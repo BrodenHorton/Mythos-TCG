@@ -1,24 +1,17 @@
 using UnityEngine;
 
-public class CreatureCardEffect : CardEffect {
-    private CreatureCardBase card; // Change to card instance
+public abstract class CreatureCardEffect {
+    protected CreatureCard card;
 
-    public CreatureCardEffect(CreatureCardBase card) : base() {
+    public CreatureCardEffect() {}
+
+    public void Init(CreatureCard card) {
         this.card = card;
     }
 
-    public override void AddListener()
-    {
-        throw new System.NotImplementedException();
-    }
+    public abstract void AddListener();
 
-    public override void RemoveListener()
-    {
-        throw new System.NotImplementedException();
-    }
+    public abstract void RemoveListener();
 
-    public override void Execute()
-    {
-        throw new System.NotImplementedException();
-    }
+    public abstract void Execute();
 }
