@@ -5,14 +5,14 @@ using UnityEngine;
 public class DuelManager : MonoBehaviour {
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
 
-    private int playerTurnIndex;
+    private MatchPlayer currentPlayerTurn;
     private int turnCount;
 
     private void Awake() {
         if(players.Count < 2)
             throw new Exception("Not enough players to start match.");
 
-        playerTurnIndex = 0;
+        currentPlayerTurn = players[0];
         turnCount = 0;
     }
 
@@ -20,7 +20,15 @@ public class DuelManager : MonoBehaviour {
         
     }
 
+    public void DrawCard(MatchPlayer player) {
+        player.DrawCard();
+    }
+
     public int GetPlayerCount() {
         return players.Count;
     }
+
+    public MatchPlayer CurrentPlayerTurn { get { return currentPlayerTurn; } }
+
+    public int TurnCount { get { return turnCount; } }
 }

@@ -25,6 +25,8 @@ public class DuelStateManager : MonoBehaviour {
         currentState.EnterState(this);
     }
 
+    public DuelManager DuelManager { get { return duelManager; } }
+
     public DrawPhase DrawPhase { get { return drawPhase; } }
 
     public StartPhase StartPhase { get { return startPhase; } }
