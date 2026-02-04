@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class DuelStateManager : MonoBehaviour {
-    [SerializeField] private DuelManager duelManager;
+    [SerializeField] private DuelManager duelManager; // Check if it is on the same Object
 
     private DrawPhase drawPhase;
     private StartPhase startPhase;

@@ -22,13 +22,15 @@ public class MatchPlayer {
         seriesWinCount = 0;
     }
 
-    public void DrawCard() {
+    public Card DrawCard() {
         if(deck.Count == 0) {
             Debug.Log("Player has ran out of cards to draw");
-            return;
+            return null;
         }
 
-        hand.Add(deck[deck.Count - 1]);
+        Card card = deck[deck.Count - 1];
+        hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
+        return card;
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
+    public event EventHandler<EventArgs> OnDrawCard;
+
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
 
     private MatchPlayer currentPlayerTurn;
@@ -14,14 +16,19 @@ public class DuelManager : MonoBehaviour {
 
         currentPlayerTurn = players[0];
         turnCount = 0;
+
+        players.Add(new MatchPlayer());
     }
 
     private void Start() {
-        
+        for(int i = 0; i < 4; i++) {
+            DrawCard(players[0]);
+        }
     }
 
     public void DrawCard(MatchPlayer player) {
-        player.DrawCard();
+        Card card = player.DrawCard();
+        OnDrawCard.Invoke(this, EventArgs.Empty);
     }
 
     public int GetPlayerCount() {
