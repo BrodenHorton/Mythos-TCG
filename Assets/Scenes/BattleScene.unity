@@ -1205,10 +1205,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   players:
-  - lifePoints: 0
+  - deck:
+    - rid: 9104119117656096956
+    - rid: 9104119117656096962
+    - rid: 9104119117656096963
+    - rid: 9104119117656096964
+    - rid: 9104119117656096965
+    hand: []
+    discardPile: []
+    lifePoints: 0
     maxMana: 0
     currentMana: 0
     seriesWinCount: 0
+  - deck: []
+    hand: []
+    discardPile: []
+    lifePoints: 0
+    maxMana: 0
+    currentMana: 0
+    seriesWinCount: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 9104119117656096956
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 11400000, guid: f13b282707b13d94f937dd29ef663bc4, type: 2}
+    - rid: 9104119117656096962
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119117656096963
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119117656096964
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119117656096965
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
 --- !u!4 &1366366361 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
@@ -1600,6 +1638,14 @@ PrefabInstance:
     - target: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8496425766226962873, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 8496425766226962873, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

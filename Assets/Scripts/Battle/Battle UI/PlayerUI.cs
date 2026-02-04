@@ -10,7 +10,7 @@ public class PlayerUI : MonoBehaviour {
     [Header("Prefabs")]
     [SerializeField] private GameObject card;
 
-    private float cardSpacing = 0.5f;
+    private float cardSpacing = 0.65f;
 
     private void Start() {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
@@ -22,13 +22,14 @@ public class PlayerUI : MonoBehaviour {
 
     public void DrawCard(object sender, EventArgs args) {
         GameObject drawnCard = Instantiate(card, handOrigin);
+        drawnCard.transform.Rotate(90f, 0, 0);
         cardsInHand.Add(drawnCard);
         SpaceCards();
     }
 
     private void SpaceCards() {
         int cardCount = cardsInHand.Count;
-        float handOffset = cardCount * cardSpacing / 2;
+        float handOffset = (cardCount - 1) * cardSpacing / 2;
         for (int i = 0; i < cardCount; i++) {
             Vector3 cardPosition = handOrigin.position;
             cardPosition.x += i * cardSpacing - handOffset;

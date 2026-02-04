@@ -16,12 +16,10 @@ public class DuelManager : MonoBehaviour {
 
         currentPlayerTurn = players[0];
         turnCount = 0;
-
-        players.Add(new MatchPlayer());
     }
 
     private void Start() {
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < 6; i++) {
             DrawCard(players[0]);
         }
     }

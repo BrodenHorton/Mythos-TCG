@@ -6,6 +6,8 @@ public class CreatureCard : Card {
     [SerializeField] private CreatureCardBase cardBase;
     [SerializeField] private List<CreatureCardEffect> effects;
 
+    public CreatureCard() { }
+
     public CreatureCard(CreatureCardBase cardBase) {
         this.cardBase = cardBase;
         effects = new List<CreatureCardEffect>();

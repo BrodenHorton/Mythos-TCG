@@ -4,9 +4,9 @@ using UnityEngine;
 
 [Serializable]
 public class MatchPlayer {
-    [SerializeField] private List<Card> deck;
-    [SerializeField] private List<Card> hand;
-    [SerializeField] private List<Card> discardPile;
+    [SerializeReference, SubclassSelector] private List<Card> deck;
+    [SerializeReference, SubclassSelector] private List<Card> hand;
+    [SerializeReference, SubclassSelector] private List<Card> discardPile;
     [SerializeField] private int lifePoints;
     [SerializeField] private int maxMana;
     [SerializeField] private int currentMana;
