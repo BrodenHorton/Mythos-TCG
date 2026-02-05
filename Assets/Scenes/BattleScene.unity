@@ -620,6 +620,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Playing Field UI 2
       objectReference: {fileID: 0}
+    - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8641841102797122468, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1034,7 +1038,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.003, z: 0}
-  m_LocalScale: {x: 0.417981, y: 1, z: 0.28794608}
+  m_LocalScale: {x: 0.42, y: 1, z: 0.265}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 269465233}
@@ -1211,13 +1215,19 @@ MonoBehaviour:
     - rid: 9104119117656096963
     - rid: 9104119117656096964
     - rid: 9104119117656096965
+    - rid: 9104119128535072828
     hand: []
     discardPile: []
     lifePoints: 0
     maxMana: 0
     currentMana: 0
     seriesWinCount: 0
-  - deck: []
+  - deck:
+    - rid: 9104119128535072829
+    - rid: 9104119128535072830
+    - rid: 9104119128535072831
+    - rid: 9104119128535072832
+    - rid: 9104119128535072833
     hand: []
     discardPile: []
     lifePoints: 0
@@ -1244,6 +1254,30 @@ MonoBehaviour:
       data:
         cardBase: {fileID: 0}
     - rid: 9104119117656096965
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119128535072828
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119128535072829
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119128535072830
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119128535072831
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119128535072832
+      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+      data:
+        cardBase: {fileID: 0}
+    - rid: 9104119128535072833
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 0}
@@ -1330,7 +1364,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.002, z: 0}
-  m_LocalScale: {x: 0.61123, y: 1, z: 0.28794608}
+  m_LocalScale: {x: 0.61123, y: 1, z: 0.265}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 269465233}
@@ -1439,7 +1473,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.001, z: 0}
-  m_LocalScale: {x: 0.417981, y: 1, z: 0.54261464}
+  m_LocalScale: {x: 0.42, y: 1, z: 0.53}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 269465233}
@@ -1527,9 +1561,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1657869791}
     m_Modifications:
+    - target: {fileID: 3074724133692166430, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_Name
       value: Playing Field UI 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921344399750140061, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921344399750140061, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.35
       objectReference: {fileID: 0}
     - target: {fileID: 8641841102797122468, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1599,6 +1649,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerUI 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6095768053009822255, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
+      propertyPath: cardsInHand.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1638,14 +1692,6 @@ PrefabInstance:
     - target: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8496425766226962873, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8496425766226962873, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

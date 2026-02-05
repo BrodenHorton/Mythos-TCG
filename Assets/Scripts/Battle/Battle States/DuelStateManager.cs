@@ -20,6 +20,10 @@ public class DuelStateManager : MonoBehaviour {
         currentState = startPhase;
     }
 
+    private void Start() {
+        currentState.EnterState(this);
+    }
+
     public void SwitchState(DuelState state) {
         currentState = state;
         currentState.EnterState(this);

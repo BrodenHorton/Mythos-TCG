@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 3559634976586841411}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: -0.35}
+  m_LocalPosition: {x: -2, y: 0.02, z: -0.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -81,6 +81,8 @@ MonoBehaviour:
   creatureSlotOrigin: {fileID: 3074724133692166430}
   spellSlotOrigin: {fileID: 3689575478617416704}
   domainSlotOrigin: {fileID: 3921344399750140061}
+  creatureCards: []
+  card: {fileID: 6249417413540295753, guid: 65603f203dde6f54da27889cd3168450, type: 3}
 --- !u!1 &8649806919628490686
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,7 +108,7 @@ Transform:
   m_GameObject: {fileID: 8649806919628490686}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0.02, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -137,7 +139,7 @@ Transform:
   m_GameObject: {fileID: 9040775679754799836}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: 0, z: -0.35}
+  m_LocalPosition: {x: 2, y: 0.02, z: -0.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
