@@ -616,6 +616,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1657869791}
     m_Modifications:
+    - target: {fileID: 2770585981518750029, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: playerIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_Name
       value: Playing Field UI 2

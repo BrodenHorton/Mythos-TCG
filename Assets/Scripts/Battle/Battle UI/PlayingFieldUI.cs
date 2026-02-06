@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayingFieldUI : MonoBehaviour {
+    [SerializeField] private int playerIndex;
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform spellSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
@@ -24,20 +25,29 @@ public class PlayingFieldUI : MonoBehaviour {
         duelManager.OnPlayDomainCard += PlayDomainCard;
     }
 
-    public void PlayCreatureCard(object sender, EventArgs args) {
+    public void PlayCreatureCard(object sender, DrawCardEventArgs args) {
+        if (playerIndex != args.PlayerIndex)
+            return;
+
         GameObject creatureCard = Instantiate(card, creatureSlotOrigin);
         creatureCard.transform.Rotate(90f, 0, 0);
         creatureCards.Add(creatureCard);
         SpaceCards();
     }
 
-    public void PlaySpellCard(object sender, EventArgs args) {
+    public void PlaySpellCard(object sender, DrawCardEventArgs args) {
+        if (playerIndex != args.PlayerIndex)
+            return;
+
         GameObject spellCard = Instantiate(card, spellSlotOrigin);
         spellCard.transform.Rotate(90f, 0, 0);
         spellCards.Add(spellCard);
     }
 
-    public void PlayDomainCard(object sender, EventArgs args) {
+    public void PlayDomainCard(object sender, DrawCardEventArgs args) {
+        if (playerIndex != args.PlayerIndex)
+            return;
+
         GameObject domainCard = Instantiate(card, domainSlotOrigin);
         domainCard.transform.Rotate(90f, 0, 0);
         this.domainCard = domainCard;
