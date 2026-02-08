@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayingFieldUI : MonoBehaviour {
-    [SerializeField] private int playerIndex;
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform spellSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
@@ -13,6 +12,7 @@ public class PlayingFieldUI : MonoBehaviour {
     [Header("Prefabs")]
     [SerializeField] private GameObject card;
 
+    private Guid playerUuid;
     private float cardSpacing = 0.5f;
 
     private void Awake() {
@@ -26,7 +26,7 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void PlayCreatureCard(object sender, DrawCardEventArgs args) {
-        if (playerIndex != args.PlayerIndex)
+        if (playerUuid != args.Player.Uuid)
             return;
 
         GameObject creatureCard = Instantiate(card, creatureSlotOrigin);
@@ -36,7 +36,7 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void PlaySpellCard(object sender, DrawCardEventArgs args) {
-        if (playerIndex != args.PlayerIndex)
+        if (playerUuid != args.Player.Uuid)
             return;
 
         GameObject spellCard = Instantiate(card, spellSlotOrigin);
@@ -45,7 +45,7 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void PlayDomainCard(object sender, DrawCardEventArgs args) {
-        if (playerIndex != args.PlayerIndex)
+        if (playerUuid != args.Player.Uuid)
             return;
 
         GameObject domainCard = Instantiate(card, domainSlotOrigin);
@@ -62,4 +62,6 @@ public class PlayingFieldUI : MonoBehaviour {
             creatureCards[i].transform.position = cardPosition;
         }
     }
+
+    public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
 }

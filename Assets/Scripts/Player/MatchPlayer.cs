@@ -12,6 +12,8 @@ public class MatchPlayer {
     [SerializeField] private int currentMana;
     [SerializeField] private int seriesWinCount;
 
+    private Guid uuid;
+
     public MatchPlayer() {
         deck = new List<Card>();
         hand = new List<Card>();
@@ -20,6 +22,7 @@ public class MatchPlayer {
         maxMana = 1;
         currentMana = 1;
         seriesWinCount = 0;
+        uuid = Guid.NewGuid();
     }
 
     public Card DrawCard() {
@@ -33,4 +36,6 @@ public class MatchPlayer {
         deck.RemoveAt(deck.Count - 1);
         return card;
     }
+
+    public Guid Uuid { get { return uuid; } }
 }

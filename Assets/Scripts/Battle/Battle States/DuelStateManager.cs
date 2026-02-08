@@ -10,6 +10,8 @@ public class DuelStateManager : MonoBehaviour {
     private EndPhase endPhase;
     private DuelState currentState;
 
+    private bool isFirstUpdate = true;
+
     private void Awake() {
         drawPhase = new DrawPhase();
         startPhase = new StartPhase();
@@ -17,11 +19,14 @@ public class DuelStateManager : MonoBehaviour {
         battlePhase = new BattlePhase();
         endPhase = new EndPhase();
 
-        currentState = startPhase;
+        currentState = drawPhase;
     }
 
-    private void Start() {
-        currentState.EnterState(this);
+    private void Update() {
+        if(isFirstUpdate) {
+            currentState.EnterState(this);
+            isFirstUpdate = false;
+        }
     }
 
     public void SwitchState(DuelState state) {

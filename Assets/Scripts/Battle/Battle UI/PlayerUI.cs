@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerUI : MonoBehaviour {
-    [SerializeField] private int playerIndex;
     [SerializeField] private Transform deckOrigin;
     [SerializeField] private Transform handOrigin;
     [SerializeField] private List<GameObject> cardsInHand;
     [Header("Prefabs")]
     [SerializeField] private GameObject card;
 
+    private Guid playerUuid;
     private float cardSpacing = 0.65f;
 
     private void Start() {
@@ -20,7 +20,10 @@ public class PlayerUI : MonoBehaviour {
         duelManager.OnDrawCard += DrawCard;
     }
 
-    public void DrawCard(object sender, EventArgs args) {
+    public void DrawCard(object sender, DrawCardEventArgs args) {
+        if (playerUuid != args.Player.Uuid)
+            return;
+
         GameObject drawnCard = Instantiate(card, handOrigin);
         drawnCard.transform.Rotate(90f, 0, 0);
         cardsInHand.Add(drawnCard);
@@ -36,4 +39,6 @@ public class PlayerUI : MonoBehaviour {
             cardsInHand[i].transform.position = cardPosition;
         }
     }
+
+    public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
 }

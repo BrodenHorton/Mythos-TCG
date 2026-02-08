@@ -22,30 +22,29 @@ public class DuelManager : MonoBehaviour {
     }
 
     private void Start() {
-        for(int i = 0; i < 3; i++)
-            DrawCard(GetCurrentPlayerTurn());
-        for (int i = 0; i < 6; i++)
-            PlayCreatureCard(GetCurrentPlayerTurn());
-        PlaySpellCard(GetCurrentPlayerTurn());
-        PlaySpellCard(GetCurrentPlayerTurn());
-        PlayDomainCard(GetCurrentPlayerTurn());
+
     }
 
     public void DrawCard(MatchPlayer player) {
         Card card = player.DrawCard();
-        OnDrawCard.Invoke(this, new DrawCardEventArgs(player, currentPlayerTurnIndex));
+        OnDrawCard.Invoke(this, new DrawCardEventArgs(player));
     }
 
     public void PlayCreatureCard(MatchPlayer player) {
-        OnPlayCreatureCard.Invoke(this, new DrawCardEventArgs(player, currentPlayerTurnIndex));
+        OnPlayCreatureCard.Invoke(this, new DrawCardEventArgs(player));
     }
 
     public void PlaySpellCard(MatchPlayer player) {
-        OnPlaySpellCard.Invoke(this, new DrawCardEventArgs(player, currentPlayerTurnIndex));
+        OnPlaySpellCard.Invoke(this, new DrawCardEventArgs(player));
     }
 
     public void PlayDomainCard(MatchPlayer player) {
-        OnPlayDomainCard.Invoke(this, new DrawCardEventArgs(player, currentPlayerTurnIndex));
+        OnPlayDomainCard.Invoke(this, new DrawCardEventArgs(player));
+    }
+
+    public void NextTurn() {
+        Debug.Log("Current player index: " + currentPlayerTurnIndex);
+        currentPlayerTurnIndex = ++currentPlayerTurnIndex % players.Count;
     }
 
     public int GetPlayerCount() {
@@ -55,6 +54,8 @@ public class DuelManager : MonoBehaviour {
     public MatchPlayer GetCurrentPlayerTurn() {
         return players[currentPlayerTurnIndex];
     }
+
+    public List<MatchPlayer> Players { get { return players; } }
 
     public int TurnCount { get { return turnCount; } }
 }

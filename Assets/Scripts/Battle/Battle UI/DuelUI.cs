@@ -14,6 +14,11 @@ public class DuelUI : MonoBehaviour {
         if (duelStateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
-
+        List<MatchPlayer> players = duelManager.Players;
+        for (int i = 0; i < playerUIs.Count; i++) {
+            if (players.Count <= i)
+                break;
+            playerUIs[i].PlayerUuid = players[i].Uuid;
+        }
     }
 }
