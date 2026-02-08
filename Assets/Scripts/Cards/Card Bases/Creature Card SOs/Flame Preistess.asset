@@ -10,11 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d884deb7188e42e4c86259bffd9cb5cb, type: 3}
-  m_Name: Sanctum Knight
+  m_Name: Flame Preistess
   m_EditorClassIdentifier: 
-  cardName: Sanctum Knight
-  manaCost: 2
+  cardName: Flame Preistess
+  manaCost: 3
   domain: 0
-  atk: 2
+  atk: 1
   health: 3
   creatureClasses: 02000000
+  baseEffects: []
+  references:
+    version: 2
+    RefIds: []

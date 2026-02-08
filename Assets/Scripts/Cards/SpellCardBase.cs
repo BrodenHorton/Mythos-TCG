@@ -4,5 +4,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SpellCardBase", menuName = "Scriptable Objects/Card/SpellCardBase")]
 public class SpellCardBase : CardBase {
     [SerializeField] SpellType spellType;
-    [SerializeField] private List<SpellCardEffect> baseEffects;
+    [SerializeReference, SubclassSelector] private List<SpellCardEffect> baseEffects;
 }

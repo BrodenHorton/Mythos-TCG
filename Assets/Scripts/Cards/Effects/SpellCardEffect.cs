@@ -1,4 +1,4 @@
-
+[System.Serializable]
 public abstract class SpellCardEffect {
     protected SpellCard card;
 

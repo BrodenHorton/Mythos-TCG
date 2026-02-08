@@ -1,3 +1,4 @@
+[System.Serializable]
 public class OverwhelmEffect : CreatureCardEffect {
 
     public OverwhelmEffect() : base() {

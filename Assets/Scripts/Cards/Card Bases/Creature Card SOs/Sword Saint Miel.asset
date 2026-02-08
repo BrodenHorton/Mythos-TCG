@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d884deb7188e42e4c86259bffd9cb5cb, type: 3}
+  m_Name: Sword Saint Miel
+  m_EditorClassIdentifier: 
+  cardName: Sword Saint Miel
+  manaCost: 6
+  domain: 0
+  atk: 6
+  health: 6
+  creatureClasses: 0200000022000000
+  baseEffects: []
+  references:
+    version: 2
+    RefIds: []
