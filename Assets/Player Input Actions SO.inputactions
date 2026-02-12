@@ -1,0 +1,34 @@
+{
+    "name": "Player Input Actions SO",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "4abf53fd-cac1-4445-8a69-51876f744f19",
+            "actions": [
+                {
+                    "name": "Next",
+                    "type": "Button",
+                    "id": "b736bf78-42d5-4e42-b852-8a7b49468bed",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "460fb130-bec4-4480-8362-30aeb2b83301",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

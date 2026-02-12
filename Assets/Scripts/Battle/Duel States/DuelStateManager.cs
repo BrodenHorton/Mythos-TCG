@@ -1,8 +1,8 @@
+using System;
 using UnityEngine;
 
+[RequireComponent(typeof(DuelManager))]
 public class DuelStateManager : MonoBehaviour {
-    [SerializeField] private DuelManager duelManager; // Check if it is on the same Object
-
     private DrawPhase drawPhase;
     private StartPhase startPhase;
     private MainPhase mainPhase;
@@ -10,28 +10,33 @@ public class DuelStateManager : MonoBehaviour {
     private EndPhase endPhase;
     private DuelState currentState;
 
+    private DuelManager duelManager;
     private bool isFirstUpdate = true;
 
     private void Awake() {
-        drawPhase = new DrawPhase();
-        startPhase = new StartPhase();
-        mainPhase = new MainPhase();
-        battlePhase = new BattlePhase();
-        endPhase = new EndPhase();
+        duelManager = GetComponent<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("DuelManager not found on GameObject");
+
+        drawPhase = new DrawPhase(this);
+        startPhase = new StartPhase(this);
+        mainPhase = new MainPhase(this);
+        battlePhase = new BattlePhase(this);
+        endPhase = new EndPhase(this);
 
         currentState = drawPhase;
     }
 
     private void Update() {
         if(isFirstUpdate) {
-            currentState.EnterState(this);
+            currentState.EnterState();
             isFirstUpdate = false;
         }
     }
 
     public void SwitchState(DuelState state) {
         currentState = state;
-        currentState.EnterState(this);
+        currentState.EnterState();
     }
 
     public DuelManager DuelManager { get { return duelManager; } }
