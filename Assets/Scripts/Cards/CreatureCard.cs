@@ -26,6 +26,6 @@ public class CreatureCard : Card {
     }
 
     public override bool IsPlayable() {
-        throw new System.NotImplementedException();
+        return true;
     }
 }

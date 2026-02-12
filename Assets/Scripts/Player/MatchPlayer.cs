@@ -38,4 +38,10 @@ public class MatchPlayer {
     }
 
     public Guid Uuid { get { return uuid; } }
+
+    public List<Card> Deck {  get { return deck; } }
+
+    public List<Card> Hand { get { return hand; } }
+
+    public List<Card> DiscardPile { get { return discardPile; } }
 }

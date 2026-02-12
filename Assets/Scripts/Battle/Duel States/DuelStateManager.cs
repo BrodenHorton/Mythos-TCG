@@ -32,6 +32,8 @@ public class DuelStateManager : MonoBehaviour {
             currentState.EnterState();
             isFirstUpdate = false;
         }
+
+        currentState.UpdateState();
     }
 
     public void SwitchState(DuelState state) {

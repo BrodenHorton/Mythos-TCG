@@ -1212,7 +1212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 175e28889429d8c4e99d8fe29f0f7b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duelManager: {fileID: 1336480730}
 --- !u!114 &1336480730
 MonoBehaviour:
   m_ObjectHideFlags: 0

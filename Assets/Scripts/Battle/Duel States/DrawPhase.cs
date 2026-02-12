@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class DrawPhase : DuelState {
+    public event EventHandler<EventArgs> OnDrawPhase;
+
     private DuelStateManager stateManager;
     private PlayerInputActions playerInputActions;
 
@@ -13,6 +16,7 @@ public class DrawPhase : DuelState {
 
     public void EnterState() {
         Debug.Log("Entered Draw Phase");
+        OnDrawPhase?.Invoke(this, EventArgs.Empty);
         playerInputActions.Enable();
         DuelManager duelManager = stateManager.DuelManager;
         duelManager.DrawCard(duelManager.GetCurrentPlayerTurn());

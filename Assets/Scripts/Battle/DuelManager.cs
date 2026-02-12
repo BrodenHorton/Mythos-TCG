@@ -55,6 +55,16 @@ public class DuelManager : MonoBehaviour {
         return players[currentPlayerTurnIndex];
     }
 
+    public MatchPlayer GetPlayerByUuid(Guid uuid) {
+        MatchPlayer result = null;
+        foreach(MatchPlayer p in players) {
+            if (p.Uuid == uuid)
+                result = p;
+        }
+
+        return result;
+    }
+
     public List<MatchPlayer> Players { get { return players; } }
 
     public int TurnCount { get { return turnCount; } }

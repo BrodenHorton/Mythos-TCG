@@ -46,11 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 829d11a3339092044ac394f116625e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
   deckOrigin: {fileID: 6534586550801431259}
   handOrigin: {fileID: 8496425766226962873}
   cardsInHand: []
-  card: {fileID: 6249417413540295753, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
+  card: {fileID: 1201297320161513180, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
 --- !u!1 &5937108094863691832
 GameObject:
   m_ObjectHideFlags: 0

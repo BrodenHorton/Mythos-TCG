@@ -1,4 +1,6 @@
-﻿public class MainPhase : DuelState {
+﻿using UnityEngine;
+
+public class MainPhase : DuelState {
     private DuelStateManager stateManager;
 
     public MainPhase(DuelStateManager stateManager) {
@@ -6,6 +8,7 @@
     }
 
     public void EnterState() {
+        Debug.Log("Entered Main Phase");
         stateManager.SwitchState(stateManager.EndPhase);
     }
 
