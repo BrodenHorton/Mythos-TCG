@@ -17,9 +17,10 @@ public class DrawPhase : DuelState {
     public void EnterState() {
         Debug.Log("Entered Draw Phase");
         OnDrawPhase?.Invoke(this, EventArgs.Empty);
-        playerInputActions.Enable();
         DuelManager duelManager = stateManager.DuelManager;
+        duelManager.SetStartOfTurnMana();
         duelManager.DrawCard(duelManager.GetCurrentPlayerTurn());
+        playerInputActions.Enable();
     }
 
     public void UpdateState() {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ public class CreatureCard : Card {
     }
 
     public override bool IsPlayable() {
-        return true;
+        System.Random rand = new System.Random();
+        return rand.Next(0, 2) == 0;
     }
 }

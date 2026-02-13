@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerUI : MonoBehaviour {
     [SerializeField] private Transform deckOrigin;
     [SerializeField] private Transform handOrigin;
+    [SerializeField] private TextMeshPro manaCount;
     [SerializeField] private List<HandCardUI> cardsInHand;
     [Header("Prefabs")]
     [SerializeField] private HandCardUI card;
@@ -19,6 +21,11 @@ public class PlayerUI : MonoBehaviour {
         DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+
+        duelManager.OnManaCountChanged += (sender, e) => {
+            if(e.Player.Uuid == playerUuid)
+                manaCount.text = e.CurrentMana.ToString();
+        };
 
         duelManager.OnDrawCard += DrawCard;
 

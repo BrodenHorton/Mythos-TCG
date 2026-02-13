@@ -19,8 +19,8 @@ public class BattlefieldUI : MonoBehaviour {
         for(int i = 0; i < playingFieldUIs.Count; i++) {
             if (players.Count <= i)
                 break;
+
             playingFieldUIs[i].PlayerUuid = players[i].Uuid;
-            Debug.Log("Player " + i + " Uuid: " + players[i].Uuid);
         }
     }
 

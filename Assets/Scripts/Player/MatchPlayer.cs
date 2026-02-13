@@ -8,7 +8,6 @@ public class MatchPlayer {
     [SerializeReference, SubclassSelector] private List<Card> hand;
     [SerializeReference, SubclassSelector] private List<Card> discardPile;
     [SerializeField] private int lifePoints;
-    [SerializeField] private int maxMana;
     [SerializeField] private int currentMana;
     [SerializeField] private int seriesWinCount;
 
@@ -19,7 +18,6 @@ public class MatchPlayer {
         hand = new List<Card>();
         discardPile = new List<Card>();
         lifePoints = 20;
-        maxMana = 1;
         currentMana = 1;
         seriesWinCount = 0;
         uuid = Guid.NewGuid();
@@ -44,4 +42,6 @@ public class MatchPlayer {
     public List<Card> Hand { get { return hand; } }
 
     public List<Card> DiscardPile { get { return discardPile; } }
+
+    public int CurrentMana { get { return currentMana; } set { currentMana = value; } }
 }
