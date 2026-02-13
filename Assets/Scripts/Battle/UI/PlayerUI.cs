@@ -41,7 +41,7 @@ public class PlayerUI : MonoBehaviour {
                 if (player.Hand.Count <= i)
                     break;
 
-                cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable());
+                cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable(duelManager));
             }
         };
     }
@@ -53,6 +53,7 @@ public class PlayerUI : MonoBehaviour {
         HandCardUI drawnCard = Instantiate(card, handOrigin);
         drawnCard.transform.Rotate(90f, 0, 0);
         cardsInHand.Add(drawnCard);
+        drawnCard.OnSelected += PlayCardFromHand;
         SpaceCards();
     }
 
@@ -64,6 +65,23 @@ public class PlayerUI : MonoBehaviour {
             cardPosition.x += i * cardSpacing - handOffset;
             cardsInHand[i].transform.position = cardPosition;
         }
+    }
+
+    private void PlayCardFromHand(object sender, HandCardSelectedEventArgs args) {
+        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
+        int cardIndex = -1;
+        for(int i = 0; i < cardsInHand.Count; i++) {
+            if(cardsInHand[i].Equals(args.CardUI)) {
+                cardIndex = i;
+                break;
+            }
+        }
+        if (cardIndex == -1)
+            throw new Exception("Invalid card selected in hand");
+
+        cardsInHand.RemoveAt(cardIndex);
+        Destroy(args.CardUI.gameObject);
+        duelManager.PlayCardInHand(cardIndex);
     }
 
     public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }

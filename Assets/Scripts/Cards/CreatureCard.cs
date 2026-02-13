@@ -26,8 +26,12 @@ public class CreatureCard : Card {
         throw new System.NotImplementedException();
     }
 
-    public override bool IsPlayable() {
+    public override bool IsPlayable(DuelManager duelManager) {
         System.Random rand = new System.Random();
         return rand.Next(0, 2) == 0;
+    }
+
+    public override void PlayCard(DuelManager duelManager) {
+        duelManager.PlayCreatureCard(duelManager.GetCurrentPlayerTurn(), this);
     }
 }

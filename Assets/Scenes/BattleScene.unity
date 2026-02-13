@@ -554,6 +554,50 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1 &412414826
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 412414827}
+  - component: {fileID: 412414828}
+  m_Layer: 0
+  m_Name: PlayerClickManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &412414827
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412414826}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1151302305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &412414828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412414826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 615ef5df2dc347446b485381233b6397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &560894277 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
@@ -977,6 +1021,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2172442502103766587, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 6229987266681270232, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
 --- !u!114 &876774572 stripped
 MonoBehaviour:
@@ -1024,6 +1071,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1336480728}
+  - {fileID: 412414827}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1151329755
@@ -1234,8 +1282,11 @@ MonoBehaviour:
     - rid: 9104119128535072828
     hand: []
     discardPile: []
+    creatures: []
+    spells: []
+    domain:
+      rid: -2
     lifePoints: 0
-    maxMana: 0
     currentMana: 0
     seriesWinCount: 0
   - deck:
@@ -1246,13 +1297,18 @@ MonoBehaviour:
     - rid: 9104119128535072833
     hand: []
     discardPile: []
+    creatures: []
+    spells: []
+    domain:
+      rid: -2
     lifePoints: 0
-    maxMana: 0
     currentMana: 0
     seriesWinCount: 0
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 9104119117656096956
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
@@ -1794,6 +1850,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 2172442502103766587, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 6229987266681270232, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}

@@ -7,6 +7,10 @@ public class MatchPlayer {
     [SerializeReference, SubclassSelector] private List<Card> deck;
     [SerializeReference, SubclassSelector] private List<Card> hand;
     [SerializeReference, SubclassSelector] private List<Card> discardPile;
+    // Could move these three to a PlayerField class
+    [SerializeReference, SubclassSelector] private List<Card> creatures;
+    [SerializeReference, SubclassSelector] private List<Card> spells;
+    [SerializeReference, SubclassSelector] private Card domain;
     [SerializeField] private int lifePoints;
     [SerializeField] private int currentMana;
     [SerializeField] private int seriesWinCount;
@@ -17,6 +21,9 @@ public class MatchPlayer {
         deck = new List<Card>();
         hand = new List<Card>();
         discardPile = new List<Card>();
+        creatures = new List<Card>();
+        spells = new List<Card>();
+        domain = null;
         lifePoints = 20;
         currentMana = 1;
         seriesWinCount = 0;
@@ -42,6 +49,12 @@ public class MatchPlayer {
     public List<Card> Hand { get { return hand; } }
 
     public List<Card> DiscardPile { get { return discardPile; } }
+
+    public List<Card> Creatures { get { return creatures; } }
+
+    public List<Card> Spells { get { return spells; } }
+
+    public Card Domain { get { return domain; } }
 
     public int CurrentMana { get { return currentMana; } set { currentMana = value; } }
 }

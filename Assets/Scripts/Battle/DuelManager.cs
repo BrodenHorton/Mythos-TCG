@@ -5,9 +5,10 @@ using UnityEngine;
 public class DuelManager : MonoBehaviour {
     public event EventHandler<DrawCardEventArgs> OnDrawCard;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public event EventHandler<DrawCardEventArgs> OnPlayCreatureCard;
-    public event EventHandler<DrawCardEventArgs> OnPlaySpellCard;
-    public event EventHandler<DrawCardEventArgs> OnPlayDomainCard;
+    public event EventHandler<CardPlayedFromHandEventArgs> OnCardPlayedFromHand;
+    public event EventHandler<DrawCardEventArgs> OnCreatureCardPlayed;
+    public event EventHandler<DrawCardEventArgs> OnSpellCardPlayed;
+    public event EventHandler<DrawCardEventArgs> OnDomainCardPlayed;
 
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
 
@@ -41,16 +42,29 @@ public class DuelManager : MonoBehaviour {
         OnManaCountChanged?.Invoke(this, new ManaChangedEventArgs(GetCurrentPlayerTurn(), fullTurnCount));
     }
 
-    public void PlayCreatureCard(MatchPlayer player) {
-        OnPlayCreatureCard?.Invoke(this, new DrawCardEventArgs(player));
+    public void PlayCardInHand(int cardIndex) {
+        MatchPlayer player = players[0];
+        if (player.Hand.Count <= cardIndex)
+            return;
+
+        player.Hand[cardIndex].PlayCard(this);
+        player.Hand.RemoveAt(cardIndex);
     }
 
-    public void PlaySpellCard(MatchPlayer player) {
-        OnPlaySpellCard?.Invoke(this, new DrawCardEventArgs(player));
+    public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
+        // TODO: Implement adding a creature card to the MatchPlayer's field
     }
 
-    public void PlayDomainCard(MatchPlayer player) {
-        OnPlayDomainCard?.Invoke(this, new DrawCardEventArgs(player));
+    public void PlaySpellCard(MatchPlayer player, SpellCard card) {
+        // TODO: Implement adding a spell card to the MatchPlayer's field
+    }
+
+    public void PlayDomainCard(MatchPlayer player, SpellCard card) {
+        // TODO: Implement adding a domain card to the MatchPlayer's field
+    }
+
+    public void PlayCardFromHand(MatchPlayer player, Card card) {
+        OnCardPlayedFromHand?.Invoke(this, new CardPlayedFromHandEventArgs(player, card));
     }
 
     public void NextTurn() {

@@ -20,9 +20,9 @@ public class PlayingFieldUI : MonoBehaviour {
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
-        duelManager.OnPlayCreatureCard += PlayCreatureCard;
-        duelManager.OnPlaySpellCard += PlaySpellCard;
-        duelManager.OnPlayDomainCard += PlayDomainCard;
+        duelManager.OnCreatureCardPlayed += PlayCreatureCard;
+        duelManager.OnSpellCardPlayed += PlaySpellCard;
+        duelManager.OnDomainCardPlayed += PlayDomainCard;
     }
 
     public void PlayCreatureCard(object sender, DrawCardEventArgs args) {
