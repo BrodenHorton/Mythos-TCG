@@ -17,12 +17,12 @@ public class SpellCard : Card {
         throw new System.NotImplementedException();
     }
 
-    public override bool IsPlayable(DuelManager duelManager) {
+    public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
         System.Random rand = new System.Random();
         return rand.Next(0, 2) == 0;
     }
 
-    public override void PlayCard(DuelManager duelManager) {
+    public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
         duelManager.PlaySpellCard(duelManager.GetCurrentPlayerTurn(), this);
     }
 }

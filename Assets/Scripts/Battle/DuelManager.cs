@@ -47,20 +47,24 @@ public class DuelManager : MonoBehaviour {
         if (player.Hand.Count <= cardIndex)
             return;
 
-        player.Hand[cardIndex].PlayCard(this);
+        Card card = player.Hand[cardIndex];
         player.Hand.RemoveAt(cardIndex);
+        card.PlayCard(this, player);
     }
 
     public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
-        // TODO: Implement adding a creature card to the MatchPlayer's field
+        player.Creatures.Add(card);
+        OnCreatureCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
     }
 
     public void PlaySpellCard(MatchPlayer player, SpellCard card) {
-        // TODO: Implement adding a spell card to the MatchPlayer's field
+        player.Spells.Add(card);
+        OnSpellCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
     }
 
     public void PlayDomainCard(MatchPlayer player, SpellCard card) {
-        // TODO: Implement adding a domain card to the MatchPlayer's field
+        player.Domain = card;
+        OnDomainCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
     }
 
     public void PlayCardFromHand(MatchPlayer player, Card card) {

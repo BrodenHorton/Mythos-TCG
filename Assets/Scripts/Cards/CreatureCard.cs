@@ -26,12 +26,17 @@ public class CreatureCard : Card {
         throw new System.NotImplementedException();
     }
 
-    public override bool IsPlayable(DuelManager duelManager) {
-        System.Random rand = new System.Random();
-        return rand.Next(0, 2) == 0;
+    public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
+        if (player.CurrentMana < cardBase.ManaCost)
+            return false;
+        if (player.Creatures.Count > 6)
+            return false;
+
+        return true;
     }
 
-    public override void PlayCard(DuelManager duelManager) {
+    public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
+        duelManager.SetCurrentMana(player, player.CurrentMana - cardBase.ManaCost);
         duelManager.PlayCreatureCard(duelManager.GetCurrentPlayerTurn(), this);
     }
 }

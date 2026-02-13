@@ -30,20 +30,11 @@ public class PlayerUI : MonoBehaviour {
         duelManager.OnDrawCard += DrawCard;
 
         stateManager.DrawPhase.OnDrawPhase += (sender, e) => {
-            for (int i = 0; i < cardsInHand.Count; i++) {
+            for (int i = 0; i < cardsInHand.Count; i++)
                 cardsInHand[i].SetBorderVisibility(false);
-            }
         };
 
-        MatchPlayer player = duelManager.GetPlayerByUuid(playerUuid);
-        stateManager.StartPhase.OnStartPhase += (sender, e) => {
-            for(int i = 0; i < cardsInHand.Count; i++) {
-                if (player.Hand.Count <= i)
-                    break;
-
-                cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable(duelManager));
-            }
-        };
+        stateManager.StartPhase.OnStartPhase += SetSelectableCards;
     }
 
     public void DrawCard(object sender, DrawCardEventArgs args) {
@@ -67,6 +58,18 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    private void SetSelectableCards(object sender, EventArgs args) {
+        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
+        MatchPlayer player = duelManager.GetPlayerByUuid(playerUuid);
+        for (int i = 0; i < cardsInHand.Count; i++) {
+            if (player.Hand.Count <= i)
+                break;
+
+            Debug.Log("Setting Selectable Card for Player: " + player.Uuid);
+            cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable(duelManager, player));
+        }
+    }
+
     private void PlayCardFromHand(object sender, HandCardSelectedEventArgs args) {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
         int cardIndex = -1;
@@ -81,6 +84,7 @@ public class PlayerUI : MonoBehaviour {
 
         cardsInHand.RemoveAt(cardIndex);
         Destroy(args.CardUI.gameObject);
+        SpaceCards();
         duelManager.PlayCardInHand(cardIndex);
     }
 
