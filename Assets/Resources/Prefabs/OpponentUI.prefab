@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7844369168081223106}
-  - component: {fileID: 6095768053009822255}
+  - component: {fileID: 7419398484432964348}
   m_Layer: 0
-  m_Name: PlayerUI
+  m_Name: OpponentUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 5218075967919715047}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6095768053009822255
+--- !u!114 &7419398484432964348
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,15 +44,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4619643054382922744}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 829d11a3339092044ac394f116625e94, type: 3}
+  m_Script: {fileID: 11500000, guid: f448bccf6c0c6764495f62455bcf338c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckOrigin: {fileID: 6534586550801431259}
+  deckOrigin: {fileID: 4278301540757572507}
   handOrigin: {fileID: 8496425766226962873}
   manaCount: {fileID: 7642753490845534241}
   cardsInHand: []
   card: {fileID: 1201297320161513180, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
-  handInspectOffset: {x: 0, y: 0.05, z: 0.02}
 --- !u!1 &5937108094863691832
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,8 +274,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8496425766226962873}
-  - component: {fileID: 1270910435446852903}
-  - component: {fileID: 4018830698225923646}
   m_Layer: 0
   m_Name: Payer Hand
   m_TagString: Untagged
@@ -299,40 +296,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7844369168081223106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1270910435446852903
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7192386006791262969}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.5, y: 0.5, z: 0.7}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4018830698225923646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7192386006791262969}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4cfcf269cb23ed4991dd9f0eeb07ca7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerUI: {fileID: 6095768053009822255}
 --- !u!1001 &120744310330428246
 PrefabInstance:
   m_ObjectHideFlags: 0

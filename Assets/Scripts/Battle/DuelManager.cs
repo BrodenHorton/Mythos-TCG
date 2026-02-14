@@ -42,8 +42,11 @@ public class DuelManager : MonoBehaviour {
         OnManaCountChanged?.Invoke(this, new ManaChangedEventArgs(GetCurrentPlayerTurn(), fullTurnCount));
     }
 
-    public void PlayCardInHand(int cardIndex) {
-        MatchPlayer player = players[0];
+    public void PlayCardInHand(Guid playerUuid, int cardIndex) {
+        PlayCardInHand(GetPlayerByUuid(playerUuid), cardIndex);
+    }
+
+    public void PlayCardInHand(MatchPlayer player, int cardIndex) {
         if (player.Hand.Count <= cardIndex)
             return;
 

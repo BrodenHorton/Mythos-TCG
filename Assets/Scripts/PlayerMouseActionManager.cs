@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerClickManager : MonoBehaviour {
+public class PlayerMouseActionManager : MonoBehaviour {
     private Camera cam;
     private PlayerInputActions playerInputActions;
 
@@ -10,6 +10,10 @@ public class PlayerClickManager : MonoBehaviour {
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
         playerInputActions.Player.Select.performed += SelectCard;
+    }
+
+    private void Update() {
+        InspectHand();
     }
 
     private void SelectCard(InputAction.CallbackContext context) {
@@ -28,5 +32,21 @@ public class PlayerClickManager : MonoBehaviour {
             return;
 
         cardUI.Select();
+    }
+
+    private void InspectCard() {
+
+    }
+
+    private void InspectHand() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        PlayerUI playerUI = null;
+        if (Physics.Raycast(ray, out hit)) {
+            if (hit.collider.GetComponent<HandInspectRegion>()) {
+                playerUI = hit.collider.GetComponent<HandInspectRegion>().PlayerUI;
+                playerUI.InspectHand();
+            }
+        }
     }
 }

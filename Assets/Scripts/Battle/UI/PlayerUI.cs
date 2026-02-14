@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public class PlayerUI : MonoBehaviour {
-    [SerializeField] private Transform deckOrigin;
-    [SerializeField] private Transform handOrigin;
-    [SerializeField] private TextMeshPro manaCount;
-    [SerializeField] private List<HandCardUI> cardsInHand;
-    [Header("Prefabs")]
-    [SerializeField] private HandCardUI card;
-
-    private Guid playerUuid;
-    private float cardSpacing = 0.55f;
+public class PlayerUI : ResourceUI {
+    [SerializeField] private Vector3 handInspectOffset;
+    [SerializeField] private bool isInspectActive;
 
     private void Start() {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
@@ -35,6 +26,8 @@ public class PlayerUI : MonoBehaviour {
         };
 
         stateManager.StartPhase.OnStartPhase += SetSelectableCards;
+
+        isInspectActive = false;
     }
 
     public void DrawCard(object sender, DrawCardEventArgs args) {
@@ -48,18 +41,11 @@ public class PlayerUI : MonoBehaviour {
         SpaceCards();
     }
 
-    private void SpaceCards() {
-        int cardCount = cardsInHand.Count;
-        float handOffset = (cardCount - 1) * cardSpacing / 2;
-        for (int i = 0; i < cardCount; i++) {
-            Vector3 cardPosition = handOrigin.position;
-            cardPosition.x += i * cardSpacing - handOffset;
-            cardsInHand[i].transform.position = cardPosition;
-        }
-    }
-
     private void SetSelectableCards(object sender, EventArgs args) {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
+        if (playerUuid != duelManager.GetCurrentPlayerTurn().Uuid)
+            return;
+
         MatchPlayer player = duelManager.GetPlayerByUuid(playerUuid);
         for (int i = 0; i < cardsInHand.Count; i++) {
             if (player.Hand.Count <= i)
@@ -85,8 +71,15 @@ public class PlayerUI : MonoBehaviour {
         cardsInHand.RemoveAt(cardIndex);
         Destroy(args.CardUI.gameObject);
         SpaceCards();
-        duelManager.PlayCardInHand(cardIndex);
+        duelManager.PlayCardInHand(playerUuid, cardIndex);
     }
 
-    public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
+    public void InspectHand() {
+        if (isInspectActive)
+            return;
+
+        for (int i = 0; i < cardsInHand.Count; i++)
+            cardsInHand[i].transform.Translate(handInspectOffset, Space.World);
+        isInspectActive = true;
+    }
 }
