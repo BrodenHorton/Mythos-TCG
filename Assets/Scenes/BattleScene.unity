@@ -570,7 +570,7 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
---- !u!1 &412414826
+--- !u!1 &586076831
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -578,22 +578,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 412414827}
-  - component: {fileID: 412414828}
+  - component: {fileID: 586076832}
+  - component: {fileID: 586076833}
   m_Layer: 0
-  m_Name: PlayerClickManager
+  m_Name: PlayerUIController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &412414827
+--- !u!4 &586076832
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 412414826}
+  m_GameObject: {fileID: 586076831}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -602,18 +602,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1151302305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &412414828
+--- !u!114 &586076833
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 412414826}
+  m_GameObject: {fileID: 586076831}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 615ef5df2dc347446b485381233b6397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerUI: {fileID: 1366366362}
 --- !u!1 &636189469
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,7 +663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battlefieldUI: {fileID: 1657869792}
-  resourceUI:
+  resourceUIs:
   - {fileID: 1366366362}
   - {fileID: 32471554}
 --- !u!1001 &674147308
@@ -939,7 +940,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1336480728}
-  - {fileID: 412414827}
+  - {fileID: 586076832}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1151329755
@@ -1756,18 +1757,6 @@ PrefabInstance:
     - target: {fileID: 4619643054382922744, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_Name
       value: PlayerUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 6095768053009822255, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: handInspectOffset.y
-      value: 0.85
-      objectReference: {fileID: 0}
-    - target: {fileID: 6095768053009822255, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: handInspectOffset.z
-      value: 1.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 6095768053009822255, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: cardsInHand.Array.size
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_LocalPosition.x

@@ -28,6 +28,7 @@ public class DuelManager : MonoBehaviour {
     }
 
     public void DrawCard(MatchPlayer player) {
+        Debug.Log("Drawing Card in DuelManager");
         Card card = player.DrawCard();
         OnDrawCard?.Invoke(this, new DrawCardEventArgs(player));
     }
