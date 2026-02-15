@@ -13,5 +13,14 @@ public abstract class ResourceUI : MonoBehaviour {
 
     protected Guid playerUuid;
 
+    public bool ContainsCard(HandCardUI handCardUI) {
+        foreach (HandCardUI card in cardsInHand) {
+            if (card.Equals(handCardUI))
+                return true;
+        }
+
+        return false;
+    }
+
     public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
 }

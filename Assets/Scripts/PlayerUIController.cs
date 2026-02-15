@@ -20,12 +20,19 @@ public class PlayerUIController : MonoBehaviour {
     private void Update() {
         HandCardUI handCardUI = HoverDetection();
         if(handCardUI == null && previousSelection != null) {
-            DeselectHand();
+            ExitHoverHand();
             previousSelection = null;
         }
-        if (handCardUI != null && previousSelection == null) {
-            InspectHand();
-            previousSelection = handCardUI;
+        else if(handCardUI != null && playerUI.ContainsCard(handCardUI)) {
+            if (previousSelection == null) {
+                HoverHand(handCardUI);
+                previousSelection = handCardUI;
+            }
+            else if(handCardUI != previousSelection) {
+                ExitHoverCard(previousSelection);
+                HoverCard(handCardUI);
+                previousSelection = handCardUI;
+            }
         }
     }
 
@@ -39,6 +46,7 @@ public class PlayerUIController : MonoBehaviour {
             if (hit.collider.GetComponent<HandCardCollisionPointer>()) {
                 HandCardUI cardUI = hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
                 cardUI.Select();
+                break;
             }
         }
     }
@@ -46,20 +54,30 @@ public class PlayerUIController : MonoBehaviour {
     private HandCardUI HoverDetection() {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
+        if(hits.Length > 0)
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<HandCardCollisionPointer>()) {
+            if (hit.collider.GetComponent<HandCardCollisionPointer>())
                 return hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
-            }
         }
 
         return null;
     }
 
-    private void InspectHand() {
+    private void HoverHand(HandCardUI card) {
         playerUI.InspectHand();
+        HoverCard(card);
     }
 
-    private void DeselectHand() {
+    private void ExitHoverHand() {
         playerUI.DefaultCardPositions();
+    }
+
+    private void HoverCard(HandCardUI card) {
+        playerUI.HoverCard(card);
+    }
+
+    private void ExitHoverCard(HandCardUI card) {
+        playerUI.ExitHoverCard(card);
     }
 }

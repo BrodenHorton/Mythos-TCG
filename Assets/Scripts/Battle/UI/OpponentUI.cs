@@ -40,9 +40,9 @@ public class OpponentUI : ResourceUI {
     }
 
     private void SpaceCards() {
-        float cardSpacing = 0.32f;
+        float cardSpacing = 0.34f;
         float cardVerticalOffset = 0.005f;
-        float cardRotation = -1.6f;
+        float cardRotation = -1f;
 
         int cardCount = cardsInHand.Count;
         float handOffsetX = (cardCount - 1) * cardSpacing / 2;

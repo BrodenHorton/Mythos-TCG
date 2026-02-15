@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PlayerUI : ResourceUI {
     [SerializeField] private Vector3 handInspectOffset;
+    [SerializeField] private Vector3 cardHoverOffset;
+    [SerializeField] private float cardHoverScale;
 
     private void Start() {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
@@ -72,21 +74,17 @@ public class PlayerUI : ResourceUI {
         duelManager.PlayCardInHand(playerUuid, cardIndex);
     }
 
-    public void InspectHand() {
-        for (int i = 0; i < cardsInHand.Count; i++)
-            cardsInHand[i].transform.Translate(handInspectOffset, Space.World);
-    }
-
     public void DefaultCardPositions() {
-        float cardSpacing = 0.32f;
+        float cardSpacing = 0.34f;
         float cardVerticalOffset = -0.003f;
-        float cardRotation = 1.6f;
+        float cardRotation = 1f;
 
         int cardCount = cardsInHand.Count;
         float handOffsetX = (cardCount - 1) * cardSpacing / 2;
         float centerCardPoint = (cardCount - 1) / 2f;
         float handRotation = (cardCount - 1) * cardRotation / 2;
         for (int i = 0; i < cardCount; i++) {
+            cardsInHand[i].transform.localScale = new Vector3(1f, 1f, 1f);
             cardsInHand[i].transform.position = handOrigin.position;
             float xOffset = (i * cardSpacing - handOffsetX);
             float zOffset = (float)Math.Floor(Math.Abs(i - centerCardPoint)) * cardVerticalOffset * 3f;
@@ -95,5 +93,20 @@ public class PlayerUI : ResourceUI {
             cardsInHand[i].transform.eulerAngles = new Vector3(cardsInHand[i].transform.eulerAngles.x, 0f, cardsInHand[i].transform.eulerAngles.z);
             cardsInHand[i].transform.Rotate(new Vector3(0, i * cardRotation - handRotation, 0), Space.World);
         }
+    }
+
+    public void InspectHand() {
+        for (int i = 0; i < cardsInHand.Count; i++)
+            cardsInHand[i].transform.Translate(handInspectOffset, Space.World);
+    }
+
+    public void HoverCard(HandCardUI card) {
+        card.transform.Translate(cardHoverOffset, Space.World);
+        card.transform.localScale = new Vector3(cardHoverScale, cardHoverScale, cardHoverScale);
+    }
+
+    public void ExitHoverCard(HandCardUI card) {
+        card.transform.Translate(-cardHoverOffset, Space.World);
+        card.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 }
