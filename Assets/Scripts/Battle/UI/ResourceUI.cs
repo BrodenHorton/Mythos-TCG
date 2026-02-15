@@ -22,5 +22,9 @@ public abstract class ResourceUI : MonoBehaviour {
         return false;
     }
 
+    public TextMeshPro ManaCount { get { return manaCount; } }
+
+    public List<HandCardUI> CardsInHand { get { return cardsInHand; } }
+
     public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
 }

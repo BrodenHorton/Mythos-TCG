@@ -5,7 +5,6 @@ using UnityEngine;
 public class DuelManager : MonoBehaviour {
     public event EventHandler<DrawCardEventArgs> OnDrawCard;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public event EventHandler<CardPlayedFromHandEventArgs> OnCardPlayedFromHand;
     public event EventHandler<DrawCardEventArgs> OnCreatureCardPlayed;
     public event EventHandler<DrawCardEventArgs> OnSpellCardPlayed;
     public event EventHandler<DrawCardEventArgs> OnDomainCardPlayed;
@@ -48,6 +47,7 @@ public class DuelManager : MonoBehaviour {
     }
 
     public void PlayCardInHand(MatchPlayer player, int cardIndex) {
+        Debug.Log("PlayCardInHand method called");
         if (player.Hand.Count <= cardIndex)
             return;
 
@@ -69,10 +69,6 @@ public class DuelManager : MonoBehaviour {
     public void PlayDomainCard(MatchPlayer player, SpellCard card) {
         player.Domain = card;
         OnDomainCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
-    }
-
-    public void PlayCardFromHand(MatchPlayer player, Card card) {
-        OnCardPlayedFromHand?.Invoke(this, new CardPlayedFromHandEventArgs(player, card));
     }
 
     public void NextTurn() {

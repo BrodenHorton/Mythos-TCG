@@ -52,8 +52,8 @@ MonoBehaviour:
   manaCount: {fileID: 7642753490845534241}
   cardsInHand: []
   card: {fileID: 1201297320161513180, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
-  handInspectOffset: {x: 0, y: 0.8, z: 0.92}
-  cardHoverOffset: {x: 0, y: 0.05, z: 0.1}
+  handHoverOffset: {x: 0, y: 0.8, z: 0.88}
+  cardHoverOffset: {x: 0, y: 0.05, z: 0.2}
   cardHoverScale: 1.25
 --- !u!1 &5937108094863691832
 GameObject:

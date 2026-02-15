@@ -2,38 +2,11 @@
 using UnityEngine;
 
 public class PlayerUI : ResourceUI {
-    [SerializeField] private Vector3 handInspectOffset;
+    [SerializeField] private Vector3 handHoverOffset;
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
 
-    private void Start() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-
-        duelManager.OnManaCountChanged += (sender, e) => {
-            if(e.Player.Uuid == playerUuid)
-                manaCount.text = e.CurrentMana.ToString();
-        };
-
-        duelManager.OnDrawCard += DrawCard;
-
-        stateManager.DrawPhase.OnDrawPhase += (sender, e) => {
-            for (int i = 0; i < cardsInHand.Count; i++)
-                cardsInHand[i].SetBorderVisibility(false);
-        };
-
-        stateManager.StartPhase.OnStartPhase += SetSelectableCards;
-    }
-
-    public void DrawCard(object sender, DrawCardEventArgs args) {
-        Debug.Log("Drawing Card before check in PlayerUI. Uuid: " + args.Player.Uuid);
-        if (playerUuid != args.Player.Uuid)
-            return;
-
+    public void DrawCard() {
         Debug.Log("Drawing Card");
         HandCardUI drawnCard = Instantiate(card, handOrigin);
         drawnCard.transform.Rotate(90f, 0, 0);
@@ -42,7 +15,11 @@ public class PlayerUI : ResourceUI {
         DefaultCardPositions();
     }
 
-    private void SetSelectableCards(object sender, EventArgs args) {
+    public void SetManaCount(int manaCount) {
+        this.manaCount.text = manaCount.ToString();
+    }
+
+    public void SetSelectableCards() {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
         if (playerUuid != duelManager.GetCurrentPlayerTurn().Uuid)
             return;
@@ -57,21 +34,25 @@ public class PlayerUI : ResourceUI {
     }
 
     private void PlayCardFromHand(object sender, HandCardSelectedEventArgs args) {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        int cardIndex = -1;
-        for(int i = 0; i < cardsInHand.Count; i++) {
-            if(cardsInHand[i].Equals(args.CardUI)) {
-                cardIndex = i;
-                break;
-            }
-        }
+        int cardIndex = IndexOf(args.CardUI);
         if (cardIndex == -1)
-            throw new Exception("Invalid card selected in hand");
+            return;
 
         cardsInHand.RemoveAt(cardIndex);
         Destroy(args.CardUI.gameObject);
         DefaultCardPositions();
-        duelManager.PlayCardInHand(playerUuid, cardIndex);
+    }
+
+    public int IndexOf(HandCardUI cardUI) {
+        int cardIndex = -1;
+        for (int i = 0; i < cardsInHand.Count; i++) {
+            if (cardsInHand[i].Equals(cardUI)) {
+                cardIndex = i;
+                break;
+            }
+        }
+
+        return cardIndex;
     }
 
     public void DefaultCardPositions() {
@@ -97,7 +78,7 @@ public class PlayerUI : ResourceUI {
 
     public void InspectHand() {
         for (int i = 0; i < cardsInHand.Count; i++)
-            cardsInHand[i].transform.Translate(handInspectOffset, Space.World);
+            cardsInHand[i].transform.Translate(handHoverOffset, Space.World);
     }
 
     public void HoverCard(HandCardUI card) {

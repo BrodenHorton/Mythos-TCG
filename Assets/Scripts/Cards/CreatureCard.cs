@@ -27,11 +27,6 @@ public class CreatureCard : Card {
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
-        if (player == null)
-            Debug.Log("Player null");
-        if (cardBase == null)
-            Debug.Log("Card Base null");
-
         if (player.CurrentMana < cardBase.ManaCost)
             return false;
         if (player.Creatures.Count > 6)
@@ -41,6 +36,7 @@ public class CreatureCard : Card {
     }
 
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
+        Debug.Log("Played Creature Card");
         duelManager.SetCurrentMana(player, player.CurrentMana - cardBase.ManaCost);
         duelManager.PlayCreatureCard(duelManager.GetCurrentPlayerTurn(), this);
     }
