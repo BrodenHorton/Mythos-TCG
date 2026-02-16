@@ -1143,12 +1143,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   players:
   - deck:
-    - rid: 9104119117656096956
-    - rid: 9104119117656096962
-    - rid: 9104119117656096963
-    - rid: 9104119117656096964
+    - rid: 5279054749841752128
+    - rid: 5279054749841752127
+    - rid: 5279054749841752126
+    - rid: 5279054749841752125
     - rid: 5279054719720357949
-    - rid: 9104119128535072828
+    - rid: 5279054749841752124
     - rid: 5279054719720357952
     - rid: 5279054719720357953
     hand: []
@@ -1207,26 +1207,26 @@ MonoBehaviour:
       type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 93b25e9c179a91547a022d006596aca3, type: 2}
-    - rid: 9104119117656096956
-      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+    - rid: 5279054749841752124
+      type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
-        cardBase: {fileID: 11400000, guid: f13b282707b13d94f937dd29ef663bc4, type: 2}
-    - rid: 9104119117656096962
-      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+        cardBase: {fileID: 11400000, guid: 93b25e9c179a91547a022d006596aca3, type: 2}
+    - rid: 5279054749841752125
+      type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
-        cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
-    - rid: 9104119117656096963
-      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+        cardBase: {fileID: 11400000, guid: 93b25e9c179a91547a022d006596aca3, type: 2}
+    - rid: 5279054749841752126
+      type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
-        cardBase: {fileID: 11400000, guid: 68aafd42cede4eb40942e7c77b728c6e, type: 2}
-    - rid: 9104119117656096964
-      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+        cardBase: {fileID: 11400000, guid: 93b25e9c179a91547a022d006596aca3, type: 2}
+    - rid: 5279054749841752127
+      type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
-        cardBase: {fileID: 11400000, guid: 8ee001a240ce3d947abca3a1272af321, type: 2}
-    - rid: 9104119128535072828
-      type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
+        cardBase: {fileID: 11400000, guid: 93b25e9c179a91547a022d006596aca3, type: 2}
+    - rid: 5279054749841752128
+      type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
-        cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
+        cardBase: {fileID: 11400000, guid: 1cdd9111a7832ae439c09351c9b6db3c, type: 2}
     - rid: 9104119128535072829
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:

@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public abstract class Card {
 
-    public abstract void DisplayCard();
+    public abstract void Init(MatchPlayer player);
 
     public abstract bool IsPlayable(DuelManager duelManager, MatchPlayer player);
 

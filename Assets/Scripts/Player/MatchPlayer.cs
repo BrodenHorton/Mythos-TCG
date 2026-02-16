@@ -39,6 +39,7 @@ public class MatchPlayer {
         Card card = deck[deck.Count - 1];
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
+        card.Init(this);
         return card;
     }
 

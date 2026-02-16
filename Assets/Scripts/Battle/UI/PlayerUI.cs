@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerUI : ResourceUI {
@@ -6,9 +7,24 @@ public class PlayerUI : ResourceUI {
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
 
-    public void DrawCard() {
-        Debug.Log("Drawing Card");
-        HandCardUI drawnCard = Instantiate(card, handOrigin);
+    public void DrawCreatureCard(Guid uuid) {
+        if (playerUuid != uuid)
+            return;
+
+        Debug.Log("Creature card instantiated");
+        CreatureHandCardUI drawnCard = Instantiate(creatureCard, handOrigin);
+        drawnCard.transform.Rotate(90f, 0, 0);
+        cardsInHand.Add(drawnCard);
+        drawnCard.OnSelected += PlayCardFromHand;
+        DefaultCardPositions();
+    }
+
+    public void DrawSpellCard(Guid uuid) {
+        if (playerUuid != uuid)
+            return;
+
+        Debug.Log("Spell card instantiated");
+        SpellHandCardUI drawnCard = Instantiate(spellCard, handOrigin);
         drawnCard.transform.Rotate(90f, 0, 0);
         cardsInHand.Add(drawnCard);
         drawnCard.OnSelected += PlayCardFromHand;

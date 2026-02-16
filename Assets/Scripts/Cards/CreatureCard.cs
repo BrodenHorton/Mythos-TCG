@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class CreatureCard : Card {
     [SerializeField] private CreatureCardBase cardBase;
     [SerializeField] private List<CreatureCardEffect> effects;
@@ -15,15 +15,19 @@ public class CreatureCard : Card {
     }
 
     public int GetAtk() {
-        return 0;
+        return cardBase.Atk;
     }
 
     public int GetHealth() {
-        return 0;
+        return cardBase.Health;
     }
 
-    public override void DisplayCard() {
-        throw new System.NotImplementedException();
+    public int GetManaCost() {
+        return cardBase.ManaCost;
+    }
+
+    public override void Init(MatchPlayer player) {
+        EventBus.InvokeOnCreatureCardDrawn(this, new DrawCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
@@ -36,7 +40,6 @@ public class CreatureCard : Card {
     }
 
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
-        Debug.Log("Played Creature Card");
         duelManager.SetCurrentMana(player, player.CurrentMana - cardBase.ManaCost);
         duelManager.PlayCreatureCard(duelManager.GetCurrentPlayerTurn(), this);
     }

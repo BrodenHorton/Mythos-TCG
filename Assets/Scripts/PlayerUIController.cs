@@ -27,7 +27,8 @@ public class PlayerUIController : MonoBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         duelManager.OnManaCountChanged += SetManaCountUI;
-        duelManager.OnDrawCard += DrawCardUI;
+        EventBus.OnCreatureCardDrawn += DrawCreatureCardUI;
+        EventBus.OnSpellCardDrawn += DrawSpellCardUI;
         stateManager.DrawPhase.OnDrawPhase += (sender, e) => {
             for (int i = 0; i < playerUI.CardsInHand.Count; i++)
                 playerUI.CardsInHand[i].SetBorderVisibility(false);
@@ -54,9 +55,15 @@ public class PlayerUIController : MonoBehaviour {
         }
     }
 
-    private void DrawCardUI(object sender, DrawCardEventArgs args) {
+    private void DrawCreatureCardUI(object sender, DrawCardEventArgs args) {
         if (args.Player.Uuid == playerUI.PlayerUuid) {
-            playerUI.DrawCard();
+            playerUI.DrawCreatureCard(args.Player.Uuid);
+        }
+    }
+
+    private void DrawSpellCardUI(object sender, DrawCardEventArgs args) {
+        if (args.Player.Uuid == playerUI.PlayerUuid) {
+            playerUI.DrawSpellCard(args.Player.Uuid);
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
-    public event EventHandler<DrawCardEventArgs> OnDrawCard;
+    //public event EventHandler<DrawCardEventArgs> OnDrawCard;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     public event EventHandler<DrawCardEventArgs> OnCreatureCardPlayed;
     public event EventHandler<DrawCardEventArgs> OnSpellCardPlayed;
@@ -20,6 +20,8 @@ public class DuelManager : MonoBehaviour {
 
         currentPlayerTurnIndex = 0;
         fullTurnCount = 1;
+
+
     }
 
     private void Start() {
@@ -29,7 +31,7 @@ public class DuelManager : MonoBehaviour {
     public void DrawCard(MatchPlayer player) {
         Debug.Log("Drawing Card in DuelManager");
         Card card = player.DrawCard();
-        OnDrawCard?.Invoke(this, new DrawCardEventArgs(player));
+        //OnDrawCard?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 
     public void SetCurrentMana(MatchPlayer player, int manaCount) {
@@ -58,17 +60,17 @@ public class DuelManager : MonoBehaviour {
 
     public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
         player.Creatures.Add(card);
-        OnCreatureCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
+        OnCreatureCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 
     public void PlaySpellCard(MatchPlayer player, SpellCard card) {
         player.Spells.Add(card);
-        OnSpellCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
+        OnSpellCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 
     public void PlayDomainCard(MatchPlayer player, SpellCard card) {
         player.Domain = card;
-        OnDomainCardPlayed?.Invoke(this, new DrawCardEventArgs(player));
+        OnDomainCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 
     public void NextTurn() {

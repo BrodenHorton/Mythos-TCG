@@ -1,10 +1,12 @@
 using System;
+using TMPro;
 using UnityEngine;
 
-public class HandCardUI : MonoBehaviour {
+public abstract class HandCardUI : MonoBehaviour {
     public event EventHandler<HandCardSelectedEventArgs> OnSelected;
 
-    [SerializeField] private GameObject selectableBorder;
+    [SerializeField] protected GameObject selectableBorder;
+    [SerializeField] protected TextMeshPro manaCost;
 
     private void Awake() {
         selectableBorder.SetActive(false);

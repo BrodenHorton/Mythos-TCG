@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class OpponentUI : ResourceUI {
@@ -14,14 +12,25 @@ public class OpponentUI : ResourceUI {
                 manaCount.text = e.CurrentMana.ToString();
         };
 
-        duelManager.OnDrawCard += DrawCard;
+        EventBus.OnCreatureCardDrawn += DrawCreatureCard;
+        EventBus.OnSpellCardDrawn += DrawCreatureCard;
     }
 
-    public void DrawCard(object sender, DrawCardEventArgs args) {
+    private void DrawCreatureCard(object sender, DrawCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
-        HandCardUI drawnCard = Instantiate(card, handOrigin);
+        CreatureHandCardUI drawnCard = Instantiate(creatureCard, handOrigin);
+        drawnCard.transform.Rotate(-90f, 0, 0);
+        cardsInHand.Add(drawnCard);
+        SpaceCards();
+    }
+
+    private void DrawSpellCard(object sender, DrawCardEventArgs args) {
+        if (playerUuid != args.Player.Uuid)
+            return;
+
+        SpellHandCardUI drawnCard = Instantiate(spellCard, handOrigin);
         drawnCard.transform.Rotate(-90f, 0, 0);
         cardsInHand.Add(drawnCard);
         SpaceCards();

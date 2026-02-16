@@ -988,7 +988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a87b31f224e2a04d84bfaf88246f203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handCardUI: {fileID: 1201297320161513180}
+  handCardUI: {fileID: 6147231164332936400}
 --- !u!1 &6068144397991091520
 GameObject:
   m_ObjectHideFlags: 0
@@ -1111,9 +1111,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7076353674377426761}
-  - component: {fileID: 1201297320161513180}
+  - component: {fileID: 6147231164332936400}
   m_Layer: 0
-  m_Name: Card (Hand)
+  m_Name: Creature Card (Hand)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1139,7 +1139,7 @@ Transform:
   - {fileID: 5387369990155025785}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1201297320161513180
+--- !u!114 &6147231164332936400
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1148,10 +1148,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6249417413540295753}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3808690a7ce83640921dada0ce37151, type: 3}
+  m_Script: {fileID: 11500000, guid: 36f8be18a9147a041b338c0dea396957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   selectableBorder: {fileID: 99607716425891067}
+  manaCost: {fileID: 7234837148198759778}
+  atk: {fileID: 8820538375480111801}
+  health: {fileID: 5583595662363798004}
 --- !u!1001 &3953997852962781958
 PrefabInstance:
   m_ObjectHideFlags: 0

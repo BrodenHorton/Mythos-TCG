@@ -9,7 +9,8 @@ public abstract class ResourceUI : MonoBehaviour {
     [SerializeField] protected TextMeshPro manaCount;
     [SerializeField] protected List<HandCardUI> cardsInHand;
     [Header("Prefabs")]
-    [SerializeField] protected HandCardUI card;
+    [SerializeField] protected CreatureHandCardUI creatureCard;
+    [SerializeField] protected SpellHandCardUI spellCard;
 
     protected Guid playerUuid;
 

@@ -51,7 +51,8 @@ MonoBehaviour:
   handOrigin: {fileID: 8496425766226962873}
   manaCount: {fileID: 7642753490845534241}
   cardsInHand: []
-  card: {fileID: 1201297320161513180, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
+  creatureCard: {fileID: 6147231164332936400, guid: cf6a5725ea4823c4eaac7f033a9cef82, type: 3}
+  spellCard: {fileID: 5094083861015089267, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
   handHoverOffset: {x: 0, y: 0.8, z: 0.88}
   cardHoverOffset: {x: 0, y: 0.05, z: 0.2}
   cardHoverScale: 1.25

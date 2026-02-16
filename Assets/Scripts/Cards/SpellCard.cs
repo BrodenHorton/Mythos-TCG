@@ -13,16 +13,25 @@ public class SpellCard : Card {
         effects = new List<SpellCardEffect>();
     }
 
-    public override void DisplayCard() {
-        throw new System.NotImplementedException();
+    public int GetManaCost() {
+        return cardBase.ManaCost;
+    }
+
+    public override void Init(MatchPlayer player) {
+        EventBus.InvokeOnSpellCardDrawn(this, new DrawCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
-        System.Random rand = new System.Random();
-        return rand.Next(0, 2) == 0;
+        if (player.CurrentMana < cardBase.ManaCost)
+            return false;
+        if (player.Creatures.Count > 6)
+            return false;
+
+        return true;
     }
 
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
+        duelManager.SetCurrentMana(player, player.CurrentMana - cardBase.ManaCost);
         duelManager.PlaySpellCard(duelManager.GetCurrentPlayerTurn(), this);
     }
 }
