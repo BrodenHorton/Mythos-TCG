@@ -55,22 +55,19 @@ public class PlayerUIController : MonoBehaviour {
         }
     }
 
-    private void DrawCreatureCardUI(object sender, DrawCardEventArgs args) {
-        if (args.Player.Uuid == playerUI.PlayerUuid) {
-            playerUI.DrawCreatureCard(args.Player.Uuid);
-        }
+    private void DrawCreatureCardUI(object sender, DrawCreatureCardEventArgs args) {
+        if (args.Player.Uuid == playerUI.PlayerUuid)
+            playerUI.DrawCreatureCard(args.Player.Uuid, args.Card);
     }
 
-    private void DrawSpellCardUI(object sender, DrawCardEventArgs args) {
-        if (args.Player.Uuid == playerUI.PlayerUuid) {
-            playerUI.DrawSpellCard(args.Player.Uuid);
-        }
+    private void DrawSpellCardUI(object sender, DrawSpellCardEventArgs args) {
+        if (args.Player.Uuid == playerUI.PlayerUuid)
+            playerUI.DrawSpellCard(args.Player.Uuid, args.Card);
     }
 
     private void SetManaCountUI(object sender, ManaChangedEventArgs args) {
-        if (args.Player.Uuid == playerUI.PlayerUuid) {
+        if (args.Player.Uuid == playerUI.PlayerUuid)
             playerUI.SetManaCount(args.CurrentMana);
-        }
     }
 
     private void SetSelectableCardsUI(object sender, EventArgs args) {

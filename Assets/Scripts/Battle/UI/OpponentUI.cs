@@ -13,26 +13,28 @@ public class OpponentUI : ResourceUI {
         };
 
         EventBus.OnCreatureCardDrawn += DrawCreatureCard;
-        EventBus.OnSpellCardDrawn += DrawCreatureCard;
+        EventBus.OnSpellCardDrawn += DrawSpellCard;
     }
 
-    private void DrawCreatureCard(object sender, DrawCardEventArgs args) {
+    private void DrawCreatureCard(object sender, DrawCreatureCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
-        CreatureHandCardUI drawnCard = Instantiate(creatureCard, handOrigin);
-        drawnCard.transform.Rotate(-90f, 0, 0);
-        cardsInHand.Add(drawnCard);
+        CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);
+        cardUI.Init(args.Card);
+        cardUI.transform.Rotate(-90f, 0, 0);
+        cardsInHand.Add(cardUI);
         SpaceCards();
     }
 
-    private void DrawSpellCard(object sender, DrawCardEventArgs args) {
+    private void DrawSpellCard(object sender, DrawSpellCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
-        SpellHandCardUI drawnCard = Instantiate(spellCard, handOrigin);
-        drawnCard.transform.Rotate(-90f, 0, 0);
-        cardsInHand.Add(drawnCard);
+        SpellHandCardUI cardUI = Instantiate(spellCard, handOrigin);
+        cardUI.Init(args.Card);
+        cardUI.transform.Rotate(-90f, 0, 0);
+        cardsInHand.Add(cardUI);
         SpaceCards();
     }
 

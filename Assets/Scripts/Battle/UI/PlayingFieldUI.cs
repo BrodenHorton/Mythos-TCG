@@ -6,11 +6,12 @@ public class PlayingFieldUI : MonoBehaviour {
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform spellSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
-    [SerializeField] private List<GameObject> creatureCards;
-    [SerializeField] private List<GameObject> spellCards;
-    [SerializeField] private GameObject domainCard;
+    [SerializeField] private List<CreatureFieldCardUI> creatureCards;
+    [SerializeField] private List<SpellFieldCardUI> spellCards;
+    [SerializeField] private SpellFieldCardUI domainCard;
     [Header("Prefabs")]
-    [SerializeField] private GameObject card;
+    [SerializeField] private CreatureFieldCardUI creatureCardUIPrefab;
+    [SerializeField] private SpellFieldCardUI spellCardUIPrefab;
 
     private Guid playerUuid;
     private float cardSpacing = 0.5f;
@@ -20,38 +21,41 @@ public class PlayingFieldUI : MonoBehaviour {
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
-        duelManager.OnCreatureCardPlayed += PlayCreatureCard;
-        duelManager.OnSpellCardPlayed += PlaySpellCard;
-        duelManager.OnDomainCardPlayed += PlayDomainCard;
+        EventBus.OnCreatureCardPlayed += PlayCreatureCard;
+        EventBus.OnSpellCardPlayed += PlaySpellCard;
+        //duelManager.OnDomainCardPlayed += PlayDomainCard;
     }
 
-    public void PlayCreatureCard(object sender, DrawCardEventArgs args) {
+    public void PlayCreatureCard(object sender, PlayCreatureCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
-        GameObject creatureCard = Instantiate(card, creatureSlotOrigin);
-        creatureCard.transform.Rotate(90f, 0, 0);
-        creatureCards.Add(creatureCard);
+        CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab, creatureSlotOrigin);
+        creatureCardUI.Init(args.Card);
+        creatureCardUI.transform.Rotate(90f, 0, 0);
+        creatureCards.Add(creatureCardUI);
         SpaceCards();
     }
 
-    public void PlaySpellCard(object sender, DrawCardEventArgs args) {
+    public void PlaySpellCard(object sender, PlaySpellCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
-        GameObject spellCard = Instantiate(card, spellSlotOrigin);
-        spellCard.transform.Rotate(90f, 0, 0);
-        spellCards.Add(spellCard);
+        SpellFieldCardUI spellCardUI = Instantiate(spellCardUIPrefab, spellSlotOrigin);
+        spellCardUI.Init(args.Card);
+        spellCardUI.transform.Rotate(90f, 0, 0);
+        spellCards.Add(spellCardUI);
     }
 
-    public void PlayDomainCard(object sender, DrawCardEventArgs args) {
+    /*public void PlayDomainCard(object sender, DrawCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
-        GameObject domainCard = Instantiate(card, domainSlotOrigin);
-        domainCard.transform.Rotate(90f, 0, 0);
-        this.domainCard = domainCard;
-    }
+        SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab, domainSlotOrigin);
+        domainCardUI.Init(args.Card);
+        domainCardUI.transform.Rotate(90f, 0, 0);
+        domainCard = domainCardUI;
+    }*/
 
     private void SpaceCards() {
         int cardCount = creatureCards.Count;

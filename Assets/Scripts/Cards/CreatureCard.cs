@@ -27,7 +27,7 @@ public class CreatureCard : Card {
     }
 
     public override void Init(MatchPlayer player) {
-        EventBus.InvokeOnCreatureCardDrawn(this, new DrawCardEventArgs(player, this));
+        EventBus.InvokeOnCreatureCardDrawn(this, new DrawCreatureCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {

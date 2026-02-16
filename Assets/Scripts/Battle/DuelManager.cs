@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
-    //public event EventHandler<DrawCardEventArgs> OnDrawCard;
+    //public event EventHandler<DrawCardEventArgs> OnDrawCard; // TODO: Move to EventBus event
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public event EventHandler<DrawCardEventArgs> OnCreatureCardPlayed;
-    public event EventHandler<DrawCardEventArgs> OnSpellCardPlayed;
-    public event EventHandler<DrawCardEventArgs> OnDomainCardPlayed;
+    public event EventHandler<DrawCardEventArgs> OnDomainCardPlayed; // TODO: Change to EventBus event
 
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
 
@@ -20,12 +18,6 @@ public class DuelManager : MonoBehaviour {
 
         currentPlayerTurnIndex = 0;
         fullTurnCount = 1;
-
-
-    }
-
-    private void Start() {
-
     }
 
     public void DrawCard(MatchPlayer player) {
@@ -60,16 +52,17 @@ public class DuelManager : MonoBehaviour {
 
     public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
         player.Creatures.Add(card);
-        OnCreatureCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
+        EventBus.InvokeOnCreatureCardPlayed(this, new PlayCreatureCardEventArgs(player, card));
     }
 
     public void PlaySpellCard(MatchPlayer player, SpellCard card) {
         player.Spells.Add(card);
-        OnSpellCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
+        EventBus.InvokeOnSpellCardPlayed(this, new PlaySpellCardEventArgs(player, card));
     }
 
     public void PlayDomainCard(MatchPlayer player, SpellCard card) {
         player.Domain = card;
+        // TODO: Change to EventBus Invoke
         OnDomainCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 

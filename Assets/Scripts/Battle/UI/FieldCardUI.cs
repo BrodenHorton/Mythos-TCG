@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
-public class FieldCardUI : MonoBehaviour
-{
-    [SerializeField] private GameObject selectableBorder;
+public abstract class FieldCardUI : MonoBehaviour {
+    [SerializeField] protected GameObject selectableBorder;
 
     private void Awake() {
         selectableBorder.SetActive(false);

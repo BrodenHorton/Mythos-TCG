@@ -18,7 +18,7 @@ public class SpellCard : Card {
     }
 
     public override void Init(MatchPlayer player) {
-        EventBus.InvokeOnSpellCardDrawn(this, new DrawCardEventArgs(player, this));
+        EventBus.InvokeOnSpellCardDrawn(this, new DrawSpellCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
