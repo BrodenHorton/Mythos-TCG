@@ -23,7 +23,7 @@ public class PlayingFieldUI : MonoBehaviour {
 
         EventBus.OnCreatureCardPlayed += PlayCreatureCard;
         EventBus.OnSpellCardPlayed += PlaySpellCard;
-        //duelManager.OnDomainCardPlayed += PlayDomainCard;
+        EventBus.OnDomainCardPlayed += PlayDomainCard;
     }
 
     public void PlayCreatureCard(object sender, PlayCreatureCardEventArgs args) {
@@ -47,7 +47,7 @@ public class PlayingFieldUI : MonoBehaviour {
         spellCards.Add(spellCardUI);
     }
 
-    /*public void PlayDomainCard(object sender, DrawCardEventArgs args) {
+    public void PlayDomainCard(object sender, PlaySpellCardEventArgs args) {
         if (playerUuid != args.Player.Uuid)
             return;
 
@@ -55,7 +55,7 @@ public class PlayingFieldUI : MonoBehaviour {
         domainCardUI.Init(args.Card);
         domainCardUI.transform.Rotate(90f, 0, 0);
         domainCard = domainCardUI;
-    }*/
+    }
 
     private void SpaceCards() {
         int cardCount = creatureCards.Count;

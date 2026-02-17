@@ -26,7 +26,7 @@ public class PlayerUIController : MonoBehaviour {
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
-        duelManager.OnManaCountChanged += SetManaCountUI;
+        EventBus.OnManaCountChanged += SetManaCountUI;
         EventBus.OnCreatureCardDrawn += DrawCreatureCardUI;
         EventBus.OnSpellCardDrawn += DrawSpellCardUI;
         stateManager.DrawPhase.OnDrawPhase += (sender, e) => {
@@ -103,6 +103,7 @@ public class PlayerUIController : MonoBehaviour {
         Debug.Log("PlayerUIController before PlayCardInHand");
         duelManager.PlayCardInHand(player, cardIndex);
         cardUI.Select();
+        playerUI.SetSelectableCards();
     }
 
     private HandCardUI HoverDetection() {

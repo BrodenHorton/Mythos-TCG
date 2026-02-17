@@ -82,7 +82,10 @@ MonoBehaviour:
   spellSlotOrigin: {fileID: 3689575478617416704}
   domainSlotOrigin: {fileID: 3921344399750140061}
   creatureCards: []
-  card: {fileID: 6249417413540295753, guid: 65603f203dde6f54da27889cd3168450, type: 3}
+  spellCards: []
+  domainCard: {fileID: 0}
+  creatureCardUIPrefab: {fileID: 8696858695724869291, guid: 22c6877d40548284b8208578e672fe58, type: 3}
+  spellCardUIPrefab: {fileID: 2365724326917806165, guid: 65603f203dde6f54da27889cd3168450, type: 3}
 --- !u!1 &8649806919628490686
 GameObject:
   m_ObjectHideFlags: 0

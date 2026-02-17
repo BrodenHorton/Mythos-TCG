@@ -7,7 +7,6 @@ public class MatchPlayer {
     [SerializeReference, SubclassSelector] private List<Card> deck;
     [SerializeReference, SubclassSelector] private List<Card> hand;
     [SerializeReference, SubclassSelector] private List<Card> discardPile;
-    // Could move these three to a PlayerField class
     [SerializeReference, SubclassSelector] private List<CreatureCard> creatures;
     [SerializeReference, SubclassSelector] private List<SpellCard> spells;
     [SerializeReference, SubclassSelector] private SpellCard domain;
@@ -28,6 +27,10 @@ public class MatchPlayer {
         currentMana = 1;
         seriesWinCount = 0;
         uuid = Guid.NewGuid();
+    }
+
+    public void ShuffleDeck() {
+        deck.Shuffle();
     }
 
     public Card DrawCard() {
@@ -55,7 +58,23 @@ public class MatchPlayer {
 
     public List<SpellCard> Spells { get { return spells; } }
 
-    public SpellCard Domain { get { return domain; } set { domain = value; } }
+    public SpellCard Domain {
+        get {
+            return domain;
+        }
+        set {
+            domain = value;
+            EventBus.InvokeOnDomainCardPlayed(this, new PlaySpellCardEventArgs(this, domain));
+        }
+    }
 
-    public int CurrentMana { get { return currentMana; } set { currentMana = value; } }
+    public int CurrentMana {
+        get { 
+            return currentMana;
+        }
+        set {
+            currentMana = value;
+            EventBus.InvokeOnManaCountChanged(this, new ManaChangedEventArgs(this, currentMana));
+        }
+    }
 }

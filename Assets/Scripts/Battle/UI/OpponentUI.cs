@@ -7,7 +7,7 @@ public class OpponentUI : ResourceUI {
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
-        duelManager.OnManaCountChanged += (sender, e) => {
+        EventBus.OnManaCountChanged += (sender, e) => {
             if (e.Player.Uuid == playerUuid)
                 manaCount.text = e.CurrentMana.ToString();
         };

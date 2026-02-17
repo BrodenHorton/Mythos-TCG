@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
-    //public event EventHandler<DrawCardEventArgs> OnDrawCard; // TODO: Move to EventBus event
-    public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public event EventHandler<DrawCardEventArgs> OnDomainCardPlayed; // TODO: Change to EventBus event
-
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
 
     private int currentPlayerTurnIndex;
@@ -20,20 +16,29 @@ public class DuelManager : MonoBehaviour {
         fullTurnCount = 1;
     }
 
+    private void Start() {
+        InitializePlayers();
+    }
+
+    public void InitializePlayers() {
+        foreach(MatchPlayer player in players) {
+            player.ShuffleDeck();
+            for (int i = 0; i < 5; i++)
+                player.DrawCard();
+        }
+    }
+
     public void DrawCard(MatchPlayer player) {
         Debug.Log("Drawing Card in DuelManager");
         Card card = player.DrawCard();
-        //OnDrawCard?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 
     public void SetCurrentMana(MatchPlayer player, int manaCount) {
         player.CurrentMana = manaCount;
-        OnManaCountChanged?.Invoke(this, new ManaChangedEventArgs(player, manaCount));
     }
 
     public void SetStartOfTurnMana() {
         GetCurrentPlayerTurn().CurrentMana = fullTurnCount;
-        OnManaCountChanged?.Invoke(this, new ManaChangedEventArgs(GetCurrentPlayerTurn(), fullTurnCount));
     }
 
     public void PlayCardInHand(Guid playerUuid, int cardIndex) {
@@ -62,8 +67,6 @@ public class DuelManager : MonoBehaviour {
 
     public void PlayDomainCard(MatchPlayer player, SpellCard card) {
         player.Domain = card;
-        // TODO: Change to EventBus Invoke
-        OnDomainCardPlayed?.Invoke(this, new DrawCardEventArgs(player, card));
     }
 
     public void NextTurn() {
