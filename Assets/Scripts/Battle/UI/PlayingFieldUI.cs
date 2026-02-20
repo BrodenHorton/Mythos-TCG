@@ -20,7 +20,11 @@ public class PlayingFieldUI : MonoBehaviour {
         DuelManager duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
+        DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("CJould not find DuelStateMangaer object");
 
+        stateManager.DrawPhase.OnDrawPhase += UntapCreatures;
         EventBus.OnCreatureCardPlayed += PlayCreatureCard;
         EventBus.OnSpellCardPlayed += PlaySpellCard;
         EventBus.OnDomainCardPlayed += PlayDomainCard;
@@ -32,7 +36,7 @@ public class PlayingFieldUI : MonoBehaviour {
 
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab, creatureSlotOrigin);
         creatureCardUI.Init(args.Card);
-        creatureCardUI.transform.Rotate(90f, 0, 0);
+        creatureCardUI.Tap();
         creatureCards.Add(creatureCardUI);
         SpaceCards();
     }
@@ -43,7 +47,6 @@ public class PlayingFieldUI : MonoBehaviour {
 
         SpellFieldCardUI spellCardUI = Instantiate(spellCardUIPrefab, spellSlotOrigin);
         spellCardUI.Init(args.Card);
-        spellCardUI.transform.Rotate(90f, 0, 0);
         spellCards.Add(spellCardUI);
     }
 
@@ -53,8 +56,12 @@ public class PlayingFieldUI : MonoBehaviour {
 
         SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab, domainSlotOrigin);
         domainCardUI.Init(args.Card);
-        domainCardUI.transform.Rotate(90f, 0, 0);
         domainCard = domainCardUI;
+    }
+
+    public void UntapCreatures(object sender, EventArgs args) {
+        foreach(CreatureFieldCardUI cardUI in creatureCards)
+            cardUI.UnTap();
     }
 
     private void SpaceCards() {

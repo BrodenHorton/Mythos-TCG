@@ -9,7 +9,7 @@ public class CreatureCard : Card {
     [SerializeField] private bool isTapped;
     [SerializeField] private List<CreatureCardEffect> effects;
 
-    public CreatureCard() { }
+    public CreatureCard() {}
 
     public CreatureCard(CreatureCardBase cardBase) {
         this.cardBase = cardBase;

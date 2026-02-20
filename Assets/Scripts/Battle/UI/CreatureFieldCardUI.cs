@@ -9,4 +9,12 @@ public class CreatureFieldCardUI : FieldCardUI {
         atk.text = card.GetAtk().ToString();
         health.text = card.GetHealth().ToString();
     }
+
+    public void Tap() {
+        transform.Rotate(0f, -90f, 0f, Space.World);
+    }
+
+    public void UnTap() {
+        transform.eulerAngles = Vector3.zero;
+    }
 }
