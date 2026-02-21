@@ -7,61 +7,60 @@ public class PlayingFieldUI : MonoBehaviour {
     [SerializeField] private Transform spellSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
     [SerializeField] private List<CreatureFieldCardUI> creatureCards;
-    [SerializeField] private List<SpellFieldCardUI> spellCards;
     [SerializeField] private SpellFieldCardUI domainCard;
     [Header("Prefabs")]
     [SerializeField] private CreatureFieldCardUI creatureCardUIPrefab;
     [SerializeField] private SpellFieldCardUI spellCardUIPrefab;
 
-    private Guid playerUuid;
-    private float cardSpacing = 0.5f;
+    private float cardSpacing = 0.6f;
 
-    private void Awake() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("CJould not find DuelStateMangaer object");
-
-        stateManager.DrawPhase.OnDrawPhase += UntapCreatures;
-        EventBus.OnCreatureCardPlayed += PlayCreatureCard;
-        EventBus.OnSpellCardPlayed += PlaySpellCard;
-        EventBus.OnDomainCardPlayed += PlayDomainCard;
-    }
-
-    public void PlayCreatureCard(object sender, PlayCreatureCardEventArgs args) {
-        if (playerUuid != args.Player.Uuid)
-            return;
-
+    public void PlayCreatureCard(CreatureCard card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab, creatureSlotOrigin);
-        creatureCardUI.Init(args.Card);
-        creatureCardUI.Tap();
+        creatureCardUI.Init(card);
         creatureCards.Add(creatureCardUI);
         SpaceCards();
     }
 
-    public void PlaySpellCard(object sender, PlaySpellCardEventArgs args) {
-        if (playerUuid != args.Player.Uuid)
-            return;
-
-        SpellFieldCardUI spellCardUI = Instantiate(spellCardUIPrefab, spellSlotOrigin);
-        spellCardUI.Init(args.Card);
-        spellCards.Add(spellCardUI);
-    }
-
-    public void PlayDomainCard(object sender, PlaySpellCardEventArgs args) {
-        if (playerUuid != args.Player.Uuid)
-            return;
-
+    public void PlayDomainCard(SpellCard card) {
         SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab, domainSlotOrigin);
-        domainCardUI.Init(args.Card);
+        domainCardUI.Init(card);
         domainCard = domainCardUI;
     }
 
-    public void UntapCreatures(object sender, EventArgs args) {
-        foreach(CreatureFieldCardUI cardUI in creatureCards)
-            cardUI.UnTap();
+    public void TapCreature(CreatureCard card) {
+        foreach (CreatureFieldCardUI cardUI in creatureCards) {
+            if (cardUI.CardUuid == card.Uuid) {
+                cardUI.Tap();
+                break;
+            }
+        }
+    }
+
+    public void UntapCreature(CreatureCard card) {
+        foreach(CreatureFieldCardUI cardUI in creatureCards) {
+            if(cardUI.CardUuid == card.Uuid) {
+                cardUI.Untap();
+                break;
+            }
+        }
+    }
+
+    public bool ContainsCreatureCard(CreatureFieldCardUI other) {
+        foreach(CreatureFieldCardUI cardUI in creatureCards) {
+            if(cardUI == other)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void SetSelectableCards(MatchPlayer player) {
+        for (int i = 0; i < creatureCards.Count; i++) {
+            if (player.Creatures.Count <= i)
+                throw new Exception("Creature cards in model and view do not match");
+
+            creatureCards[i].SetBorderVisibility(player.Creatures[i].CanAttack());
+        }
     }
 
     private void SpaceCards() {
@@ -73,6 +72,4 @@ public class PlayingFieldUI : MonoBehaviour {
             creatureCards[i].transform.position = cardPosition;
         }
     }
-
-    public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
 }

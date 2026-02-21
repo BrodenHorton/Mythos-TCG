@@ -3,38 +3,48 @@ using UnityEngine;
 
 public static class EventBus {
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public static event EventHandler<DrawCardEventArgs> OnCardDrawn;
-    public static event EventHandler<DrawCreatureCardEventArgs> OnCreatureCardDrawn;
-    public static event EventHandler<DrawSpellCardEventArgs> OnSpellCardDrawn;
-    public static event EventHandler<PlayCreatureCardEventArgs> OnCreatureCardPlayed;
-    public static event EventHandler<PlaySpellCardEventArgs> OnSpellCardPlayed;
-    public static event EventHandler<PlaySpellCardEventArgs> OnDomainCardPlayed;
+    public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
+    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardDrawn;
+    public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardDrawn;
+    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardPlayed;
+    public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardPlayed;
+    public static event EventHandler<PlayerSpellCardEventArgs> OnDomainCardPlayed;
+    public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
+    public static event EventHandler<CreatureCardEventArgs> OnCreatureUntapped;
 
     public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
         OnManaCountChanged?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCardDrawn(object sender, DrawCardEventArgs args) {
+    public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs args) {
         OnCardDrawn?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureCardDrawn(object sender, DrawCreatureCardEventArgs args) {
+    public static void InvokeOnCreatureCardDrawn(object sender, PlayerCreatureCardEventArgs args) {
         OnCreatureCardDrawn?.Invoke(sender, args);
     }
 
-    public static void InvokeOnSpellCardDrawn(object sender, DrawSpellCardEventArgs args) {
+    public static void InvokeOnSpellCardDrawn(object sender, PlayerSpellCardEventArgs args) {
         OnSpellCardDrawn?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureCardPlayed(object sender, PlayCreatureCardEventArgs args) {
+    public static void InvokeOnCreatureCardPlayed(object sender, PlayerCreatureCardEventArgs args) {
         OnCreatureCardPlayed?.Invoke(sender, args);
     }
 
-    public static void InvokeOnSpellCardPlayed(object sender, PlaySpellCardEventArgs args) {
+    public static void InvokeOnSpellCardPlayed(object sender, PlayerSpellCardEventArgs args) {
         OnSpellCardPlayed?.Invoke(sender, args);
     }
 
-    public static void InvokeOnDomainCardPlayed(object sender, PlaySpellCardEventArgs args) {
+    public static void InvokeOnDomainCardPlayed(object sender, PlayerSpellCardEventArgs args) {
         OnDomainCardPlayed?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnCreatureTapped(object sender, CreatureCardEventArgs args) {
+        OnCreatureTapped?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnCreatureUntapped(object sender, CreatureCardEventArgs args) {
+        OnCreatureUntapped?.Invoke(sender, args);
     }
 }

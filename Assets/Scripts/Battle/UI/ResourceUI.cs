@@ -12,8 +12,6 @@ public abstract class ResourceUI : MonoBehaviour {
     [SerializeField] protected CreatureHandCardUI creatureCard;
     [SerializeField] protected SpellHandCardUI spellCard;
 
-    protected Guid playerUuid;
-
     public bool ContainsCard(HandCardUI handCardUI) {
         foreach (HandCardUI card in cardsInHand) {
             if (card.Equals(handCardUI))
@@ -26,6 +24,4 @@ public abstract class ResourceUI : MonoBehaviour {
     public TextMeshPro ManaCount { get { return manaCount; } }
 
     public List<HandCardUI> CardsInHand { get { return cardsInHand; } }
-
-    public Guid PlayerUuid { get { return playerUuid; } set { playerUuid = value; } }
 }

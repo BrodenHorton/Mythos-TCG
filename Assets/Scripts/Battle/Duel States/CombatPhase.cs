@@ -1,7 +1,7 @@
-﻿public class BattlePhase : DuelState {
+﻿public class CombatPhase : DuelState {
     private DuelStateManager stateManager;
 
-    public BattlePhase(DuelStateManager stateManager) {
+    public CombatPhase(DuelStateManager stateManager) {
         this.stateManager = stateManager;
     }
 

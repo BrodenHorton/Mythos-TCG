@@ -5,12 +5,17 @@ using UnityEngine.InputSystem;
 public class PlayerUIController : MonoBehaviour {
     [SerializeField] private PlayerUI playerUI;
 
+    private MatchPlayer player;
     private DuelManager duelManager;
     private Camera cam;
     private PlayerInputActions playerInputActions;
     private HandCardUI previousSelection;
 
     private void Awake() {
+        duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
+
         cam = Camera.main;
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
@@ -19,21 +24,15 @@ public class PlayerUIController : MonoBehaviour {
     }
 
     private void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
         DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
-        EventBus.OnManaCountChanged += SetManaCountUI;
-        EventBus.OnCreatureCardDrawn += DrawCreatureCardUI;
-        EventBus.OnSpellCardDrawn += DrawSpellCardUI;
-        stateManager.DrawPhase.OnDrawPhase += (sender, e) => {
-            for (int i = 0; i < playerUI.CardsInHand.Count; i++)
-                playerUI.CardsInHand[i].SetBorderVisibility(false);
-        };
-        stateManager.StartPhase.OnStartPhase += SetSelectableCardsUI;
+        EventBus.OnManaCountChanged += SetManaCount;
+        EventBus.OnCreatureCardDrawn += DrawCreatureCard;
+        EventBus.OnSpellCardDrawn += DrawSpellCard;
+        stateManager.DrawPhase.OnDrawPhase += HideBorderAll;
+        stateManager.MainPhase.OnMainPhase += SetSelectableCards;
     }
 
     private void Update() {
@@ -55,55 +54,70 @@ public class PlayerUIController : MonoBehaviour {
         }
     }
 
-    private void DrawCreatureCardUI(object sender, DrawCreatureCardEventArgs args) {
-        if (args.Player.Uuid == playerUI.PlayerUuid)
-            playerUI.DrawCreatureCard(args.Player.Uuid, args.Card);
+    public void Init(MatchPlayer player) {
+        this.player = player;
     }
 
-    private void DrawSpellCardUI(object sender, DrawSpellCardEventArgs args) {
-        if (args.Player.Uuid == playerUI.PlayerUuid)
-            playerUI.DrawSpellCard(args.Player.Uuid, args.Card);
+    private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
+        if (args.Player.Uuid == player.Uuid)
+            playerUI.DrawCreatureCard(args.Card);
     }
 
-    private void SetManaCountUI(object sender, ManaChangedEventArgs args) {
-        if (args.Player.Uuid == playerUI.PlayerUuid)
+    private void DrawSpellCard(object sender, PlayerSpellCardEventArgs args) {
+        if (args.Player.Uuid == player.Uuid)
+            playerUI.DrawSpellCard(args.Card);
+    }
+
+    private void SetManaCount(object sender, ManaChangedEventArgs args) {
+        if (args.Player.Uuid == player.Uuid)
             playerUI.SetManaCount(args.CurrentMana);
     }
 
-    private void SetSelectableCardsUI(object sender, EventArgs args) {
-        playerUI.SetSelectableCards();
+    private void SetSelectableCards(object sender, EventArgs args) {
+        if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
+            return;
+
+        playerUI.SetSelectableCards(player);
+    }
+
+    private void HideBorderAll(object sender, EventArgs args) {
+        playerUI.SetBorderVisibilityAll(false);
     }
 
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        if (playerUI.PlayerUuid != duelManager.GetCurrentPlayerTurn().Uuid)
+        if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
             return;
+        HandCardUI handCardUI = RaycastColliderCheck();
+        if (handCardUI == null)
+            return;
+        if (!playerUI.ContainsCard(handCardUI))
+            return;
+        int cardIndex = playerUI.IndexOf(handCardUI);
+        if (cardIndex == -1)
+            return;
+        if (!player.Hand[cardIndex].IsPlayable(duelManager, player))
+            return;
+
+        duelManager.PlayCardFromHand(player, cardIndex);
+        handCardUI.Select();
+        playerUI.SetSelectableCards(player);
+    }
+
+    private HandCardUI RaycastColliderCheck() {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         HandCardUI cardUI = null;
-        foreach(RaycastHit hit in hits) {
+        foreach (RaycastHit hit in hits) {
             if (hit.collider.GetComponent<HandCardCollisionPointer>()) {
                 cardUI = hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
                 break;
             }
         }
-        if (cardUI == null)
-            return;
-        if (!playerUI.ContainsCard(cardUI))
-            return;
-        int cardIndex = playerUI.IndexOf(cardUI);
-        if (cardIndex == -1)
-            return;
-        MatchPlayer player = duelManager.GetCurrentPlayerTurn();
-        if (!player.Hand[cardIndex].IsPlayable(duelManager, player))
-            return;
 
-        Debug.Log("PlayerUIController before PlayCardInHand");
-        duelManager.PlayCardInHand(player, cardIndex);
-        cardUI.Select();
-        playerUI.SetSelectableCards();
+        return cardUI;
     }
 
     private HandCardUI HoverDetection() {

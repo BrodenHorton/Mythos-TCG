@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
+    [SerializeField] private int initialHandSize;
 
     private int currentPlayerTurnIndex;
     private int fullTurnCount;
@@ -13,7 +14,7 @@ public class DuelManager : MonoBehaviour {
             throw new Exception("Not enough players to start match.");
 
         currentPlayerTurnIndex = 0;
-        fullTurnCount = 1;
+        fullTurnCount = 4;
     }
 
     private void Start() {
@@ -23,50 +24,18 @@ public class DuelManager : MonoBehaviour {
     public void InitializePlayers() {
         foreach(MatchPlayer player in players) {
             player.ShuffleDeck();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < initialHandSize; i++)
                 player.DrawCard();
         }
     }
 
-    public void DrawCard(MatchPlayer player) {
-        Debug.Log("Drawing Card in DuelManager");
-        Card card = player.DrawCard();
-    }
-
-    public void SetCurrentMana(MatchPlayer player, int manaCount) {
-        player.CurrentMana = manaCount;
-    }
-
-    public void SetStartOfTurnMana() {
-        GetCurrentPlayerTurn().CurrentMana = fullTurnCount;
-    }
-
-    public void PlayCardInHand(Guid playerUuid, int cardIndex) {
-        PlayCardInHand(GetPlayerByUuid(playerUuid), cardIndex);
-    }
-
-    public void PlayCardInHand(MatchPlayer player, int cardIndex) {
-        Debug.Log("PlayCardInHand method called");
+    public void PlayCardFromHand(MatchPlayer player, int cardIndex) {
         if (player.Hand.Count <= cardIndex)
             return;
 
         Card card = player.Hand[cardIndex];
         player.Hand.RemoveAt(cardIndex);
         card.PlayCard(this, player);
-    }
-
-    public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
-        player.Creatures.Add(card);
-        EventBus.InvokeOnCreatureCardPlayed(this, new PlayCreatureCardEventArgs(player, card));
-    }
-
-    public void PlaySpellCard(MatchPlayer player, SpellCard card) {
-        player.Spells.Add(card);
-        EventBus.InvokeOnSpellCardPlayed(this, new PlaySpellCardEventArgs(player, card));
-    }
-
-    public void PlayDomainCard(MatchPlayer player, SpellCard card) {
-        player.Domain = card;
     }
 
     public void NextTurn() {
@@ -82,6 +51,10 @@ public class DuelManager : MonoBehaviour {
 
     public MatchPlayer GetCurrentPlayerTurn() {
         return players[currentPlayerTurnIndex];
+    }
+
+    public int GetStartOfTurnManaCount() {
+        return fullTurnCount;
     }
 
     public MatchPlayer GetPlayerByUuid(Guid uuid) {

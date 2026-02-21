@@ -18,7 +18,7 @@ public class SpellCard : Card {
     }
 
     public override void Init(MatchPlayer player) {
-        EventBus.InvokeOnSpellCardDrawn(this, new DrawSpellCardEventArgs(player, this));
+        EventBus.InvokeOnSpellCardDrawn(this, new PlayerSpellCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
@@ -31,7 +31,7 @@ public class SpellCard : Card {
     }
 
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
-        duelManager.SetCurrentMana(player, player.CurrentMana - cardBase.ManaCost);
-        duelManager.PlaySpellCard(duelManager.GetCurrentPlayerTurn(), this);
+        // TODO: Implement logic for checking criteria for playing the card on the field
+        player.PlaySpellCard(this); // Remove later once Battlefield is implemtned
     }
 }

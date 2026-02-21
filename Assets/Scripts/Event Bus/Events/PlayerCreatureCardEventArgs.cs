@@ -1,10 +1,10 @@
 ﻿using System;
 
-public class DrawCreatureCardEventArgs : EventArgs {
+public class PlayerCreatureCardEventArgs : EventArgs {
     private MatchPlayer player;
     private CreatureCard card;
 
-    public DrawCreatureCardEventArgs(MatchPlayer player, CreatureCard card) {
+    public PlayerCreatureCardEventArgs(MatchPlayer player, CreatureCard card) {
         this.player = player;
         this.card = card;
     }

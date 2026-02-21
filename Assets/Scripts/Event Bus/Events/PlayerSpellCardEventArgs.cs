@@ -1,10 +1,10 @@
 ﻿using System;
 
-public class PlaySpellCardEventArgs : EventArgs {
+public class PlayerSpellCardEventArgs : EventArgs {
     private MatchPlayer player;
     private SpellCard card;
 
-    public PlaySpellCardEventArgs(MatchPlayer player, SpellCard card) {
+    public PlayerSpellCardEventArgs(MatchPlayer player, SpellCard card) {
         this.player = player;
         this.card = card;
     }

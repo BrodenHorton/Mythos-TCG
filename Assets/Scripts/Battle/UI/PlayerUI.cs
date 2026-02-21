@@ -6,11 +6,7 @@ public class PlayerUI : ResourceUI {
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
 
-    public void DrawCreatureCard(Guid uuid, CreatureCard card) {
-        if (playerUuid != uuid)
-            return;
-
-        Debug.Log("Creature card instantiated");
+    public void DrawCreatureCard(CreatureCard card) {
         CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);
         cardUI.Init(card);
         cardUI.transform.Rotate(90f, 0, 0);
@@ -19,11 +15,7 @@ public class PlayerUI : ResourceUI {
         DefaultCardPositions();
     }
 
-    public void DrawSpellCard(Guid uuid, SpellCard card) {
-        if (playerUuid != uuid)
-            return;
-
-        Debug.Log("Spell card instantiated");
+    public void DrawSpellCard(SpellCard card) {
         SpellHandCardUI cardUI = Instantiate(spellCard, handOrigin);
         cardUI.Init(card);
         cardUI.transform.Rotate(90f, 0, 0);
@@ -36,18 +28,19 @@ public class PlayerUI : ResourceUI {
         this.manaCount.text = manaCount.ToString();
     }
 
-    public void SetSelectableCards() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        if (playerUuid != duelManager.GetCurrentPlayerTurn().Uuid)
-            return;
-
-        MatchPlayer player = duelManager.GetPlayerByUuid(playerUuid);
+    public void SetSelectableCards(MatchPlayer player) {
         for (int i = 0; i < cardsInHand.Count; i++) {
             if (player.Hand.Count <= i)
                 break;
 
+            DuelManager duelManager = FindFirstObjectByType<DuelManager>(); 
             cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable(duelManager, player));
         }
+    }
+
+    public void SetBorderVisibilityAll(bool isVisiable) {
+        foreach(HandCardUI cardUI in cardsInHand)
+            cardUI.SetBorderVisibility(isVisiable);
     }
 
     private void PlayCardFromHand(object sender, HandCardSelectedEventArgs args) {

@@ -10,7 +10,7 @@ public class EndPhase : DuelState {
     public void EnterState() {
         Debug.Log("End of Turn");
         stateManager.DuelManager.NextTurn();
-        stateManager.SwitchState(stateManager.DrawPhase);
+        stateManager.SwitchState(stateManager.UntapPhase);
     }
 
     public void UpdateState() {

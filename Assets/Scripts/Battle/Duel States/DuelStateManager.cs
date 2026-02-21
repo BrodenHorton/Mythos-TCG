@@ -3,10 +3,10 @@ using UnityEngine;
 
 [RequireComponent(typeof(DuelManager))]
 public class DuelStateManager : MonoBehaviour {
+    private UntapPhase untapPhase;
     private DrawPhase drawPhase;
-    private StartPhase startPhase;
     private MainPhase mainPhase;
-    private BattlePhase battlePhase;
+    private CombatPhase combatPhase;
     private EndPhase endPhase;
     private DuelState currentState;
 
@@ -18,13 +18,13 @@ public class DuelStateManager : MonoBehaviour {
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
 
+        untapPhase = new UntapPhase(this);
         drawPhase = new DrawPhase(this);
-        startPhase = new StartPhase(this);
         mainPhase = new MainPhase(this);
-        battlePhase = new BattlePhase(this);
+        combatPhase = new CombatPhase(this);
         endPhase = new EndPhase(this);
 
-        currentState = drawPhase;
+        currentState = untapPhase;
     }
 
     private void Update() {
@@ -43,13 +43,13 @@ public class DuelStateManager : MonoBehaviour {
 
     public DuelManager DuelManager { get { return duelManager; } }
 
-    public DrawPhase DrawPhase { get { return drawPhase; } }
+    public UntapPhase UntapPhase { get { return untapPhase; } }
 
-    public StartPhase StartPhase { get { return startPhase; } }
+    public DrawPhase DrawPhase { get { return drawPhase; } }
 
     public MainPhase MainPhase { get { return mainPhase; } }
 
-    public BattlePhase BattlePhase { get { return battlePhase; } }
+    public CombatPhase CombatPhase { get { return combatPhase; } }
 
     public EndPhase EndPhase { get { return  endPhase; } }
 }

@@ -1,11 +1,10 @@
-﻿using System;
-
-public class DrawCardEventArgs : EventArgs {
+﻿public class PlayerCardEventArgs {
     private MatchPlayer player;
     private Card card;
 
-    public DrawCardEventArgs(MatchPlayer player, Card card) {
+    public PlayerCardEventArgs(MatchPlayer player, Card card) {
         this.player = player;
+        this.card = card;
     }
 
     public MatchPlayer Player { get { return player; } }

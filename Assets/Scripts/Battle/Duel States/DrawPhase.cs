@@ -18,8 +18,8 @@ public class DrawPhase : DuelState {
         Debug.Log("Entered Draw Phase");
         OnDrawPhase?.Invoke(this, EventArgs.Empty);
         DuelManager duelManager = stateManager.DuelManager;
-        duelManager.SetStartOfTurnMana();
-        duelManager.DrawCard(duelManager.GetCurrentPlayerTurn());
+        duelManager.GetCurrentPlayerTurn().CurrentMana = duelManager.GetStartOfTurnManaCount();
+        duelManager.GetCurrentPlayerTurn().DrawCard();
         playerInputActions.Enable();
     }
 
@@ -32,6 +32,6 @@ public class DrawPhase : DuelState {
             return;
 
         playerInputActions.Player.Disable();
-        stateManager.SwitchState(stateManager.StartPhase);
+        stateManager.SwitchState(stateManager.MainPhase);
     }
 }

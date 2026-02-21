@@ -17,7 +17,7 @@ public class CreatureCard : Card {
     }
 
     public override void Init(MatchPlayer player) {
-        EventBus.InvokeOnCreatureCardDrawn(this, new DrawCreatureCardEventArgs(player, this));
+        EventBus.InvokeOnCreatureCardDrawn(this, new PlayerCreatureCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
@@ -30,8 +30,8 @@ public class CreatureCard : Card {
     }
 
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
-        duelManager.SetCurrentMana(player, player.CurrentMana - cardBase.ManaCost);
-        duelManager.PlayCreatureCard(duelManager.GetCurrentPlayerTurn(), this);
+        // TODO: Implement logic for checking criteria for playing the card on the field
+        player.PlayCreatureCard(this);
     }
 
     public int GetManaCost() {
@@ -47,19 +47,21 @@ public class CreatureCard : Card {
     }
 
     public void Tap() {
-
+        isTapped = true;
+        EventBus.InvokeOnCreatureTapped(this, new CreatureCardEventArgs(this)); 
     }
 
     public void Untap() {
-
+        isTapped = false;
+        EventBus.InvokeOnCreatureUntapped(this, new CreatureCardEventArgs(this));
     }
 
     public bool CanAttack() {
-        return false;
+        return !isTapped && !hasSummoningSickness;
     }
 
     public bool CanDefend() {
-        return false;
+        return !isTapped;
     }
 
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }

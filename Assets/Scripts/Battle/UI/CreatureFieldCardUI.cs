@@ -6,6 +6,7 @@ public class CreatureFieldCardUI : FieldCardUI {
     [SerializeField] private TextMeshPro health;
 
     public void Init(CreatureCard card) {
+        cardUuid = card.Uuid;
         atk.text = card.GetAtk().ToString();
         health.text = card.GetHealth().ToString();
     }
@@ -14,7 +15,7 @@ public class CreatureFieldCardUI : FieldCardUI {
         transform.Rotate(0f, -90f, 0f, Space.World);
     }
 
-    public void UnTap() {
+    public void Untap() {
         transform.eulerAngles = Vector3.zero;
     }
 }

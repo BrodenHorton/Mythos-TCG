@@ -8,7 +8,6 @@ public class MatchPlayer {
     [SerializeReference, SubclassSelector] private List<Card> hand;
     [SerializeReference, SubclassSelector] private List<Card> discardPile;
     [SerializeReference, SubclassSelector] private List<CreatureCard> creatures;
-    [SerializeReference, SubclassSelector] private List<SpellCard> spells;
     [SerializeReference, SubclassSelector] private SpellCard domain;
     [SerializeField] private int lifePoints;
     [SerializeField] private int currentMana;
@@ -21,7 +20,6 @@ public class MatchPlayer {
         hand = new List<Card>();
         discardPile = new List<Card>();
         creatures = new List<CreatureCard>();
-        spells = new List<SpellCard>();
         domain = null;
         lifePoints = 20;
         currentMana = 1;
@@ -46,6 +44,42 @@ public class MatchPlayer {
         return card;
     }
 
+    public void PlayCreatureCard(CreatureCard card) {
+        CurrentMana -= card.GetManaCost();
+        creatures.Add(card);
+        EventBus.InvokeOnCreatureCardPlayed(this, new PlayerCreatureCardEventArgs(this, card));
+    }
+
+    public void PlaySpellCard(SpellCard card) {
+        CurrentMana -= card.GetManaCost();
+        //player.Spells.Add(card);
+        //EventBus.InvokeOnSpellCardPlayed(this, new PlayerSpellCardEventArgs(player, card));
+    }
+
+    public void PlayDomainCard(SpellCard card) {
+        CurrentMana -= card.GetManaCost();
+        domain = card;
+        EventBus.InvokeOnDomainCardPlayed(this, new PlayerSpellCardEventArgs(this, card));
+    }
+
+    public bool ContainsCreatureUuid(Guid uuid) {
+        foreach(CreatureCard card in creatures) {
+            if (card.Uuid == uuid)
+                return true;
+        }
+
+        return false;
+    }
+
+    public CreatureCard GetCreatureByUuid(Guid uuid) {
+        for(int i = 0; i < creatures.Count; i++) {
+            if (creatures[i].Uuid == uuid)
+                return creatures[i];
+        }
+
+        return null;
+    }
+
     public Guid Uuid { get { return uuid; } }
 
     public List<Card> Deck {  get { return deck; } }
@@ -56,15 +90,13 @@ public class MatchPlayer {
 
     public List<CreatureCard> Creatures { get { return creatures; } }
 
-    public List<SpellCard> Spells { get { return spells; } }
-
     public SpellCard Domain {
         get {
             return domain;
         }
         set {
             domain = value;
-            EventBus.InvokeOnDomainCardPlayed(this, new PlaySpellCardEventArgs(this, domain));
+            EventBus.InvokeOnDomainCardPlayed(this, new PlayerSpellCardEventArgs(this, domain));
         }
     }
 

@@ -2,52 +2,25 @@
 using UnityEngine;
 
 public class OpponentUI : ResourceUI {
-    private void Start() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
 
-        EventBus.OnManaCountChanged += (sender, e) => {
-            if (e.Player.Uuid == playerUuid)
-                manaCount.text = e.CurrentMana.ToString();
-        };
-
-        EventBus.OnCreatureCardDrawn += DrawCreatureCard;
-        EventBus.OnSpellCardDrawn += DrawSpellCard;
-    }
-
-    private void DrawCreatureCard(object sender, DrawCreatureCardEventArgs args) {
-        if (playerUuid != args.Player.Uuid)
-            return;
-
+    public void DrawCreatureCard(CreatureCard card) {
         CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);
-        cardUI.Init(args.Card);
+        cardUI.Init(card);
         cardUI.transform.Rotate(-90f, 0, 0);
         cardsInHand.Add(cardUI);
         SpaceCards();
     }
 
-    private void DrawSpellCard(object sender, DrawSpellCardEventArgs args) {
-        if (playerUuid != args.Player.Uuid)
-            return;
-
+    public void DrawSpellCard(SpellCard card) {
         SpellHandCardUI cardUI = Instantiate(spellCard, handOrigin);
-        cardUI.Init(args.Card);
+        cardUI.Init(card);
         cardUI.transform.Rotate(-90f, 0, 0);
         cardsInHand.Add(cardUI);
         SpaceCards();
     }
 
-    private void PlayCardFromHand(int cardIndex) {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        if (cardIndex < 0 || cardsInHand.Count <= cardIndex)
-            throw new Exception("Invalid card selected in hand");
-
-        HandCardUI handCardUI = cardsInHand[cardIndex];
-        cardsInHand.RemoveAt(cardIndex);
-        Destroy(handCardUI.gameObject);
-        SpaceCards();
-        duelManager.PlayCardInHand(playerUuid, cardIndex);
+    public void SetManaCount(int value) {
+        manaCount.text = value.ToString();
     }
 
     private void SpaceCards() {
