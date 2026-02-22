@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class PlayerUI : ResourceUI {
+public class PlayerUI : DuelistUI {
     [SerializeField] private Vector3 handHoverOffset;
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;

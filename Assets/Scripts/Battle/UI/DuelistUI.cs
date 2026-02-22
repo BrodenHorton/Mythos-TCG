@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public abstract class ResourceUI : MonoBehaviour {
+public abstract class DuelistUI : MonoBehaviour {
     [SerializeField] protected Transform deckOrigin;
     [SerializeField] protected Transform handOrigin;
     [SerializeField] protected TextMeshPro manaCount;

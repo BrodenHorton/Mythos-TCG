@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public static class EventBus {
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
@@ -11,6 +10,8 @@ public static class EventBus {
     public static event EventHandler<PlayerSpellCardEventArgs> OnDomainCardPlayed;
     public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
     public static event EventHandler<CreatureCardEventArgs> OnCreatureUntapped;
+    public static event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
+    public static event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
 
     public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
         OnManaCountChanged?.Invoke(sender, args);
@@ -46,5 +47,13 @@ public static class EventBus {
 
     public static void InvokeOnCreatureUntapped(object sender, CreatureCardEventArgs args) {
         OnCreatureUntapped?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnDelcareAttacker(object sender, DeclareAttackerEventArgs args) {
+        OnDeclareAttacker?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnDelcareDefender(object sender, DeclareDefenderEventArgs args) {
+        OnDeclareDefender?.Invoke(sender, args);
     }
 }

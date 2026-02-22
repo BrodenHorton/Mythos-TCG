@@ -1,18 +1,12 @@
 ﻿using UnityEngine;
 
-public class OpponentUIController : MonoBehaviour {
+public class OpponentUIController : DuelistUIController {
     [SerializeField] private OpponentUI opponentUI;
-
-    private MatchPlayer player;
 
     private void Awake() {
         EventBus.OnManaCountChanged += SetManaCount;
         EventBus.OnCreatureCardDrawn += DrawCreatureCard;
         EventBus.OnSpellCardDrawn += DrawSpellCard;
-    }
-
-    public void Init(MatchPlayer player) {
-        this.player = player;
     }
 
     private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
@@ -34,5 +28,9 @@ public class OpponentUIController : MonoBehaviour {
             return;
 
         opponentUI.SetManaCount(args.CurrentMana);
+    }
+
+    public override DuelistUI GetDuelistUI() {
+        return opponentUI;
     }
 }

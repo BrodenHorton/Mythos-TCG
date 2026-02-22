@@ -2,10 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerUIController : MonoBehaviour {
+public class PlayerUIController : DuelistUIController {
     [SerializeField] private PlayerUI playerUI;
 
-    private MatchPlayer player;
     private DuelManager duelManager;
     private Camera cam;
     private PlayerInputActions playerInputActions;
@@ -52,10 +51,6 @@ public class PlayerUIController : MonoBehaviour {
                 previousSelection = handCardUI;
             }
         }
-    }
-
-    public void Init(MatchPlayer player) {
-        this.player = player;
     }
 
     private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
@@ -148,5 +143,9 @@ public class PlayerUIController : MonoBehaviour {
 
     private void ExitHoverCard(HandCardUI card) {
         playerUI.ExitHoverCard(card);
+    }
+
+    public override DuelistUI GetDuelistUI() {
+        return playerUI;
     }
 }

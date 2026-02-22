@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class OpponentUI : ResourceUI {
+public class OpponentUI : DuelistUI {
 
     public void DrawCreatureCard(CreatureCard card) {
         CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);

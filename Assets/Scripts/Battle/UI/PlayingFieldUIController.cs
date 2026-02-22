@@ -59,21 +59,21 @@ public class PlayingFieldUIController : MonoBehaviour {
             return;
         if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
             return;
-        CreatureFieldCardUI fieldCardUI = RaycastColliderCheck();
-        if (fieldCardUI == null)
+        CreatureFieldCardUI cardUI = RaycastColliderCheck();
+        if (cardUI == null)
             return;
-        if (!playingFieldUI.ContainsCreatureCard(fieldCardUI))
+        if (!playingFieldUI.ContainsBenchCreature(cardUI))
             return;
-        if (!player.ContainsCreatureUuid(fieldCardUI.CardUuid))
+        if (!player.ContainsCreatureUuid(cardUI.CardUuid))
             return;
-        CreatureCard creatureCard = player.GetCreatureByUuid(fieldCardUI.CardUuid);
+        CreatureCard creatureCard = player.GetCreatureByUuid(cardUI.CardUuid);
         if (creatureCard == null)
             return;
         if (!creatureCard.CanAttack())
             return;
 
-        Debug.Log("Creature Card tapped");
-        creatureCard.Tap();
+        playingFieldUI.RemoveCreature(cardUI);
+        EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(player, duelManager.Players[1], creatureCard));
     }
 
     private CreatureFieldCardUI RaycastColliderCheck() {
@@ -90,4 +90,6 @@ public class PlayingFieldUIController : MonoBehaviour {
 
         return fieldCardUI;
     }
+
+    public PlayingFieldUI PlayingFieldUI {  get { return playingFieldUI; } }
 }

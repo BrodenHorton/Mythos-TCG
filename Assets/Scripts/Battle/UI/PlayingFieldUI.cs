@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class PlayingFieldUI : MonoBehaviour {
     [SerializeField] private Transform creatureSlotOrigin;
-    [SerializeField] private Transform spellSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
-    [SerializeField] private List<CreatureFieldCardUI> creatureCards;
+    [SerializeField] private List<CreatureFieldCardUI> creatures;
     [SerializeField] private SpellFieldCardUI domainCard;
     [Header("Prefabs")]
     [SerializeField] private CreatureFieldCardUI creatureCardUIPrefab;
@@ -17,7 +16,7 @@ public class PlayingFieldUI : MonoBehaviour {
     public void PlayCreatureCard(CreatureCard card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab, creatureSlotOrigin);
         creatureCardUI.Init(card);
-        creatureCards.Add(creatureCardUI);
+        creatures.Add(creatureCardUI);
         SpaceCards();
     }
 
@@ -28,7 +27,7 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void TapCreature(CreatureCard card) {
-        foreach (CreatureFieldCardUI cardUI in creatureCards) {
+        foreach (CreatureFieldCardUI cardUI in creatures) {
             if (cardUI.CardUuid == card.Uuid) {
                 cardUI.Tap();
                 break;
@@ -37,7 +36,7 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void UntapCreature(CreatureCard card) {
-        foreach(CreatureFieldCardUI cardUI in creatureCards) {
+        foreach(CreatureFieldCardUI cardUI in creatures) {
             if(cardUI.CardUuid == card.Uuid) {
                 cardUI.Untap();
                 break;
@@ -45,8 +44,19 @@ public class PlayingFieldUI : MonoBehaviour {
         }
     }
 
-    public bool ContainsCreatureCard(CreatureFieldCardUI other) {
-        foreach(CreatureFieldCardUI cardUI in creatureCards) {
+    public void RemoveCreature(CreatureFieldCardUI cardUI) {
+        creatures.Remove(cardUI);
+        Destroy(cardUI.gameObject);
+    }
+
+    public void RemoveCreatureAndUpdate(CreatureFieldCardUI cardUI) {
+        creatures.Remove(cardUI);
+        Destroy(cardUI);
+        SpaceCards();
+    }
+
+    public bool ContainsBenchCreature(CreatureFieldCardUI other) {
+        foreach(CreatureFieldCardUI cardUI in creatures) {
             if(cardUI == other)
                 return true;
         }
@@ -55,21 +65,21 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void SetSelectableCards(MatchPlayer player) {
-        for (int i = 0; i < creatureCards.Count; i++) {
+        for (int i = 0; i < creatures.Count; i++) {
             if (player.Creatures.Count <= i)
                 throw new Exception("Creature cards in model and view do not match");
 
-            creatureCards[i].SetBorderVisibility(player.Creatures[i].CanAttack());
+            creatures[i].SetBorderVisibility(player.Creatures[i].CanAttack());
         }
     }
 
     private void SpaceCards() {
-        int cardCount = creatureCards.Count;
+        int cardCount = creatures.Count;
         float handOffset = (cardCount - 1) * cardSpacing / 2;
         for (int i = 0; i < cardCount; i++) {
             Vector3 cardPosition = creatureSlotOrigin.position;
             cardPosition.x += i * cardSpacing - handOffset;
-            creatureCards[i].transform.position = cardPosition;
+            creatures[i].transform.position = cardPosition;
         }
     }
 }
