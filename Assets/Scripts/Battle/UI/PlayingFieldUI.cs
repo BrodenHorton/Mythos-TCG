@@ -47,15 +47,10 @@ public class PlayingFieldUI : MonoBehaviour {
     public void RemoveCreature(CreatureFieldCardUI cardUI) {
         creatures.Remove(cardUI);
         Destroy(cardUI.gameObject);
-    }
-
-    public void RemoveCreatureAndUpdate(CreatureFieldCardUI cardUI) {
-        creatures.Remove(cardUI);
-        Destroy(cardUI);
         SpaceCards();
     }
 
-    public bool ContainsBenchCreature(CreatureFieldCardUI other) {
+    public bool ContainsCreature(CreatureFieldCardUI other) {
         foreach(CreatureFieldCardUI cardUI in creatures) {
             if(cardUI == other)
                 return true;

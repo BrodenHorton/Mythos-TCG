@@ -6,6 +6,7 @@ public class DuelManager : MonoBehaviour {
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
     [SerializeField] private int initialHandSize;
 
+    private MatchPlayer activePlayer;
     private int currentPlayerTurnIndex;
     private int fullTurnCount;
 
@@ -13,6 +14,7 @@ public class DuelManager : MonoBehaviour {
         if(players.Count < 2)
             throw new Exception("Not enough players to start match.");
 
+        activePlayer = players[0];
         currentPlayerTurnIndex = 0;
         fullTurnCount = 4;
     }
@@ -51,6 +53,10 @@ public class DuelManager : MonoBehaviour {
 
     public MatchPlayer GetCurrentPlayerTurn() {
         return players[currentPlayerTurnIndex];
+    }
+
+    public bool IsActivePlayerTurn() {
+        return activePlayer == GetCurrentPlayerTurn();
     }
 
     public int GetStartOfTurnManaCount() {

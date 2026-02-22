@@ -63,6 +63,7 @@ public class MatchPlayer {
     }
 
     public bool ContainsCreatureUuid(Guid uuid) {
+        Debug.Log("Creature card count: " + creatures.Count);
         foreach(CreatureCard card in creatures) {
             if (card.Uuid == uuid)
                 return true;

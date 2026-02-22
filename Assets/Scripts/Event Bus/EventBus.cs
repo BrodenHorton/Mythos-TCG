@@ -12,6 +12,7 @@ public static class EventBus {
     public static event EventHandler<CreatureCardEventArgs> OnCreatureUntapped;
     public static event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
     public static event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
+    public static event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
 
     public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
         OnManaCountChanged?.Invoke(sender, args);
@@ -55,5 +56,9 @@ public static class EventBus {
 
     public static void InvokeOnDelcareDefender(object sender, DeclareDefenderEventArgs args) {
         OnDeclareDefender?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnUndelcareAttacker(object sender, UndeclareAttackerEventArgs args) {
+        OnUndeclareAttacker?.Invoke(sender, args);
     }
 }

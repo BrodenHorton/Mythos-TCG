@@ -26,6 +26,7 @@ public class PlayingFieldUIController : MonoBehaviour {
         EventBus.OnDomainCardPlayed += PlayDomainCard;
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
+        EventBus.OnUndeclareAttacker += UndeclareAttacker;
     }
 
     public void Init(MatchPlayer player) {
@@ -34,6 +35,13 @@ public class PlayingFieldUIController : MonoBehaviour {
 
     public void PlayCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
         if (player.Uuid != args.Player.Uuid)
+            return;
+
+        playingFieldUI.PlayCreatureCard(args.Card);
+    }
+
+    public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
+        if (player.Uuid != args.Attacker.Uuid)
             return;
 
         playingFieldUI.PlayCreatureCard(args.Card);
@@ -62,7 +70,7 @@ public class PlayingFieldUIController : MonoBehaviour {
         CreatureFieldCardUI cardUI = RaycastColliderCheck();
         if (cardUI == null)
             return;
-        if (!playingFieldUI.ContainsBenchCreature(cardUI))
+        if (!playingFieldUI.ContainsCreature(cardUI))
             return;
         if (!player.ContainsCreatureUuid(cardUI.CardUuid))
             return;

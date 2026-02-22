@@ -25,6 +25,21 @@ public class CombatFieldUI : MonoBehaviour {
         defenders.Add(cardUI);
     }
 
+    public void RemoveCreature(CreatureFieldCardUI cardUI) {
+        attackers.Remove(cardUI);
+        Destroy(cardUI.gameObject);
+        SpaceAttackers();
+    }
+
+    public bool ContainsAttacker(CreatureFieldCardUI other) {
+        foreach (CreatureFieldCardUI cardUI in attackers) {
+            if (cardUI == other)
+                return true;
+        }
+
+        return false;
+    }
+
     private void SpaceAttackers() {
         int cardCount = attackers.Count;
         float handOffset = (cardCount - 1) * cardSpacing / 2;
