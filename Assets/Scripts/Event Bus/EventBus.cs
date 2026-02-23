@@ -13,6 +13,7 @@ public static class EventBus {
     public static event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
     public static event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
     public static event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
+    public static event EventHandler<AttackEventArgs> OnAttack;
 
     public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
         OnManaCountChanged?.Invoke(sender, args);
@@ -60,5 +61,9 @@ public static class EventBus {
 
     public static void InvokeOnUndelcareAttacker(object sender, UndeclareAttackerEventArgs args) {
         OnUndeclareAttacker?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnAttack(object sender, AttackEventArgs args) {
+        OnAttack?.Invoke(sender, args);
     }
 }

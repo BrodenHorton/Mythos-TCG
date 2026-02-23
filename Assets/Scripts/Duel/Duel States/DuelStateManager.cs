@@ -17,11 +17,14 @@ public class DuelStateManager : MonoBehaviour {
         duelManager = GetComponent<DuelManager>();
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
+        CombatManager combatManager = FindFirstObjectByType<CombatManager>();
+        if(combatManager == null)
+            throw new Exception("Unable to find GameObject with CombatManager component");
 
         untapPhase = new UntapPhase(this);
         drawPhase = new DrawPhase(this);
         mainPhase = new MainPhase(this);
-        combatPhase = new CombatPhase(this);
+        combatPhase = new CombatPhase(this, combatManager);
         endPhase = new EndPhase(this);
 
         currentState = untapPhase;

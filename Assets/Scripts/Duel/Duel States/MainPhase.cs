@@ -29,6 +29,6 @@ public class MainPhase : DuelState {
             return;
 
         playerInputActions.Player.Disable();
-        stateManager.SwitchState(stateManager.EndPhase);
+        stateManager.SwitchState(stateManager.CombatPhase);
     }
 }

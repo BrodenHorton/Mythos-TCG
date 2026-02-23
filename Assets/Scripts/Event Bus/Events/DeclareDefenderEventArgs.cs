@@ -1,19 +1,19 @@
 ﻿using System;
 
 public class DeclareDefenderEventArgs : EventArgs {
-    private MatchPlayer defender;
-    private CreatureCard card;
-    private CreatureCard targetAttacker;
+    private MatchPlayer target;
+    private CreatureCard defender;
+    private CreatureCard attacker;
 
-    public DeclareDefenderEventArgs(MatchPlayer defender, CreatureCard card, CreatureCard targetAttacker) {
+    public DeclareDefenderEventArgs(MatchPlayer target, CreatureCard defender, CreatureCard attacker) {
+        this.target = target;
         this.defender = defender;
-        this.card = card;
-        this.targetAttacker = targetAttacker;
+        this.attacker = attacker;
     }
 
-    public MatchPlayer Defender { get { return defender; } }
+    public MatchPlayer Target { get { return target; } }
 
-    public CreatureCard Card { get { return card; } }
+    public CreatureCard Defender { get { return defender; } }
 
-    public CreatureCard TargetAttacker { get { return targetAttacker; } }
+    public CreatureCard Attacker { get { return attacker; } }
 }

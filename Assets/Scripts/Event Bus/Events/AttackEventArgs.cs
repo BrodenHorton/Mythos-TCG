@@ -1,11 +1,11 @@
 ﻿using System;
 
-public class UndeclareAttackerEventArgs : EventArgs {
+public class AttackEventArgs : EventArgs {
     private MatchPlayer initiator;
     private MatchPlayer target;
     private CreatureCard attacker;
 
-    public UndeclareAttackerEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker) {
+    public AttackEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker) {
         this.initiator = initiator;
         this.target = target;
         this.attacker = attacker;
@@ -16,4 +16,5 @@ public class UndeclareAttackerEventArgs : EventArgs {
     public MatchPlayer Target { get { return target; } }
 
     public CreatureCard Attacker { get { return attacker; } }
+
 }

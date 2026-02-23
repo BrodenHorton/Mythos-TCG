@@ -1,19 +1,19 @@
 ﻿using System;
 
 public class DeclareAttackerEventArgs : EventArgs {
-    private MatchPlayer attacker;
-    private MatchPlayer defender;
-    private CreatureCard card;
+    private MatchPlayer initiator;
+    private MatchPlayer target;
+    private CreatureCard attacker;
 
-    public DeclareAttackerEventArgs(MatchPlayer attacker, MatchPlayer defender, CreatureCard card) {
+    public DeclareAttackerEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker) {
+        this.initiator = initiator;
+        this.target = target;
         this.attacker = attacker;
-        this.defender = defender;
-        this.card = card;
     }
 
-    public MatchPlayer Attacker { get { return attacker; } }
+    public MatchPlayer Initiator { get { return initiator; } }
 
-    public MatchPlayer Defender { get { return defender; } }
+    public MatchPlayer Target { get { return target; } }
 
-    public CreatureCard Card { get { return card; } }
+    public CreatureCard Attacker { get { return attacker; } }
 }

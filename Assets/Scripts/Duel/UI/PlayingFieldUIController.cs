@@ -41,10 +41,10 @@ public class PlayingFieldUIController : MonoBehaviour {
     }
 
     public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
-        if (player.Uuid != args.Attacker.Uuid)
+        if (player.Uuid != args.Initiator.Uuid)
             return;
 
-        playingFieldUI.PlayCreatureCard(args.Card);
+        playingFieldUI.PlayCreatureCard(args.Attacker);
     }
 
     public void PlayDomainCard(object sender, PlayerSpellCardEventArgs args) {

@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class CombatFieldUIController : MonoBehaviour {
     [SerializeField] private CombatFieldUI combatFieldUI;
 
-    private MatchPlayer defender;
+    private MatchPlayer target;
     private DuelManager duelManager;
     private Camera cam;
     private PlayerInputActions playerInputActions;
@@ -27,49 +27,43 @@ public class CombatFieldUIController : MonoBehaviour {
     }
 
     public void Init(MatchPlayer player) {
-        this.defender = player;
+        this.target = player;
     }
 
     public void AddAttacker(object sender, DeclareAttackerEventArgs args) {
-        if (defender.Uuid != args.Defender.Uuid)
+        if (target.Uuid != args.Target.Uuid)
             return;
 
-        combatFieldUI.AddAttacker(args.Card);
+        combatFieldUI.AddAttacker(args.Attacker);
     }
 
     // TODO: Implement so the defender corresponds to a given attacker
     public void AddDefender(object sender, DeclareDefenderEventArgs args) {
-        if (defender.Uuid != args.Defender.Uuid)
+        if (target.Uuid != args.Target.Uuid)
             return;
 
-        combatFieldUI.AddDefender(args.Card);
+        combatFieldUI.AddDefender(args.Defender);
     }
 
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        Debug.Log("1");
         if (!duelManager.IsActivePlayerTurn())
             return;
-        Debug.Log("2");
         CreatureFieldCardUI cardUI = RaycastColliderCheck();
         if (cardUI == null)
             return;
-        Debug.Log("3");
         if (!combatFieldUI.ContainsAttacker(cardUI))
             return;
-        Debug.Log("4");
-        MatchPlayer attacker = duelManager.GetCurrentPlayerTurn();
-        if (!attacker.ContainsCreatureUuid(cardUI.CardUuid))
+        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
+        if (!initiator.ContainsCreatureUuid(cardUI.CardUuid))
             return;
-        Debug.Log("5");
-        CreatureCard creatureCard = attacker.GetCreatureByUuid(cardUI.CardUuid);
+        CreatureCard creatureCard = initiator.GetCreatureByUuid(cardUI.CardUuid);
         if (creatureCard == null)
             return;
 
-        Debug.Log("6");
         combatFieldUI.RemoveCreature(cardUI);
-        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.GetCurrentPlayerTurn(), creatureCard));
+        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.GetCurrentPlayerTurn(), target, creatureCard));
     }
 
     private CreatureFieldCardUI RaycastColliderCheck() {
