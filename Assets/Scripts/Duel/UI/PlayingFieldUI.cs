@@ -20,6 +20,11 @@ public class PlayingFieldUI : MonoBehaviour {
         SpaceCards();
     }
 
+    public void AddCreatureFieldCard(CreatureFieldCardUI cardUI) {
+        creatures.Add(cardUI);
+        SpaceCards();
+    }
+
     public void PlayDomainCard(SpellCard card) {
         SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab, domainSlotOrigin);
         domainCardUI.Init(card);
@@ -53,6 +58,15 @@ public class PlayingFieldUI : MonoBehaviour {
     public bool ContainsCreature(CreatureFieldCardUI other) {
         foreach(CreatureFieldCardUI cardUI in creatures) {
             if(cardUI == other)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool ContainsCreature(Guid cardUuid) {
+        foreach (CreatureFieldCardUI cardUI in creatures) {
+            if (cardUI.CardUuid == cardUuid)
                 return true;
         }
 

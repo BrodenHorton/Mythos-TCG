@@ -7,6 +7,7 @@ public class PlayingFieldUIController : MonoBehaviour {
 
     private MatchPlayer player;
     private DuelManager duelManager;
+    private DuelStateManager stateManager;
     private Camera cam;
     private PlayerInputActions playerInputActions;
 
@@ -14,6 +15,9 @@ public class PlayingFieldUIController : MonoBehaviour {
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
+        stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find DuelStateManager object");
 
         cam = Camera.main;
         playerInputActions = new PlayerInputActions();
@@ -27,6 +31,15 @@ public class PlayingFieldUIController : MonoBehaviour {
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
         EventBus.OnUndeclareAttacker += UndeclareAttacker;
+        EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
+    }
+
+    private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {
+        if (player != args.Player)
+            return;
+
+        for(int i = 0; i < args.Creatures.Count; i++)
+            playingFieldUI.AddCreatureFieldCard(args.Creatures[i]);
     }
 
     public void Init(MatchPlayer player) {
@@ -65,7 +78,9 @@ public class PlayingFieldUIController : MonoBehaviour {
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
+        if (!duelManager.IsActivePlayerTurn())
+            return;
+        if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
         CreatureFieldCardUI cardUI = RaycastColliderCheck();
         if (cardUI == null)
@@ -99,5 +114,5 @@ public class PlayingFieldUIController : MonoBehaviour {
         return fieldCardUI;
     }
 
-    public PlayingFieldUI PlayingFieldUI {  get { return playingFieldUI; } }
+    public PlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }
 }

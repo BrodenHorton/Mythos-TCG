@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class CombatPhase : DuelState {
     public event EventHandler<EventArgs> OnCombatPhase;
+    public event EventHandler<EventArgs> OnCombatPhaseFinished;
 
     private DuelStateManager stateManager;
     private CombatManager combatManager;
@@ -19,7 +20,7 @@ public class CombatPhase : DuelState {
     public void EnterState() {
         Debug.Log("Entered First Combat Phase");
         OnCombatPhase?.Invoke(this, EventArgs.Empty);
-        stateManager.SwitchState(stateManager.EndPhase);
+        playerInputActions.Enable();
     }
 
     public void UpdateState() {
@@ -31,7 +32,9 @@ public class CombatPhase : DuelState {
             return;
 
         playerInputActions.Player.Disable();
+        combatManager.ProcessCombat();
+        OnCombatPhaseFinished?.Invoke(this, EventArgs.Empty);
 
-        stateManager.SwitchState(stateManager.CombatPhase);
+        stateManager.SwitchState(stateManager.EndPhase);
     }
 }

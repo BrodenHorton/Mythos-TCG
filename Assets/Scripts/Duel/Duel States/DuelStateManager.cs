@@ -46,6 +46,8 @@ public class DuelStateManager : MonoBehaviour {
 
     public DuelManager DuelManager { get { return duelManager; } }
 
+    public DuelState CurrentState { get { return currentState; } }
+
     public UntapPhase UntapPhase { get { return untapPhase; } }
 
     public DrawPhase DrawPhase { get { return drawPhase; } }

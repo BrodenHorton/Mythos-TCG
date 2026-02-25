@@ -77,6 +77,15 @@ public class DuelManager : MonoBehaviour {
         fullTurnCount++;
     }
 
+    public int GetPlayerIndex(Guid playerUuid) {
+        for(int i = 0; i < players.Count; i++) {
+            if (players[i].Uuid == playerUuid)
+                return i;
+        }
+
+        throw new Exception("Player index could not be found for UUID: " + playerUuid);
+    }
+
     public List<MatchPlayer> Players { get { return players; } }
 
     public int FullTurnCount { get { return fullTurnCount; } }

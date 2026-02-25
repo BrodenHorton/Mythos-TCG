@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CombatFieldUI : MonoBehaviour {
@@ -40,6 +41,15 @@ public class CombatFieldUI : MonoBehaviour {
         return false;
     }
 
+    public bool ContainsAttacker(Guid cardUuid) {
+        foreach (CreatureFieldCardUI cardUI in attackers) {
+            if (cardUI.CardUuid == cardUuid)
+                return true;
+        }
+
+        return false;
+    }
+
     private void SpaceAttackers() {
         int cardCount = attackers.Count;
         float handOffset = (cardCount - 1) * cardSpacing / 2;
@@ -49,4 +59,13 @@ public class CombatFieldUI : MonoBehaviour {
             attackers[i].transform.position = cardPosition;
         }
     }
+
+    public void ClearCreatures() {
+        attackers.Clear();
+        defenders.Clear();
+    }
+
+    public List<CreatureFieldCardUI> Attackers { get { return attackers; } }
+
+    public List<CreatureFieldCardUI> Defenders { get { return defenders; } }
 }

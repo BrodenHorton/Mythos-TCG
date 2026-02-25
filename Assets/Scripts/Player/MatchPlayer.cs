@@ -9,10 +9,10 @@ public class MatchPlayer {
     [SerializeReference, SubclassSelector] private List<Card> discardPile;
     [SerializeReference, SubclassSelector] private List<CreatureCard> creatures;
     [SerializeReference, SubclassSelector] private SpellCard domain;
-    [SerializeField] private int lifePoints;
-    [SerializeField] private int currentMana;
-    [SerializeField] private int seriesWinCount;
-
+    
+    private int lifePoints;
+    private int currentMana;
+    private int seriesWinCount;
     private Guid uuid;
 
     public MatchPlayer() {
@@ -79,6 +79,20 @@ public class MatchPlayer {
         }
 
         return null;
+    }
+
+    public void LifePointsDamage(int amt) {
+        int temp = lifePoints;
+        lifePoints -= amt;
+        Debug.Log("Life Points " + temp + " -> " + lifePoints);
+        // TODO: Add event bus invoke here later
+    }
+
+    public void RemoveCreatureFromPlay(CreatureCard card) {
+        if (!ContainsCreatureUuid(card.Uuid))
+            throw new Exception("Player does not contain specified creature card");
+
+        creatures.Remove(card);
     }
 
     public Guid Uuid { get { return uuid; } }

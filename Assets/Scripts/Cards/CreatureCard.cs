@@ -7,6 +7,7 @@ public class CreatureCard : Card {
     [SerializeField] private CreatureCardBase cardBase;
     [SerializeField] private bool hasSummoningSickness;
     [SerializeField] private bool isTapped;
+    [SerializeField] private int damage;
     [SerializeField] private List<CreatureCardEffect> effects;
 
     public CreatureCard() {}
@@ -43,7 +44,7 @@ public class CreatureCard : Card {
     }
 
     public int GetHealth() {
-        return cardBase.Health;
+        return cardBase.Health - damage;
     }
 
     public void Tap() {
@@ -62,6 +63,10 @@ public class CreatureCard : Card {
 
     public bool CanDefend() {
         return !isTapped;
+    }
+
+    public void Damage(int amt) {
+        damage += amt;
     }
 
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }

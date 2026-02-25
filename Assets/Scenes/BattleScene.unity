@@ -973,6 +973,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &944256951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 944256952}
+  - component: {fileID: 944256953}
+  m_Layer: 0
+  m_Name: CombatManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &944256952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944256951}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1151302305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &944256953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944256951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e2db5ca913996e45810b15878c0cc94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &974144989 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8641841102797122468, guid: a3e764a6402af2547be6b938def11486, type: 3}
@@ -1110,6 +1154,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1336480728}
+  - {fileID: 944256952}
   - {fileID: 636189470}
   - {fileID: 586076832}
   - {fileID: 1068589890}
@@ -1421,24 +1466,28 @@ MonoBehaviour:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 5279054764678316093
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 8ee001a240ce3d947abca3a1272af321, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 5279054764678316094
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 68aafd42cede4eb40942e7c77b728c6e, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 5279054764678316095
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 68aafd42cede4eb40942e7c77b728c6e, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 5279054764678316100
       type: {class: SpellCard, ns: , asm: Assembly-CSharp}
       data:
@@ -1453,42 +1502,49 @@ MonoBehaviour:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 5279054883384197213
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 9104119128535072829
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 9104119128535072830
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 9104119128535072831
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 9104119128535072832
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
     - rid: 9104119128535072833
       type: {class: CreatureCard, ns: , asm: Assembly-CSharp}
       data:
         cardBase: {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
         hasSummoningSickness: 0
         isTapped: 0
+        damage: 0
 --- !u!4 &1366366361 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}

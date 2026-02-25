@@ -33,7 +33,7 @@ public class DuelistCombat {
         if(!HasAttacker(attacker))
             throw new Exception("No attacker found to remove in CreatureCombat");
 
-        creatureCombats.Remove(GetCreatureCombatByDefender(attacker));
+        creatureCombats.Remove(GetCreatureCombatByAttacker(attacker));
     }
 
     public void RemoveDefender(CreatureCard defender) {
@@ -77,6 +77,24 @@ public class DuelistCombat {
         }
 
         return false;
+    }
+
+    public List<CreatureCard> GetAllAttackers() {
+        List<CreatureCard> result = new List<CreatureCard>();
+        for(int i = 0; i < creatureCombats.Count; i++)
+            result.Add(creatureCombats[i].Attacker);
+
+        return result;
+    }
+
+    public List<CreatureCard> GetAllDefenders() {
+        List<CreatureCard> result = new List<CreatureCard>();
+        for (int i = 0; i < creatureCombats.Count; i++) {
+            if(creatureCombats[i].Defender != null)
+                result.Add(creatureCombats[i].Defender);
+        }
+
+        return result;
     }
 
     public MatchPlayer Initiator { get { return initiator; } }
