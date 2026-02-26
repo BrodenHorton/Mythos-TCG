@@ -1,6 +1,7 @@
 using System;
 
 public static class EventBus {
+    public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
     public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardDrawn;
@@ -15,6 +16,11 @@ public static class EventBus {
     public static event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
     public static event EventHandler<AttackEventArgs> OnAttack;
     public static event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
+    public static event EventHandler<EventArgs> OnActionButtonPressed;
+
+    public static void InvokeOnLifePointsChanged(object sender, LifePointsChangedEventArgs args) {
+        OnLifePointsChanged?.Invoke(sender, args);
+    }
 
     public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
         OnManaCountChanged?.Invoke(sender, args);
@@ -70,5 +76,9 @@ public static class EventBus {
 
     public static void InvokeOnReleaseCombatCreatures(object sender, ReleaseCombatCreaturesEventArgs args) {
         OnReleaseCombatCreatures?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnActionButtonPressed(object sender, EventArgs args) {
+        OnActionButtonPressed?.Invoke(sender, args);
     }
 }

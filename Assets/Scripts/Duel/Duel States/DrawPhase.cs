@@ -1,17 +1,13 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class DrawPhase : DuelState {
     public event EventHandler<EventArgs> OnDrawPhase;
 
     private DuelStateManager stateManager;
-    private PlayerInputActions playerInputActions;
 
     public DrawPhase(DuelStateManager stateManager) {
         this.stateManager = stateManager;
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Player.Next.performed += NextPhase;
     }
 
     public void EnterState() {
@@ -20,18 +16,10 @@ public class DrawPhase : DuelState {
         DuelManager duelManager = stateManager.DuelManager;
         duelManager.GetCurrentPlayerTurn().CurrentMana = duelManager.GetStartOfTurnManaCount();
         duelManager.GetCurrentPlayerTurn().DrawCard();
-        playerInputActions.Enable();
+        stateManager.SwitchState(stateManager.MainPhase);
     }
 
     public void UpdateState() {
 
-    }
-
-    private void NextPhase(InputAction.CallbackContext context) {
-        if (!context.performed)
-            return;
-
-        playerInputActions.Player.Disable();
-        stateManager.SwitchState(stateManager.MainPhase);
     }
 }

@@ -85,7 +85,7 @@ public class MatchPlayer {
         int temp = lifePoints;
         lifePoints -= amt;
         Debug.Log("Life Points " + temp + " -> " + lifePoints);
-        // TODO: Add event bus invoke here later
+        EventBus.InvokeOnLifePointsChanged(this, new LifePointsChangedEventArgs(this, lifePoints));
     }
 
     public void RemoveCreatureFromPlay(CreatureCard card) {
@@ -114,6 +114,8 @@ public class MatchPlayer {
             EventBus.InvokeOnDomainCardPlayed(this, new PlayerSpellCardEventArgs(this, domain));
         }
     }
+
+    public int LifePoints { get { return lifePoints; } }
 
     public int CurrentMana {
         get { 

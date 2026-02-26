@@ -1,34 +1,27 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class MainPhase : DuelState {
-    public event EventHandler<EventArgs> OnMainPhase;
+    public event EventHandler<PlayerEventArgs> OnMainPhase;
 
     private DuelStateManager stateManager;
-    private PlayerInputActions playerInputActions;
 
     public MainPhase(DuelStateManager stateManager) {
         this.stateManager = stateManager;
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Player.Next.performed += NextPhase;
     }
 
     public void EnterState() {
         Debug.Log("Entered First Main Phase");
-        OnMainPhase?.Invoke(this, EventArgs.Empty);
-        playerInputActions.Enable();
+        OnMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+        EventBus.OnActionButtonPressed += NextPhase;
     }
 
     public void UpdateState() {
 
     }
 
-    private void NextPhase(InputAction.CallbackContext context) {
-        if (!context.performed)
-            return;
-
-        playerInputActions.Player.Disable();
+    private void NextPhase(object sender, EventArgs args) {
+        EventBus.OnActionButtonPressed -= NextPhase;
         stateManager.SwitchState(stateManager.CombatPhase);
     }
 }

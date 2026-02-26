@@ -27,6 +27,7 @@ public class PlayerUIController : DuelistUIController {
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
+        EventBus.OnLifePointsChanged += SetLifePoints;
         EventBus.OnManaCountChanged += SetManaCount;
         EventBus.OnCreatureCardDrawn += DrawCreatureCard;
         EventBus.OnSpellCardDrawn += DrawSpellCard;
@@ -53,6 +54,11 @@ public class PlayerUIController : DuelistUIController {
         }
     }
 
+    public override void Init(MatchPlayer player) {
+        this.player = player;
+        playerUI.Init(player);
+    }
+
     private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
         if (args.Player.Uuid == player.Uuid)
             playerUI.DrawCreatureCard(args.Card);
@@ -63,12 +69,17 @@ public class PlayerUIController : DuelistUIController {
             playerUI.DrawSpellCard(args.Card);
     }
 
+    private void SetLifePoints(object sender, LifePointsChangedEventArgs args) {
+        if (args.Player.Uuid == player.Uuid)
+            playerUI.SetLifePoints(args.LifePoints);
+    }
+
     private void SetManaCount(object sender, ManaChangedEventArgs args) {
         if (args.Player.Uuid == player.Uuid)
             playerUI.SetManaCount(args.CurrentMana);
     }
 
-    private void SetSelectableCards(object sender, EventArgs args) {
+    private void SetSelectableCards(object sender, PlayerEventArgs args) {
         if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
             return;
 

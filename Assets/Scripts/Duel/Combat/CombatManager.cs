@@ -67,8 +67,9 @@ public class CombatManager : MonoBehaviour {
     }
 
     public void ProcessCombat() {
-        for(int i = 0; i < duelistCombats.Count; i++) {
-            DuelistCombat duelistCombat = duelistCombats[i];
+        Queue<DuelistCombat> combatQueue = new Queue<DuelistCombat>(duelistCombats);
+        while(combatQueue.Count > 0) {
+            DuelistCombat duelistCombat = combatQueue.Dequeue();
             for(int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
                 CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
                 if (creatureCombat.Defender == null)
@@ -80,6 +81,7 @@ public class CombatManager : MonoBehaviour {
                 }
             }
             OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(duelistCombat));
+            duelistCombats.Remove(duelistCombat);
         }
     }
 

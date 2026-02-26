@@ -24,10 +24,6 @@ public class PlayerUI : DuelistUI {
         DefaultCardPositions();
     }
 
-    public void SetManaCount(int manaCount) {
-        this.manaCount.text = manaCount.ToString();
-    }
-
     public void SetSelectableCards(MatchPlayer player) {
         for (int i = 0; i < cardsInHand.Count; i++) {
             if (player.Hand.Count <= i)

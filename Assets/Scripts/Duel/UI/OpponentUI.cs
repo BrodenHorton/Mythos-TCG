@@ -19,10 +19,6 @@ public class OpponentUI : DuelistUI {
         SpaceCards();
     }
 
-    public void SetManaCount(int value) {
-        manaCount.text = value.ToString();
-    }
-
     private void SpaceCards() {
         float cardSpacing = 0.34f;
         float cardVerticalOffset = 0.005f;

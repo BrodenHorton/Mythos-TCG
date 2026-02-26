@@ -3,9 +3,7 @@
 public abstract class DuelistUIController : MonoBehaviour {    
     protected MatchPlayer player;
 
-    public void Init(MatchPlayer player) {
-        this.player = player;
-    }
+    public abstract void Init(MatchPlayer player);
 
     public abstract DuelistUI GetDuelistUI();
 }
