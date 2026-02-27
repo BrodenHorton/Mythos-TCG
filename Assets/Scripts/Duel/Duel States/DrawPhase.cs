@@ -16,7 +16,7 @@ public class DrawPhase : DuelState {
         DuelManager duelManager = stateManager.DuelManager;
         duelManager.GetCurrentPlayerTurn().CurrentMana = duelManager.GetStartOfTurnManaCount();
         duelManager.GetCurrentPlayerTurn().DrawCard();
-        stateManager.SwitchState(stateManager.MainPhase);
+        stateManager.SwitchState(stateManager.FirstMainPhase);
     }
 
     public void UpdateState() {

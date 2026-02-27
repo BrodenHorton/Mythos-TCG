@@ -32,7 +32,7 @@ public class PlayerUIController : DuelistUIController {
         EventBus.OnCreatureCardDrawn += DrawCreatureCard;
         EventBus.OnSpellCardDrawn += DrawSpellCard;
         stateManager.DrawPhase.OnDrawPhase += HideBorderAll;
-        stateManager.MainPhase.OnMainPhase += SetSelectableCards;
+        stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
     }
 
     private void Update() {

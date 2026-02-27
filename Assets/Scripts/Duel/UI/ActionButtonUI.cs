@@ -7,6 +7,10 @@ public class ActionButtonUI : MonoBehaviour {
 
     private bool isActive;
 
+    private void Awake() {
+        isActive = true;
+    }
+
     public void Execute() {
         EventBus.InvokeOnActionButtonPressed(this, EventArgs.Empty);
     }
@@ -14,4 +18,6 @@ public class ActionButtonUI : MonoBehaviour {
     public void SetActionText(string text) {
         actionText.text = text;
     }
+
+    public bool IsActive { get { return isActive; } }
 }

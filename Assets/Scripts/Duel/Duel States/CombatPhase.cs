@@ -1,40 +1,39 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CombatPhase : DuelState {
-    public event EventHandler<EventArgs> OnCombatPhase;
-    public event EventHandler<EventArgs> OnCombatPhaseFinished;
+    public event EventHandler<PlayerEventArgs> OnCombatPhase;
+    public event EventHandler<PlayerEventArgs> OnCombatPhaseFinished;
 
     private DuelStateManager stateManager;
     private CombatManager combatManager;
-    private PlayerInputActions playerInputActions;
 
     public CombatPhase(DuelStateManager stateManager, CombatManager combatManager) {
         this.stateManager = stateManager;
         this.combatManager = combatManager;
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Player.Next.performed += ProcessCombat;
     }
 
     public void EnterState() {
-        Debug.Log("Entered First Combat Phase");
-        OnCombatPhase?.Invoke(this, EventArgs.Empty);
-        playerInputActions.Enable();
+        Debug.Log("Entered Combat Phase");
+        OnCombatPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+        if(stateManager.DuelManager.IsActivePlayerTurn())
+            EventBus.OnActionButtonPressed += ProcessCombat;
+        else
+            ProcessCombat();
     }
 
     public void UpdateState() {
 
     }
 
-    private void ProcessCombat(InputAction.CallbackContext context) {
-        if (!context.performed)
-            return;
+    private void ProcessCombat(object sender, EventArgs args) {
+        EventBus.OnActionButtonPressed -= ProcessCombat;
+        ProcessCombat();
+    }
 
-        playerInputActions.Player.Disable();
+    private void ProcessCombat() {
         combatManager.ProcessCombat();
-        OnCombatPhaseFinished?.Invoke(this, EventArgs.Empty);
-
-        stateManager.SwitchState(stateManager.EndPhase);
+        OnCombatPhaseFinished?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+        stateManager.SwitchState(stateManager.SecondMainPhase);
     }
 }

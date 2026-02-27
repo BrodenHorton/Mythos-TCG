@@ -5,8 +5,9 @@ using UnityEngine;
 public class DuelStateManager : MonoBehaviour {
     private UntapPhase untapPhase;
     private DrawPhase drawPhase;
-    private MainPhase mainPhase;
+    private FirstMainPhase firstMainPhase;
     private CombatPhase combatPhase;
+    private SecondMainPhase secondMainPhase;
     private EndPhase endPhase;
     private DuelState currentState;
 
@@ -23,8 +24,9 @@ public class DuelStateManager : MonoBehaviour {
 
         untapPhase = new UntapPhase(this);
         drawPhase = new DrawPhase(this);
-        mainPhase = new MainPhase(this);
+        firstMainPhase = new FirstMainPhase(this);
         combatPhase = new CombatPhase(this, combatManager);
+        secondMainPhase = new SecondMainPhase(this);
         endPhase = new EndPhase(this);
 
         currentState = untapPhase;
@@ -52,9 +54,11 @@ public class DuelStateManager : MonoBehaviour {
 
     public DrawPhase DrawPhase { get { return drawPhase; } }
 
-    public MainPhase MainPhase { get { return mainPhase; } }
+    public FirstMainPhase FirstMainPhase { get { return firstMainPhase; } }
 
     public CombatPhase CombatPhase { get { return combatPhase; } }
+
+    public SecondMainPhase SecondMainPhase { get { return secondMainPhase; } }
 
     public EndPhase EndPhase { get { return  endPhase; } }
 }
