@@ -5,6 +5,9 @@ public class GameStateUIController : MonoBehaviour {
     [SerializeField] private GameStateUI gameStateUI;
 
     private void Start() {
+        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
         DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
@@ -15,7 +18,8 @@ public class GameStateUIController : MonoBehaviour {
         stateManager.SecondMainPhase.OnSecondMainPhase += OnSecondMainPhase;
         stateManager.EndPhase.OnEndPhase += OnEndPhase;
 
-        stateManager.UntapPhase.OnUntapPhase += SetPlayerTurnIndex;
+        duelManager.OnNextPlayerTurn += SetPlayerTurnIndex;
+        duelManager.OnNextFullTurn += SetFullTurn;
     }
 
     public void OnUntapPhase(object sender, PlayerEventArgs args) {
@@ -38,11 +42,11 @@ public class GameStateUIController : MonoBehaviour {
         gameStateUI.SetDuelPhase("End Phase");
     }
 
-    public void SetPlayerTurnIndex(object sender, PlayerEventArgs args) {
-
+    public void SetPlayerTurnIndex(object sender, NextPlayerTurnEventArgs args) {
+        gameStateUI.SetPlayerTurnIndex(args.PlayerIndex);
     }
 
-    public void SetFullTurn(object sender, PlayerEventArgs args) {
-
+    public void SetFullTurn(object sender, NextFullTurnEventArgs args) {
+        gameStateUI.SetFullTurn(args.FullTurnCount);
     }
 }

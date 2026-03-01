@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
+    public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
+    public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
+
     [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
     [SerializeField] private int initialHandSize;
 
@@ -43,8 +46,11 @@ public class DuelManager : MonoBehaviour {
     public void NextTurn() {
         Debug.Log("Current player index: " + currentPlayerTurnIndex);
         currentPlayerTurnIndex = ++currentPlayerTurnIndex % players.Count;
-        if (currentPlayerTurnIndex == 0)
+        OnNextPlayerTurn?.Invoke(this, new NextPlayerTurnEventArgs(GetCurrentPlayerTurn(), currentPlayerTurnIndex));
+        if (currentPlayerTurnIndex == 0) {
             fullTurnCount++;
+            OnNextFullTurn?.Invoke(this, new NextFullTurnEventArgs(fullTurnCount));
+        }
     }
 
     public int GetPlayerCount() {
