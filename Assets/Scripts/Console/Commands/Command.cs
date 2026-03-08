@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public abstract class Command : ScriptableObject {
+public abstract class Command {
     [SerializeField] protected string cmdName;
 
     public abstract void Execute(string[] args);

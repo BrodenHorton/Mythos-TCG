@@ -10,6 +10,7 @@ public class ConsoleUIController : MonoBehaviour {
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
         playerInputActions.Player.OpenConsole.performed += OpenConsole;
+        playerInputActions.Player.OpenConsoleCommand.performed += OpenConsoleCommand;
         playerInputActions.Player.Escape.performed += CloseConsole;
         playerInputActions.Player.Enter.performed += SubmitInputField;
     }
@@ -21,6 +22,16 @@ public class ConsoleUIController : MonoBehaviour {
             return;
 
         consoleUI.ShowInputField();
+    }
+
+    private void OpenConsoleCommand(InputAction.CallbackContext context) {
+        if (!context.performed)
+            return;
+        if (consoleUI.IsConsoleInputFieldActive())
+            return;
+
+        consoleUI.ShowInputField();
+        consoleUI.SetInputFieldText("/");
     }
 
     private void CloseConsole(InputAction.CallbackContext context) {

@@ -37,4 +37,8 @@ public class ConsoleUI : MonoBehaviour {
     public bool IsConsoleInputFieldActive() {
         return consoleInputField.gameObject.activeSelf;
     }
+
+    public void SetInputFieldText(string text) {
+        consoleInputField.SetText(text);
+    }
 }

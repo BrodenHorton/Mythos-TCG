@@ -71,6 +71,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenConsoleCommand"",
+                    ""type"": ""Button"",
+                    ""id"": ""813e660d-dd88-4ed5-b394-958879eb977b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -128,6 +137,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""OpenConsole"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc944ac6-9790-4256-969c-9d10bc0bbd36"",
+                    ""path"": ""<Keyboard>/slash"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenConsoleCommand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -141,6 +161,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Enter = m_Player.FindAction("Enter", throwIfNotFound: true);
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
         m_Player_OpenConsole = m_Player.FindAction("OpenConsole", throwIfNotFound: true);
+        m_Player_OpenConsoleCommand = m_Player.FindAction("OpenConsoleCommand", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -212,6 +233,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Enter;
     private readonly InputAction m_Player_Escape;
     private readonly InputAction m_Player_OpenConsole;
+    private readonly InputAction m_Player_OpenConsoleCommand;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -221,6 +243,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Enter => m_Wrapper.m_Player_Enter;
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
         public InputAction @OpenConsole => m_Wrapper.m_Player_OpenConsole;
+        public InputAction @OpenConsoleCommand => m_Wrapper.m_Player_OpenConsoleCommand;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -245,6 +268,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenConsole.started += instance.OnOpenConsole;
             @OpenConsole.performed += instance.OnOpenConsole;
             @OpenConsole.canceled += instance.OnOpenConsole;
+            @OpenConsoleCommand.started += instance.OnOpenConsoleCommand;
+            @OpenConsoleCommand.performed += instance.OnOpenConsoleCommand;
+            @OpenConsoleCommand.canceled += instance.OnOpenConsoleCommand;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -264,6 +290,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenConsole.started -= instance.OnOpenConsole;
             @OpenConsole.performed -= instance.OnOpenConsole;
             @OpenConsole.canceled -= instance.OnOpenConsole;
+            @OpenConsoleCommand.started -= instance.OnOpenConsoleCommand;
+            @OpenConsoleCommand.performed -= instance.OnOpenConsoleCommand;
+            @OpenConsoleCommand.canceled -= instance.OnOpenConsoleCommand;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -288,5 +317,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnEnter(InputAction.CallbackContext context);
         void OnEscape(InputAction.CallbackContext context);
         void OnOpenConsole(InputAction.CallbackContext context);
+        void OnOpenConsoleCommand(InputAction.CallbackContext context);
     }
 }

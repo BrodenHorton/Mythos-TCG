@@ -53,13 +53,13 @@ public class ConsoleInputFieldUI : MonoBehaviour {
 
         if (inputField.text[0] == '/' && inputField.text.Length > 1) {
             string text = inputField.text;
-            text.Remove(0, 1);
+            text = text.Remove(0, 1);
             string[] inputArr = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if(inputArr.Length == 0)
                 return;
             string cmd = inputArr[0];
             string[] args = null;
-            if(inputArr.Length < 1) {
+            if(inputArr.Length < 2) {
                 args = Array.Empty<string>();
             }
             else {
@@ -76,6 +76,11 @@ public class ConsoleInputFieldUI : MonoBehaviour {
     public void Clear() {
         inputField.text = "";
         UpdateTextField();
+    }
+
+    public void SetText(string text) {
+        Clear();
+        inputField.text = text;
     }
 }
 

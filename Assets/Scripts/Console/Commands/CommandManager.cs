@@ -2,19 +2,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CommandManager : MonoBehaviour {
-    [SerializeField] private List<Command> commands;
-
     private Dictionary<string, Command> commandsByName;
 
     private void Awake() {
         commandsByName = new Dictionary<string, Command>();
-        foreach(Command cmd in commands)
-            commandsByName.Add(cmd.name, cmd);
+        CreateLobbyCommand createLobbyCommand = new CreateLobbyCommand(FindFirstObjectByType<TCGLobby>());
+        commandsByName.Add(createLobbyCommand.Name.ToLower(), createLobbyCommand);
+
+        FindFirstObjectByType<ConsoleInputFieldUI>().OnConsoleCommandSubmission += ExecuteCommand;
+    }
+
+    private void ExecuteCommand(object sender, ConsoleCommandSubmissionEventArgs args) {
+        ExecuteCommand(args.Cmd, args.Args);
     }
 
     public void ExecuteCommand(string cmd, string[] args) {
-        Command command = commandsByName[cmd];
-        if(command != null)
-            command.Execute(args);
+        if(!commandsByName.ContainsKey(cmd.ToLower())) {
+            Debug.Log("Invalid command " + cmd.ToLower());
+            return;
+        }
+
+        Command command = commandsByName[cmd.ToLower()];
+        command.Execute(args);
     }
 }

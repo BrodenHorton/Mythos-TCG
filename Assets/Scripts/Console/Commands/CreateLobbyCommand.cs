@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "CreateLobbyCommand", menuName = "Scriptable Objects/Command/Create Lobby")]
 public class CreateLobbyCommand : Command {
-    [SerializeField] private TCGLobby tcgLobby;
+    private TCGLobby tcgLobby;
+
+    public CreateLobbyCommand(TCGLobby tcgLobby) {
+        cmdName = "createLobby";
+        this.tcgLobby = tcgLobby;
+    }
 
     public override void Execute(string[] args) {
         tcgLobby.CreateLobby();
