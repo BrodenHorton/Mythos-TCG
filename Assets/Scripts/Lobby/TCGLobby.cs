@@ -15,7 +15,6 @@ public class TCGLobby : MonoBehaviour {
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
-
     public async void CreateLobby() {
         try {
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync("My First Lobby", 4);
