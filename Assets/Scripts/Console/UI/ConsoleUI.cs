@@ -6,26 +6,45 @@ public class ConsoleUI : MonoBehaviour {
     [Header("Prefabs")]
     [SerializeField] private LogUI logPrefab;
 
+    private bool isActive;
+    private bool isOpen;
+
     private void Awake() {
+        isActive = true;
+        isOpen = false;
         consoleInputField.OnChatSubmission += AddChatLog;
     }
 
     private void Start() {
-        HideInputField();
+        CloseConsole();
     }
 
-    public void ShowInputField() {
+    public void ShowConsole() {
+        logContainer.SetActive(true);
+        isActive = true;
+    }
+
+    public void HideConsole() {
+        CloseConsole();
+        logContainer.SetActive(false);
+        isActive = false;
+    }
+
+    public void OpenConsole() {
         consoleInputField.gameObject.SetActive(true);
+        logContainer.SetActive(true);
+        isOpen = true;
     }
 
-    public void HideInputField() {
+    public void CloseConsole() {
         consoleInputField.Clear();
         consoleInputField.gameObject.SetActive(false);
+        isOpen = false;
     }
 
     public void SubmitInputField() {
         consoleInputField.Submit();
-        HideInputField();
+        CloseConsole();
     }
 
     private void AddChatLog(object sender, ChatSubmissionEventArgs args) {
@@ -34,11 +53,12 @@ public class ConsoleUI : MonoBehaviour {
         logUI.SetText(args.Message);
     }
 
-    public bool IsConsoleInputFieldActive() {
-        return consoleInputField.gameObject.activeSelf;
-    }
-
     public void SetInputFieldText(string text) {
         consoleInputField.SetText(text);
     }
+
+    public bool IsActive { get { return isActive; } }
+
+    public bool IsOpen { get { return isOpen; } }
+
 }

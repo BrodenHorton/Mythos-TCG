@@ -81,6 +81,8 @@ public class ConsoleInputFieldUI : MonoBehaviour {
     public void SetText(string text) {
         Clear();
         inputField.text = text;
+        inputField.caretPosition = inputField.text.Length;
+        inputField.textComponent.ForceMeshUpdate();
     }
 }
 

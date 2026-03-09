@@ -6,13 +6,13 @@
             "id": "4abf53fd-cac1-4445-8a69-51876f744f19",
             "actions": [
                 {
-                    "name": "Next",
+                    "name": "Debug1",
                     "type": "Button",
                     "id": "b736bf78-42d5-4e42-b852-8a7b49468bed",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Select",
@@ -68,7 +68,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Next",
+                    "action": "Debug1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

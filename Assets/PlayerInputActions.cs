@@ -28,13 +28,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             ""id"": ""4abf53fd-cac1-4445-8a69-51876f744f19"",
             ""actions"": [
                 {
-                    ""name"": ""Next"",
+                    ""name"": ""Debug1"",
                     ""type"": ""Button"",
                     ""id"": ""b736bf78-42d5-4e42-b852-8a7b49468bed"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""Select"",
@@ -90,7 +90,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Next"",
+                    ""action"": ""Debug1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -156,7 +156,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
+        m_Player_Debug1 = m_Player.FindAction("Debug1", throwIfNotFound: true);
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
         m_Player_Enter = m_Player.FindAction("Enter", throwIfNotFound: true);
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
@@ -228,7 +228,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Next;
+    private readonly InputAction m_Player_Debug1;
     private readonly InputAction m_Player_Select;
     private readonly InputAction m_Player_Enter;
     private readonly InputAction m_Player_Escape;
@@ -238,7 +238,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     {
         private @PlayerInputActions m_Wrapper;
         public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Next => m_Wrapper.m_Player_Next;
+        public InputAction @Debug1 => m_Wrapper.m_Player_Debug1;
         public InputAction @Select => m_Wrapper.m_Player_Select;
         public InputAction @Enter => m_Wrapper.m_Player_Enter;
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
@@ -253,9 +253,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
-            @Next.started += instance.OnNext;
-            @Next.performed += instance.OnNext;
-            @Next.canceled += instance.OnNext;
+            @Debug1.started += instance.OnDebug1;
+            @Debug1.performed += instance.OnDebug1;
+            @Debug1.canceled += instance.OnDebug1;
             @Select.started += instance.OnSelect;
             @Select.performed += instance.OnSelect;
             @Select.canceled += instance.OnSelect;
@@ -275,9 +275,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
 
         private void UnregisterCallbacks(IPlayerActions instance)
         {
-            @Next.started -= instance.OnNext;
-            @Next.performed -= instance.OnNext;
-            @Next.canceled -= instance.OnNext;
+            @Debug1.started -= instance.OnDebug1;
+            @Debug1.performed -= instance.OnDebug1;
+            @Debug1.canceled -= instance.OnDebug1;
             @Select.started -= instance.OnSelect;
             @Select.performed -= instance.OnSelect;
             @Select.canceled -= instance.OnSelect;
@@ -312,7 +312,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public PlayerActions @Player => new PlayerActions(this);
     public interface IPlayerActions
     {
-        void OnNext(InputAction.CallbackContext context);
+        void OnDebug1(InputAction.CallbackContext context);
         void OnSelect(InputAction.CallbackContext context);
         void OnEnter(InputAction.CallbackContext context);
         void OnEscape(InputAction.CallbackContext context);
