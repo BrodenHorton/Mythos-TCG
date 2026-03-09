@@ -63,9 +63,9 @@ public class ConsoleInputFieldUI : MonoBehaviour {
                 args = Array.Empty<string>();
             }
             else {
-                args = new string[inputArr.Length - 2];
+                args = new string[inputArr.Length - 1];
                 for(int i = 1; i < inputArr.Length; i++)
-                    args[i] = inputArr[i];
+                    args[i - 1] = inputArr[i];
             }
             OnConsoleCommandSubmission?.Invoke(this, new ConsoleCommandSubmissionEventArgs(cmd, args));
         }

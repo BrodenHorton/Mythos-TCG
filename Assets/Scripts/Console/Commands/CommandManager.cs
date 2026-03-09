@@ -10,6 +10,8 @@ public class CommandManager : MonoBehaviour {
         AddCommand(createLobbyCommand);
         ListLobbiesCommand listLobbiesCommand = new ListLobbiesCommand(FindFirstObjectByType<TcgLobby>());
         AddCommand(listLobbiesCommand);
+        JoinLobbyCommand joinLobbyCommand = new JoinLobbyCommand(FindFirstObjectByType<TcgLobby>());
+        AddCommand(joinLobbyCommand);
 
         FindFirstObjectByType<ConsoleInputFieldUI>().OnConsoleCommandSubmission += ExecuteCommand;
     }
@@ -24,7 +26,7 @@ public class CommandManager : MonoBehaviour {
 
     public void ExecuteCommand(string cmd, string[] args) {
         if(!commandsByName.ContainsKey(cmd.ToLower())) {
-            Debug.Log("Invalid command " + cmd.ToLower());
+            Debug.Log("[Command] Invalid command " + cmd.ToLower());
             return;
         }
 

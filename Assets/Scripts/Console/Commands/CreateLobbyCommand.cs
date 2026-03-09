@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 public class CreateLobbyCommand : Command {
     private TcgLobby tcgLobby;
 
@@ -9,7 +8,7 @@ public class CreateLobbyCommand : Command {
     }
 
     public override void Execute(string[] args) {
-        TcgLogger.Log("Create Lobby");
+        TcgLogger.Log("[Command] Create Lobby");
         tcgLobby.CreateLobby();
     }
 }
