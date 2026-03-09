@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.Rendering.GPUSort;
 
 public class ConsoleUI : MonoBehaviour {
     [SerializeField] private GameObject logContainer;
@@ -48,9 +49,13 @@ public class ConsoleUI : MonoBehaviour {
     }
 
     private void AddChatLog(object sender, ChatSubmissionEventArgs args) {
+        AddChatLog(args.Message);
+    }
+
+    public void AddChatLog(string msg) {
         LogUI logUI = Instantiate(logPrefab);
         logUI.transform.parent = logContainer.transform;
-        logUI.SetText(args.Message);
+        logUI.SetText(msg);
     }
 
     public void SetInputFieldText(string text) {

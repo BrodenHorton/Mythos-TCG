@@ -73,4 +73,8 @@ public class ConsoleUIController : MonoBehaviour {
         consoleUI.SubmitInputField();
         consoleUI.CloseConsole();
     }
+
+    public void AddChatLog(string msg) {
+        consoleUI.AddChatLog(msg);
+    }
 }

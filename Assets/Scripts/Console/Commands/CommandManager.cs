@@ -6,10 +6,16 @@ public class CommandManager : MonoBehaviour {
 
     private void Awake() {
         commandsByName = new Dictionary<string, Command>();
-        CreateLobbyCommand createLobbyCommand = new CreateLobbyCommand(FindFirstObjectByType<TCGLobby>());
-        commandsByName.Add(createLobbyCommand.Name.ToLower(), createLobbyCommand);
+        CreateLobbyCommand createLobbyCommand = new CreateLobbyCommand(FindFirstObjectByType<TcgLobby>());
+        AddCommand(createLobbyCommand);
+        ListLobbiesCommand listLobbiesCommand = new ListLobbiesCommand(FindFirstObjectByType<TcgLobby>());
+        AddCommand(listLobbiesCommand);
 
         FindFirstObjectByType<ConsoleInputFieldUI>().OnConsoleCommandSubmission += ExecuteCommand;
+    }
+
+    private void AddCommand(Command command) {
+        commandsByName.Add(command.Name.ToLower(), command);
     }
 
     private void ExecuteCommand(object sender, ConsoleCommandSubmissionEventArgs args) {
