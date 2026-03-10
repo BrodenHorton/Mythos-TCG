@@ -10,12 +10,11 @@ public class TcgLobby : MonoBehaviour {
 
     private Lobby hostLobby;
     private float heartbeatTimer;
-
-    private string playerName;
+    private PlayerProfile playerProfile;
 
     private void Awake() {
         heartbeatTimer = 15f;
-        playerName = "Omnibit" + UnityEngine.Random.Range(0, 100);
+        playerProfile = FindFirstObjectByType<PlayerProfile>();
     }
 
     private async void Start() {
@@ -94,7 +93,7 @@ public class TcgLobby : MonoBehaviour {
     private Player GetPlayer() {
         return new Player {
             Data = new Dictionary<string, PlayerDataObject> {
-                { "playerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName) }
+                { "playerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerProfile.Username) }
             }
         };
     }
