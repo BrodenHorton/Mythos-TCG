@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 3342374767065084960}
   - component: {fileID: 3605718264040797030}
   - component: {fileID: 8832676984659826221}
+  - component: {fileID: 7782707596241766554}
   m_Layer: 0
   m_Name: Lobby Player UI
   m_TagString: Untagged
@@ -214,6 +215,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7782707596241766554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3493517619215133197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6633278d2ab02474f8246ae791a367c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  usernameText: {fileID: 3984438490577867191}
+  readyText: {fileID: 626879762021187437}
+  readyBtn: {fileID: 7884492115120301873}
 --- !u!1 &3592457088760586331
 GameObject:
   m_ObjectHideFlags: 0
