@@ -10,6 +10,10 @@ public class PlayerProfile : MonoBehaviour {
     [SerializeField] private int winCount;
     [SerializeField] private int highestWinStreak;
 
+    private void Awake() {
+        username = "Omnibit_" + Random.Range(0, 99);
+    }
+
     public string Username { get { return username; } set { username = value; } }
 
     public List<CardBase> Collection { get { return collection; } }

@@ -16,7 +16,12 @@ public class ProfileUI : MonoBehaviour {
         });
     }
 
+    private void Start() {
+        gameObject.SetActive(false);
+    }
+
     public void UpdateProfileUI(PlayerProfile playerProfile) {
+        usernameInputField.text = playerProfile.Username;
         gems.text = playerProfile.GemsCount.ToString();
         gamesPlayed.text = playerProfile.GamesPlayedCount.ToString();
         winCount.text = playerProfile.WinCount.ToString();

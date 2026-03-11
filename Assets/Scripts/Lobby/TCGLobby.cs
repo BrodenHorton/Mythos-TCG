@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -8,13 +9,26 @@ using UnityEngine;
 public class TcgLobby : MonoBehaviour {
     private static readonly float MAX_HEARTBEAT_TIMER_DURATION = 15f;
 
+    public event EventHandler<LobbyEventArgs> OnLobbyCreated;
+    public event EventHandler<LobbyEventArgs> OnLobbyJoined;
+    public event EventHandler<LobbyEventArgs> OnLobbyUpdated;
+
     private Lobby hostLobby;
-    private float heartbeatTimer;
+    private ILobbyEvents hsotLobbyEvents;
+    private Lobby joinedLobby;
     private PlayerProfile playerProfile;
+    private float heartbeatTimer;
+    private float lobbyPollUpdatesTimer;
 
     private void Awake() {
         heartbeatTimer = 15f;
+        lobbyPollUpdatesTimer = 1.1f;
         playerProfile = FindFirstObjectByType<PlayerProfile>();
+
+        // TODO: Move to the Create Lobby method
+        LobbyEventCallbacks callbacks = new LobbyEventCallbacks();
+        callbacks.LobbyChanged += InvokeLobbyUpdate;
+        hsotLobbyEvents = LobbyService.Instance.SubscribeToLobbyEventsAsync(hostLobby.Id, callbacks).Result;
     }
 
     private async void Start() {
@@ -28,6 +42,7 @@ public class TcgLobby : MonoBehaviour {
 
     private void Update() {
         LobbyHearbeat();
+        PollLobbyUpdates();
     }
 
     public async void CreateLobby() {
@@ -50,9 +65,9 @@ public class TcgLobby : MonoBehaviour {
             JoinLobbyByCodeOptions joinLobbyOptions = new JoinLobbyByCodeOptions() {
                 Player = GetPlayer()
             };
-            Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyOptions);
-            TcgLogger.Log("Joined lobby with code: " + lobbyCode);
-            PrintPlayers(lobby);
+            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyOptions);
+            TcgLogger.Log("Joined lobby with code: " + joinedLobby);
+            PrintPlayers(joinedLobby);
         }
         catch(LobbyServiceException e) {
             Debug.Log(e.Message);
@@ -68,6 +83,30 @@ public class TcgLobby : MonoBehaviour {
             TcgLogger.Log("Heatbeat sent");
             heartbeatTimer = MAX_HEARTBEAT_TIMER_DURATION;
             await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
+        }
+    }
+
+    public async void PollLobbyUpdates() {
+        if (joinedLobby == null)
+            return;
+
+        lobbyPollUpdatesTimer -= Time.deltaTime;
+        if(lobbyPollUpdatesTimer <= 0) {
+            lobbyPollUpdatesTimer = 1.1f;
+            joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+        }
+    }
+
+    public async void UpdatePlayerReadyState(bool isReady) {
+        try {
+            await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions {
+                Data = new Dictionary<string, PlayerDataObject> {
+                    { "isReady", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, isReady.ToString()) }
+                }
+            });
+        }
+        catch (LobbyServiceException e) {
+            Debug.Log(e.Message);
         }
     }
 
@@ -102,5 +141,9 @@ public class TcgLobby : MonoBehaviour {
         TcgLogger.Log("Players in lobby:");
         foreach(Player player in lobby.Players)
             TcgLogger.Log(player.Id + " " + player.Data["playerName"].Value);
+    }
+
+    private void InvokeLobbyUpdate(ILobbyChanges lobbyChanges) {
+        OnLobbyUpdated?.Invoke(this, new LobbyEventArgs(hostLobby));
     }
 }
