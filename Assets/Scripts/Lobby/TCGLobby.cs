@@ -32,9 +32,19 @@ public class TcgLobby : MonoBehaviour {
         await UnityServices.InitializeAsync();
 
         AuthenticationService.Instance.SignedIn += () => {
-            Debug.Log("Signed in: " + AuthenticationService.Instance.PlayerId);
+            TcgLogger.Log("Signed in: " + AuthenticationService.Instance.PlayerId);
         };
+        AuthenticationService.Instance.SwitchProfile(UnityEngine.Random.Range(0, 1000000).ToString());
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
+    }
+
+    private async void OnDestroy() {
+        if(hostLobby != null) {
+            await LobbyService.Instance.DeleteLobbyAsync(hostLobby.Id);
+        }
+        if(joinedLobby != null) {
+            // TODO: Add a call to leave a the joined lobby
+        }
     }
 
     private void Update() {
@@ -64,11 +74,14 @@ public class TcgLobby : MonoBehaviour {
     }
 
     public async void JoinLobby(string lobbyCode) {
+        TcgLogger.Log("Join 1");
         try {
             JoinLobbyByCodeOptions joinLobbyOptions = new JoinLobbyByCodeOptions() {
                 Player = GetPlayer()
             };
+            TcgLogger.Log("Join 2");
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyOptions);
+            TcgLogger.Log("Join 3");
             LobbyEventCallbacks callbacks = new LobbyEventCallbacks();
             callbacks.PlayerJoined += JoinedLobbyPlayerJoined;
             callbacks.PlayerLeft += JoinedLobbyPlayerLeft;
@@ -76,7 +89,9 @@ public class TcgLobby : MonoBehaviour {
             callbacks.PlayerDataChanged += JoinedLobbyPlayerDataUpdated;
             callbacks.LobbyDeleted += LobbyDeleted;
             callbacks.KickedFromLobby += KickedFromLobby;
+            TcgLogger.Log("Join 4");
             await LobbyService.Instance.SubscribeToLobbyEventsAsync(joinedLobby.Id, callbacks);
+            TcgLogger.Log("Join 5");
             OnLobbyJoined?.Invoke(this, new LobbyEventArgs(joinedLobby));
             TcgLogger.Log("You have joined a lobby");
             PrintPlayers(joinedLobby);
@@ -145,12 +160,12 @@ public class TcgLobby : MonoBehaviour {
     }
 
     private void HostLobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
-        TcgLogger.Log("Host lobby updated");
+        TcgLogger.Log("Host lobby Player Joined");
         OnPlayerJoin?.Invoke(this, new LobbyPlayersJoinedEventArgs(joinedPlayers));
     }
 
     private async void JoinedLobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
-        TcgLogger.Log("Joined lobby updated");
+        TcgLogger.Log("Joined lobby Player Joined");
         joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
         OnPlayerJoin?.Invoke(this, new LobbyPlayersJoinedEventArgs(joinedPlayers));
     }
