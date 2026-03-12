@@ -31,8 +31,13 @@ public class LobbyUI : MonoBehaviour {
         }
     }
 
-    public void UpdatePlayersReadyStatus() {
-
+    public void UpdateLobbyPlayerData(string playerId, bool isReady) {
+        foreach(LobbyPlayerUI lobbyPlayerUI in lobbyPlayers) {
+            if(lobbyPlayerUI.PlayerId == playerId) {
+                lobbyPlayerUI.SetPlayerReady(isReady);
+                break;
+            }
+        }
     }
 
 

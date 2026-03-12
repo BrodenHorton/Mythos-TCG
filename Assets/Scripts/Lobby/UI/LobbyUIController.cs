@@ -1,4 +1,6 @@
-﻿using Unity.Services.Lobbies.Models;
+﻿using System.Collections.Generic;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class LobbyUIController : MonoBehaviour {
@@ -12,7 +14,7 @@ public class LobbyUIController : MonoBehaviour {
         //tcgLobby.OnPlayerLeave += 
         //tcgLobby.OnPlayerKicked += 
         //tcgLobby.OnLobbyDataUpdated += 
-        //tcgLobby.OnPlayerDataUpdated += 
+        tcgLobby.OnPlayerDataUpdated += UpdateLobbyPlayersData;
         //tcgLobby.OnLobbyDeleted += 
         //tcgLobby.OnKicked += 
 
@@ -44,7 +46,17 @@ public class LobbyUIController : MonoBehaviour {
         lobbyUI.RemoveLobbyPlayer(playerId);
     }
 
-    public void UpdatePlayersReadyStatus() {
-
+    public void UpdateLobbyPlayersData(object sender, LobbyPlayerDataUpdatedEventArgs args) {
+        foreach (KeyValuePair<int, Dictionary<string, ChangedOrRemovedLobbyValue<PlayerDataObject>>> playerChanges in args.PlayerChanges) {
+            foreach (KeyValuePair<string, ChangedOrRemovedLobbyValue<PlayerDataObject>> change in playerChanges.Value) {
+                if (change.Key == "isReady" && change.Value.Changed) {
+                    bool isReady = bool.Parse(change.Value.Value.Value);
+                    TcgLogger.Log("isReady: " + isReady);
+                    TcgLogger.Log("Player Index: " + playerChanges.Key);
+                    TcgLogger.Log("Number of Lobby Players: " + tcgLobby.Lobby.Players.Count);
+                    lobbyUI.UpdateLobbyPlayerData(tcgLobby.Lobby.Players[playerChanges.Key].Id, isReady);
+                }
+            }
+        }
     }
 }

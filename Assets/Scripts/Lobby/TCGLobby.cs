@@ -67,6 +67,7 @@ public class TcgLobby : MonoBehaviour {
             callbacks.PlayerJoined += LobbyPlayerJoined;
             callbacks.PlayerLeft += LobbyPlayerLeft;
             callbacks.DataChanged += LobbyDataUpdated;
+            callbacks.PlayerDataAdded += LobbyPlayerDataUpdated;
             callbacks.PlayerDataChanged += LobbyPlayerDataUpdated;
             await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
             OnLobbyCreated?.Invoke(this, new LobbyEventArgs(lobby));
@@ -89,6 +90,7 @@ public class TcgLobby : MonoBehaviour {
             callbacks.PlayerJoined += LobbyPlayerJoined;
             callbacks.PlayerLeft += LobbyPlayerLeft;
             callbacks.DataChanged += LobbyDataUpdated;
+            callbacks.PlayerDataAdded += LobbyPlayerDataUpdated;
             callbacks.PlayerDataChanged += LobbyPlayerDataUpdated;
             callbacks.LobbyDeleted += LobbyDeleted;
             callbacks.KickedFromLobby += KickedFromLobby;
@@ -161,25 +163,25 @@ public class TcgLobby : MonoBehaviour {
     }
 
     private async void LobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
-        TcgLogger.Log("Joined lobby Player Joined");
+        TcgLogger.Log("Player Joined");
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerJoin?.Invoke(this, new LobbyPlayersJoinedEventArgs(joinedPlayers));
     }
 
     private async void LobbyPlayerLeft(List<int> leftPlayerIds) {
-        TcgLogger.Log("Joined lobby Player left");
+        TcgLogger.Log("Player left");
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerLeave?.Invoke(this, new LobbyPlayersLeftEventArgs(leftPlayerIds));
     }
 
     private async void LobbyDataUpdated(Dictionary<string, ChangedOrRemovedLobbyValue<DataObject>> lobbyChanges) {
-        TcgLogger.Log("Joined lobby Lobby Data Updated");
+        TcgLogger.Log("Lobby Data Updated");
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnLobbyDataUpdated?.Invoke(this, new LobbyDataUpdatedEventArgs(lobbyChanges));
     }
 
     private async void LobbyPlayerDataUpdated(Dictionary<int, Dictionary<string, ChangedOrRemovedLobbyValue<PlayerDataObject>>> playerChanges) {
-        TcgLogger.Log("Joined lobby Player Data Updated");
+        TcgLogger.Log("Player Data Updated");
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerDataUpdated?.Invoke(this, new LobbyPlayerDataUpdatedEventArgs(playerChanges));
     }
@@ -193,4 +195,6 @@ public class TcgLobby : MonoBehaviour {
     private void KickedFromLobby() {
         OnKicked?.Invoke(this, EventArgs.Empty);
     }
+
+    public Lobby Lobby { get {  return lobby; } }
 }

@@ -16,8 +16,7 @@ public class LobbyPlayerUI : MonoBehaviour {
     }
 
     public void SetPlayerReady(bool isReady) {
-        if(!readyText.gameObject.activeSelf)
-            readyText.gameObject.SetActive(true);
+        readyText.gameObject.SetActive(isReady);
     }
 
     public string PlayerId { get { return playerId; } set { playerId = value; } }
