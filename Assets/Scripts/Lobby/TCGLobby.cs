@@ -18,12 +18,13 @@ public class TcgLobby : MonoBehaviour {
     public event EventHandler OnLobbyDeleted;
     public event EventHandler OnKicked;
 
-    private Lobby hostLobby;
-    private Lobby joinedLobby;
+    private Lobby lobby;
+    private bool isHost;
     private PlayerProfile playerProfile;
     private float heartbeatTimer;
 
     private void Awake() {
+        isHost = false;
         heartbeatTimer = 15f;
         playerProfile = FindFirstObjectByType<PlayerProfile>();
     }
@@ -39,10 +40,13 @@ public class TcgLobby : MonoBehaviour {
     }
 
     private async void OnDestroy() {
-        if(hostLobby != null) {
-            await LobbyService.Instance.DeleteLobbyAsync(hostLobby.Id);
+        if (lobby == null)
+            return;
+
+        if(isHost) {
+            await LobbyService.Instance.DeleteLobbyAsync(lobby.Id);
         }
-        if(joinedLobby != null) {
+        else {
             // TODO: Add a call to leave a the joined lobby
         }
     }
@@ -53,20 +57,21 @@ public class TcgLobby : MonoBehaviour {
 
     public async void CreateLobby() {
         try {
+            isHost = true;
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions {
                 IsPrivate = false,
                 Player = GetPlayer()
             };
-            hostLobby = await LobbyService.Instance.CreateLobbyAsync("My First Lobby", 4, createLobbyOptions);
+            lobby = await LobbyService.Instance.CreateLobbyAsync("My First Lobby", 4, createLobbyOptions);
             LobbyEventCallbacks callbacks = new LobbyEventCallbacks();
-            callbacks.PlayerJoined += HostLobbyPlayerJoined;
-            callbacks.PlayerLeft += HostLobbyPlayerLeft;
-            callbacks.DataChanged += HostLobbyDataUpdated;
-            callbacks.PlayerDataChanged += HostLobbyPlayerDataUpdated;
-            await LobbyService.Instance.SubscribeToLobbyEventsAsync(hostLobby.Id, callbacks);
-            OnLobbyCreated?.Invoke(this, new LobbyEventArgs(hostLobby));
-            TcgLogger.Log("Joined Lobby: " + hostLobby.Name + " Max players: " + hostLobby.MaxPlayers + " Lobby Code: " + hostLobby.LobbyCode);
-            PrintPlayers(hostLobby);
+            callbacks.PlayerJoined += LobbyPlayerJoined;
+            callbacks.PlayerLeft += LobbyPlayerLeft;
+            callbacks.DataChanged += LobbyDataUpdated;
+            callbacks.PlayerDataChanged += LobbyPlayerDataUpdated;
+            await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
+            OnLobbyCreated?.Invoke(this, new LobbyEventArgs(lobby));
+            TcgLogger.Log("Created Lobby: " + lobby.Name + " Max players: " + lobby.MaxPlayers + " Lobby Code: " + lobby.LobbyCode);
+            PrintPlayers(lobby);
         }
         catch(LobbyServiceException e) {
             Debug.Log(e.Message);
@@ -74,27 +79,23 @@ public class TcgLobby : MonoBehaviour {
     }
 
     public async void JoinLobby(string lobbyCode) {
-        TcgLogger.Log("Join 1");
         try {
+            isHost = false;
             JoinLobbyByCodeOptions joinLobbyOptions = new JoinLobbyByCodeOptions() {
                 Player = GetPlayer()
             };
-            TcgLogger.Log("Join 2");
-            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyOptions);
-            TcgLogger.Log("Join 3");
+            lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyOptions);
             LobbyEventCallbacks callbacks = new LobbyEventCallbacks();
-            callbacks.PlayerJoined += JoinedLobbyPlayerJoined;
-            callbacks.PlayerLeft += JoinedLobbyPlayerLeft;
-            callbacks.DataChanged += JoinedLobbyDataUpdated;
-            callbacks.PlayerDataChanged += JoinedLobbyPlayerDataUpdated;
+            callbacks.PlayerJoined += LobbyPlayerJoined;
+            callbacks.PlayerLeft += LobbyPlayerLeft;
+            callbacks.DataChanged += LobbyDataUpdated;
+            callbacks.PlayerDataChanged += LobbyPlayerDataUpdated;
             callbacks.LobbyDeleted += LobbyDeleted;
             callbacks.KickedFromLobby += KickedFromLobby;
-            TcgLogger.Log("Join 4");
-            await LobbyService.Instance.SubscribeToLobbyEventsAsync(joinedLobby.Id, callbacks);
-            TcgLogger.Log("Join 5");
-            OnLobbyJoined?.Invoke(this, new LobbyEventArgs(joinedLobby));
+            await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
+            OnLobbyJoined?.Invoke(this, new LobbyEventArgs(lobby));
             TcgLogger.Log("You have joined a lobby");
-            PrintPlayers(joinedLobby);
+            PrintPlayers(lobby);
         }
         catch(LobbyServiceException e) {
             Debug.Log(e.Message);
@@ -102,20 +103,20 @@ public class TcgLobby : MonoBehaviour {
     }
 
     public async void LobbyHearbeat() {
-        if (hostLobby == null)
+        if (lobby == null || !isHost)
             return;
 
         heartbeatTimer -= Time.deltaTime;
         if(heartbeatTimer <= 0) {
             TcgLogger.Log("Heatbeat sent");
             heartbeatTimer = MAX_HEARTBEAT_TIMER_DURATION;
-            await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
+            await LobbyService.Instance.SendHeartbeatPingAsync(lobby.Id);
         }
     }
 
     public async void UpdatePlayerReadyState(bool isReady) {
         try {
-            await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions {
+            await LobbyService.Instance.UpdatePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions {
                 Data = new Dictionary<string, PlayerDataObject> {
                     { "isReady", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, isReady.ToString()) }
                 }
@@ -137,8 +138,8 @@ public class TcgLobby : MonoBehaviour {
             };
             QueryResponse response = await LobbyService.Instance.QueryLobbiesAsync();
             TcgLogger.Log("Lobbies found " + response.Results.Count);
-            foreach(Lobby lobby in response.Results)
-                TcgLogger.Log(lobby.Name + " " + lobby.MaxPlayers);
+            foreach(Lobby lobbyEntry in response.Results)
+                TcgLogger.Log(lobbyEntry.Name + " " + lobbyEntry.MaxPlayers);
         }
         catch(LobbyServiceException e) {
             Debug.Log(e.Message);
@@ -159,53 +160,33 @@ public class TcgLobby : MonoBehaviour {
             TcgLogger.Log(player.Id + " " + player.Data["playerName"].Value);
     }
 
-    private void HostLobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
-        TcgLogger.Log("Host lobby Player Joined");
-        OnPlayerJoin?.Invoke(this, new LobbyPlayersJoinedEventArgs(joinedPlayers));
-    }
-
-    private async void JoinedLobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
+    private async void LobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
         TcgLogger.Log("Joined lobby Player Joined");
-        joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+        lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerJoin?.Invoke(this, new LobbyPlayersJoinedEventArgs(joinedPlayers));
     }
 
-    private void HostLobbyPlayerLeft(List<int> leftPlayerIds) {
-        TcgLogger.Log("Host lobby Player Left");
-        OnPlayerLeave?.Invoke(this, new LobbyPlayersLeftEventArgs(leftPlayerIds));
-    }
-
-    private async void JoinedLobbyPlayerLeft(List<int> leftPlayerIds) {
+    private async void LobbyPlayerLeft(List<int> leftPlayerIds) {
         TcgLogger.Log("Joined lobby Player left");
-        joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+        lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerLeave?.Invoke(this, new LobbyPlayersLeftEventArgs(leftPlayerIds));
     }
 
-    private void HostLobbyDataUpdated(Dictionary<string, ChangedOrRemovedLobbyValue<DataObject>> lobbyChanges) {
-        TcgLogger.Log("Host lobby Lobby Data Updated");
-        OnLobbyDataUpdated?.Invoke(this, new LobbyDataUpdatedEventArgs(lobbyChanges));
-    }
-
-    private async void JoinedLobbyDataUpdated(Dictionary<string, ChangedOrRemovedLobbyValue<DataObject>> lobbyChanges) {
+    private async void LobbyDataUpdated(Dictionary<string, ChangedOrRemovedLobbyValue<DataObject>> lobbyChanges) {
         TcgLogger.Log("Joined lobby Lobby Data Updated");
-        joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+        lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnLobbyDataUpdated?.Invoke(this, new LobbyDataUpdatedEventArgs(lobbyChanges));
     }
 
-    private void HostLobbyPlayerDataUpdated(Dictionary<int, Dictionary<string, ChangedOrRemovedLobbyValue<PlayerDataObject>>> playerChanges) {
-        TcgLogger.Log("Host lobby Player Data Updated");
-        OnPlayerDataUpdated?.Invoke(this, new LobbyPlayerDataUpdatedEventArgs(playerChanges));
-    }
-
-    private async void JoinedLobbyPlayerDataUpdated(Dictionary<int, Dictionary<string, ChangedOrRemovedLobbyValue<PlayerDataObject>>> playerChanges) {
+    private async void LobbyPlayerDataUpdated(Dictionary<int, Dictionary<string, ChangedOrRemovedLobbyValue<PlayerDataObject>>> playerChanges) {
         TcgLogger.Log("Joined lobby Player Data Updated");
-        joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+        lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerDataUpdated?.Invoke(this, new LobbyPlayerDataUpdatedEventArgs(playerChanges));
     }
 
     private void LobbyDeleted() {
         TcgLogger.Log("Lobby deleted");
-        joinedLobby = null;
+        lobby = null;
         OnLobbyDeleted?.Invoke(this, EventArgs.Empty);
     }
 

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviour {
     [SerializeField] private Transform lobbyPlayersContainer;
     [SerializeField] private List<LobbyPlayerUI> lobbyPlayers;
+    [SerializeField] private Button readyBtn;
     [Header("Prefab")]
     [SerializeField] private LobbyPlayerUI lobbyPlayerUIPrefab;
     
@@ -33,4 +35,6 @@ public class LobbyUI : MonoBehaviour {
 
     }
 
+
+    public Button ReadyBtn { get { return readyBtn; } }
 }
