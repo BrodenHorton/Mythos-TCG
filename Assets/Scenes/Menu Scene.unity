@@ -2848,10 +2848,10 @@ RectTransform:
   m_Father: {fileID: 1639870522}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -605, y: -348.8661}
-  m_SizeDelta: {x: -1220, y: -817.7322}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 5, y: 60}
+  m_SizeDelta: {x: 700, y: 280}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &813973687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2865,8 +2865,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollView: {fileID: 813973686}
-  content: {fileID: 1705784264}
-  scrollSpeed: 1
+  logContainerUI: {fileID: 1705784265}
+  scrollSpeed: 28
 --- !u!114 &813973688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5385,7 +5385,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 700, y: 262.2678}
+  m_SizeDelta: {x: 700, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1705784265
 MonoBehaviour:
@@ -5399,7 +5399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e062248a507a93549ab4bc3aecf94b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxLogCount: 15
+  maxLogCount: 50
   shouldForceExpandChildWidth: 1
 --- !u!114 &1705784266
 MonoBehaviour:

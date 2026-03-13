@@ -22,9 +22,9 @@ public partial class LogContainerUI : MonoBehaviour {
 
     public void AddLog(LogUI logUI) {
         logUI.transform.parent = transform;
-        TrimExcessLogs();
         UpdateContainer();
         OnLogAdded?.Invoke(this, new FloatEventArgs(logUI.GetComponent<RectTransform>().sizeDelta.y));
+        TrimExcessLogs();
     }
 
     private void UpdateContainer() {
@@ -41,7 +41,7 @@ public partial class LogContainerUI : MonoBehaviour {
             if(shouldForceExpandChildWidth)
                 childTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, childTransform.sizeDelta.y);
         }
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, cumulativeHeight);
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, GetContainerHeight());
     }
 
     private void TrimExcessLogs() {
@@ -51,9 +51,24 @@ public partial class LogContainerUI : MonoBehaviour {
         int excessLogCount = transform.childCount - maxLogCount;
         for(int i = 0; i < excessLogCount; i++) {
             float height =  transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-            Destroy(transform.GetChild(0).gameObject);
-            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y - height);
+            Transform child = transform.GetChild(0);
+            child.parent = null;
+            Destroy(child.gameObject);
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, GetContainerHeight());
             OnLogRemoved?.Invoke(this, new FloatEventArgs(height));
         }
+    }
+
+    private float GetContainerHeight() {
+        float cumulativeHeight = 0f;
+        for (int i = 0; i < transform.childCount; i++) {
+            RectTransform childTransform = transform.GetChild(i).GetComponent<RectTransform>();
+            if (childTransform == null)
+                continue;
+
+            cumulativeHeight += childTransform.sizeDelta.y;
+        }
+
+        return cumulativeHeight;
     }
 }

@@ -83,21 +83,21 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""ScrollUp"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""e9785093-29eb-45fb-80dd-14b0c2c09428"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ScrollDown"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""d09d9baf-bd72-4180-bb3c-13316dd7e8dd"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -170,7 +170,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""145122a7-1b49-4fae-bb6d-159d4593e543"",
-                    ""path"": ""<Mouse>/forwardButton"",
+                    ""path"": ""<Mouse>/scroll/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -181,7 +181,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0b99b196-d0d8-4c8c-8010-6abd2547f756"",
-                    ""path"": ""<Mouse>/backButton"",
+                    ""path"": ""<Mouse>/scroll/down"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
