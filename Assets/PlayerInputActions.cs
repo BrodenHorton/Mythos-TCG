@@ -80,6 +80,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScrollUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""e9785093-29eb-45fb-80dd-14b0c2c09428"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScrollDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""d09d9baf-bd72-4180-bb3c-13316dd7e8dd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -148,6 +166,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""OpenConsoleCommand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""145122a7-1b49-4fae-bb6d-159d4593e543"",
+                    ""path"": ""<Mouse>/forwardButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b99b196-d0d8-4c8c-8010-6abd2547f756"",
+                    ""path"": ""<Mouse>/backButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -162,6 +202,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
         m_Player_OpenConsole = m_Player.FindAction("OpenConsole", throwIfNotFound: true);
         m_Player_OpenConsoleCommand = m_Player.FindAction("OpenConsoleCommand", throwIfNotFound: true);
+        m_Player_ScrollUp = m_Player.FindAction("ScrollUp", throwIfNotFound: true);
+        m_Player_ScrollDown = m_Player.FindAction("ScrollDown", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -234,6 +276,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Escape;
     private readonly InputAction m_Player_OpenConsole;
     private readonly InputAction m_Player_OpenConsoleCommand;
+    private readonly InputAction m_Player_ScrollUp;
+    private readonly InputAction m_Player_ScrollDown;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -244,6 +288,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
         public InputAction @OpenConsole => m_Wrapper.m_Player_OpenConsole;
         public InputAction @OpenConsoleCommand => m_Wrapper.m_Player_OpenConsoleCommand;
+        public InputAction @ScrollUp => m_Wrapper.m_Player_ScrollUp;
+        public InputAction @ScrollDown => m_Wrapper.m_Player_ScrollDown;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -271,6 +317,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenConsoleCommand.started += instance.OnOpenConsoleCommand;
             @OpenConsoleCommand.performed += instance.OnOpenConsoleCommand;
             @OpenConsoleCommand.canceled += instance.OnOpenConsoleCommand;
+            @ScrollUp.started += instance.OnScrollUp;
+            @ScrollUp.performed += instance.OnScrollUp;
+            @ScrollUp.canceled += instance.OnScrollUp;
+            @ScrollDown.started += instance.OnScrollDown;
+            @ScrollDown.performed += instance.OnScrollDown;
+            @ScrollDown.canceled += instance.OnScrollDown;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -293,6 +345,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenConsoleCommand.started -= instance.OnOpenConsoleCommand;
             @OpenConsoleCommand.performed -= instance.OnOpenConsoleCommand;
             @OpenConsoleCommand.canceled -= instance.OnOpenConsoleCommand;
+            @ScrollUp.started -= instance.OnScrollUp;
+            @ScrollUp.performed -= instance.OnScrollUp;
+            @ScrollUp.canceled -= instance.OnScrollUp;
+            @ScrollDown.started -= instance.OnScrollDown;
+            @ScrollDown.performed -= instance.OnScrollDown;
+            @ScrollDown.canceled -= instance.OnScrollDown;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -318,5 +376,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnEscape(InputAction.CallbackContext context);
         void OnOpenConsole(InputAction.CallbackContext context);
         void OnOpenConsoleCommand(InputAction.CallbackContext context);
+        void OnScrollUp(InputAction.CallbackContext context);
+        void OnScrollDown(InputAction.CallbackContext context);
     }
 }

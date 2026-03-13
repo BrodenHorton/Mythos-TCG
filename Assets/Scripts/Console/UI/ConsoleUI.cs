@@ -1,8 +1,7 @@
 using UnityEngine;
-using static UnityEngine.Rendering.GPUSort;
 
 public class ConsoleUI : MonoBehaviour {
-    [SerializeField] private GameObject logContainer;
+    [SerializeField] private LogContainerUI logContainerUI;
     [SerializeField] private ConsoleInputFieldUI consoleInputField;
     [Header("Prefabs")]
     [SerializeField] private LogUI logPrefab;
@@ -21,19 +20,19 @@ public class ConsoleUI : MonoBehaviour {
     }
 
     public void ShowConsole() {
-        logContainer.SetActive(true);
+        logContainerUI.gameObject.SetActive(true);
         isActive = true;
     }
 
     public void HideConsole() {
         CloseConsole();
-        logContainer.SetActive(false);
+        logContainerUI.gameObject.SetActive(false);
         isActive = false;
     }
 
     public void OpenConsole() {
         consoleInputField.gameObject.SetActive(true);
-        logContainer.SetActive(true);
+        logContainerUI.gameObject.SetActive(true);
         isOpen = true;
     }
 
@@ -54,8 +53,8 @@ public class ConsoleUI : MonoBehaviour {
 
     public void AddChatLog(string msg) {
         LogUI logUI = Instantiate(logPrefab);
-        logUI.transform.parent = logContainer.transform;
         logUI.SetText(msg);
+        logContainerUI.AddLog(logUI);
     }
 
     public void SetInputFieldText(string text) {
