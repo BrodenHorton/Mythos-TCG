@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ConsoleUIController : MonoBehaviour {
+public class ConsoleUIController : LogDestination {
     [SerializeField] private ConsoleUI consoleUI;
 
     private PlayerInputActions playerInputActions;
@@ -74,7 +74,7 @@ public class ConsoleUIController : MonoBehaviour {
         consoleUI.CloseConsole();
     }
 
-    public void AddChatLog(string msg) {
-        consoleUI.AddChatLog(msg);
+    public override void AddLog(string msg) {
+        consoleUI.AddLog(msg);
     }
 }

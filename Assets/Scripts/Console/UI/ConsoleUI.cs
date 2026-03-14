@@ -12,7 +12,6 @@ public class ConsoleUI : MonoBehaviour {
     private void Awake() {
         isActive = true;
         isOpen = false;
-        consoleInputField.OnChatSubmission += AddChatLog;
     }
 
     private void Start() {
@@ -47,11 +46,7 @@ public class ConsoleUI : MonoBehaviour {
         CloseConsole();
     }
 
-    private void AddChatLog(object sender, ChatSubmissionEventArgs args) {
-        AddChatLog(args.Message);
-    }
-
-    public void AddChatLog(string msg) {
+    public void AddLog(string msg) {
         LogUI logUI = Instantiate(logPrefab);
         logUI.SetText(msg);
         logContainerUI.AddLog(logUI);
@@ -64,5 +59,4 @@ public class ConsoleUI : MonoBehaviour {
     public bool IsActive { get { return isActive; } }
 
     public bool IsOpen { get { return isOpen; } }
-
 }

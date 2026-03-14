@@ -9,11 +9,10 @@ public class JoinLobbyCommand : Command {
 
     public override void Execute(string[] args) {
         if(args.Length != 1) {
-            TcgLogger.Log("[Command] Invalid Arguments");
+            TcgLogger.Log("&aInvalid Arguments");
             return;
         }
         
-        TcgLogger.Log("[Command] Join Lobby");
         tcgLobby.JoinLobby(args[0]);
     }
 }

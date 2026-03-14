@@ -1754,7 +1754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a94072ee1a768ae4fb104c1372e72999, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  consoleUIController: {fileID: 1026223891}
+  logDestination: {fileID: 1026223891}
 --- !u!1 &492335091
 GameObject:
   m_ObjectHideFlags: 0

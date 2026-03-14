@@ -38,7 +38,7 @@ public class LobbyUIController : MonoBehaviour {
     }
 
     public void AddLobbyPlayer(Player player) {
-        TcgLogger.Log(player.Data["playerName"].Value + " has joined the lobby!");
+        TcgLogger.Log("&e" + player.Data["playerName"].Value + " has joined the lobby!");
         lobbyUI.AddLobbyPlayer(player.Id, player.Data["playerName"].Value, false);
     }
 

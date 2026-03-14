@@ -8,7 +8,6 @@ public class CreateLobbyCommand : Command {
     }
 
     public override void Execute(string[] args) {
-        TcgLogger.Log("[Command] Create Lobby");
         tcgLobby.CreateLobby();
     }
 }

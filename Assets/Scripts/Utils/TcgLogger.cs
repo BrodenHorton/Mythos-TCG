@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class TcgLogger : MonoBehaviour {
-    [SerializeField] private ConsoleUIController consoleUIController;
+    [SerializeField] private LogDestination logDestination;
 
     public static TcgLogger Instance { get; private set; }
 
@@ -20,14 +20,14 @@ public class TcgLogger : MonoBehaviour {
             throw new Exception("TcgLogger Instance is null");
 
         Debug.Log(msg);
-        Instance.consoleUIController.AddChatLog(msg);
+        Instance.logDestination.AddLog(msg);
     }
 
-    public static void LogExclusive(string msg) {
+    public static void Log(TcgLogSender sender, string msg) {
         if (Instance == null)
             throw new Exception("TcgLogger Instance is null");
 
-        Instance.consoleUIController.AddChatLog(msg);
+        Debug.Log(msg);
+        Instance.logDestination.AddLog(sender.GetLogPrefix() + " " + msg);
     }
-
 }

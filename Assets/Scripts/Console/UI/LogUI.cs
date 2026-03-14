@@ -1,7 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 
-public class LogUI : MonoBehaviour {
+public partial class LogUI : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI logText;
     [SerializeField] private float verticalMargin;
 
@@ -12,7 +12,7 @@ public class LogUI : MonoBehaviour {
     }
 
     public void SetText(string text) {
-        logText.text = text;
+        logText.text = RichTextUtil.ProcessRichText(text);
     }
 
     public void UpdateLogSize(float width) {

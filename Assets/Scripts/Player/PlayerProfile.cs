@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerProfile : MonoBehaviour {
+public class PlayerProfile : MonoBehaviour, TcgLogSender {
     [SerializeField] private string username;
     [SerializeField] private List<CardBase> collection;
     [SerializeField] private List<Deck> decks;
@@ -12,6 +12,10 @@ public class PlayerProfile : MonoBehaviour {
 
     private void Awake() {
         username = "Omnibit_" + Random.Range(0, 99);
+    }
+
+    public string GetLogPrefix() {
+        return "<&8" + username + "&f>";
     }
 
     public string Username { get { return username; } set { username = value; } }

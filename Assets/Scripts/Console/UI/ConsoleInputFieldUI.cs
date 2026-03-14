@@ -3,11 +3,11 @@ using TMPro;
 using UnityEngine;
 
 public class ConsoleInputFieldUI : MonoBehaviour {
-    public event EventHandler<ChatSubmissionEventArgs> OnChatSubmission;
     public event EventHandler<ConsoleCommandSubmissionEventArgs> OnConsoleCommandSubmission;
 
     [SerializeField] private TMP_InputField inputField;
 
+    private PlayerProfile playerProfile;
     private bool shouldUpdateText;
     private bool shouldSelectInputField;
 
@@ -25,6 +25,12 @@ public class ConsoleInputFieldUI : MonoBehaviour {
         Clear();
         inputField.ActivateInputField();
         shouldUpdateText = false;
+    }
+
+    private void Start() {
+        playerProfile = FindFirstObjectByType<PlayerProfile>();
+        if (playerProfile == null)
+            throw new Exception("Unable to find object with type PlayerProfile");
     }
 
     private void OnEnable() {
@@ -55,22 +61,22 @@ public class ConsoleInputFieldUI : MonoBehaviour {
             string text = inputField.text;
             text = text.Remove(0, 1);
             string[] inputArr = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if(inputArr.Length == 0)
+            if (inputArr.Length == 0)
                 return;
             string cmd = inputArr[0];
             string[] args = null;
-            if(inputArr.Length < 2) {
+            if (inputArr.Length < 2) {
                 args = Array.Empty<string>();
             }
             else {
                 args = new string[inputArr.Length - 1];
-                for(int i = 1; i < inputArr.Length; i++)
+                for (int i = 1; i < inputArr.Length; i++)
                     args[i - 1] = inputArr[i];
             }
             OnConsoleCommandSubmission?.Invoke(this, new ConsoleCommandSubmissionEventArgs(cmd, args));
         }
         else
-            OnChatSubmission?.Invoke(this, new ChatSubmissionEventArgs(inputField.text));
+            TcgLogger.Log(playerProfile.GetLogPrefix() + " " + inputField.text);
     }
 
     public void Clear() {
@@ -85,4 +91,3 @@ public class ConsoleInputFieldUI : MonoBehaviour {
         inputField.textComponent.ForceMeshUpdate();
     }
 }
-

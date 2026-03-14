@@ -7,7 +7,7 @@
     }
 
     public override void Execute(string[] args) {
-        TcgLogger.Log("[Command] List Lobbies");
+        TcgLogger.Log("List Lobbies");
         tcgLobby.ListLobbies();
     }
 }

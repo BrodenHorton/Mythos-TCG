@@ -12,6 +12,8 @@ public class CommandManager : MonoBehaviour {
         AddCommand(listLobbiesCommand);
         JoinLobbyCommand joinLobbyCommand = new JoinLobbyCommand(FindFirstObjectByType<TcgLobby>());
         AddCommand(joinLobbyCommand);
+        ConsoleRichTextTestCommand consoleRichTextTestCommand = new ConsoleRichTextTestCommand();
+        AddCommand(consoleRichTextTestCommand);
 
         FindFirstObjectByType<ConsoleInputFieldUI>().OnConsoleCommandSubmission += ExecuteCommand;
     }
@@ -26,7 +28,7 @@ public class CommandManager : MonoBehaviour {
 
     public void ExecuteCommand(string cmd, string[] args) {
         if(!commandsByName.ContainsKey(cmd.ToLower())) {
-            Debug.Log("[Command] Invalid command " + cmd.ToLower());
+            Debug.Log("Invalid command " + cmd.ToLower());
             return;
         }
 
