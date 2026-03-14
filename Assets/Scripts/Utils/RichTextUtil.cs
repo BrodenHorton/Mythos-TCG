@@ -36,8 +36,6 @@ public static class RichTextUtil {
             }
         }
         sections.Add(msg.Substring(splitIndex, msg.Length - splitIndex));
-        for (int i = 0; i < sections.Count; i++)
-            Debug.Log(sections[i]);
 
         for (int i = 0; i < sections.Count; i++) {
             if (sections[i].Length >= 2 && sections[i][0] == richTextIndicator && richTextByCharCode.ContainsKey(sections[i][1])) {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -30,6 +31,7 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
     }
 
     private async void Start() {
+        Debug.Log("tcgLogger Ran once");
         await UnityServices.InitializeAsync();
 
         AuthenticationService.Instance.SignedIn += () => {
@@ -79,7 +81,32 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         }
     }
 
-    public async void JoinLobby(string lobbyCode) {
+    public async void JoinLobbyById(string lobbyId) {
+        try {
+            isHost = false;
+            JoinLobbyByIdOptions joinLobbyOptions = new JoinLobbyByIdOptions() {
+                Player = GetPlayer()
+            };
+            lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, joinLobbyOptions);
+            LobbyEventCallbacks callbacks = new LobbyEventCallbacks();
+            callbacks.PlayerJoined += LobbyPlayerJoined;
+            callbacks.PlayerLeft += LobbyPlayerLeft;
+            callbacks.DataChanged += LobbyDataUpdated;
+            callbacks.PlayerDataAdded += LobbyPlayerDataUpdated;
+            callbacks.PlayerDataChanged += LobbyPlayerDataUpdated;
+            callbacks.LobbyDeleted += LobbyDeleted;
+            callbacks.KickedFromLobby += KickedFromLobby;
+            await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
+            OnLobbyJoined?.Invoke(this, new LobbyEventArgs(lobby));
+            TcgLogger.Log(this, "You have joined a lobby");
+            PrintPlayers(lobby);
+        }
+        catch (LobbyServiceException e) {
+            Debug.Log(e.Message);
+        }
+    }
+
+    public async void JoinLobbyByCode(string lobbyCode) {
         try {
             isHost = false;
             JoinLobbyByCodeOptions joinLobbyOptions = new JoinLobbyByCodeOptions() {
@@ -129,7 +156,8 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         }
     }
 
-    public async void ListLobbies() {
+    public async Task<List<Lobby>> GetLobbyList() {
+        QueryResponse response = null;
         try {
             QueryLobbiesOptions lobbyOptions = new QueryLobbiesOptions();
             lobbyOptions.Filters = new List<QueryFilter> {
@@ -138,14 +166,14 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
             lobbyOptions.Order = new List<QueryOrder> {
                 new QueryOrder(false, QueryOrder.FieldOptions.Created)
             };
-            QueryResponse response = await LobbyService.Instance.QueryLobbiesAsync();
-            TcgLogger.Log(this, "Lobbies found " + response.Results.Count);
-            foreach(Lobby lobbyEntry in response.Results)
-                TcgLogger.Log(lobbyEntry.Name + " " + lobbyEntry.MaxPlayers);
+            response = await LobbyService.Instance.QueryLobbiesAsync();
+            Debug.Log("Lobbies found " + response.Results.Count);
         }
         catch(LobbyServiceException e) {
             Debug.Log(e.Message);
         }
+
+        return response != null ? response.Results : new List<Lobby>();
     }
 
     private Player GetPlayer() {
@@ -154,6 +182,14 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
                 { "playerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerProfile.Username) }
             }
         };
+    }
+
+    public async void ListLobbies() {
+        List<Lobby> lobbies = await GetLobbyList();
+        if (lobbies != null) {
+            foreach (Lobby lobbyEntry in lobbies)
+                TcgLogger.Log(lobbyEntry.Name + " " + lobbyEntry.MaxPlayers);
+        }
     }
 
     private void PrintPlayers(Lobby lobby) {

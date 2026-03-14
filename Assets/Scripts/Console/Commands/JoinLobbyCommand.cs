@@ -13,6 +13,6 @@ public class JoinLobbyCommand : Command {
             return;
         }
         
-        tcgLobby.JoinLobby(args[0]);
+        tcgLobby.JoinLobbyByCode(args[0]);
     }
 }
