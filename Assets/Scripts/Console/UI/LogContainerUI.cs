@@ -7,7 +7,6 @@ public partial class LogContainerUI : MonoBehaviour {
     public event EventHandler<FloatEventArgs> OnLogRemoved;
 
     [SerializeField] private int maxLogCount;
-    [SerializeField] private bool shouldForceExpandChildWidth;
 
     private RectTransform rectTransform;
 
@@ -22,6 +21,7 @@ public partial class LogContainerUI : MonoBehaviour {
 
     public void AddLog(LogUI logUI) {
         logUI.transform.parent = transform;
+        logUI.UpdateLogSize(rectTransform.sizeDelta.x);
         UpdateContainer();
         OnLogAdded?.Invoke(this, new FloatEventArgs(logUI.GetComponent<RectTransform>().sizeDelta.y));
         TrimExcessLogs();
@@ -38,10 +38,8 @@ public partial class LogContainerUI : MonoBehaviour {
             childTransform.pivot = Vector2.zero;
             childTransform.localPosition = new Vector3(0f, cumulativeHeight, 0f);
             cumulativeHeight += childTransform.sizeDelta.y;
-            if(shouldForceExpandChildWidth)
-                childTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, childTransform.sizeDelta.y);
         }
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, GetContainerHeight());
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, cumulativeHeight);
     }
 
     private void TrimExcessLogs() {

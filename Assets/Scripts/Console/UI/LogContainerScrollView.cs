@@ -53,7 +53,6 @@ public class LogContainerScrollView : MonoBehaviour {
     }
 
     private void UpdateScrollOffsetOnLogAdded(object sender, FloatEventArgs args) {
-        Debug.Log("UpdateScrollOffsetOnAdded entered");
         float offset = args.Value;
         if (scrollOffset <= 0f) {
             scrollOffset = 0f;
@@ -66,10 +65,8 @@ public class LogContainerScrollView : MonoBehaviour {
     }
 
     private void UpdateScrollOffsetOnLogRemoved(object sender, FloatEventArgs args) {
-        Debug.Log("UpdateScrollOffsetOnRemoved entered");
         float offset = args.Value;
         if (content.sizeDelta.y - scrollOffset - offset <= scrollView.sizeDelta.y) {
-            Debug.Log("position updated after removal");
             scrollOffset = content.sizeDelta.y - scrollView.sizeDelta.y;
             SetContntLocalPosition(-scrollOffset);
         }
