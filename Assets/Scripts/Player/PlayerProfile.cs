@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerProfile : MonoBehaviour, TcgLogSender {
+    public static PlayerProfile Instance { get; private set; }
+
     [SerializeField] private string username;
     [SerializeField] private List<CardBase> collection;
     [SerializeField] private List<Deck> decks;
@@ -11,6 +13,15 @@ public class PlayerProfile : MonoBehaviour, TcgLogSender {
     [SerializeField] private int highestWinStreak;
 
     private void Awake() {
+        if (Instance != null) {
+            Debug.LogWarning("TcgLogger already exists in scene. Destroying redundant object.");
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         username = "Omnibit_" + Random.Range(0, 99);
     }
 

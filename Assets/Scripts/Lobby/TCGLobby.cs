@@ -8,6 +8,9 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class TcgLobby : MonoBehaviour, TcgLogSender {
+    public static readonly string START_GAME_KEY = "startGame";
+    public static readonly string PLAYER_NAME_KEY = "playerName";
+    public static readonly string READY_STATUS_KEY = "isReady";
     private static readonly float MAX_HEARTBEAT_TIMER_DURATION = 15f;
 
     public event EventHandler<LobbyEventArgs> OnLobbyCreated;
@@ -16,22 +19,33 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
     public event EventHandler<LobbyPlayersLeftEventArgs> OnPlayerLeave;
     public event EventHandler<LobbyDataUpdatedEventArgs> OnLobbyDataUpdated;
     public event EventHandler<LobbyPlayerDataUpdatedEventArgs> OnPlayerDataUpdated;
+    public event EventHandler<bool> OnPlayersReadyStatusUpdated;
     public event EventHandler OnLobbyDeleted;
     public event EventHandler OnKicked;
 
+    public static TcgLobby Instance { get; private set; }
+
+    [SerializeField] private TcgRelay relay;
+
     private Lobby lobby;
-    private bool isHost;
     private PlayerProfile playerProfile;
     private float heartbeatTimer;
 
     private void Awake() {
-        isHost = false;
+        if (Instance != null) {
+            Debug.LogWarning("TcgLobby already exists in scene. Destroying redundant object.");
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         heartbeatTimer = 15f;
         playerProfile = FindFirstObjectByType<PlayerProfile>();
     }
 
     private async void Start() {
-        Debug.Log("tcgLogger Ran once");
         await UnityServices.InitializeAsync();
 
         AuthenticationService.Instance.SignedIn += () => {
@@ -45,7 +59,7 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         if (lobby == null)
             return;
 
-        if(isHost) {
+        if(IsLobbyHost()) {
             await LobbyService.Instance.DeleteLobbyAsync(lobby.Id);
         }
         else {
@@ -59,10 +73,12 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
 
     public async void CreateLobby() {
         try {
-            isHost = true;
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions {
                 IsPrivate = false,
-                Player = GetPlayer()
+                Player = GetPlayer(),
+                Data = new Dictionary<string, DataObject> {
+                    { START_GAME_KEY, new DataObject(DataObject.VisibilityOptions.Member, "0") }
+                }
             };
             lobby = await LobbyService.Instance.CreateLobbyAsync("My First Lobby", 4, createLobbyOptions);
             LobbyEventCallbacks callbacks = new LobbyEventCallbacks();
@@ -83,7 +99,6 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
 
     public async void JoinLobbyById(string lobbyId) {
         try {
-            isHost = false;
             JoinLobbyByIdOptions joinLobbyOptions = new JoinLobbyByIdOptions() {
                 Player = GetPlayer()
             };
@@ -108,7 +123,6 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
 
     public async void JoinLobbyByCode(string lobbyCode) {
         try {
-            isHost = false;
             JoinLobbyByCodeOptions joinLobbyOptions = new JoinLobbyByCodeOptions() {
                 Player = GetPlayer()
             };
@@ -131,8 +145,26 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         }
     }
 
+    public async void StartGame() {
+        if (!IsLobbyHost())
+            throw new Exception("Attempting to start game from lobby when player is not the host");
+
+        try {
+            TcgLogger.Log(this, "Starting game");
+            string relayCode = await relay.CreateRelay();
+            lobby = await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, new UpdateLobbyOptions {
+                Data = new Dictionary<string, DataObject> {
+                    { START_GAME_KEY, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                }
+            });
+        }
+        catch(LobbyServiceException e) {
+            Debug.Log(e.Message);
+        }
+    }
+
     public async void LobbyHearbeat() {
-        if (lobby == null || !isHost)
+        if (lobby == null || !IsLobbyHost())
             return;
 
         heartbeatTimer -= Time.deltaTime;
@@ -147,7 +179,7 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         try {
             await LobbyService.Instance.UpdatePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions {
                 Data = new Dictionary<string, PlayerDataObject> {
-                    { "isReady", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, isReady.ToString()) }
+                    { READY_STATUS_KEY, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, isReady.ToString()) }
                 }
             });
         }
@@ -179,9 +211,17 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
     private Player GetPlayer() {
         return new Player {
             Data = new Dictionary<string, PlayerDataObject> {
-                { "playerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerProfile.Username) }
+                { PLAYER_NAME_KEY, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerProfile.Username) },
+                { READY_STATUS_KEY, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "false") }
             }
         };
+    }
+
+    public bool IsLobbyHost() {
+        if(lobby == null)
+            throw new Exception("Attempting to check lobby host when lobby is null");
+
+        return AuthenticationService.Instance.PlayerId == lobby.HostId;
     }
 
     public async void ListLobbies() {
@@ -195,7 +235,16 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
     private void PrintPlayers(Lobby lobby) {
         TcgLogger.Log(this, "Players in lobby:");
         foreach(Player player in lobby.Players)
-            TcgLogger.Log(this, player.Id + " " + player.Data["playerName"].Value);
+            TcgLogger.Log(this, player.Id + " " + player.Data[PLAYER_NAME_KEY].Value);
+    }
+
+    private bool AreAllPlayersReady() {
+        foreach(Player player in lobby.Players) {
+            if (!bool.Parse(player.Data[READY_STATUS_KEY].Value))
+                return false;
+        }
+
+        return true;
     }
 
     private async void LobbyPlayerJoined(List<LobbyPlayerJoined> joinedPlayers) {
@@ -214,12 +263,19 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         TcgLogger.Log(this, "Lobby Data Updated");
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnLobbyDataUpdated?.Invoke(this, new LobbyDataUpdatedEventArgs(lobbyChanges));
+        if (!IsLobbyHost() && lobby.Data[START_GAME_KEY].Value != "0") {
+            relay.JoinRelay(lobby.Data[START_GAME_KEY].Value);
+            TcgMultiplayerManager.Instance.StartClient();
+        }
     }
 
     private async void LobbyPlayerDataUpdated(Dictionary<int, Dictionary<string, ChangedOrRemovedLobbyValue<PlayerDataObject>>> playerChanges) {
         TcgLogger.Log(this, "Player Data Updated");
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnPlayerDataUpdated?.Invoke(this, new LobbyPlayerDataUpdatedEventArgs(playerChanges));
+        if (IsLobbyHost()) {
+            OnPlayersReadyStatusUpdated?.Invoke(this, AreAllPlayersReady());
+        }
     }
 
     private void LobbyDeleted() {

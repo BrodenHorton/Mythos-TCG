@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class TcgLogger : MonoBehaviour {
-    [SerializeField] private LogDestination logDestination;
+    public event EventHandler<string> OnLog;
 
     public static TcgLogger Instance { get; private set; }
 
@@ -10,9 +10,11 @@ public class TcgLogger : MonoBehaviour {
         if (Instance != null) {
             Debug.LogWarning("TcgLogger already exists in scene. Destroying redundant object.");
             Destroy(this);
+            return;
         }
-        else
-            Instance = this;
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public static void Log(string msg) {
@@ -20,7 +22,7 @@ public class TcgLogger : MonoBehaviour {
             throw new Exception("TcgLogger Instance is null");
 
         Debug.Log(msg);
-        Instance.logDestination.AddLog(msg);
+        Instance.OnLog?.Invoke(Instance, msg);
     }
 
     public static void Log(TcgLogSender sender, string msg) {
@@ -28,6 +30,6 @@ public class TcgLogger : MonoBehaviour {
             throw new Exception("TcgLogger Instance is null");
 
         Debug.Log(msg);
-        Instance.logDestination.AddLog(sender.GetLogPrefix() + " " + msg);
+        Instance.OnLog?.Invoke(Instance, sender.GetLogPrefix() + " " + msg);
     }
 }

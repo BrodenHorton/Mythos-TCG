@@ -4,9 +4,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerUIController : DuelistUIController {
     [SerializeField] private PlayerUI playerUI;
+    private Camera cam;
 
     private DuelManager duelManager;
-    private Camera cam;
     private PlayerInputActions playerInputActions;
     private HandCardUI previousSelection;
 
@@ -15,7 +15,6 @@ public class PlayerUIController : DuelistUIController {
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
-        cam = Camera.main;
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
         playerInputActions.Player.Select.performed += SelectCard;
@@ -26,6 +25,9 @@ public class PlayerUIController : DuelistUIController {
         DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+
+        cam = Camera.main;
+        Debug.Log("Player UI Controller has Started");
 
         EventBus.OnLifePointsChanged += SetLifePoints;
         EventBus.OnManaCountChanged += SetManaCount;

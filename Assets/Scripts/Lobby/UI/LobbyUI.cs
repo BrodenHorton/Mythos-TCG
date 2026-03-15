@@ -6,10 +6,12 @@ public class LobbyUI : MonoBehaviour {
     [SerializeField] private Transform lobbyPlayersContainer;
     [SerializeField] private List<LobbyPlayerUI> lobbyPlayers;
     [SerializeField] private Button readyBtn;
+    [SerializeField] private Button startGameBtn;
     [Header("Prefab")]
     [SerializeField] private LobbyPlayerUI lobbyPlayerUIPrefab;
     
     private void Start() {
+        startGameBtn.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 
@@ -40,6 +42,11 @@ public class LobbyUI : MonoBehaviour {
         }
     }
 
+    public void SetStartGameButtonActive(bool isActive) {
+        startGameBtn.gameObject.SetActive(isActive);
+    }
 
     public Button ReadyBtn { get { return readyBtn; } }
+
+    public Button StartGameBtn { get { return startGameBtn; } }
 }

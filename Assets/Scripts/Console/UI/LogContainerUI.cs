@@ -21,9 +21,9 @@ public partial class LogContainerUI : MonoBehaviour {
 
     public void AddLog(LogUI logUI) {
         logUI.transform.parent = transform;
-        logUI.UpdateLogSize(rectTransform.sizeDelta.x);
+        logUI.UpdateLogSize(rectTransform.rect.width);
         UpdateContainer();
-        OnLogAdded?.Invoke(this, new FloatEventArgs(logUI.GetComponent<RectTransform>().sizeDelta.y));
+        OnLogAdded?.Invoke(this, new FloatEventArgs(logUI.GetComponent<RectTransform>().rect.height));
         TrimExcessLogs();
     }
 
@@ -37,9 +37,9 @@ public partial class LogContainerUI : MonoBehaviour {
             childTransform.anchoredPosition = Vector2.zero;
             childTransform.pivot = Vector2.zero;
             childTransform.localPosition = new Vector3(0f, cumulativeHeight, 0f);
-            cumulativeHeight += childTransform.sizeDelta.y;
+            cumulativeHeight += childTransform.rect.height;
         }
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, cumulativeHeight);
+        rectTransform.sizeDelta = new Vector2(rectTransform.rect.width, cumulativeHeight);
     }
 
     private void TrimExcessLogs() {
@@ -48,7 +48,7 @@ public partial class LogContainerUI : MonoBehaviour {
 
         int excessLogCount = transform.childCount - maxLogCount;
         for(int i = 0; i < excessLogCount; i++) {
-            float height =  transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+            float height =  transform.GetChild(0).GetComponent<RectTransform>().rect.height;
             Transform child = transform.GetChild(0);
             child.parent = null;
             Destroy(child.gameObject);
@@ -64,7 +64,7 @@ public partial class LogContainerUI : MonoBehaviour {
             if (childTransform == null)
                 continue;
 
-            cumulativeHeight += childTransform.sizeDelta.y;
+            cumulativeHeight += childTransform.rect.height;
         }
 
         return cumulativeHeight;

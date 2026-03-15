@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ConsoleUIController : LogDestination {
+public class ConsoleUIController : MonoBehaviour {
     [SerializeField] private ConsoleUI consoleUI;
 
     private PlayerInputActions playerInputActions;
@@ -14,6 +14,21 @@ public class ConsoleUIController : LogDestination {
         playerInputActions.Player.OpenConsoleCommand.performed += OpenConsoleCommand;
         playerInputActions.Player.Escape.performed += CloseConsole;
         playerInputActions.Player.Enter.performed += SubmitInputField;
+    }
+
+    private void Start() {
+        TcgLogger.Instance.OnLog += AddChatLog;
+    }
+
+    private void OnDestroy() {
+        playerInputActions.Player.Debug1.performed -= ToggleConsole;
+        playerInputActions.Player.OpenConsole.performed -= OpenConsole;
+        playerInputActions.Player.OpenConsoleCommand.performed -= OpenConsoleCommand;
+        playerInputActions.Player.Escape.performed -= CloseConsole;
+        playerInputActions.Player.Enter.performed -= SubmitInputField;
+        playerInputActions.Disable();
+
+        TcgLogger.Instance.OnLog -= AddChatLog;
     }
 
     private void ToggleConsole(InputAction.CallbackContext context) {
@@ -74,7 +89,7 @@ public class ConsoleUIController : LogDestination {
         consoleUI.CloseConsole();
     }
 
-    public override void AddLog(string msg) {
+    public void AddChatLog(object sender, string msg) {
         consoleUI.AddLog(msg);
     }
 }

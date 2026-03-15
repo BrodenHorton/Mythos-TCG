@@ -18,7 +18,7 @@ public partial class LogUI : MonoBehaviour {
     public void UpdateLogSize(float width) {
         logText.ForceMeshUpdate();
         // Since wrapping is enabled, we have to set the width before getting preferred height.
-        rectTransform.sizeDelta = new Vector2(width, rectTransform.sizeDelta.y);
+        rectTransform.sizeDelta = new Vector2(width, rectTransform.rect.height);
         rectTransform.sizeDelta = new Vector2(width, logText.preferredHeight + verticalMargin);
     }
 }

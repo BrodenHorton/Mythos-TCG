@@ -15,6 +15,7 @@ public class LobbyUIController : MonoBehaviour {
         //tcgLobby.OnPlayerKicked += 
         //tcgLobby.OnLobbyDataUpdated += 
         tcgLobby.OnPlayerDataUpdated += UpdateLobbyPlayersData;
+        tcgLobby.OnPlayersReadyStatusUpdated += UpdateStartGame;
         //tcgLobby.OnLobbyDeleted += 
         //tcgLobby.OnKicked += 
 
@@ -22,6 +23,23 @@ public class LobbyUIController : MonoBehaviour {
             tcgLobby.UpdatePlayerReadyState(true);
             lobbyUI.ReadyBtn.gameObject.SetActive(false);
         });
+        lobbyUI.StartGameBtn.onClick.AddListener(() => {
+            tcgLobby.StartGame();
+            lobbyUI.StartGameBtn.gameObject.SetActive(false);
+        });
+    }
+
+    private void OnDestroy() {
+        tcgLobby.OnLobbyCreated -= JoinLobby;
+        tcgLobby.OnLobbyJoined -= JoinLobby;
+        tcgLobby.OnPlayerJoin -= AddLobbyPlayers;
+        //tcgLobby.OnPlayerLeave -= 
+        //tcgLobby.OnPlayerKicked -= 
+        //tcgLobby.OnLobbyDataUpdated -= 
+        tcgLobby.OnPlayerDataUpdated -= UpdateLobbyPlayersData;
+        tcgLobby.OnPlayersReadyStatusUpdated -= UpdateStartGame;
+        //tcgLobby.OnLobbyDeleted -= 
+        //tcgLobby.OnKicked -= 
     }
 
     public void JoinLobby(object sender, LobbyEventArgs args) {
@@ -58,5 +76,9 @@ public class LobbyUIController : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public void UpdateStartGame(object sender, bool areAllPlayersReady) {
+        lobbyUI.SetStartGameButtonActive(areAllPlayersReady);
     }
 }
