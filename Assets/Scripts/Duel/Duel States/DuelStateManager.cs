@@ -12,7 +12,6 @@ public class DuelStateManager : MonoBehaviour {
     private DuelState currentState;
 
     private DuelManager duelManager;
-    private bool isFirstUpdate = true;
 
     private void Awake() {
         duelManager = GetComponent<DuelManager>();
@@ -32,11 +31,18 @@ public class DuelStateManager : MonoBehaviour {
         currentState = untapPhase;
     }
 
+    private void Start() {
+        GameManager.Instance.OnGameStart += StartGame;
+    }
+
     private void Update() {
-        if(isFirstUpdate) {
-            currentState.EnterState();
-            isFirstUpdate = false;
-        }
+        // TODO: Do a check to make sure the game has already started
+
+        currentState.UpdateState();
+    }
+
+    public void StartGame(object sender, EventArgs args) {
+        currentState.EnterState();
 
         currentState.UpdateState();
     }

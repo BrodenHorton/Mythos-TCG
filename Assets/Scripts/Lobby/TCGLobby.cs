@@ -25,8 +25,6 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
 
     public static TcgLobby Instance { get; private set; }
 
-    [SerializeField] private TcgRelay relay;
-
     private Lobby lobby;
     private PlayerProfile playerProfile;
     private float heartbeatTimer;
@@ -151,7 +149,7 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
 
         try {
             TcgLogger.Log(this, "Starting game");
-            string relayCode = await relay.CreateRelay();
+            string relayCode = await TcgRelay.Instance.CreateRelay();
             lobby = await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, new UpdateLobbyOptions {
                 Data = new Dictionary<string, DataObject> {
                     { START_GAME_KEY, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
@@ -264,7 +262,7 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
         OnLobbyDataUpdated?.Invoke(this, new LobbyDataUpdatedEventArgs(lobbyChanges));
         if (!IsLobbyHost() && lobby.Data[START_GAME_KEY].Value != "0") {
-            relay.JoinRelay(lobby.Data[START_GAME_KEY].Value);
+            TcgRelay.Instance.JoinRelay(lobby.Data[START_GAME_KEY].Value);
             TcgMultiplayerManager.Instance.StartClient();
         }
     }

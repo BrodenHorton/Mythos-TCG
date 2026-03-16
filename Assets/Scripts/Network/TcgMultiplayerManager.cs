@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -24,5 +25,6 @@ public class TcgMultiplayerManager : MonoBehaviour {
     public void StartClient() {
         Debug.Log("Starting as Client");
         NetworkManager.Singleton.StartClient();
+        SceneLoader.NetworkLoadScene(SceneLoader.Scene.TwoPlayerDuel);
     }
 }
