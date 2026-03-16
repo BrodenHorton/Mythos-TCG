@@ -32,7 +32,6 @@ public class LogContainerScrollView : MonoBehaviour {
         if (content.sizeDelta.y - scrollOffset <= scrollView.sizeDelta.y)
             return;
 
-        Debug.Log("Scrolled up");
         scrollOffset += scrollSpeed;
         if (content.sizeDelta.y - scrollOffset <= scrollView.sizeDelta.y)
             scrollOffset = content.sizeDelta.y - scrollView.sizeDelta.y;
@@ -47,7 +46,6 @@ public class LogContainerScrollView : MonoBehaviour {
         if (scrollOffset <= 0f)
             return;
 
-        Debug.Log("Scrolled down");
         scrollOffset = scrollOffset - scrollSpeed > 0f ? scrollOffset - scrollSpeed : 0f;
         SetContntLocalPosition(-scrollOffset);
     }

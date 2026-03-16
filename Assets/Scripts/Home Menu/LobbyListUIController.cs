@@ -7,6 +7,7 @@ public class LobbyListUIController : MonoBehaviour {
 
     [SerializeField] private LobbyListUI lobbyListUI;
     [SerializeField] private TcgLobby tcgLobby;
+    [SerializeField] private bool isManualRefresh;
 
     private float pollLobbiesTimer;
 
@@ -15,6 +16,9 @@ public class LobbyListUIController : MonoBehaviour {
     }
 
     private void Update() {
+        if (isManualRefresh)
+            return;
+
         PollLobbies();
     }
 

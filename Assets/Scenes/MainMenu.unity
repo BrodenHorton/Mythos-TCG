@@ -2844,7 +2844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74fe1191912bc4393bd11b244aa042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  relay: {fileID: 712552789}
 --- !u!1 &1026223889
 GameObject:
   m_ObjectHideFlags: 0
@@ -3573,6 +3572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyListUI: {fileID: 242078172}
   tcgLobby: {fileID: 986634686}
+  isManualRefresh: 1
 --- !u!1 &1389128608
 GameObject:
   m_ObjectHideFlags: 0

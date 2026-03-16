@@ -263,7 +263,6 @@ public class TcgLobby : MonoBehaviour, TcgLogSender {
         OnLobbyDataUpdated?.Invoke(this, new LobbyDataUpdatedEventArgs(lobbyChanges));
         if (!IsLobbyHost() && lobby.Data[START_GAME_KEY].Value != "0") {
             TcgRelay.Instance.JoinRelay(lobby.Data[START_GAME_KEY].Value);
-            TcgMultiplayerManager.Instance.StartClient();
         }
     }
 

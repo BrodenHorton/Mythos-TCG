@@ -36,7 +36,8 @@ public class DuelStateManager : MonoBehaviour {
     }
 
     private void Update() {
-        // TODO: Do a check to make sure the game has already started
+        if (GameManager.Instance.GameState != GameState.Duel)
+            return;
 
         currentState.UpdateState();
     }

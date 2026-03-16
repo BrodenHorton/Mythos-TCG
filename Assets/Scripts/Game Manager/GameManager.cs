@@ -6,13 +6,12 @@ public class GameManager : MonoBehaviour {
     public event EventHandler OnGameStart;
 
     public static GameManager Instance { get; private set; }
-
-    // Remove this and just have it listen for events
-    [SerializeField] private WaitingForPlayersUIController waitingForPlayersUIController;
     
     private GameState gameState;
+    private int playerCount = 2;
+    private bool isFirstUpdate = true;
 
-    public void Awake() {
+    private void Awake() {
         if(Instance != null) {
             Debug.Log("Instance of GameManager already exisits in scene. Destroying redundant object");
             Destroy(Instance.gameObject);
@@ -23,15 +22,28 @@ public class GameManager : MonoBehaviour {
         gameState = GameState.WaitingForPlayers;
     }
 
-    private void LateUpdate() {
-        if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count < 2) {
-            //waitingForPlayersUIController.Update(NetworkManager.Singleton.ConnectedClients.Count, 2);
+    private void Start() {
+        NetworkManager.Singleton.OnClientConnectedCallback += UpdateGameStateOnClientConnected;
+    }
+
+    private void Update() {
+        if (!isFirstUpdate)
+            return;
+
+        if (NetworkManager.Singleton.ConnectedClients.Count >= playerCount)
+            StartGame();
+        isFirstUpdate = false;
+    }
+
+    private void UpdateGameStateOnClientConnected(ulong clientId) {
+        if(gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= 2) {
+            StartGame();
         }
-        else {
-            gameState = GameState.Duel;
-            waitingForPlayersUIController.gameObject.SetActive(false);
-            OnGameStart?.Invoke(this, EventArgs.Empty);
-        }
+    }
+
+    private void StartGame() {
+        gameState = GameState.Duel;
+        OnGameStart?.Invoke(this, EventArgs.Empty);
     }
 
     public GameState GameState { get { return gameState; } }
