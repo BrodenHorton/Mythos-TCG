@@ -1,8 +1,9 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 [RequireComponent(typeof(DuelManager))]
-public class DuelStateManager : MonoBehaviour {
+public class DuelStateManager : NetworkBehaviour {
     private UntapPhase untapPhase;
     private DrawPhase drawPhase;
     private FirstMainPhase firstMainPhase;
@@ -44,10 +45,9 @@ public class DuelStateManager : MonoBehaviour {
 
     public void StartGame(object sender, EventArgs args) {
         currentState.EnterState();
-
-        currentState.UpdateState();
     }
 
+    //[ClientRpc]
     public void SwitchState(DuelState state) {
         currentState = state;
         currentState.EnterState();

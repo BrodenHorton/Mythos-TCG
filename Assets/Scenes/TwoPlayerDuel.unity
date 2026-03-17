@@ -1362,6 +1362,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 782071761}
+  - component: {fileID: 782071763}
   - component: {fileID: 782071762}
   m_Layer: 0
   m_Name: GameManager
@@ -1397,6 +1398,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59705e6bd51905a4e95f2daaa9520e63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &782071763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 782071760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2823915114
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &786581904
 GameObject:
   m_ObjectHideFlags: 0
@@ -2144,9 +2171,9 @@ Transform:
   - {fileID: 1727205385}
   - {fileID: 1322588981}
   - {fileID: 279632598}
-  - {fileID: 659647327}
   - {fileID: 431122890}
   - {fileID: 901241746}
+  - {fileID: 659647327}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1151329755
@@ -2527,6 +2554,7 @@ GameObject:
   - component: {fileID: 1336480728}
   - component: {fileID: 1336480730}
   - component: {fileID: 1336480729}
+  - component: {fileID: 1336480731}
   m_Layer: 0
   m_Name: DuelManager
   m_TagString: Untagged
@@ -2705,6 +2733,31 @@ MonoBehaviour:
         hasSummoningSickness: 0
         isTapped: 0
         damage: 0
+--- !u!114 &1336480731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336480727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1185950932
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!4 &1366366361 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}

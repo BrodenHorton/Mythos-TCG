@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : NetworkBehaviour {
     public event EventHandler OnGameStart;
 
     public static GameManager Instance { get; private set; }
@@ -23,25 +23,31 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Start() {
-        NetworkManager.Singleton.OnClientConnectedCallback += UpdateGameStateOnClientConnected;
+        if(IsServer)
+            NetworkManager.Singleton.OnClientConnectedCallback += UpdateGameStateOnClientConnected;
     }
 
     private void Update() {
-        if (!isFirstUpdate)
+        if(!IsServer || !isFirstUpdate) {
             return;
+        }
 
+        TcgLogger.Log("Entered Update for GameManager");
         if (NetworkManager.Singleton.ConnectedClients.Count >= playerCount)
-            StartGame();
+            StartGameClientRpc();
         isFirstUpdate = false;
     }
 
     private void UpdateGameStateOnClientConnected(ulong clientId) {
-        if(gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= 2) {
-            StartGame();
+        TcgLogger.Log("GameManager: Client Connected");
+        if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= 2) {
+            StartGameClientRpc();
         }
     }
 
-    private void StartGame() {
+    [ClientRpc]
+    private void StartGameClientRpc() {
+        TcgLogger.Log("StarGameClientRpc Entered");
         gameState = GameState.Duel;
         OnGameStart?.Invoke(this, EventArgs.Empty);
     }
