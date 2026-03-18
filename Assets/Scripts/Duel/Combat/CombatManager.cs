@@ -104,9 +104,9 @@ public class CombatManager : MonoBehaviour {
     }
 
     private void InsertCombat(DuelistCombat combat) {
-        int playerIndex = duelManager.GetPlayerIndex(combat.Initiator.Uuid);
+        int playerIndex = duelManager.GetPlayerIndex(combat.Initiator.PlayerId);
         for(int i = 0; i < duelistCombats.Count; i++) {
-            if (playerIndex < duelManager.GetPlayerIndex(duelistCombats[i].Initiator.Uuid)) {
+            if (playerIndex < duelManager.GetPlayerIndex(duelistCombats[i].Initiator.PlayerId)) {
                 duelistCombats[i] = combat;
                 return;
             }

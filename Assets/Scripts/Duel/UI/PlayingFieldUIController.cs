@@ -47,21 +47,21 @@ public class PlayingFieldUIController : MonoBehaviour {
     }
 
     public void PlayCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
-        if (player.Uuid != args.Player.Uuid)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
 
         playingFieldUI.PlayCreatureCard(args.Card);
     }
 
     public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
-        if (player.Uuid != args.Initiator.Uuid)
+        if (player.PlayerId != args.Initiator.PlayerId)
             return;
 
         playingFieldUI.PlayCreatureCard(args.Attacker);
     }
 
     public void PlayDomainCard(object sender, PlayerSpellCardEventArgs args) {
-        if (player.Uuid != args.Player.Uuid)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
 
         playingFieldUI.PlayDomainCard(args.Card);
@@ -78,7 +78,7 @@ public class PlayingFieldUIController : MonoBehaviour {
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        if (!duelManager.IsActivePlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;

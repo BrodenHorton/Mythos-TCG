@@ -1,14 +1,11 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class EndPhase : DuelState {
+public class EndPhase : NetworkBehaviour, DuelState {
     public EventHandler<PlayerEventArgs> OnEndPhase;
 
-    private DuelStateManager stateManager;
-
-    public EndPhase(DuelStateManager stateManager) {
-        this.stateManager = stateManager;
-    }
+    [SerializeField] private DuelStateManager stateManager;
 
     public void EnterState() {
         Debug.Log("End of Turn");

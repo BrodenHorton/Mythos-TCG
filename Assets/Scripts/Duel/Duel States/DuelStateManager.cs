@@ -4,14 +4,14 @@ using UnityEngine;
 
 [RequireComponent(typeof(DuelManager))]
 public class DuelStateManager : NetworkBehaviour {
-    private UntapPhase untapPhase;
-    private DrawPhase drawPhase;
-    private FirstMainPhase firstMainPhase;
-    private CombatPhase combatPhase;
-    private SecondMainPhase secondMainPhase;
-    private EndPhase endPhase;
+    [SerializeField] private UntapPhase untapPhase;
+    [SerializeField] private DrawPhase drawPhase;
+    [SerializeField] private FirstMainPhase firstMainPhase;
+    [SerializeField] private CombatPhase combatPhase;
+    [SerializeField] private SecondMainPhase secondMainPhase;
+    [SerializeField] private EndPhase endPhase;
+    
     private DuelState currentState;
-
     private DuelManager duelManager;
 
     private void Awake() {
@@ -21,13 +21,6 @@ public class DuelStateManager : NetworkBehaviour {
         CombatManager combatManager = FindFirstObjectByType<CombatManager>();
         if(combatManager == null)
             throw new Exception("Unable to find GameObject with CombatManager component");
-
-        untapPhase = new UntapPhase(this);
-        drawPhase = new DrawPhase(this);
-        firstMainPhase = new FirstMainPhase(this);
-        combatPhase = new CombatPhase(this, combatManager);
-        secondMainPhase = new SecondMainPhase(this);
-        endPhase = new EndPhase(this);
 
         currentState = untapPhase;
     }
@@ -40,11 +33,11 @@ public class DuelStateManager : NetworkBehaviour {
         if (GameManager.Instance.GameState != GameState.Duel)
             return;
 
-        currentState.UpdateState();
+        //currentState.UpdateState();
     }
 
     public void StartGame(object sender, EventArgs args) {
-        currentState.EnterState();
+        //currentState.EnterState();
     }
 
     //[ClientRpc]

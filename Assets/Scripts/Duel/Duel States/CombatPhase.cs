@@ -1,22 +1,18 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class CombatPhase : DuelState {
+public class CombatPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnCombatPhase;
     public event EventHandler<PlayerEventArgs> OnCombatPhaseFinished;
 
-    private DuelStateManager stateManager;
-    private CombatManager combatManager;
-
-    public CombatPhase(DuelStateManager stateManager, CombatManager combatManager) {
-        this.stateManager = stateManager;
-        this.combatManager = combatManager;
-    }
+    [SerializeField] private DuelStateManager stateManager;
+    [SerializeField] private CombatManager combatManager;
 
     public void EnterState() {
         Debug.Log("Entered Combat Phase");
         OnCombatPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if(stateManager.DuelManager.IsActivePlayerTurn())
+        if(stateManager.DuelManager.IsLocalClientPlayerTurn())
             EventBus.OnActionButtonPressed += ProcessCombat;
         else
             ProcessCombat();

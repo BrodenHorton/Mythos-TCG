@@ -7,17 +7,23 @@ public class DuelUIManager : MonoBehaviour {
     [SerializeField] private List<PlayingFieldUIController> playingFieldUIControllers;
     [SerializeField] private List<CombatFieldUIController> combatFieldUIControllers;
 
-    private Dictionary<Guid, DuelistUIController> duelistUIControllerByPlayerUuid;
-    private Dictionary<Guid, PlayingFieldUIController> playingFieldUIControllerByPlayerUuid;
-    private Dictionary<Guid, CombatFieldUIController> combatFieldUIControllerByPlayerUuid;
+    private DuelManager duelManager;
+    private Dictionary<ulong, DuelistUIController> duelistUIControllerByPlayerId;
+    private Dictionary<ulong, PlayingFieldUIController> playingFieldUIControllerByPlayerId;
+    private Dictionary<ulong, CombatFieldUIController> combatFieldUIControllerByPlayerId;
 
-    private void Awake() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
+    private void Start() {
+        duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
+
+        duelManager.OnPlayersInitialized += Init;
+    }
+
+    private void Init(object sender, EventArgs args) {
         List<MatchPlayer> players = duelManager.Players;
-        if(players.Count != duelistUIControllers.Count)
-            throw new Exception("Number of Match Players and DuelistUIControllers does not match. " + 
+        if (players.Count != duelistUIControllers.Count)
+            throw new Exception("Number of Match Players and DuelistUIControllers does not match. " +
                 players.Count + " Match Players and " + duelistUIControllers.Count + " DuelistUIControllers");
         if (players.Count != playingFieldUIControllers.Count)
             throw new Exception("Number of Match Players and PlayingFieldUIs does not match. " +
@@ -26,27 +32,28 @@ public class DuelUIManager : MonoBehaviour {
             throw new Exception("Number of Match Players and CombatFieldUIControllers does not match. " +
                 players.Count + " Match Players and " + combatFieldUIControllers.Count + " CombatFieldUIControllers");
 
-        duelistUIControllerByPlayerUuid = new Dictionary<Guid, DuelistUIController>();
-        playingFieldUIControllerByPlayerUuid = new Dictionary<Guid, PlayingFieldUIController>();
-        combatFieldUIControllerByPlayerUuid = new Dictionary<Guid, CombatFieldUIController>();
+        duelistUIControllerByPlayerId = new Dictionary<ulong, DuelistUIController>();
+        playingFieldUIControllerByPlayerId = new Dictionary<ulong, PlayingFieldUIController>();
+        combatFieldUIControllerByPlayerId = new Dictionary<ulong, CombatFieldUIController>();
         for (int i = 0; i < players.Count; i++) {
             duelistUIControllers[i].Init(players[i]);
             playingFieldUIControllers[i].Init(players[i]);
             combatFieldUIControllers[i].Init(players[i]);
-            duelistUIControllerByPlayerUuid.Add(players[i].Uuid, duelistUIControllers[i]);
-            playingFieldUIControllerByPlayerUuid.Add(players[i].Uuid, playingFieldUIControllers[i]);
-            combatFieldUIControllerByPlayerUuid.Add(players[i].Uuid, combatFieldUIControllers[i]);
+            duelistUIControllerByPlayerId.Add(players[i].PlayerId, duelistUIControllers[i]);
+            playingFieldUIControllerByPlayerId.Add(players[i].PlayerId, playingFieldUIControllers[i]);
+            combatFieldUIControllerByPlayerId.Add(players[i].PlayerId, combatFieldUIControllers[i]);
         }
     }
-    public DuelistUIController GetDuelistUIControllerByPlayerUUid(Guid playerUuid) {
-        return duelistUIControllerByPlayerUuid[playerUuid];
+
+    public DuelistUIController GetDuelistUIControllerByPlayerUUid(ulong playerId) {
+        return duelistUIControllerByPlayerId[playerId];
     }
 
-    public PlayingFieldUIController GetPlayingFieldUIControllerByPlayerUuid(Guid playerUuid) {
-        return playingFieldUIControllerByPlayerUuid[playerUuid];
+    public PlayingFieldUIController GetPlayingFieldUIControllerByPlayerUuid(ulong playerId) {
+        return playingFieldUIControllerByPlayerId[playerId];
     }
 
-    public CombatFieldUIController GetCombatUIControllerByPlayerUUid(Guid playerUuid) {
-        return combatFieldUIControllerByPlayerUuid[playerUuid];
+    public CombatFieldUIController GetCombatUIControllerByPlayerUUid(ulong playerId) {
+        return combatFieldUIControllerByPlayerId[playerId];
     }
 }

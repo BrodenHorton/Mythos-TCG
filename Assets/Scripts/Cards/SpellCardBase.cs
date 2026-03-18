@@ -5,4 +5,8 @@ using UnityEngine;
 public class SpellCardBase : CardBase {
     [SerializeField] SpellType spellType;
     [SerializeReference, SubclassSelector] private List<SpellCardEffect> baseEffects;
+
+    public override Card GenerateCardFromBase() {
+        return new SpellCard(this);
+    }
 }

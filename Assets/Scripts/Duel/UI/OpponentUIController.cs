@@ -16,26 +16,26 @@ public class OpponentUIController : DuelistUIController {
     }
 
     private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
-        if (player.Uuid != args.Player.Uuid)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
 
         opponentUI.DrawCreatureCard(args.Card);
     }
 
     private void DrawSpellCard(object sender, PlayerSpellCardEventArgs args) {
-        if (player.Uuid != args.Player.Uuid)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
 
         opponentUI.DrawSpellCard(args.Card);
     }
 
     private void SetLifePoints(object sender, LifePointsChangedEventArgs args) {
-        if (args.Player.Uuid == player.Uuid)
+        if (args.Player.PlayerId == player.PlayerId)
             opponentUI.SetLifePoints(args.LifePoints);
     }
 
     public void SetManaCount(object sender, ManaChangedEventArgs args) {
-        if (player.Uuid != args.Player.Uuid)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
 
         opponentUI.SetManaCount(args.CurrentMana);

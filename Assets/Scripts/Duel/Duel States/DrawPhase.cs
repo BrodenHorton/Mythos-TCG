@@ -1,14 +1,11 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class DrawPhase : DuelState {
+public class DrawPhase : NetworkBehaviour, DuelState {
     public event EventHandler<EventArgs> OnDrawPhase;
 
-    private DuelStateManager stateManager;
-
-    public DrawPhase(DuelStateManager stateManager) {
-        this.stateManager = stateManager;
-    }
+    [SerializeField] private DuelStateManager stateManager;
 
     public void EnterState() {
         Debug.Log("Entered Draw Phase");

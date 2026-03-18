@@ -4,19 +4,20 @@ using UnityEngine;
 
 [Serializable]
 public class MatchPlayer {
-    [SerializeReference, SubclassSelector] private List<Card> deck;
-    [SerializeReference, SubclassSelector] private List<Card> hand;
-    [SerializeReference, SubclassSelector] private List<Card> discardPile;
-    [SerializeReference, SubclassSelector] private List<CreatureCard> creatures;
-    [SerializeReference, SubclassSelector] private SpellCard domain;
+    private List<Card> deck;
+    private List<Card> hand;
+    private List<Card> discardPile;
+    private List<CreatureCard> creatures;
+    private SpellCard domain;
     
     private int lifePoints;
     private int currentMana;
     private int seriesWinCount;
-    private Guid uuid;
+    private ulong playerId;
 
-    public MatchPlayer() {
+    public MatchPlayer(ulong playerId) {
         deck = new List<Card>();
+        Temp_PopulateDeck();
         hand = new List<Card>();
         discardPile = new List<Card>();
         creatures = new List<CreatureCard>();
@@ -24,7 +25,16 @@ public class MatchPlayer {
         lifePoints = 20;
         currentMana = 1;
         seriesWinCount = 0;
-        uuid = Guid.NewGuid();
+        this.playerId = playerId;
+    }
+
+    public void Temp_PopulateDeck() {
+        int tempDeckSize = 10;
+        int databaseCardCount = CardDatabase.Instance.Cards.Count;
+        for (int i = 0; i < tempDeckSize; i++) {
+            Card card = CardDatabase.Instance.GetCardByIndex(UnityEngine.Random.Range(0, databaseCardCount)).GenerateCardFromBase();
+            deck.Add(card);
+        }
     }
 
     public void ShuffleDeck() {
@@ -94,7 +104,7 @@ public class MatchPlayer {
         creatures.Remove(card);
     }
 
-    public Guid Uuid { get { return uuid; } }
+    public ulong PlayerId { get { return playerId; } }
 
     public List<Card> Deck {  get { return deck; } }
 

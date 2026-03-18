@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour {
-    public event EventHandler OnGameStart;
+    public event EventHandler<StartGameEventArgs> OnGameStart;
 
     public static GameManager Instance { get; private set; }
     
@@ -24,7 +25,7 @@ public class GameManager : NetworkBehaviour {
 
     private void Start() {
         if(IsServer)
-            NetworkManager.Singleton.OnClientConnectedCallback += UpdateGameStateOnClientConnected;
+            NetworkManager.Singleton.OnClientConnectedCallback += UpdateGameStateOnClientConnectedServerRpc;
     }
 
     private void Update() {
@@ -38,7 +39,8 @@ public class GameManager : NetworkBehaviour {
         isFirstUpdate = false;
     }
 
-    private void UpdateGameStateOnClientConnected(ulong clientId) {
+    [ServerRpc]
+    private void UpdateGameStateOnClientConnectedServerRpc(ulong clientId) {
         TcgLogger.Log("GameManager: Client Connected");
         if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= 2) {
             StartGameClientRpc();
@@ -49,7 +51,10 @@ public class GameManager : NetworkBehaviour {
     private void StartGameClientRpc() {
         TcgLogger.Log("StarGameClientRpc Entered");
         gameState = GameState.Duel;
-        OnGameStart?.Invoke(this, EventArgs.Empty);
+        List<ulong>  playerOrder = new List<ulong>();
+        foreach(ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys)
+            playerOrder.Add(playerId);
+        OnGameStart?.Invoke(this, new StartGameEventArgs(playerOrder));
     }
 
     public GameState GameState { get { return gameState; } }

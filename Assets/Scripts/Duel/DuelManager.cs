@@ -1,37 +1,39 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class DuelManager : MonoBehaviour {
+    public event EventHandler OnPlayersInitialized;
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
     public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
 
-    [SerializeField] private List<MatchPlayer> players = new List<MatchPlayer>();
     [SerializeField] private int initialHandSize;
 
-    private MatchPlayer activePlayer;
+    private List<MatchPlayer> players;
+    private MatchPlayer localClientPlayer;
     private int currentPlayerTurnIndex;
     private int fullTurnCount;
 
     private void Awake() {
-        if(players.Count < 2)
-            throw new Exception("Not enough players to start match.");
-
-        activePlayer = players[0];
         currentPlayerTurnIndex = 0;
         fullTurnCount = 4;
     }
 
     private void Start() {
-        InitializePlayers();
+        GameManager.Instance.OnGameStart += InitializePlayers;
     }
 
-    public void InitializePlayers() {
-        foreach(MatchPlayer player in players) {
+    public void InitializePlayers(object sender, StartGameEventArgs args) {
+        foreach(ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys) {
+            MatchPlayer player = new MatchPlayer(playerId);
             player.ShuffleDeck();
             for (int i = 0; i < initialHandSize; i++)
                 player.DrawCard();
+            if (playerId == NetworkManager.Singleton.LocalClientId)
+                localClientPlayer = player;
         }
+        OnPlayersInitialized?.Invoke(this, EventArgs.Empty);
     }
 
     public void PlayCardFromHand(MatchPlayer player, int cardIndex) {
@@ -61,18 +63,18 @@ public class DuelManager : MonoBehaviour {
         return players[currentPlayerTurnIndex];
     }
 
-    public bool IsActivePlayerTurn() {
-        return activePlayer == GetCurrentPlayerTurn();
+    public bool IsLocalClientPlayerTurn() {
+        return localClientPlayer == GetCurrentPlayerTurn();
     }
 
     public int GetStartOfTurnManaCount() {
         return fullTurnCount;
     }
 
-    public MatchPlayer GetPlayerByUuid(Guid uuid) {
+    public MatchPlayer GetPlayerById(ulong playerId) {
         MatchPlayer result = null;
         foreach(MatchPlayer p in players) {
-            if (p.Uuid == uuid)
+            if (p.PlayerId == playerId)
                 result = p;
         }
 
@@ -83,13 +85,13 @@ public class DuelManager : MonoBehaviour {
         fullTurnCount++;
     }
 
-    public int GetPlayerIndex(Guid playerUuid) {
+    public int GetPlayerIndex(ulong playerId) {
         for(int i = 0; i < players.Count; i++) {
-            if (players[i].Uuid == playerUuid)
+            if (players[i].PlayerId == playerId)
                 return i;
         }
 
-        throw new Exception("Player index could not be found for UUID: " + playerUuid);
+        throw new Exception("Player index could not be found for playerId: " + playerId);
     }
 
     public List<MatchPlayer> Players { get { return players; } }

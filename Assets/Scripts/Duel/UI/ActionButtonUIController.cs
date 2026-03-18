@@ -31,21 +31,21 @@ public class ActionButtonUIController : MonoBehaviour {
     }
 
     private void FirstMainPhaseAction(object sender, PlayerEventArgs args) {
-        if (!duelManager.IsActivePlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
         actionButtonUI.SetActionText("Combat Phase");
     }
 
     private void CombatPhaseAction(object sender, PlayerEventArgs args) {
-        if (!duelManager.IsActivePlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
         actionButtonUI.SetActionText("Next");
     }
 
     private void SecondMainPhaseAction(object sender, PlayerEventArgs args) {
-        if (!duelManager.IsActivePlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
         actionButtonUI.SetActionText("End");
@@ -54,7 +54,7 @@ public class ActionButtonUIController : MonoBehaviour {
     private void ButtonPressedCheck(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        if (!duelManager.IsActivePlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return;
         if (!actionButtonUI.IsActive)
             return;

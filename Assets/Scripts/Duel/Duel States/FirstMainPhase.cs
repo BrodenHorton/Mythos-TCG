@@ -1,19 +1,16 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class FirstMainPhase : DuelState {
+public class FirstMainPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnFirstMainPhase;
 
-    private DuelStateManager stateManager;
-
-    public FirstMainPhase(DuelStateManager stateManager) {
-        this.stateManager = stateManager;
-    }
+    [SerializeField] private DuelStateManager stateManager;
 
     public void EnterState() {
         Debug.Log("Entered First Main Phase");
         OnFirstMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (stateManager.DuelManager.IsActivePlayerTurn())
+        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
             EventBus.OnActionButtonPressed += NextPhase;
         else
             stateManager.SwitchState(stateManager.CombatPhase);

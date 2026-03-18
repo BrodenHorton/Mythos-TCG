@@ -62,27 +62,27 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
-        if (args.Player.Uuid == player.Uuid)
+        if (args.Player.PlayerId == player.PlayerId)
             playerUI.DrawCreatureCard(args.Card);
     }
 
     private void DrawSpellCard(object sender, PlayerSpellCardEventArgs args) {
-        if (args.Player.Uuid == player.Uuid)
+        if (args.Player.PlayerId == player.PlayerId)
             playerUI.DrawSpellCard(args.Card);
     }
 
     private void SetLifePoints(object sender, LifePointsChangedEventArgs args) {
-        if (args.Player.Uuid == player.Uuid)
+        if (args.Player.PlayerId == player.PlayerId)
             playerUI.SetLifePoints(args.LifePoints);
     }
 
     private void SetManaCount(object sender, ManaChangedEventArgs args) {
-        if (args.Player.Uuid == player.Uuid)
+        if (args.Player.PlayerId == player.PlayerId)
             playerUI.SetManaCount(args.CurrentMana);
     }
 
     private void SetSelectableCards(object sender, PlayerEventArgs args) {
-        if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
+        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
 
         playerUI.SetSelectableCards(player);
@@ -95,7 +95,7 @@ public class PlayerUIController : DuelistUIController {
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        if (player.Uuid != duelManager.GetCurrentPlayerTurn().Uuid)
+        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         HandCardUI handCardUI = RaycastColliderCheck();
         if (handCardUI == null)

@@ -40,7 +40,7 @@ public class CombatFieldUIController : MonoBehaviour {
     }
 
     public void AddAttacker(object sender, DeclareAttackerEventArgs args) {
-        if (target.Uuid != args.Target.Uuid)
+        if (target.PlayerId != args.Target.PlayerId)
             return;
 
         combatFieldUI.AddAttacker(args.Attacker);
@@ -48,7 +48,7 @@ public class CombatFieldUIController : MonoBehaviour {
 
     // TODO: Implement so the defender corresponds to a given attacker
     public void AddDefender(object sender, DeclareDefenderEventArgs args) {
-        if (target.Uuid != args.Target.Uuid)
+        if (target.PlayerId != args.Target.PlayerId)
             return;
 
         combatFieldUI.AddDefender(args.Defender);
@@ -70,7 +70,7 @@ public class CombatFieldUIController : MonoBehaviour {
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
-        if (!duelManager.IsActivePlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
