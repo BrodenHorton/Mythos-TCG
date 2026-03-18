@@ -8,8 +8,6 @@ public class DuelManager : MonoBehaviour {
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
     public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
 
-    [SerializeField] private int initialHandSize;
-
     private List<MatchPlayer> players;
     private MatchPlayer localClientPlayer;
     private int currentPlayerTurnIndex;
@@ -25,13 +23,13 @@ public class DuelManager : MonoBehaviour {
     }
 
     public void InitializePlayers(object sender, StartGameEventArgs args) {
+        players = new List<MatchPlayer>();
         foreach(ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys) {
             MatchPlayer player = new MatchPlayer(playerId);
-            player.ShuffleDeck();
-            for (int i = 0; i < initialHandSize; i++)
-                player.DrawCard();
-            if (playerId == NetworkManager.Singleton.LocalClientId)
+            if (playerId == NetworkManager.Singleton.LocalClientId) {
                 localClientPlayer = player;
+            }
+            players.Add(player);
         }
         OnPlayersInitialized?.Invoke(this, EventArgs.Empty);
     }
@@ -95,6 +93,8 @@ public class DuelManager : MonoBehaviour {
     }
 
     public List<MatchPlayer> Players { get { return players; } }
+
+    public MatchPlayer LocalClientPlayer { get { return localClientPlayer; } }
 
     public int FullTurnCount { get { return fullTurnCount; } }
 }

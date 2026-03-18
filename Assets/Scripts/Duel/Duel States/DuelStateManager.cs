@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(DuelManager))]
 public class DuelStateManager : NetworkBehaviour {
+    [SerializeField] private InitializationPhase initializationPhase;
     [SerializeField] private UntapPhase untapPhase;
     [SerializeField] private DrawPhase drawPhase;
     [SerializeField] private FirstMainPhase firstMainPhase;
@@ -22,11 +23,14 @@ public class DuelStateManager : NetworkBehaviour {
         if(combatManager == null)
             throw new Exception("Unable to find GameObject with CombatManager component");
 
-        currentState = untapPhase;
+        currentState = initializationPhase;
     }
 
     private void Start() {
-        GameManager.Instance.OnGameStart += StartGame;
+        if (!IsServer)
+            return;
+
+        DuelManager.OnPlayersInitialized += StartStateMachine;
     }
 
     private void Update() {
@@ -36,11 +40,15 @@ public class DuelStateManager : NetworkBehaviour {
         //currentState.UpdateState();
     }
 
-    public void StartGame(object sender, EventArgs args) {
-        //currentState.EnterState();
+    public void StartStateMachine(object sender, EventArgs args) {
+        StartStateMachineClientRpc();
     }
 
-    //[ClientRpc]
+    [ClientRpc]
+    public void StartStateMachineClientRpc() {
+        currentState.EnterState();
+    }
+
     public void SwitchState(DuelState state) {
         currentState = state;
         currentState.EnterState();
@@ -49,6 +57,8 @@ public class DuelStateManager : NetworkBehaviour {
     public DuelManager DuelManager { get { return duelManager; } }
 
     public DuelState CurrentState { get { return currentState; } }
+
+    public InitializationPhase Initialization {  get { return initializationPhase; } }
 
     public UntapPhase UntapPhase { get { return untapPhase; } }
 
