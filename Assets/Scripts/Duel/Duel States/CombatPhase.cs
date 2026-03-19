@@ -14,22 +14,34 @@ public class CombatPhase : NetworkBehaviour, DuelState {
         OnCombatPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
         if(stateManager.DuelManager.IsLocalClientPlayerTurn())
             EventBus.OnActionButtonPressed += ProcessCombat;
-        else
-            ProcessCombat();
     }
 
-    public void UpdateState() {
-
-    }
+    public void UpdateState() { }
 
     private void ProcessCombat(object sender, EventArgs args) {
         EventBus.OnActionButtonPressed -= ProcessCombat;
-        ProcessCombat();
+        ProcessCombatRpc();
+        SwitchToSecondMainPhaseRpc();
     }
 
-    private void ProcessCombat() {
+    [Rpc(SendTo.Server)]
+    private void ProcessCombatRpc() {
+        ProcessCombatClientRpc();
+    }
+
+    [ClientRpc]
+    private void ProcessCombatClientRpc() {
         combatManager.ProcessCombat();
         OnCombatPhaseFinished?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SwitchToSecondMainPhaseRpc() {
+        SwitchToSecondMainPhaseClientRpc();
+    }
+
+    [ClientRpc]
+    private void SwitchToSecondMainPhaseClientRpc() {
         stateManager.SwitchState(stateManager.SecondMainPhase);
     }
 }

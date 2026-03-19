@@ -16,7 +16,5 @@ public class DrawPhase : NetworkBehaviour, DuelState {
         stateManager.SwitchState(stateManager.FirstMainPhase);
     }
 
-    public void UpdateState() {
-
-    }
+    public void UpdateState() { }
 }

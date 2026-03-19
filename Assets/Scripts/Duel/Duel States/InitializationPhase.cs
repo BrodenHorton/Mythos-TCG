@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,20 +11,15 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
     private int initialHandSize = 5;
 
     public void EnterState() {
-        if (!IsServer)
-            return;
-
-        InitializationPhaseClientRpc();
-    }
-
-    [ClientRpc]
-    private void InitializationPhaseClientRpc() {
         Debug.Log("Entered Initialization Phase");
         OnInitializationPhase?.Invoke(this, EventArgs.Empty);
         MatchPlayer player = stateManager.DuelManager.LocalClientPlayer;
         player.ShuffleDeck();
-        for (int i = 0; i < initialHandSize; i++)
-            player.DrawCard();
+        List<MatchPlayer> players = stateManager.DuelManager.Players;
+        for(int i = 0; i < players.Count; i++) {
+            for (int j = 0; j < initialHandSize; j++)
+                players[i].DrawCard();
+        }
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 

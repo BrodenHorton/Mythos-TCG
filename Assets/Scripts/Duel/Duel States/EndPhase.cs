@@ -14,7 +14,5 @@ public class EndPhase : NetworkBehaviour, DuelState {
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 
-    public void UpdateState() {
-
-    }
+    public void UpdateState() { }
 }

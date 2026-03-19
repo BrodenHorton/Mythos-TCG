@@ -35,13 +35,16 @@ public class DuelUIManager : MonoBehaviour {
         duelistUIControllerByPlayerId = new Dictionary<ulong, DuelistUIController>();
         playingFieldUIControllerByPlayerId = new Dictionary<ulong, PlayingFieldUIController>();
         combatFieldUIControllerByPlayerId = new Dictionary<ulong, CombatFieldUIController>();
+        int playerIndex = duelManager.GetPlayerIndex(duelManager.LocalClientPlayer.PlayerId);
+        int playerCount = duelManager.GetPlayerCount();
         for (int i = 0; i < players.Count; i++) {
-            duelistUIControllers[i].Init(players[i]);
-            playingFieldUIControllers[i].Init(players[i]);
-            combatFieldUIControllers[i].Init(players[i]);
-            duelistUIControllerByPlayerId.Add(players[i].PlayerId, duelistUIControllers[i]);
-            playingFieldUIControllerByPlayerId.Add(players[i].PlayerId, playingFieldUIControllers[i]);
-            combatFieldUIControllerByPlayerId.Add(players[i].PlayerId, combatFieldUIControllers[i]);
+            MatchPlayer localClientOffsetPlayer = players[(playerIndex + i) % playerCount];
+            duelistUIControllers[i].Init(localClientOffsetPlayer);
+            playingFieldUIControllers[i].Init(localClientOffsetPlayer);
+            combatFieldUIControllers[i].Init(localClientOffsetPlayer);
+            duelistUIControllerByPlayerId.Add(localClientOffsetPlayer.PlayerId, duelistUIControllers[i]);
+            playingFieldUIControllerByPlayerId.Add(localClientOffsetPlayer.PlayerId, playingFieldUIControllers[i]);
+            combatFieldUIControllerByPlayerId.Add(localClientOffsetPlayer.PlayerId, combatFieldUIControllers[i]);
         }
     }
 

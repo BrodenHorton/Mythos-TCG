@@ -12,16 +12,22 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
         OnSecondMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
         if (stateManager.DuelManager.IsLocalClientPlayerTurn())
             EventBus.OnActionButtonPressed += NextPhase;
-        else
-            stateManager.SwitchState(stateManager.EndPhase);
     }
 
-    public void UpdateState() {
-
-    }
+    public void UpdateState() { }
 
     private void NextPhase(object sender, EventArgs args) {
         EventBus.OnActionButtonPressed -= NextPhase;
+        SwitchToEndPhaseRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SwitchToEndPhaseRpc() {
+        SwitchToEndPhaseClientRpc();
+    }
+
+    [ClientRpc]
+    private void SwitchToEndPhaseClientRpc() {
         stateManager.SwitchState(stateManager.EndPhase);
     }
 }

@@ -8,14 +8,6 @@ public class UntapPhase : NetworkBehaviour, DuelState {
     [SerializeField] private DuelStateManager stateManager;
 
     public void EnterState() {
-        if (!IsServer)
-            return;
-
-        UntapPhaseClientRpc();
-    }
-
-    [ClientRpc]
-    private void UntapPhaseClientRpc() {
         Debug.Log("Entered Untap Phase");
         OnUntapPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
         MatchPlayer player = stateManager.DuelManager.GetCurrentPlayerTurn();
@@ -26,7 +18,5 @@ public class UntapPhase : NetworkBehaviour, DuelState {
         stateManager.SwitchState(stateManager.DrawPhase);
     }
 
-    public void UpdateState() {
-
-    }
+    public void UpdateState() { }
 }

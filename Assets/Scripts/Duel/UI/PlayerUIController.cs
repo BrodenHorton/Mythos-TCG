@@ -62,10 +62,6 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
-        if(player == null)
-            Debug.Log("player null");
-        if (args.Player == null)
-            Debug.Log("args.Player null");
         if (args.Player.PlayerId == player.PlayerId)
             playerUI.DrawCreatureCard(args.Card);
     }
