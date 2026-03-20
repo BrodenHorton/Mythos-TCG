@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
-public class CreatureCard : Card {
+public class CreatureCard : Card, INetworkSerializable {
     [SerializeField] private CreatureCardBase cardBase;
     [SerializeField] private bool hasSummoningSickness;
     [SerializeField] private bool isTapped;
     [SerializeField] private int damage;
-    [SerializeField] private List<CreatureCardEffect> effects;
+    //[SerializeField] private List<CreatureCardEffect> effects;
 
-    public CreatureCard() {}
+    public CreatureCard() { }
 
     public CreatureCard(CreatureCardBase cardBase) {
         this.cardBase = cardBase;
-        effects = new List<CreatureCardEffect>();
+        //effects = new List<CreatureCardEffect>();
     }
 
     public override void Init(MatchPlayer player) {
@@ -67,6 +68,10 @@ public class CreatureCard : Card {
 
     public void Damage(int amt) {
         damage += amt;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
+        
     }
 
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }

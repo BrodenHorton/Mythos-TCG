@@ -96,7 +96,9 @@ public class PlayingFieldUIController : MonoBehaviour {
             return;
 
         playingFieldUI.RemoveCreature(cardUI);
-        EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(player, duelManager.Players[1], creatureCard));
+        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
+        MatchPlayer target = duelManager.Players[(duelManager.GetPlayerIndex(initiator.PlayerId) + 1) % duelManager.Players.Count];
+        EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(initiator, target, creatureCard));
     }
 
     private CreatureFieldCardUI RaycastColliderCheck() {

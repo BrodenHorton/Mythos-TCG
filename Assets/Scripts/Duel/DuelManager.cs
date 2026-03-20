@@ -34,12 +34,22 @@ public class DuelManager : MonoBehaviour {
         OnPlayersInitialized?.Invoke(this, EventArgs.Empty);
     }
 
-    public void PlayCardFromHand(MatchPlayer player, int cardIndex) {
-        if (player.Hand.Count <= cardIndex)
+    public void PlayCardFromHand(MatchPlayer player, int handCardIndex) {
+        if (player.Hand.Count <= handCardIndex)
             return;
 
-        Card card = player.Hand[cardIndex];
-        player.Hand.RemoveAt(cardIndex);
+        PlayCardFromHandRpc(GetPlayerIndex(player.PlayerId), player.Hand[handCardIndex], handCardIndex);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void PlayCardFromHandRpc(int playerIndex, Card card, int handCardIndex) {
+        PlayCardFromHandClientRpc(playerIndex, card, handCardIndex);
+    }
+
+    [ClientRpc]
+    private void PlayCardFromHandClientRpc(int playerIndex, Card card, int handCardIndex) {
+        MatchPlayer player = Players[playerIndex];
+        player.Hand.RemoveAt(handCardIndex);
         card.PlayCard(this, player);
     }
 

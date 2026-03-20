@@ -37,7 +37,7 @@ public class DuelStateManager : NetworkBehaviour {
         if (GameManager.Instance.GameState != GameState.Duel)
             return;
 
-        //currentState.UpdateState();
+        currentState.UpdateState();
     }
 
     public void StartStateMachine(object sender, EventArgs args) {
