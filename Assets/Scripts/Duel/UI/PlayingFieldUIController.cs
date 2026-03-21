@@ -1,8 +1,11 @@
 ﻿using System;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.GraphicsBuffer;
 
-public class PlayingFieldUIController : MonoBehaviour {
+public class PlayingFieldUIController : NetworkBehaviour {
     [SerializeField] private PlayingFieldUI playingFieldUI;
 
     private MatchPlayer player;
@@ -30,6 +33,7 @@ public class PlayingFieldUIController : MonoBehaviour {
         EventBus.OnDomainCardPlayed += PlayDomainCard;
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
+        EventBus.OnDeclareAttacker += RemoveAttacker;
         EventBus.OnUndeclareAttacker += UndeclareAttacker;
         EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
@@ -97,10 +101,10 @@ public class PlayingFieldUIController : MonoBehaviour {
         if (!creatureCard.CanAttack())
             return;
 
-        playingFieldUI.RemoveCreature(cardUI);
+        TcgLogger.Log("Card Selected");
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
         MatchPlayer target = duelManager.Players[(duelManager.GetPlayerIndex(initiator.PlayerId) + 1) % duelManager.Players.Count];
-        EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(initiator, target, creatureCard));
+        DeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
     }
 
     private CreatureFieldCardUI RaycastColliderCheck() {
@@ -116,6 +120,29 @@ public class PlayingFieldUIController : MonoBehaviour {
         }
 
         return fieldCardUI;
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DeclareAttackerServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        DeclareAttackerClientRpc(initiatorIndex, targetIndex, cardUuidStr);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void DeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
+        CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
+        EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    }
+
+    private void RemoveAttacker(object sender, DeclareAttackerEventArgs args) {
+        foreach(CreatureFieldCardUI cardUI in playingFieldUI.Temp_GetCreatureFieldCards())
+            TcgLogger.Log(cardUI.CardUuid.ToString());
+        if (args.Initiator.PlayerId != player.PlayerId)
+            return;
+        if (!playingFieldUI.ContainsCreature(args.Attacker.Uuid))
+            return;
+
+        playingFieldUI.RemoveCreature(args.Attacker.Uuid);
     }
 
     public bool ContainsCreature(CreatureFieldCardUI creatureFieldCardUI) {

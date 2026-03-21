@@ -98,6 +98,10 @@ public class DuelManager : NetworkBehaviour {
         fullTurnCount++;
     }
 
+    public int GetPlayerIndex(MatchPlayer player) {
+        return GetPlayerIndex(player.PlayerId);
+    }
+
     public int GetPlayerIndex(ulong playerId) {
         for(int i = 0; i < players.Count; i++) {
             if (players[i].PlayerId == playerId)

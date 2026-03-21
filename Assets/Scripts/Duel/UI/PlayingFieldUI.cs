@@ -49,6 +49,15 @@ public class PlayingFieldUI : MonoBehaviour {
         }
     }
 
+    public void RemoveCreature(Guid uuid) {
+        foreach(CreatureFieldCardUI cardUI in creatures) {
+            if(cardUI.CardUuid == uuid) {
+                RemoveCreature(cardUI);
+                break;
+            }
+        }
+    }
+
     public void RemoveCreature(CreatureFieldCardUI cardUI) {
         creatures.Remove(cardUI);
         Destroy(cardUI.gameObject);
@@ -90,5 +99,18 @@ public class PlayingFieldUI : MonoBehaviour {
             cardPosition.x += i * cardSpacing - handOffset;
             creatures[i].transform.position = cardPosition;
         }
+    }
+
+    public CreatureFieldCardUI GetCreatureFieldCardUIBy(Guid uuid) {
+        foreach(CreatureFieldCardUI cardUI in creatures) {
+            if(cardUI.CardUuid == uuid)
+                return cardUI;
+        }
+
+        return null;
+    }
+
+    public List<CreatureFieldCardUI> Temp_GetCreatureFieldCards() {
+        return creatures;
     }
 }
