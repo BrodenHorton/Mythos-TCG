@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,14 +28,17 @@ public class PlayerUIController : DuelistUIController {
             throw new Exception("Could not find DuelStateManager object");
 
         cam = Camera.main;
-        Debug.Log("Player UI Controller has Started");
 
         EventBus.OnLifePointsChanged += SetLifePoints;
         EventBus.OnManaCountChanged += SetManaCount;
+        EventBus.OnManaCountChanged += SetSelectableCardsAfterManaChanged;
         EventBus.OnCreatureCardDrawn += DrawCreatureCard;
         EventBus.OnSpellCardDrawn += DrawSpellCard;
-        stateManager.DrawPhase.OnDrawPhase += HideBorderAll;
+        EventBus.OnCardRemovedFromHand += RemoveCardUIFromHand;
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
+        stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
+        stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
+        stateManager.EndPhase.OnEndPhase += HideAllClientsSelectionBorders;
     }
 
     private void Update() {
@@ -82,14 +86,47 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void SetSelectableCards(object sender, PlayerEventArgs args) {
-        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
 
         playerUI.SetSelectableCards(player);
     }
 
-    private void HideBorderAll(object sender, EventArgs args) {
+    private void HideSelectionBorders(object sender, PlayerEventArgs args) {
+        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
+            return;
+        if (player.PlayerId != args.Player.PlayerId)
+            return;
+
+        HideSelectionBorders();
+    }
+
+    private void HideSelectionBorders() {
         playerUI.SetBorderVisibilityAll(false);
+    }
+
+    private void HideAllClientsSelectionBorders(object sender, PlayerEventArgs args) {
+        HideAllClientsSelectionBordersServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void HideAllClientsSelectionBordersServerRpc() {
+        HideAllClientsSelectionBordersClientRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void HideAllClientsSelectionBordersClientRpc() {
+        playerUI.SetBorderVisibilityAll(false);
+    }
+
+    private void SetSelectableCardsAfterManaChanged(object sender, ManaChangedEventArgs args) {
+        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
+            return;
+        if (player.PlayerId != args.Player.PlayerId)
+            return;
+        // TODO: Add a boolean to tell if we are in a state that we can play selectable cards in
+        
+        playerUI.SetSelectableCards(player);
     }
 
     private void SelectCard(InputAction.CallbackContext context) {
@@ -109,8 +146,13 @@ public class PlayerUIController : DuelistUIController {
             return;
 
         duelManager.PlayCardFromHand(player, cardIndex);
-        handCardUI.Select();
-        playerUI.SetSelectableCards(player);
+    }
+
+    private void RemoveCardUIFromHand(object sender, CardRemovedFromHandEventArgs args) {
+        if (player.PlayerId != args.Player.PlayerId)
+            return;
+
+        playerUI.RemoveCardFromHand(args.HandIndex);
     }
 
     private HandCardUI RaycastColliderCheck() {

@@ -26,7 +26,7 @@ public class PlayingFieldUIController : MonoBehaviour {
     }
 
     private void Start() {
-        EventBus.OnCreatureCardPlayed += PlayCreatureCard;
+        EventBus.OnCreatureCardPlayedFromHand += PlayCreatureCard;
         EventBus.OnDomainCardPlayed += PlayDomainCard;
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
@@ -46,7 +46,7 @@ public class PlayingFieldUIController : MonoBehaviour {
         this.player = player;
     }
 
-    public void PlayCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
+    public void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {
         if (player.PlayerId != args.Player.PlayerId)
             return;
 
@@ -80,7 +80,6 @@ public class PlayingFieldUIController : MonoBehaviour {
             return;
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
-        TcgLogger.Log("PlayingFieldUIController playerId: " + player.PlayerId + " LocalClientPlayerId: " + duelManager.LocalClientPlayer.PlayerId);
         if (player != duelManager.LocalClientPlayer)
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)

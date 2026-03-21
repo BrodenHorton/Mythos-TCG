@@ -47,16 +47,15 @@ public class DuelManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    private void PlayCreatureCardFromHandServerRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handCardIndex) {
-        PlayCreatureCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handCardIndex);
+    private void PlayCreatureCardFromHandServerRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+        PlayCreatureCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handCardIndex) {
+    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
         MatchPlayer player = Players[playerIndex];
-        player.Hand.RemoveAt(handCardIndex);
         CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
-        player.PlayCreatureCard(card);
+        player.PlayCreatureCardFromHand(card, handIndex);
     }
 
     public void NextTurn() {

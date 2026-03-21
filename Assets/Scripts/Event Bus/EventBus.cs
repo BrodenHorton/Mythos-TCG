@@ -6,8 +6,9 @@ public static class EventBus {
     public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
     public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardDrawn;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardDrawn;
+    public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
     public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardSelectedForPlay;
-    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardPlayed;
+    public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardPlayedFromHand;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardPlayed;
     public static event EventHandler<PlayerSpellCardEventArgs> OnDomainCardPlayed;
     public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
@@ -39,12 +40,16 @@ public static class EventBus {
         OnSpellCardDrawn?.Invoke(sender, args);
     }
 
+    public static void InvokeOnCardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {
+        OnCardRemovedFromHand?.Invoke(sender, args);
+    }
+
     public static void InvokeOnCreatureCardSelectedForPlay(object sender, PlayCreatureCardFromHandEventArgs args) {
         OnCreatureCardSelectedForPlay?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureCardPlayed(object sender, PlayerCreatureCardEventArgs args) {
-        OnCreatureCardPlayed?.Invoke(sender, args);
+    public static void InvokeOnCreatureCardPlayedFromHand(object sender, PlayCreatureCardFromHandEventArgs args) {
+        OnCreatureCardPlayedFromHand?.Invoke(sender, args);
     }
 
     public static void InvokeOnSpellCardPlayed(object sender, PlayerSpellCardEventArgs args) {

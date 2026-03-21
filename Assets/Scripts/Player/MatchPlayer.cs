@@ -43,7 +43,7 @@ public class MatchPlayer {
 
     public Card DrawCard() {
         if(deck.Count == 0) {
-            Debug.Log("Player has ran out of cards to draw");
+            TcgLogger.Log("Player has ran out of cards to draw");
             return null;
         }
 
@@ -54,10 +54,11 @@ public class MatchPlayer {
         return card;
     }
 
-    public void PlayCreatureCard(CreatureCard card) {
+    public void PlayCreatureCardFromHand(CreatureCard card, int handIndex) {
+        RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         creatures.Add(card);
-        EventBus.InvokeOnCreatureCardPlayed(this, new PlayerCreatureCardEventArgs(this, card));
+        EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCreatureCardFromHandEventArgs(this, card, handIndex));
     }
 
     public void PlaySpellCard(SpellCard card) {
@@ -69,6 +70,15 @@ public class MatchPlayer {
         CurrentMana -= card.GetManaCost();
         domain = card;
         EventBus.InvokeOnDomainCardPlayed(this, new PlayerSpellCardEventArgs(this, card));
+    }
+
+    public void RemoveCardFromHandAt(int handIndex) {
+        if (handIndex < 0 || handIndex >= hand.Count)
+            throw new Exception("Attempting to remove card from hand with invalid handIndex: " + handIndex);
+
+        Card card = hand[handIndex];
+        hand.RemoveAt(handIndex);
+        EventBus.InvokeOnCardRemovedFromHand(this, new CardRemovedFromHandEventArgs(this, card, handIndex));
     }
 
     public bool ContainsCreatureUuid(Guid uuid) {

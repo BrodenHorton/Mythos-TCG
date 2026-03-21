@@ -3,8 +3,6 @@ using TMPro;
 using UnityEngine;
 
 public abstract class HandCardUI : MonoBehaviour {
-    public event EventHandler<HandCardSelectedEventArgs> OnSelected;
-
     [SerializeField] protected GameObject selectableBorder;
     [SerializeField] protected TextMeshPro cardName;
     [SerializeField] protected TextMeshPro manaCost;
@@ -15,9 +13,5 @@ public abstract class HandCardUI : MonoBehaviour {
 
     public void SetBorderVisibility(bool isVisible) {
         selectableBorder.SetActive(isVisible);
-    }
-
-    public void Select() {
-        OnSelected?.Invoke(this, new HandCardSelectedEventArgs(this));
     }
 }

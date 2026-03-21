@@ -11,7 +11,6 @@ public class PlayerUI : DuelistUI {
         cardUI.Init(card);
         cardUI.transform.Rotate(90f, 0, 0);
         cardsInHand.Add(cardUI);
-        cardUI.OnSelected += PlayCardFromHand;
         DefaultCardPositions();
     }
 
@@ -20,15 +19,14 @@ public class PlayerUI : DuelistUI {
         cardUI.Init(card);
         cardUI.transform.Rotate(90f, 0, 0);
         cardsInHand.Add(cardUI);
-        cardUI.OnSelected += PlayCardFromHand;
         DefaultCardPositions();
     }
 
     public void SetSelectableCards(MatchPlayer player) {
-        for (int i = 0; i < cardsInHand.Count; i++) {
-            if (player.Hand.Count <= i)
-                break;
+        if (player.Hand.Count != cardsInHand.Count)
+            throw new Exception("Cards in MatchPlayer hand and PlayerUI hand do not match");
 
+        for (int i = 0; i < cardsInHand.Count; i++) {
             DuelManager duelManager = FindFirstObjectByType<DuelManager>(); 
             cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable(duelManager, player));
         }
@@ -39,13 +37,13 @@ public class PlayerUI : DuelistUI {
             cardUI.SetBorderVisibility(isVisiable);
     }
 
-    private void PlayCardFromHand(object sender, HandCardSelectedEventArgs args) {
-        int cardIndex = IndexOf(args.CardUI);
-        if (cardIndex == -1)
-            return;
+    public void RemoveCardFromHand(int handIndex) {
+        if (handIndex < 0 || handIndex >= cardsInHand.Count)
+            throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
 
-        cardsInHand.RemoveAt(cardIndex);
-        Destroy(args.CardUI.gameObject);
+        HandCardUI cardUI = cardsInHand[handIndex];
+        cardsInHand.RemoveAt(handIndex);
+        Destroy(cardUI.gameObject);
         DefaultCardPositions();
     }
 

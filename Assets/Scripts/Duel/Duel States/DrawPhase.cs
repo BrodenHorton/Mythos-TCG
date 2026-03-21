@@ -3,13 +3,13 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class DrawPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<EventArgs> OnDrawPhase;
+    public event EventHandler<PlayerEventArgs> OnDrawPhase;
 
     [SerializeField] private DuelStateManager stateManager;
 
     public void EnterState() {
         Debug.Log("Entered Draw Phase");
-        OnDrawPhase?.Invoke(this, EventArgs.Empty);
+        OnDrawPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
         DuelManager duelManager = stateManager.DuelManager;
         duelManager.GetCurrentPlayerTurn().CurrentMana = duelManager.GetStartOfTurnManaCount();
         duelManager.GetCurrentPlayerTurn().DrawCard();
