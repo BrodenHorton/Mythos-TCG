@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class CombatManager : NetworkBehaviour {
     public event EventHandler<DuelistCombatEventArgs> OnDuelistCombatFinsihed;
@@ -74,7 +75,7 @@ public class CombatManager : NetworkBehaviour {
             for(int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
                 CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
                 if (creatureCombat.Defender == null)
-                    LifePointsDamgaeServerRpc(duelManager.GetPlayerIndex(duelistCombat.Target.PlayerId), creatureCombat.Attacker.GetAtk());
+                    duelistCombat.Target.LifePointsDamage(creatureCombat.Attacker.GetAtk());
                 else {
                     creatureCombat.Defender.Damage(creatureCombat.Attacker.GetAtk());
                     if (creatureCombat.Defender.GetHealth() <= 0)
@@ -84,19 +85,6 @@ public class CombatManager : NetworkBehaviour {
             OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(duelistCombat));
             duelistCombats.Remove(duelistCombat);
         }
-    }
-
-    [Rpc(SendTo.Server)]
-    private void LifePointsDamgaeServerRpc(int targetIndex, int damage) {
-        TcgLogger.Log("LifePointsDamgaeServerRpc Entered");
-        LifePointsDamgaeClientrRpc(targetIndex, damage);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void LifePointsDamgaeClientrRpc(int targetIndex, int damage) {
-        TcgLogger.Log("LifePointsDamgaeClientRpc Entered");
-        MatchPlayer target = duelManager.Players[targetIndex];
-        target.LifePointsDamage(damage);
     }
 
     private bool HasExistingDuelistCombat(MatchPlayer initiator, MatchPlayer target) {

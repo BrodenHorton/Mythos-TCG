@@ -38,14 +38,6 @@ public class PlayingFieldUIController : NetworkBehaviour {
         EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
 
-    private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {
-        if (player != args.Player)
-            return;
-
-        for(int i = 0; i < args.Creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(args.Creatures[i]);
-    }
-
     public void Init(MatchPlayer player) {
         this.player = player;
     }
@@ -101,7 +93,6 @@ public class PlayingFieldUIController : NetworkBehaviour {
         if (!creatureCard.CanAttack())
             return;
 
-        TcgLogger.Log("Card Selected");
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
         MatchPlayer target = duelManager.Players[(duelManager.GetPlayerIndex(initiator.PlayerId) + 1) % duelManager.Players.Count];
         DeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
@@ -135,14 +126,20 @@ public class PlayingFieldUIController : NetworkBehaviour {
     }
 
     private void RemoveAttacker(object sender, DeclareAttackerEventArgs args) {
-        foreach(CreatureFieldCardUI cardUI in playingFieldUI.Temp_GetCreatureFieldCards())
-            TcgLogger.Log(cardUI.CardUuid.ToString());
         if (args.Initiator.PlayerId != player.PlayerId)
             return;
         if (!playingFieldUI.ContainsCreature(args.Attacker.Uuid))
             return;
 
         playingFieldUI.RemoveCreature(args.Attacker.Uuid);
+    }
+
+    private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {
+        if (player != args.Player)
+            return;
+
+        for (int i = 0; i < args.Creatures.Count; i++)
+            playingFieldUI.AddCreatureFieldCard(args.Creatures[i]);
     }
 
     public bool ContainsCreature(CreatureFieldCardUI creatureFieldCardUI) {

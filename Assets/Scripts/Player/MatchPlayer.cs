@@ -102,7 +102,6 @@ public class MatchPlayer {
     public void LifePointsDamage(int amt) {
         int temp = lifePoints;
         lifePoints -= amt;
-        Debug.Log("Life Points " + temp + " -> " + lifePoints);
         EventBus.InvokeOnLifePointsChanged(this, new LifePointsChangedEventArgs(this, lifePoints));
     }
 

@@ -14,7 +14,7 @@ public class PlayingFieldUI : MonoBehaviour {
     private float cardSpacing = 0.6f;
 
     public void PlayCreatureCard(CreatureCard card) {
-        CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab, creatureSlotOrigin);
+        CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
         creatureCardUI.Init(card);
         creatures.Add(creatureCardUI);
         SpaceCards();
@@ -108,9 +108,5 @@ public class PlayingFieldUI : MonoBehaviour {
         }
 
         return null;
-    }
-
-    public List<CreatureFieldCardUI> Temp_GetCreatureFieldCards() {
-        return creatures;
     }
 }
