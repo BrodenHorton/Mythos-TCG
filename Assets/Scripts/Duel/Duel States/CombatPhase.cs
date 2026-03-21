@@ -29,7 +29,7 @@ public class CombatPhase : NetworkBehaviour, DuelState {
         ProcessCombatClientRpc();
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.ClientsAndHost)]
     private void ProcessCombatClientRpc() {
         combatManager.ProcessCombat();
         OnCombatPhaseFinished?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
@@ -40,7 +40,7 @@ public class CombatPhase : NetworkBehaviour, DuelState {
         SwitchToSecondMainPhaseClientRpc();
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.ClientsAndHost)]
     private void SwitchToSecondMainPhaseClientRpc() {
         stateManager.SwitchState(stateManager.SecondMainPhase);
     }

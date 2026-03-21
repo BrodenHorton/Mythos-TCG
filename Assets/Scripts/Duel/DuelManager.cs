@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class DuelManager : MonoBehaviour {
+public class DuelManager : NetworkBehaviour {
     public event EventHandler OnPlayersInitialized;
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
     public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
@@ -20,6 +20,7 @@ public class DuelManager : MonoBehaviour {
 
     private void Start() {
         GameManager.Instance.OnGameStart += InitializePlayers;
+        EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCard;
     }
 
     public void InitializePlayers(object sender, StartGameEventArgs args) {
@@ -34,23 +35,30 @@ public class DuelManager : MonoBehaviour {
         OnPlayersInitialized?.Invoke(this, EventArgs.Empty);
     }
 
-    public void PlayCardFromHand(MatchPlayer player, int handCardIndex) {
-        if (player.Hand.Count <= handCardIndex)
+    public void PlayCardFromHand(MatchPlayer player, int handIndex) {
+        if (player.Hand.Count <= handIndex)
             return;
 
-        PlayCardFromHandRpc(GetPlayerIndex(player.PlayerId), player.Hand[handCardIndex], handCardIndex);
+        player.Hand[handIndex].PlayCardFromHand(this, player, handIndex);
+    }
+
+    public void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {
+        PlayCreatureCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
     [Rpc(SendTo.Server)]
-    private void PlayCardFromHandRpc(int playerIndex, Card card, int handCardIndex) {
-        PlayCardFromHandClientRpc(playerIndex, card, handCardIndex);
+    private void PlayCreatureCardFromHandServerRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handCardIndex) {
+        PlayCreatureCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handCardIndex);
     }
 
-    [ClientRpc]
-    private void PlayCardFromHandClientRpc(int playerIndex, Card card, int handCardIndex) {
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handCardIndex) {
+        TcgLogger.Log("PlayCreatureCardFromHandClientRpc Entered");
         MatchPlayer player = Players[playerIndex];
         player.Hand.RemoveAt(handCardIndex);
-        card.PlayCard(this, player);
+        CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
+        TcgLogger.Log("Playing Creature Card for player index: " + playerIndex);
+        player.PlayCreatureCard(card);
     }
 
     public void NextTurn() {

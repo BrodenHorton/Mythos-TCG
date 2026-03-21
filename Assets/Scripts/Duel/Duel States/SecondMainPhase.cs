@@ -26,7 +26,7 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
         SwitchToEndPhaseClientRpc();
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.ClientsAndHost)]
     private void SwitchToEndPhaseClientRpc() {
         stateManager.SwitchState(stateManager.EndPhase);
     }

@@ -63,7 +63,6 @@ public class MatchPlayer {
     public void PlaySpellCard(SpellCard card) {
         CurrentMana -= card.GetManaCost();
         //player.Spells.Add(card);
-        //EventBus.InvokeOnSpellCardPlayed(this, new PlayerSpellCardEventArgs(player, card));
     }
 
     public void PlayDomainCard(SpellCard card) {

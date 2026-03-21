@@ -4,18 +4,25 @@ using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
-public class CreatureCard : Card, INetworkSerializable {
+public partial class CreatureCard : Card {
     [SerializeField] private CreatureCardBase cardBase;
     [SerializeField] private bool hasSummoningSickness;
     [SerializeField] private bool isTapped;
     [SerializeField] private int damage;
-    //[SerializeField] private List<CreatureCardEffect> effects;
 
     public CreatureCard() { }
 
     public CreatureCard(CreatureCardBase cardBase) {
         this.cardBase = cardBase;
         //effects = new List<CreatureCardEffect>();
+    }
+
+    public CreatureCard(CreatureCardNetworkSerializable networkSerializationObject) {
+        uuid = Guid.Parse(networkSerializationObject.uuidStr.ToString());
+        cardBase = CardDatabase.Instance.GetCreatureCardByIndex(networkSerializationObject.cardBaseIndex);
+        hasSummoningSickness = networkSerializationObject.hasSummoningSickness;
+        isTapped = networkSerializationObject.isTapped;
+        damage = networkSerializationObject.damage;
     }
 
     public override void Init(MatchPlayer player) {
@@ -31,9 +38,14 @@ public class CreatureCard : Card, INetworkSerializable {
         return true;
     }
 
+    // TODO: Implement for cards not payed from the hand
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
-        // TODO: Implement logic for checking criteria for playing the card on the field
-        player.PlayCreatureCard(this);
+        //EventBus.InvokeOnCreatureCardPlayed(this, new PlayCreatureCardFromHandEventArgs(player, this));
+        //player.PlayCreatureCard(this);
+    }
+
+    public override void PlayCardFromHand(DuelManager duelManager, MatchPlayer player, int handIndex) {
+        EventBus.InvokeOnCreatureCardSelectedForPlay(this, new PlayCreatureCardFromHandEventArgs(player, this, handIndex));
     }
 
     public int GetManaCost() {
@@ -70,8 +82,13 @@ public class CreatureCard : Card, INetworkSerializable {
         damage += amt;
     }
 
-    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
-        
+    public CreatureCardNetworkSerializable GetNetworkSerializableObject() {
+        return new CreatureCardNetworkSerializable(
+            uuid.ToString(),
+            CardDatabase.Instance.GetIndexOf(cardBase),
+            hasSummoningSickness,
+            isTapped,
+            damage);
     }
 
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }

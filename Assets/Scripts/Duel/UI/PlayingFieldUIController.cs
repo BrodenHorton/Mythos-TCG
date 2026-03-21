@@ -47,6 +47,7 @@ public class PlayingFieldUIController : MonoBehaviour {
     }
 
     public void PlayCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
+        TcgLogger.Log("PlayingFieldUI PlayCreatureCard entered");
         if (player.PlayerId != args.Player.PlayerId)
             return;
 

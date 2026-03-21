@@ -6,6 +6,7 @@ public static class EventBus {
     public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
     public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardDrawn;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardDrawn;
+    public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardSelectedForPlay;
     public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardPlayed;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardPlayed;
     public static event EventHandler<PlayerSpellCardEventArgs> OnDomainCardPlayed;
@@ -36,6 +37,10 @@ public static class EventBus {
 
     public static void InvokeOnSpellCardDrawn(object sender, PlayerSpellCardEventArgs args) {
         OnSpellCardDrawn?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnCreatureCardSelectedForPlay(object sender, PlayCreatureCardFromHandEventArgs args) {
+        OnCreatureCardSelectedForPlay?.Invoke(sender, args);
     }
 
     public static void InvokeOnCreatureCardPlayed(object sender, PlayerCreatureCardEventArgs args) {

@@ -26,7 +26,7 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
         SwitchToCombatPhaseClientRpc();
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.ClientsAndHost)]
     private void SwitchToCombatPhaseClientRpc() {
         stateManager.SwitchState(stateManager.CombatPhase);
     }

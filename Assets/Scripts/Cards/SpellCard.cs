@@ -1,16 +1,22 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class SpellCard : Card {
     [SerializeField] private SpellCardBase cardBase;
-    [SerializeField] private List<SpellCardEffect> effects;
+    //[SerializeField] private List<SpellCardEffect> effects;
 
     public SpellCard() { }
 
+    public SpellCard(SpellCardNetworkSerializable networkSerializationObject) {
+        uuid = Guid.Parse(networkSerializationObject.uuidStr.ToString());
+        cardBase = CardDatabase.Instance.GetSpellCardByIndex(networkSerializationObject.cardBaseIndex);
+    }
+
     public SpellCard(SpellCardBase cardBase) {
         this.cardBase = cardBase;
-        effects = new List<SpellCardEffect>();
+        //effects = new List<SpellCardEffect>();
     }
 
     public int GetManaCost() {
@@ -31,7 +37,14 @@ public class SpellCard : Card {
     }
 
     public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
-        // TODO: Implement logic for checking criteria for playing the card on the field
-        player.PlaySpellCard(this); // Remove later once Battlefield is implemtned
+        
+    }
+
+    public override void PlayCardFromHand(DuelManager duelManager, MatchPlayer player, int handIndex) {
+        
+    }
+
+    public SpellCardNetworkSerializable GetNetworkSerializableObject() {
+        return new SpellCardNetworkSerializable(uuid.ToString(), CardDatabase.Instance.GetIndexOf(cardBase));
     }
 }
