@@ -91,6 +91,8 @@ public partial class CreatureCard : Card {
             damage);
     }
 
+    public string CardName { get { return cardBase.CardName; } }
+
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }
 
     public bool IsTapped { get { return isTapped; } }

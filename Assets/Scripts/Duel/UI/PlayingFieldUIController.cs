@@ -47,7 +47,6 @@ public class PlayingFieldUIController : MonoBehaviour {
     }
 
     public void PlayCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
-        TcgLogger.Log("PlayingFieldUI PlayCreatureCard entered");
         if (player.PlayerId != args.Player.PlayerId)
             return;
 
@@ -80,6 +79,9 @@ public class PlayingFieldUIController : MonoBehaviour {
         if (!context.performed)
             return;
         if (!duelManager.IsLocalClientPlayerTurn())
+            return;
+        TcgLogger.Log("PlayingFieldUIController playerId: " + player.PlayerId + " LocalClientPlayerId: " + duelManager.LocalClientPlayer.PlayerId);
+        if (player != duelManager.LocalClientPlayer)
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
@@ -115,6 +117,10 @@ public class PlayingFieldUIController : MonoBehaviour {
         }
 
         return fieldCardUI;
+    }
+
+    public bool ContainsCreature(CreatureFieldCardUI creatureFieldCardUI) {
+        return playingFieldUI.ContainsCreature(creatureFieldCardUI);
     }
 
     public PlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }

@@ -28,27 +28,33 @@ public class ActionButtonUIController : MonoBehaviour {
         stateManager.FirstMainPhase.OnFirstMainPhase += FirstMainPhaseAction;
         stateManager.CombatPhase.OnCombatPhase += CombatPhaseAction;
         stateManager.SecondMainPhase.OnSecondMainPhase += SecondMainPhaseAction;
+        duelManager.OnNextPlayerTurn += SetActionButtonInactive;
     }
 
     private void FirstMainPhaseAction(object sender, PlayerEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
-        actionButtonUI.SetActionText("Combat Phase");
+        actionButtonUI.SetActiveAction("Combat Phase");
     }
 
     private void CombatPhaseAction(object sender, PlayerEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
-        actionButtonUI.SetActionText("Next");
+        actionButtonUI.SetActiveAction("Next");
     }
 
     private void SecondMainPhaseAction(object sender, PlayerEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
-        actionButtonUI.SetActionText("End");
+        actionButtonUI.SetActiveAction("End");
+    }
+
+    private void SetActionButtonInactive(object sender, NextPlayerTurnEventArgs args) {
+        if(actionButtonUI.IsActive)
+            actionButtonUI.SetInactive();
     }
 
     private void ButtonPressedCheck(InputAction.CallbackContext context) {

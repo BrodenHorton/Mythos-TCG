@@ -6,6 +6,7 @@ public class CreatureHandCardUI : HandCardUI {
     [SerializeField] private TextMeshPro health;
 
     public void Init(CreatureCard card) {
+        cardName.text = card.CardName;
         atk.text = card.GetAtk().ToString();
         health.text = card.GetHealth().ToString();
         manaCost.text = card.GetManaCost().ToString();

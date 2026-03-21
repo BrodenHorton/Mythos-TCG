@@ -554,3 +554,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionText: {fileID: 7068889995139248933}
+  actionBtnCenter: {fileID: 2394142341803444106}
+  activeColor: {r: 0.16470589, g: 0.41960785, b: 0.85490197, a: 1}
+  inactiveColor: {r: 0.7798742, g: 0.7798742, b: 0.7798742, a: 1}

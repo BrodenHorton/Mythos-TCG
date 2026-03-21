@@ -53,11 +53,9 @@ public class DuelManager : NetworkBehaviour {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handCardIndex) {
-        TcgLogger.Log("PlayCreatureCardFromHandClientRpc Entered");
         MatchPlayer player = Players[playerIndex];
         player.Hand.RemoveAt(handCardIndex);
         CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
-        TcgLogger.Log("Playing Creature Card for player index: " + playerIndex);
         player.PlayCreatureCard(card);
     }
 

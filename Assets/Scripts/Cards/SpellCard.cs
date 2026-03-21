@@ -47,4 +47,6 @@ public class SpellCard : Card {
     public SpellCardNetworkSerializable GetNetworkSerializableObject() {
         return new SpellCardNetworkSerializable(uuid.ToString(), CardDatabase.Instance.GetIndexOf(cardBase));
     }
+
+    public string CardName { get { return cardBase.CardName; } }
 }

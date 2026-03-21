@@ -6,6 +6,7 @@ public abstract class HandCardUI : MonoBehaviour {
     public event EventHandler<HandCardSelectedEventArgs> OnSelected;
 
     [SerializeField] protected GameObject selectableBorder;
+    [SerializeField] protected TextMeshPro cardName;
     [SerializeField] protected TextMeshPro manaCost;
 
     private void Awake() {

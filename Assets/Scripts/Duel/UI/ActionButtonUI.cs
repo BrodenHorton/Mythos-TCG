@@ -4,19 +4,32 @@ using UnityEngine;
 
 public class ActionButtonUI : MonoBehaviour {
     [SerializeField] private TextMeshPro actionText;
+    [SerializeField] private SpriteRenderer actionBtnCenter;
+    [SerializeField] private Color activeColor;
+    [SerializeField] private Color inactiveColor;
 
     private bool isActive;
 
     private void Awake() {
-        isActive = true;
+        isActive = false;
+        actionText.text = "";
+        actionBtnCenter.color = inactiveColor;
     }
 
     public void Execute() {
         EventBus.InvokeOnActionButtonPressed(this, EventArgs.Empty);
     }
 
-    public void SetActionText(string text) {
+    public void SetActiveAction(string text) {
+        isActive = true;
         actionText.text = text;
+        actionBtnCenter.color = activeColor;
+    }
+
+    public void SetInactive() {
+        isActive = false;
+        actionText.text = "";
+        actionBtnCenter.color = inactiveColor;
     }
 
     public bool IsActive { get { return isActive; } }

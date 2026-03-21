@@ -109,7 +109,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2791617167873842089
+--- !u!1 &1105110074037054984
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,9 +117,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6253718133941471428}
-  - component: {fileID: 1404515342103665494}
-  - component: {fileID: 334100467418106082}
+  - component: {fileID: 6789894767076361269}
+  - component: {fileID: 5415782394992394599}
+  - component: {fileID: 6920978680477961768}
   m_Layer: 0
   m_Name: Name Text
   m_TagString: Untagged
@@ -127,14 +127,14 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &6253718133941471428
+--- !u!224 &6789894767076361269
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2791617167873842089}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 1105110074037054984}
+  m_LocalRotation: {x: -0, y: -0, z: -1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: -0.0001}
   m_LocalScale: {x: 2.0053189, y: 1.4316374, z: 1}
   m_ConstrainProportionsScale: 0
@@ -143,16 +143,16 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.4181}
-  m_SizeDelta: {x: 0.22218, y: 0.05602}
+  m_AnchoredPosition: {x: 0, y: -0.41493148}
+  m_SizeDelta: {x: 0.23, y: 0.065}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!23 &1404515342103665494
+--- !u!23 &5415782394992394599
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2791617167873842089}
+  m_GameObject: {fileID: 1105110074037054984}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -191,13 +191,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &334100467418106082
+--- !u!114 &6920978680477961768
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2791617167873842089}
+  m_GameObject: {fileID: 1105110074037054984}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Creature Name
+  m_text: Spell Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -246,7 +246,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -283,7 +283,7 @@ MonoBehaviour:
   _SortingLayerID: 0
   _SortingOrder: 0
   m_hasFontAssetChanged: 0
-  m_renderer: {fileID: 1404515342103665494}
+  m_renderer: {fileID: 5415782394992394599}
   m_maskType: 0
 --- !u!1 &4106555577696255618
 GameObject:
@@ -949,7 +949,7 @@ Transform:
   m_GameObject: {fileID: 5561055090140507902}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.026, z: 0.005}
+  m_LocalPosition: {x: 0, y: -0.069, z: 0.005}
   m_LocalScale: {x: 1, y: 1.067, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -974,7 +974,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.7, z: 0.05}
+  m_Size: {x: 0.5, y: 0.8, z: 0.05}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7661939004037164645
 MonoBehaviour:
@@ -1024,7 +1024,7 @@ Transform:
   - {fileID: 8588940960194869343}
   - {fileID: 7415417262683838568}
   - {fileID: 10058863367090434}
-  - {fileID: 6253718133941471428}
+  - {fileID: 6789894767076361269}
   m_Father: {fileID: 7076353674377426761}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!33 &1121966149513378283
@@ -1152,6 +1152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectableBorder: {fileID: 99607716425891067}
+  cardName: {fileID: 6920978680477961768}
   manaCost: {fileID: 7234837148198759778}
 --- !u!1001 &3953997852962781958
 PrefabInstance:
