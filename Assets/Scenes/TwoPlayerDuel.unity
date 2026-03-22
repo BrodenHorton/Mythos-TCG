@@ -3452,6 +3452,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1727205385}
   - component: {fileID: 1727205386}
+  - component: {fileID: 1727205387}
   m_Layer: 0
   m_Name: CombatFieldUIController 2
   m_TagString: Untagged
@@ -3486,7 +3487,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56691a74c51ef4f42ba6a5887d79c07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   combatFieldUI: {fileID: 679797540}
+--- !u!114 &1727205387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727205384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2529298059
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1740248976
 GameObject:
   m_ObjectHideFlags: 0
@@ -4023,6 +4050,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2013395940}
   - component: {fileID: 2013395941}
+  - component: {fileID: 2013395942}
   m_Layer: 0
   m_Name: CombatFieldUIController 1
   m_TagString: Untagged
@@ -4057,7 +4085,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56691a74c51ef4f42ba6a5887d79c07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   combatFieldUI: {fileID: 1485904010}
+--- !u!114 &2013395942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2013395939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2980485382
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &2023102273
 GameObject:
   m_ObjectHideFlags: 0

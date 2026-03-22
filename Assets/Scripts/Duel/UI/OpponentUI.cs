@@ -19,6 +19,16 @@ public class OpponentUI : DuelistUI {
         SpaceCards();
     }
 
+    public void RemoveCardFromHand(int handIndex) {
+        if (handIndex < 0 || handIndex >= cardsInHand.Count)
+            throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
+
+        HandCardUI cardUI = cardsInHand[handIndex];
+        cardsInHand.RemoveAt(handIndex);
+        Destroy(cardUI.gameObject);
+        SpaceCards();
+    }
+
     private void SpaceCards() {
         float cardSpacing = 0.34f;
         float cardVerticalOffset = 0.005f;

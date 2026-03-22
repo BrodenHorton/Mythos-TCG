@@ -26,7 +26,16 @@ public class CombatFieldUI : MonoBehaviour {
         defenders.Add(cardUI);
     }
 
-    public void RemoveCreature(CreatureFieldCardUI cardUI) {
+    public void RemoveAttacker(Guid uuid) {
+        foreach (CreatureFieldCardUI cardUI in attackers) {
+            if (cardUI.CardUuid == uuid) {
+                RemoveAttacker(cardUI);
+                break;
+            }
+        }
+    }
+
+    public void RemoveAttacker(CreatureFieldCardUI cardUI) {
         attackers.Remove(cardUI);
         Destroy(cardUI.gameObject);
         SpaceAttackers();

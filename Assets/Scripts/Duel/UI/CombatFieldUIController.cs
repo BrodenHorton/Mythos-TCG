@@ -1,8 +1,10 @@
 ﻿using System;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CombatFieldUIController : MonoBehaviour {
+public class CombatFieldUIController : NetworkBehaviour {
     [SerializeField] private CombatFieldUI combatFieldUI;
 
     private MatchPlayer target;
@@ -32,6 +34,7 @@ public class CombatFieldUIController : MonoBehaviour {
     private void Start() {
         EventBus.OnDeclareAttacker += AddAttacker;
         EventBus.OnDeclareDefender += AddDefender;
+        EventBus.OnUndeclareAttacker += RemoveAttacker;
         combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
     }
 
@@ -86,8 +89,7 @@ public class CombatFieldUIController : MonoBehaviour {
         if (creatureCard == null)
             return;
 
-        combatFieldUI.RemoveCreature(cardUI);
-        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.GetCurrentPlayerTurn(), target, creatureCard));
+        UndeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
     }
 
     private CreatureFieldCardUI RaycastColliderCheck() {
@@ -103,5 +105,26 @@ public class CombatFieldUIController : MonoBehaviour {
         }
 
         return fieldCardUI;
+    }
+
+    [Rpc(SendTo.Server)]
+    private void UndeclareAttackerServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        UndeclareAttackerClientRpc(initiatorIndex, targetIndex, cardUuidStr);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void UndeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
+        CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
+        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    }
+
+    private void RemoveAttacker(object sender, UndeclareAttackerEventArgs args) {
+        if (args.Target.PlayerId != target.PlayerId)
+            return;
+        if (!combatFieldUI.ContainsAttacker(args.Attacker.Uuid))
+            return;
+
+        combatFieldUI.RemoveAttacker(args.Attacker.Uuid);
     }
 }

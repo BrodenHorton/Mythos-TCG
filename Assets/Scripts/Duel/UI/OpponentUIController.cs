@@ -8,6 +8,7 @@ public class OpponentUIController : DuelistUIController {
         EventBus.OnManaCountChanged += SetManaCount;
         EventBus.OnCreatureCardDrawn += DrawCreatureCard;
         EventBus.OnSpellCardDrawn += DrawSpellCard;
+        EventBus.OnCardRemovedFromHand += RemoveCardUIFromHand;
     }
 
     public override void Init(MatchPlayer player) {
@@ -27,6 +28,13 @@ public class OpponentUIController : DuelistUIController {
             return;
 
         opponentUI.DrawSpellCard(args.Card);
+    }
+
+    private void RemoveCardUIFromHand(object sender, CardRemovedFromHandEventArgs args) {
+        if (player.PlayerId != args.Player.PlayerId)
+            return;
+
+        opponentUI.RemoveCardFromHand(args.HandIndex);
     }
 
     private void SetLifePoints(object sender, LifePointsChangedEventArgs args) {

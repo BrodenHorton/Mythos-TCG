@@ -15,6 +15,7 @@ public class PlayingFieldUI : MonoBehaviour {
 
     public void PlayCreatureCard(CreatureCard card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
+        creatureCardUI.transform.parent = creatureSlotOrigin;
         creatureCardUI.Init(card);
         creatures.Add(creatureCardUI);
         SpaceCards();
