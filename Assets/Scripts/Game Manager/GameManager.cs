@@ -33,7 +33,6 @@ public class GameManager : NetworkBehaviour {
             return;
         }
 
-        TcgLogger.Log("Entered Update for GameManager");
         if (NetworkManager.Singleton.ConnectedClients.Count >= playerCount)
             StartGameRpc();
         isFirstUpdate = false;
@@ -41,7 +40,6 @@ public class GameManager : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     private void UpdateGameStateOnClientConnectedServerRpc(ulong clientId) {
-        TcgLogger.Log("GameManager: Client Connected");
         if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= 2) {
             StartGameRpc();
         }
@@ -49,7 +47,6 @@ public class GameManager : NetworkBehaviour {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void StartGameRpc() {
-        TcgLogger.Log("StarGameClientRpc Entered");
         gameState = GameState.Duel;
         List<ulong>  playerOrder = new List<ulong>();
         foreach(ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys)

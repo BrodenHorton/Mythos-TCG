@@ -30,7 +30,7 @@ public class DuelStateManager : NetworkBehaviour {
         if (!IsServer)
             return;
 
-        DuelManager.OnPlayersInitialized += StartStateMachine;
+        DuelManager.OnPlayersInitializationFinished += StartStateMachine;
     }
 
     private void Update() {

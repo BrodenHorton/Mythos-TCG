@@ -4,7 +4,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class DuelManager : NetworkBehaviour {
-    public event EventHandler OnPlayersInitialized;
+    public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitialization;
+    public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitializationFinished;
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
     public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
 
@@ -32,7 +33,8 @@ public class DuelManager : NetworkBehaviour {
             }
             players.Add(player);
         }
-        OnPlayersInitialized?.Invoke(this, EventArgs.Empty);
+        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
+        OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
     }
 
     public void PlayCardFromHand(MatchPlayer player, int handIndex) {
