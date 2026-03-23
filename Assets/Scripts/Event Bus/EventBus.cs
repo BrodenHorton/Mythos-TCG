@@ -3,7 +3,6 @@ using System;
 public static class EventBus {
     public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
     public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardDrawn;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardDrawn;
     public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
@@ -26,10 +25,6 @@ public static class EventBus {
 
     public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
         OnManaCountChanged?.Invoke(sender, args);
-    }
-
-    public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs args) {
-        OnCardDrawn?.Invoke(sender, args);
     }
 
     public static void InvokeOnCreatureCardDrawn(object sender, PlayerCreatureCardEventArgs args) {

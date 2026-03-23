@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using Unity.Netcode;
+using UnityEngine;
+
+public class CombatFieldUIManager : NetworkBehaviour {
+    [SerializeField] private List<CombatFieldUIController> controllers;
+
+    private DuelManager duelManager;
+    private CombatManager combatManager;
+    private Dictionary<ulong, CombatFieldUIController> controllerByPlayerId;
+
+    private void Start() {
+        duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
+        combatManager = FindFirstObjectByType<CombatManager>();
+        if (combatManager == null)
+            throw new Exception("Could not find CombatManager object");
+
+        duelManager.OnPlayersInitialization += Init;
+        EventBus.OnDeclareAttacker += AddAttacker;
+        EventBus.OnDeclareDefender += AddDefender;
+        EventBus.OnUndeclareAttacker += RemoveAttacker;
+        combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
+    }
+
+    private void Init(object sender, PlayersInitializedEventArgs args) {
+        List<MatchPlayer> players = duelManager.Players;
+        if (players.Count != controllers.Count)
+            throw new Exception("Number of Match Players and CombatFieldUIControllers does not match. " +
+                players.Count + " Match Players and " + controllers.Count + " CombatFieldUIControllers");
+
+        controllerByPlayerId = new Dictionary<ulong, CombatFieldUIController>();
+        for (int i = 0; i < players.Count; i++) {
+            MatchPlayer localClientOffsetPlayer = players[(args.LocalClientPlayerIndex + i) % args.PlayerCount];
+            controllers[i].Init(localClientOffsetPlayer);
+            controllerByPlayerId.Add(localClientOffsetPlayer.PlayerId, controllers[i]);
+        }
+    }
+
+    private void AddAttacker(object sender, DeclareAttackerEventArgs args) {
+        if (controllerByPlayerId[args.Target.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Target.PlayerId);
+
+        controllerByPlayerId[args.Target.PlayerId].AddAttacker(args.Attacker);
+    }
+
+    private void AddDefender(object sender, DeclareDefenderEventArgs args) {
+        if (controllerByPlayerId[args.Target.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Target.PlayerId);
+
+        controllerByPlayerId[args.Target.PlayerId].AddDefender(args.Defender);
+    }
+
+    private void RemoveAttacker(object sender, UndeclareAttackerEventArgs args) {
+        if (controllerByPlayerId[args.Target.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Target.PlayerId);
+        if(!controllerByPlayerId[args.Target.PlayerId].ContainsAttacker(args.Attacker.Uuid))
+            throw new Exception("Unable to find combat field UI controller with creature Uuid: " + args.Attacker.Uuid);
+
+        controllerByPlayerId[args.Target.PlayerId].RemoveAttacker(args.Attacker);
+    }
+
+    private void ReleaseCreatureCards(object sender, DuelistCombatEventArgs args) {
+        if (controllerByPlayerId[args.Combat.Target.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Combat.Target.PlayerId);
+
+        controllerByPlayerId[args.Combat.Target.PlayerId].ReleaseCreatureCards(args.Combat);
+    }
+}

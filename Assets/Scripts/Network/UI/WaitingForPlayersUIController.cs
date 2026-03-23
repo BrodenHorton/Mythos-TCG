@@ -4,8 +4,8 @@ using UnityEngine;
 public class WaitingForPlayersUIController : MonoBehaviour {
     [SerializeField] private WaitingForPlayersUI waitingForPlayersUI;
 
-    public void Start() {
-        waitingForPlayersUI.UpdateUI(NetworkManager.Singleton.ConnectedClients.Count, 2);
+    private void Start() {
+        waitingForPlayersUI.UpdateUI(NetworkManager.Singleton.ConnectedClients.Count, GameManager.Instance.PlayerCount);
         NetworkManager.Singleton.OnClientConnectedCallback += ClientConnectedUpdate;
         GameManager.Instance.OnGameStart += (sender, args) => {
             waitingForPlayersUI.gameObject.SetActive(false);

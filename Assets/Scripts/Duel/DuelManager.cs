@@ -16,7 +16,7 @@ public class DuelManager : NetworkBehaviour {
 
     private void Awake() {
         currentPlayerTurnIndex = 0;
-        fullTurnCount = 4;
+        fullTurnCount = 0;
     }
 
     private void Start() {
@@ -26,13 +26,15 @@ public class DuelManager : NetworkBehaviour {
 
     public void InitializePlayers(object sender, StartGameEventArgs args) {
         players = new List<MatchPlayer>();
-        foreach(ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys) {
-            MatchPlayer player = new MatchPlayer(playerId);
-            if (playerId == NetworkManager.Singleton.LocalClientId) {
+        for(int i = 0; i < args.PlayerOrder.Count; i++) {
+            MatchPlayer player = new MatchPlayer(args.PlayerOrder[i]);
+            if (player.PlayerId == NetworkManager.Singleton.LocalClientId)
                 localClientPlayer = player;
-            }
             players.Add(player);
         }
+        if (localClientPlayer == null)
+            throw new Exception("Local Client Id not found in start game player list");
+
         OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
         OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
     }

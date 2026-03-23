@@ -29,12 +29,6 @@ public class PlayerUIController : DuelistUIController {
 
         cam = Camera.main;
 
-        EventBus.OnLifePointsChanged += SetLifePoints;
-        EventBus.OnManaCountChanged += SetManaCount;
-        EventBus.OnManaCountChanged += SetSelectableCardsAfterManaChanged;
-        EventBus.OnCreatureCardDrawn += DrawCreatureCard;
-        EventBus.OnSpellCardDrawn += DrawSpellCard;
-        EventBus.OnCardRemovedFromHand += RemoveCardUIFromHand;
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
         stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
@@ -65,29 +59,38 @@ public class PlayerUIController : DuelistUIController {
         playerUI.Init(player);
     }
 
-    private void DrawCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
-        if (args.Player.PlayerId == player.PlayerId)
-            playerUI.DrawCreatureCard(args.Card);
+    public override void SetLifePoints(int lifePoints) {
+        playerUI.SetLifePoints(lifePoints);
     }
 
-    private void DrawSpellCard(object sender, PlayerSpellCardEventArgs args) {
-        if (args.Player.PlayerId == player.PlayerId)
-            playerUI.DrawSpellCard(args.Card);
+    public override void SetManaCount(int manaCount) {
+        playerUI.SetManaCount(manaCount);
+        SetSelectableCardsAfterManaCountChanged();
     }
 
-    private void SetLifePoints(object sender, LifePointsChangedEventArgs args) {
-        if (args.Player.PlayerId == player.PlayerId)
-            playerUI.SetLifePoints(args.LifePoints);
+    public override void DrawCreatureCard(CreatureCard card) {
+        playerUI.DrawCreatureCard(card);
     }
 
-    private void SetManaCount(object sender, ManaChangedEventArgs args) {
-        if (args.Player.PlayerId == player.PlayerId)
-            playerUI.SetManaCount(args.CurrentMana);
+    public override void DrawSpellCard(SpellCard card) {
+        playerUI.DrawSpellCard(card);
+    }
+
+    public override void RemoveCardFromHand(int handIndex) {
+        playerUI.RemoveCardFromHand(handIndex);
     }
 
     private void SetSelectableCards(object sender, PlayerEventArgs args) {
         if (player.PlayerId != args.Player.PlayerId)
             return;
+
+        playerUI.SetSelectableCards(player);
+    }
+
+    private void SetSelectableCardsAfterManaCountChanged() {
+        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
+            return;
+        // TODO: Add a boolean to tell if we are in a state that we can play selectable cards in
 
         playerUI.SetSelectableCards(player);
     }
@@ -119,16 +122,6 @@ public class PlayerUIController : DuelistUIController {
         playerUI.SetBorderVisibilityAll(false);
     }
 
-    private void SetSelectableCardsAfterManaChanged(object sender, ManaChangedEventArgs args) {
-        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
-            return;
-        if (player.PlayerId != args.Player.PlayerId)
-            return;
-        // TODO: Add a boolean to tell if we are in a state that we can play selectable cards in
-        
-        playerUI.SetSelectableCards(player);
-    }
-
     private void SelectCard(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
@@ -146,13 +139,6 @@ public class PlayerUIController : DuelistUIController {
             return;
 
         duelManager.PlayCardFromHand(player, cardIndex);
-    }
-
-    private void RemoveCardUIFromHand(object sender, CardRemovedFromHandEventArgs args) {
-        if (player.PlayerId != args.Player.PlayerId)
-            return;
-
-        playerUI.RemoveCardFromHand(args.HandIndex);
     }
 
     private HandCardUI RaycastColliderCheck() {

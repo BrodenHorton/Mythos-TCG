@@ -10,7 +10,6 @@ public class CombatFieldUIController : NetworkBehaviour {
     private MatchPlayer target;
     private DuelManager duelManager;
     private DuelStateManager stateManager;
-    private CombatManager combatManager;
     private Camera cam;
     private PlayerInputActions playerInputActions;
 
@@ -21,9 +20,6 @@ public class CombatFieldUIController : NetworkBehaviour {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
-        combatManager = FindFirstObjectByType<CombatManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find CombatManager object");
 
         cam = Camera.main;
         playerInputActions = new PlayerInputActions();
@@ -31,41 +27,29 @@ public class CombatFieldUIController : NetworkBehaviour {
         playerInputActions.Player.Select.performed += SelectCard;
     }
 
-    private void Start() {
-        EventBus.OnDeclareAttacker += AddAttacker;
-        EventBus.OnDeclareDefender += AddDefender;
-        EventBus.OnUndeclareAttacker += RemoveAttacker;
-        combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
-    }
-
     public void Init(MatchPlayer player) {
         target = player;
     }
 
-    public void AddAttacker(object sender, DeclareAttackerEventArgs args) {
-        if (target.PlayerId != args.Target.PlayerId)
-            return;
-
-        combatFieldUI.AddAttacker(args.Attacker);
+    public void AddAttacker(CreatureCard attacker) {
+        combatFieldUI.AddAttacker(attacker);
     }
 
     // TODO: Implement so the defender corresponds to a given attacker
-    public void AddDefender(object sender, DeclareDefenderEventArgs args) {
-        if (target.PlayerId != args.Target.PlayerId)
-            return;
-
-        combatFieldUI.AddDefender(args.Defender);
+    public void AddDefender(CreatureCard defender) {
+        combatFieldUI.AddDefender(defender);
     }
 
-    private void ReleaseCreatureCards(object sender, DuelistCombatEventArgs args) {
-        if (target != args.Combat.Target)
-            return;
+    public void RemoveAttacker(CreatureCard attacker) {
+        combatFieldUI.RemoveAttacker(attacker.Uuid);
+    }
 
+    public void ReleaseCreatureCards(DuelistCombat combat) {
         EventBus.InvokeOnReleaseCombatCreatures(this, new ReleaseCombatCreaturesEventArgs(
-            args.Combat.Initiator,
+            combat.Initiator,
             combatFieldUI.Attackers));
         EventBus.InvokeOnReleaseCombatCreatures(this, new ReleaseCombatCreaturesEventArgs(
-            args.Combat.Target,
+            combat.Target,
             combatFieldUI.Defenders));
         combatFieldUI.ClearCreatures();
     }
@@ -119,12 +103,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
     }
 
-    private void RemoveAttacker(object sender, UndeclareAttackerEventArgs args) {
-        if (args.Target.PlayerId != target.PlayerId)
-            return;
-        if (!combatFieldUI.ContainsAttacker(args.Attacker.Uuid))
-            return;
-
-        combatFieldUI.RemoveAttacker(args.Attacker.Uuid);
+    public bool ContainsAttacker(Guid uuid) {
+        return combatFieldUI.ContainsAttacker(uuid);
     }
 }

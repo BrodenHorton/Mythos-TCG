@@ -41,6 +41,11 @@ public class DuelStateManager : NetworkBehaviour {
     }
 
     public void StartStateMachine(object sender, EventArgs args) {
+        StartStateMachineServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    public void StartStateMachineServerRpc() {
         StartStateMachineClientRpc();
     }
 

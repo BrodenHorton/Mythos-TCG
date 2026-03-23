@@ -29,9 +29,8 @@ public class GameManager : NetworkBehaviour {
     }
 
     private void Update() {
-        if(!IsServer || !isFirstUpdate) {
+        if(!IsServer || !isFirstUpdate)
             return;
-        }
 
         if (NetworkManager.Singleton.ConnectedClients.Count >= playerCount)
             StartGameRpc();
@@ -40,7 +39,7 @@ public class GameManager : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     private void UpdateGameStateOnClientConnectedServerRpc(ulong clientId) {
-        if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= 2) {
+        if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= playerCount) {
             StartGameRpc();
         }
     }
@@ -55,4 +54,6 @@ public class GameManager : NetworkBehaviour {
     }
 
     public GameState GameState { get { return gameState; } }
+
+    public int PlayerCount { get { return playerCount; } }
 }

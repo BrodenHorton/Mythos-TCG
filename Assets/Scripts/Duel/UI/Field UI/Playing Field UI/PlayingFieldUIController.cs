@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.Rendering.GPUSort;
 
 public class PlayingFieldUIController : NetworkBehaviour {
     [SerializeField] private PlayingFieldUI playingFieldUI;
@@ -28,47 +30,37 @@ public class PlayingFieldUIController : NetworkBehaviour {
         playerInputActions.Player.Select.performed += SelectCard;
     }
 
-    private void Start() {
-        EventBus.OnCreatureCardPlayedFromHand += PlayCreatureCard;
-        EventBus.OnDomainCardPlayed += PlayDomainCard;
-        EventBus.OnCreatureTapped += TapCreature;
-        EventBus.OnCreatureUntapped += UntapCreature;
-        EventBus.OnDeclareAttacker += RemoveAttacker;
-        EventBus.OnUndeclareAttacker += UndeclareAttacker;
-        EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
-    }
-
     public void Init(MatchPlayer player) {
         this.player = player;
     }
 
-    public void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {
-        if (player.PlayerId != args.Player.PlayerId)
-            return;
-
-        playingFieldUI.PlayCreatureCard(args.Card);
+    public void PlayCreatureCard(CreatureCard card) {
+        playingFieldUI.PlayCreatureCard(card);
     }
 
-    public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
-        if (player.PlayerId != args.Initiator.PlayerId)
-            return;
-
-        playingFieldUI.PlayCreatureCard(args.Attacker);
+    public void PlayDomainCard(SpellCard card) {
+        playingFieldUI.PlayDomainCard(card);
     }
 
-    public void PlayDomainCard(object sender, PlayerSpellCardEventArgs args) {
-        if (player.PlayerId != args.Player.PlayerId)
-            return;
+    public void RemoveAttacker(CreatureCard attacker) {
+        if (!playingFieldUI.ContainsCreature(attacker.Uuid))
+            throw new Exception("Playing field UI controller does not contain card uuid: " + attacker.Uuid);
 
-        playingFieldUI.PlayDomainCard(args.Card);
+        playingFieldUI.RemoveCreature(attacker.Uuid);
     }
 
-    public void TapCreature(object sender, CreatureCardEventArgs args) {
-        playingFieldUI.TapCreature(args.Card);
+    public void TapCreature(CreatureCard card) {
+        if (!playingFieldUI.ContainsCreature(card.Uuid))
+            throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);
+
+        playingFieldUI.TapCreature(card);
     }
 
-    public void UntapCreature(object sender, CreatureCardEventArgs args) {
-        playingFieldUI.UntapCreature(args.Card);
+    public void UntapCreature(CreatureCard card) {
+        if (!playingFieldUI.ContainsCreature(card.Uuid))
+            throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);
+
+        playingFieldUI.UntapCreature(card);
     }
 
     private void SelectCard(InputAction.CallbackContext context) {
@@ -125,25 +117,13 @@ public class PlayingFieldUIController : NetworkBehaviour {
         EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
     }
 
-    private void RemoveAttacker(object sender, DeclareAttackerEventArgs args) {
-        if (args.Initiator.PlayerId != player.PlayerId)
-            return;
-        if (!playingFieldUI.ContainsCreature(args.Attacker.Uuid))
-            return;
-
-        playingFieldUI.RemoveCreature(args.Attacker.Uuid);
+    public void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
+        for (int i = 0; i < creatures.Count; i++)
+            playingFieldUI.AddCreatureFieldCard(creatures[i]);
     }
 
-    private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {
-        if (player != args.Player)
-            return;
-
-        for (int i = 0; i < args.Creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(args.Creatures[i]);
-    }
-
-    public bool ContainsCreature(CreatureFieldCardUI creatureFieldCardUI) {
-        return playingFieldUI.ContainsCreature(creatureFieldCardUI);
+    public bool ContainsCreature(Guid uuid) {
+        return playingFieldUI.ContainsCreature(uuid);
     }
 
     public PlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }
