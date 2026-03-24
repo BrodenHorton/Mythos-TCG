@@ -10,11 +10,23 @@ public class DrawPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered Draw Phase");
         OnDrawPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        DuelManager duelManager = stateManager.DuelManager;
-        duelManager.GetCurrentPlayerTurn().CurrentMana = duelManager.GetStartOfTurnManaCount();
-        duelManager.GetCurrentPlayerTurn().DrawCard();
-        stateManager.SwitchState(stateManager.FirstMainPhase);
+        if(IsServer) {
+            DrawPhaseServerRpc();
+        }
     }
 
     public void UpdateState() { }
+
+    [Rpc(SendTo.Server)]
+    private void DrawPhaseServerRpc() {
+        DuelManager duelManager = stateManager.DuelManager;
+        duelManager.GetCurrentPlayerTurn().CurrentMana = duelManager.GetStartOfTurnManaCount();
+        duelManager.GetCurrentPlayerTurn().DrawCard();
+        SwitchStateClientRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)] 
+    private void SwitchStateClientRpc() {
+        stateManager.SwitchState(stateManager.FirstMainPhase);
+    }
 }

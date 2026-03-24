@@ -10,8 +10,8 @@ public abstract class DuelistUI : MonoBehaviour {
     [SerializeField] protected TextMeshPro manaCount;
     [SerializeField] protected List<HandCardUI> cardsInHand;
     [Header("Prefabs")]
-    [SerializeField] protected CreatureHandCardUI creatureCard;
-    [SerializeField] protected SpellHandCardUI spellCard;
+    [SerializeField] protected CreatureHandCardUI creatureHandCardPrefab;
+    [SerializeField] protected SpellHandCardUI spellHandCardPrefab;
 
     public void Init(MatchPlayer player) {
         SetLifePoints(player.LifePoints);
@@ -25,6 +25,12 @@ public abstract class DuelistUI : MonoBehaviour {
     public void SetManaCount(int manaCount) {
         this.manaCount.text = manaCount.ToString();
     }
+
+    public abstract void DrawCard(Card card);
+
+    public abstract void RemoveCardFromHand(int handIndex);
+
+    public abstract void SetDefaultCardPositions();
 
     public bool ContainsCard(HandCardUI handCardUI) {
         foreach (HandCardUI card in cardsInHand) {

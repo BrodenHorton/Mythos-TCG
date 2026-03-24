@@ -6,20 +6,31 @@ public class PlayerUI : DuelistUI {
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
 
-    public void DrawCreatureCard(CreatureCard card) {
-        CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);
-        cardUI.Init(card);
-        cardUI.transform.Rotate(90f, 0, 0);
-        cardsInHand.Add(cardUI);
-        DefaultCardPositions();
+    public override void DrawCard(Card card) {
+        if (card is CreatureCard creatureCard) {
+            CreatureHandCardUI cardUI = Instantiate(creatureHandCardPrefab, handOrigin);
+            cardUI.Init(creatureCard);
+            cardUI.transform.Rotate(-90f, 0, 0);
+            cardsInHand.Add(cardUI);
+        }
+        else if (card is SpellCard spellCard) {
+            SpellHandCardUI cardUI = Instantiate(spellHandCardPrefab, handOrigin);
+            cardUI.Init(spellCard);
+            cardUI.transform.Rotate(-90f, 0, 0);
+            cardsInHand.Add(cardUI);
+        }
+
+        SetDefaultCardPositions();
     }
 
-    public void DrawSpellCard(SpellCard card) {
-        SpellHandCardUI cardUI = Instantiate(spellCard, handOrigin);
-        cardUI.Init(card);
-        cardUI.transform.Rotate(90f, 0, 0);
-        cardsInHand.Add(cardUI);
-        DefaultCardPositions();
+    public override void RemoveCardFromHand(int handIndex) {
+        if (handIndex < 0 || handIndex >= cardsInHand.Count)
+            throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
+
+        HandCardUI cardUI = cardsInHand[handIndex];
+        cardsInHand.RemoveAt(handIndex);
+        Destroy(cardUI.gameObject);
+        SetDefaultCardPositions();
     }
 
     public void SetSelectableCards(MatchPlayer player) {
@@ -37,16 +48,6 @@ public class PlayerUI : DuelistUI {
             cardUI.SetBorderVisibility(isVisiable);
     }
 
-    public void RemoveCardFromHand(int handIndex) {
-        if (handIndex < 0 || handIndex >= cardsInHand.Count)
-            throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
-
-        HandCardUI cardUI = cardsInHand[handIndex];
-        cardsInHand.RemoveAt(handIndex);
-        Destroy(cardUI.gameObject);
-        DefaultCardPositions();
-    }
-
     public int IndexOf(HandCardUI cardUI) {
         int cardIndex = -1;
         for (int i = 0; i < cardsInHand.Count; i++) {
@@ -59,7 +60,7 @@ public class PlayerUI : DuelistUI {
         return cardIndex;
     }
 
-    public void DefaultCardPositions() {
+    public override void SetDefaultCardPositions() {
         float cardSpacing = 0.34f;
         float cardVerticalOffset = -0.003f;
         float cardRotation = 1f;

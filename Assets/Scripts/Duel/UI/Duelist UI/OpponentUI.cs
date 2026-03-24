@@ -3,33 +3,34 @@ using UnityEngine;
 
 public class OpponentUI : DuelistUI {
 
-    public void DrawCreatureCard(CreatureCard card) {
-        CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);
-        cardUI.Init(card);
-        cardUI.transform.Rotate(-90f, 0, 0);
-        cardsInHand.Add(cardUI);
-        SpaceCards();
+    public override void DrawCard(Card card) {
+        if (card is CreatureCard creatureCard) {
+            CreatureHandCardUI cardUI = Instantiate(creatureHandCardPrefab, handOrigin);
+            cardUI.Init(creatureCard);
+            cardUI.transform.Rotate(-90f, 0, 0);
+            cardsInHand.Add(cardUI);
+        }
+        else if (card is SpellCard spellCard) {
+            SpellHandCardUI cardUI = Instantiate(spellHandCardPrefab, handOrigin);
+            cardUI.Init(spellCard);
+            cardUI.transform.Rotate(-90f, 0, 0);
+            cardsInHand.Add(cardUI);
+        }
+
+        SetDefaultCardPositions();
     }
 
-    public void DrawSpellCard(SpellCard card) {
-        SpellHandCardUI cardUI = Instantiate(spellCard, handOrigin);
-        cardUI.Init(card);
-        cardUI.transform.Rotate(-90f, 0, 0);
-        cardsInHand.Add(cardUI);
-        SpaceCards();
-    }
-
-    public void RemoveCardFromHand(int handIndex) {
+    public override void RemoveCardFromHand(int handIndex) {
         if (handIndex < 0 || handIndex >= cardsInHand.Count)
             throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
 
         HandCardUI cardUI = cardsInHand[handIndex];
         cardsInHand.RemoveAt(handIndex);
         Destroy(cardUI.gameObject);
-        SpaceCards();
+        SetDefaultCardPositions();
     }
 
-    private void SpaceCards() {
+    public override void SetDefaultCardPositions() {
         float cardSpacing = 0.34f;
         float cardVerticalOffset = 0.005f;
         float cardRotation = -1f;

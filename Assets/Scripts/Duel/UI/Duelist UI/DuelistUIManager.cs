@@ -17,8 +17,7 @@ public class DuelistUIManager : NetworkBehaviour {
         duelManager.OnPlayersInitialization += Init;
         EventBus.OnLifePointsChanged += LifePointsChanged;
         EventBus.OnManaCountChanged += ManaCountChanged;
-        EventBus.OnCreatureCardDrawn += CreatureCardDrawn;
-        EventBus.OnSpellCardDrawn += SpellCardDrawn;
+        EventBus.OnCardDrawn += CardDrawn;
         EventBus.OnCardRemovedFromHand += CardRemovedFromHand;
     }
 
@@ -50,18 +49,11 @@ public class DuelistUIManager : NetworkBehaviour {
         controllerByPlayerId[args.Player.PlayerId].SetManaCount(args.CurrentMana);
     }
 
-    private void CreatureCardDrawn(object sender, PlayerCreatureCardEventArgs args) {
+    private void CardDrawn(object sender, PlayerCardEventArgs args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].DrawCreatureCard(args.Card);
-    }
-
-    private void SpellCardDrawn(object sender, PlayerSpellCardEventArgs args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
-
-        controllerByPlayerId[args.Player.PlayerId].DrawSpellCard(args.Card);
+        controllerByPlayerId[args.Player.PlayerId].DrawCard(args.Card);
     }
 
     private void CardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {

@@ -19,12 +19,8 @@ public class SpellCard : Card {
         //effects = new List<SpellCardEffect>();
     }
 
-    public int GetManaCost() {
+    public override int GetManaCost() {
         return cardBase.ManaCost;
-    }
-
-    public override void Init(MatchPlayer player) {
-        EventBus.InvokeOnSpellCardDrawn(this, new PlayerSpellCardEventArgs(player, this));
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
@@ -40,7 +36,7 @@ public class SpellCard : Card {
         
     }
 
-    public override void PlayCardFromHand(DuelManager duelManager, MatchPlayer player, int handIndex) {
+    public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
         
     }
 
