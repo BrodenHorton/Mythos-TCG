@@ -9,7 +9,7 @@ public class PlayersInitializedEventArgs : EventArgs {
         this.localClientPlayerIndex = localClientPlayerIndex;
     }
 
-    public int PlayerCount { get { return playerCount; } }
+    public int PlayerCount { get {return playerCount; } }
 
-    public int LocalClientPlayerIndex { get { return localClientPlayerIndex; } }
+    public int LocalClientPlayerIndex { get {return localClientPlayerIndex; } }
 }

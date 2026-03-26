@@ -3,10 +3,11 @@ using System;
 public static class EventBus {
     public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
-    public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
+    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardDrawn;
+    public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardDrawn;
     public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
     public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardSelectedForPlay;
-    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureCardPlayed;
+    public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardPlayedFromHand;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardPlayed;
     public static event EventHandler<PlayerSpellCardEventArgs> OnDomainCardPlayed;
     public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
@@ -26,8 +27,12 @@ public static class EventBus {
         OnManaCountChanged?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs args) {
-        OnCardDrawn?.Invoke(sender, args);
+    public static void InvokeOnCreatureCardDrawn(object sender, PlayerCreatureCardEventArgs args) {
+        OnCreatureCardDrawn?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnSpellCardDrawn(object sender, PlayerSpellCardEventArgs args) {
+        OnSpellCardDrawn?.Invoke(sender, args);
     }
 
     public static void InvokeOnCardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {
@@ -38,8 +43,8 @@ public static class EventBus {
         OnCreatureCardSelectedForPlay?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureCardPlayeded(object sender, PlayerCreatureCardEventArgs args) {
-        OnCreatureCardPlayed?.Invoke(sender, args);
+    public static void InvokeOnCreatureCardPlayedFromHand(object sender, PlayCreatureCardFromHandEventArgs args) {
+        OnCreatureCardPlayedFromHand?.Invoke(sender, args);
     }
 
     public static void InvokeOnSpellCardPlayed(object sender, PlayerSpellCardEventArgs args) {

@@ -10,35 +10,24 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered Second Main Phase");
         OnSecondMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (IsServer) {
-            ClientRpcParams clientRpcParams = new ClientRpcParams {
-                Send = new ClientRpcSendParams {
-                    TargetClientIds = new ulong[] { stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId }
-                }
-            };
-            EnableActionButtonForCurrentPlayersTurn(clientRpcParams);
-        }
+        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
+            EventBus.OnActionButtonPressed += NextPhase;
     }
 
     public void UpdateState() { }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void EnableActionButtonForCurrentPlayersTurn(ClientRpcParams clientRpcParams) {
-        EventBus.OnActionButtonPressed += NextPhase;
-    }
-
     private void NextPhase(object sender, EventArgs args) {
         EventBus.OnActionButtonPressed -= NextPhase;
-        SwitchStateServerRpc();
+        SwitchToEndPhaseRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void SwitchStateServerRpc() {
-        SwitchStateClientRpc();
+    private void SwitchToEndPhaseRpc() {
+        SwitchToEndPhaseClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchStateClientRpc() {
+    private void SwitchToEndPhaseClientRpc() {
         stateManager.SwitchState(stateManager.EndPhase);
     }
 }

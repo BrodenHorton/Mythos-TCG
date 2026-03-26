@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class MatchPlayer {
@@ -9,21 +10,31 @@ public class MatchPlayer {
     private List<CreatureCard> creatures;
     private SpellCard domain;
     
-    private ulong playerId;
     private int lifePoints;
     private int currentMana;
     private int seriesWinCount;
+    private ulong playerId;
 
-    public MatchPlayer(ulong playerId, List<Card> deck) {
+    public MatchPlayer(ulong playerId) {
         deck = new List<Card>();
+        Temp_PopulateDeck();
         hand = new List<Card>();
         discardPile = new List<Card>();
         creatures = new List<CreatureCard>();
         domain = null;
-        this.playerId = playerId;
         lifePoints = 20;
         currentMana = 1;
         seriesWinCount = 0;
+        this.playerId = playerId;
+    }
+
+    public void Temp_PopulateDeck() {
+        int tempDeckSize = 10;
+        int databaseCardCount = CardDatabase.Instance.Cards.Count;
+        for (int i = 0; i < tempDeckSize; i++) {
+            Card card = CardDatabase.Instance.GetCardByIndex(UnityEngine.Random.Range(0, databaseCardCount)).GenerateCardFromBase();
+            deck.Add(card);
+        }
     }
 
     public void ShuffleDeck() {
@@ -39,22 +50,15 @@ public class MatchPlayer {
         Card card = deck[deck.Count - 1];
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
-        EventBus.InvokeOnCardDrawn(this, new PlayerCardEventArgs(this, card));
+        card.Init(this);
         return card;
     }
 
-    public void PlayCardFromHand(int handIndex) {
-        // TODO: Add guard clauses
-
-        Card card = hand[handIndex];
+    public void PlayCreatureCardFromHand(CreatureCard card, int handIndex) {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
-        card.PlayCardFromHand(this, handIndex);
-    }
-
-    public void PlayCreatureCardFromHand(CreatureCard card) {
         creatures.Add(card);
-        EventBus.InvokeOnCreatureCardPlayeded(this, new PlayerCreatureCardEventArgs(this, card));
+        EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCreatureCardFromHandEventArgs(this, card, handIndex));
     }
 
     public void PlaySpellCard(SpellCard card) {

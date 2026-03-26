@@ -13,26 +13,17 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered Initialization Phase");
         OnInitializationPhase?.Invoke(this, EventArgs.Empty);
-        if(IsServer) {
-            PlayerSetup();
-            SwitchStateClientRpc();
-        }
-    }
-
-    public void UpdateState() { }
-
-    [Rpc(SendTo.Server)]
-    private void PlayerSetup() {
+        MatchPlayer player = stateManager.DuelManager.LocalClientPlayer;
+        player.ShuffleDeck();
         List<MatchPlayer> players = stateManager.DuelManager.Players;
-        for (int i = 0; i < players.Count; i++) {
-            players[i].ShuffleDeck();
+        for(int i = 0; i < players.Count; i++) {
             for (int j = 0; j < initialHandSize; j++)
                 players[i].DrawCard();
         }
+        stateManager.SwitchState(stateManager.UntapPhase);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchStateClientRpc() {
-        stateManager.SwitchState(stateManager.UntapPhase);
+    public void UpdateState() {
+
     }
 }

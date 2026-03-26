@@ -9,7 +9,9 @@ public abstract class DuelistUIController : MonoBehaviour {
 
     public abstract void SetManaCount(int manaCount);
 
-    public abstract void DrawCard(Card card);
+    public abstract void DrawCreatureCard(CreatureCard card);
+
+    public abstract void DrawSpellCard(SpellCard card);
 
     public abstract void RemoveCardFromHand(int handIndex);
 

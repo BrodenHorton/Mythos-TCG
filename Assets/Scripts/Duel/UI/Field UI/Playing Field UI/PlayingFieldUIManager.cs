@@ -15,7 +15,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Could not find DuelManager object");
 
         duelManager.OnPlayersInitialization += Init;
-        EventBus.OnCreatureCardPlayed += PlayCreatureCard;
+        EventBus.OnCreatureCardPlayedFromHand += PlayCreatureCard;
         EventBus.OnDomainCardPlayed += PlayDomainCard;
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
@@ -38,7 +38,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         }
     }
 
-    private void PlayCreatureCard(object sender, PlayerCreatureCardEventArgs args) {
+    private void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 

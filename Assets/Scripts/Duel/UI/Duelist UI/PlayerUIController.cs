@@ -29,7 +29,6 @@ public class PlayerUIController : DuelistUIController {
 
         cam = Camera.main;
 
-        //EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCard;
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
         stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
@@ -69,8 +68,12 @@ public class PlayerUIController : DuelistUIController {
         SetSelectableCardsAfterManaCountChanged();
     }
 
-    public override void DrawCard(Card card) {
-        playerUI.DrawCard(card);
+    public override void DrawCreatureCard(CreatureCard card) {
+        playerUI.DrawCreatureCard(card);
+    }
+
+    public override void DrawSpellCard(SpellCard card) {
+        playerUI.DrawSpellCard(card);
     }
 
     public override void RemoveCardFromHand(int handIndex) {
@@ -135,7 +138,7 @@ public class PlayerUIController : DuelistUIController {
         if (!player.Hand[cardIndex].IsPlayable(duelManager, player))
             return;
 
-        PlayCardFromHand(player, cardIndex);
+        duelManager.PlayCardFromHand(player, cardIndex);
     }
 
     private HandCardUI RaycastColliderCheck() {
@@ -172,7 +175,7 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void ExitHoverHand() {
-        playerUI.SetDefaultCardPositions();
+        playerUI.DefaultCardPositions();
     }
 
     private void HoverCard(HandCardUI card) {
@@ -185,24 +188,5 @@ public class PlayerUIController : DuelistUIController {
 
     public override DuelistUI GetDuelistUI() {
         return playerUI;
-    }
-
-    public void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        if (player.Hand.Count <= handIndex)
-            return;
-
-        player.Hand[handIndex].PlayCardFromHand(player, handIndex);
-    }
-
-    [Rpc(SendTo.Server)]
-    private void PlayCardFromHandServerRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        PlayCreatureCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        //MatchPlayer player = Players[playerIndex];
-        //CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
-        //player.PlayCreatureCardFromHand(card, handIndex);
     }
 }

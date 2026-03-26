@@ -10,16 +10,9 @@ public class EndPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("End of Turn");
         OnEndPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if(IsServer) {
-            stateManager.DuelManager.NextTurn();
-            SwitchStateClientRpc();
-        }
+        stateManager.DuelManager.NextTurn();
+        stateManager.SwitchState(stateManager.UntapPhase);
     }
 
     public void UpdateState() { }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchStateClientRpc() {
-        stateManager.SwitchState(stateManager.UntapPhase);
-    }
 }

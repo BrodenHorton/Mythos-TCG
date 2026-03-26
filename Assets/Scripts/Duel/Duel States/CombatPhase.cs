@@ -12,42 +12,36 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered Combat Phase");
         OnCombatPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if(IsServer) {
-            ClientRpcParams clientRpcParams = new ClientRpcParams {
-                Send = new ClientRpcSendParams {
-                    TargetClientIds = new ulong[] { stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId }
-                }
-            };
-            EnableActionButtonForCurrentPlayersTurn(clientRpcParams);
-        }
+        if(stateManager.DuelManager.IsLocalClientPlayerTurn())
+            EventBus.OnActionButtonPressed += ProcessCombat;
     }
 
     public void UpdateState() { }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void EnableActionButtonForCurrentPlayersTurn(ClientRpcParams clientRpcParams) {
-        EventBus.OnActionButtonPressed += ProcessCombat;
-    }
-
     private void ProcessCombat(object sender, EventArgs args) {
         EventBus.OnActionButtonPressed -= ProcessCombat;
-        ProcessCombatServerRpc();
+        ProcessCombatRpc();
+        SwitchToSecondMainPhaseRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void ProcessCombatServerRpc() {
-        combatManager.ProcessCombat();
-        CombatFinishedClientRpc();
-        SwitchStateClientRpc();
+    private void ProcessCombatRpc() {
+        ProcessCombatClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void CombatFinishedClientRpc() {
+    private void ProcessCombatClientRpc() {
+        combatManager.ProcessCombat();
         OnCombatPhaseFinished?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
     }
 
+    [Rpc(SendTo.Server)]
+    private void SwitchToSecondMainPhaseRpc() {
+        SwitchToSecondMainPhaseClientRpc();
+    }
+
     [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchStateClientRpc() {
+    private void SwitchToSecondMainPhaseClientRpc() {
         stateManager.SwitchState(stateManager.SecondMainPhase);
     }
 }
