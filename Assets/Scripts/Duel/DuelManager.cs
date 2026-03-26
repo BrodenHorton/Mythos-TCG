@@ -16,7 +16,7 @@ public class DuelManager : NetworkBehaviour {
 
     private void Awake() {
         currentPlayerTurnIndex = 0;
-        fullTurnCount = 0;
+        fullTurnCount = 1;
     }
 
     private void Start() {
@@ -27,7 +27,7 @@ public class DuelManager : NetworkBehaviour {
     public void InitializePlayers(object sender, StartGameEventArgs args) {
         players = new List<MatchPlayer>();
         for(int i = 0; i < args.PlayerOrder.Count; i++) {
-            MatchPlayer player = new MatchPlayer(args.PlayerOrder[i]);
+            MatchPlayer player = new MatchPlayer(args.PlayerOrder[i], Temp_PopulateDeck());
             if (player.PlayerId == NetworkManager.Singleton.LocalClientId)
                 localClientPlayer = player;
             players.Add(player);
@@ -37,6 +37,17 @@ public class DuelManager : NetworkBehaviour {
 
         OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
         OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
+    }
+
+    private List<Card> Temp_PopulateDeck() {
+        List<Card> result = new List<Card>();
+        int tempDeckSize = 40;
+        int databaseCardCount = CardDatabase.Instance.Cards.Count;
+        for (int i = 0; i < tempDeckSize; i++) {
+            Card card = CardDatabase.Instance.GetCardByIndex(UnityEngine.Random.Range(0, databaseCardCount)).GenerateCardFromBase();
+            result.Add(card);
+        }
+        return result;
     }
 
     public void PlayCardFromHand(MatchPlayer player, int handIndex) {

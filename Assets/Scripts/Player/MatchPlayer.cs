@@ -4,20 +4,19 @@ using UnityEngine;
 
 [Serializable]
 public class MatchPlayer {
+    private ulong playerId;
     private List<Card> deck;
     private List<Card> hand;
     private List<Card> discardPile;
     private List<CreatureCard> creatures;
     private SpellCard domain;
-    
     private int lifePoints;
     private int currentMana;
     private int seriesWinCount;
-    private ulong playerId;
 
-    public MatchPlayer(ulong playerId) {
-        deck = new List<Card>();
-        Temp_PopulateDeck();
+    public MatchPlayer(ulong playerId, List<Card> deck) {
+        this.playerId = playerId;
+        this.deck = new List<Card>(deck);
         hand = new List<Card>();
         discardPile = new List<Card>();
         creatures = new List<CreatureCard>();
@@ -25,16 +24,6 @@ public class MatchPlayer {
         lifePoints = 20;
         currentMana = 1;
         seriesWinCount = 0;
-        this.playerId = playerId;
-    }
-
-    public void Temp_PopulateDeck() {
-        int tempDeckSize = 10;
-        int databaseCardCount = CardDatabase.Instance.Cards.Count;
-        for (int i = 0; i < tempDeckSize; i++) {
-            Card card = CardDatabase.Instance.GetCardByIndex(UnityEngine.Random.Range(0, databaseCardCount)).GenerateCardFromBase();
-            deck.Add(card);
-        }
     }
 
     public void ShuffleDeck() {
