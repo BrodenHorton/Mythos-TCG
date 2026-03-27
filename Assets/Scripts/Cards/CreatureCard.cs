@@ -25,10 +25,6 @@ public partial class CreatureCard : Card {
         damage = networkSerializationObject.damage;
     }
 
-    public override void Init(MatchPlayer player) {
-        EventBus.InvokeOnCreatureCardDrawn(this, new PlayerCreatureCardEventArgs(player, this));
-    }
-
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
         if (player.CurrentMana < cardBase.ManaCost)
             return false;
@@ -45,10 +41,11 @@ public partial class CreatureCard : Card {
     }
 
     public override void PlayCardFromHand(DuelManager duelManager, MatchPlayer player, int handIndex) {
+        player.PlayCreatureCardFromHand(this, handIndex);
         EventBus.InvokeOnCreatureCardSelectedForPlay(this, new PlayCreatureCardFromHandEventArgs(player, this, handIndex));
     }
 
-    public int GetManaCost() {
+    public override int GetManaCost() {
         return cardBase.ManaCost;
     }
 

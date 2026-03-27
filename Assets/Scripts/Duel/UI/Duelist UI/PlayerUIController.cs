@@ -5,10 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerUIController : DuelistUIController {
     [SerializeField] private PlayerUI playerUI;
+    
     private Camera cam;
-
     private DuelManager duelManager;
     private PlayerInputActions playerInputActions;
+    // TODO: Move to PlayerUI
     private HandCardUI previousSelection;
 
     private void Awake() {
@@ -18,7 +19,8 @@ public class PlayerUIController : DuelistUIController {
 
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
-        playerInputActions.Player.Select.performed += SelectCard;
+        playerInputActions.Player.Select.started += SelectCardDrag;
+        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
         previousSelection = null;
     }
 
@@ -36,20 +38,24 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void Update() {
-        HandCardUI handCardUI = HoverDetection();
-        if(handCardUI == null && previousSelection != null) {
-            ExitHoverHand();
-            previousSelection = null;
-        }
-        else if(handCardUI != null && playerUI.ContainsCard(handCardUI)) {
-            if (previousSelection == null) {
-                HoverHand(handCardUI);
-                previousSelection = handCardUI;
+        if (playerUI.IsDragging)
+            return;
+        else {
+            HandCardUI handCardUI = HoverDetection();
+            if (handCardUI == null && previousSelection != null) {
+                ExitHoverHand();
+                previousSelection = null;
             }
-            else if(handCardUI != previousSelection) {
-                ExitHoverCard(previousSelection);
-                HoverCard(handCardUI);
-                previousSelection = handCardUI;
+            else if (handCardUI != null && playerUI.ContainsCard(handCardUI)) {
+                if (previousSelection == null) {
+                    HoverHand(handCardUI);
+                    previousSelection = handCardUI;
+                }
+                else if (handCardUI != previousSelection) {
+                    ExitHoverCard(previousSelection);
+                    HoverCard(handCardUI);
+                    previousSelection = handCardUI;
+                }
             }
         }
     }
@@ -68,12 +74,8 @@ public class PlayerUIController : DuelistUIController {
         SetSelectableCardsAfterManaCountChanged();
     }
 
-    public override void DrawCreatureCard(CreatureCard card) {
-        playerUI.DrawCreatureCard(card);
-    }
-
-    public override void DrawSpellCard(SpellCard card) {
-        playerUI.DrawSpellCard(card);
+    public override void DrawCard(Card card) {
+        playerUI.DrawCard(card);
     }
 
     public override void RemoveCardFromHand(int handIndex) {
@@ -122,8 +124,8 @@ public class PlayerUIController : DuelistUIController {
         playerUI.SetBorderVisibilityAll(false);
     }
 
-    private void SelectCard(InputAction.CallbackContext context) {
-        if (!context.performed)
+    private void SelectCardDrag(InputAction.CallbackContext context) {
+        if (!context.started)
             return;
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
@@ -138,6 +140,27 @@ public class PlayerUIController : DuelistUIController {
         if (!player.Hand[cardIndex].IsPlayable(duelManager, player))
             return;
 
+        playerUI.SelectCardDrag(handCardUI);
+    }
+
+    private void ReleaseCardDrag(InputAction.CallbackContext context) {
+        if (!context.canceled)
+            return;
+        if (!playerUI.IsDragging)
+            return;
+        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId) {
+            playerUI.ReleaseCardDrag();
+            return;
+        }
+        int cardIndex = playerUI.IndexOf(playerUI.DraggingCard);
+        if (cardIndex == -1)
+            throw new Exception("Dragging card not found in playerUI cards");
+        if (!player.Hand[cardIndex].IsPlayable(duelManager, player)) {
+            playerUI.ReleaseCardDrag();
+            return;
+        }
+
+        playerUI.ReleaseCardDrag();
         duelManager.PlayCardFromHand(player, cardIndex);
     }
 
@@ -175,7 +198,7 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void ExitHoverHand() {
-        playerUI.DefaultCardPositions();
+        playerUI.SetDefaultCardPositions();
     }
 
     private void HoverCard(HandCardUI card) {

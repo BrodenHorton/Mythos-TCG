@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class MatchPlayer {
@@ -39,7 +38,7 @@ public class MatchPlayer {
         Card card = deck[deck.Count - 1];
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
-        card.Init(this);
+        EventBus.InvokeOnCardDrawn(this, new PlayerCardEventArgs(this, card));
         return card;
     }
 
@@ -103,7 +102,7 @@ public class MatchPlayer {
 
     public ulong PlayerId { get { return playerId; } }
 
-    public List<Card> Deck {  get { return deck; } }
+    public List<Card> Deck { get { return deck; } }
 
     public List<Card> Hand { get { return hand; } }
 

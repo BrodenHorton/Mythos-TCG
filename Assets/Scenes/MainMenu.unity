@@ -3572,6 +3572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyListUI: {fileID: 242078172}
   tcgLobby: {fileID: 986634686}
+  maxPollLobbiesTimerDuration: 5
   isManualRefresh: 0
 --- !u!1 &1389128608
 GameObject:

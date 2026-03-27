@@ -3,16 +3,15 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class LobbyListUIController : MonoBehaviour {
-    private static readonly float MAX_POLL_LOBBIES_TIMER_DURATION = 7f;
-
     [SerializeField] private LobbyListUI lobbyListUI;
     [SerializeField] private TcgLobby tcgLobby;
+    [SerializeField] private float maxPollLobbiesTimerDuration;
     [SerializeField] private bool isManualRefresh;
 
     private float pollLobbiesTimer;
 
     private void Awake() {
-        pollLobbiesTimer = MAX_POLL_LOBBIES_TIMER_DURATION;
+        pollLobbiesTimer = maxPollLobbiesTimerDuration;
     }
 
     private void Update() {
@@ -31,7 +30,7 @@ public class LobbyListUIController : MonoBehaviour {
         pollLobbiesTimer -= Time.deltaTime;
         if (pollLobbiesTimer <= 0f) {
             Debug.Log("Polling lobbies");
-            pollLobbiesTimer = MAX_POLL_LOBBIES_TIMER_DURATION;
+            pollLobbiesTimer = maxPollLobbiesTimerDuration;
             UpdateLobbyList();
         }
     }

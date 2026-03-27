@@ -2,34 +2,24 @@
 using UnityEngine;
 
 public class OpponentUI : DuelistUI {
-
-    public void DrawCreatureCard(CreatureCard card) {
-        CreatureHandCardUI cardUI = Instantiate(creatureCard, handOrigin);
-        cardUI.Init(card);
+    public override void DrawCard(Card card) {
+        NullHandCardUI cardUI = Instantiate(nullCardPrefab, handOrigin);
         cardUI.transform.Rotate(-90f, 0, 0);
         cardsInHand.Add(cardUI);
-        SpaceCards();
+        SetDefaultCardPositions();
     }
 
-    public void DrawSpellCard(SpellCard card) {
-        SpellHandCardUI cardUI = Instantiate(spellCard, handOrigin);
-        cardUI.Init(card);
-        cardUI.transform.Rotate(-90f, 0, 0);
-        cardsInHand.Add(cardUI);
-        SpaceCards();
-    }
-
-    public void RemoveCardFromHand(int handIndex) {
+    public override void RemoveCardFromHand(int handIndex) {
         if (handIndex < 0 || handIndex >= cardsInHand.Count)
             throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
 
         HandCardUI cardUI = cardsInHand[handIndex];
         cardsInHand.RemoveAt(handIndex);
         Destroy(cardUI.gameObject);
-        SpaceCards();
+        SetDefaultCardPositions();
     }
 
-    private void SpaceCards() {
+    public override void SetDefaultCardPositions() {
         float cardSpacing = 0.34f;
         float cardVerticalOffset = 0.005f;
         float cardRotation = -1f;

@@ -8,7 +8,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
 
     [SerializeField] private DuelStateManager stateManager;
 
-    private int initialHandSize = 40;
+    private int initialHandSize = 5;
 
     public void EnterState() {
         Debug.Log("Entered Initialization Phase");
