@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class LobbyUIController : MonoBehaviour {
+    public event EventHandler OnLobbyUIOpened;
+    public event EventHandler OnLobbyUIClosed;
+
     [SerializeField] TcgLobby tcgLobby;
     [SerializeField] private LobbyUI lobbyUI;
 
@@ -44,15 +48,14 @@ public class LobbyUIController : MonoBehaviour {
 
     public void JoinLobby(object sender, LobbyEventArgs args) {
         lobbyUI.gameObject.SetActive(true);
-        for (int i = 0; i < args.Lobby.Players.Count; i++) {
+        for (int i = 0; i < args.Lobby.Players.Count; i++)
             AddLobbyPlayer(args.Lobby.Players[i]);
-        }
+        OnLobbyUIOpened?.Invoke(this, EventArgs.Empty);
     }
 
     public void AddLobbyPlayers(object sender, LobbyPlayersJoinedEventArgs args) {
-        for (int i = 0; i < args.JoinedPlayers.Count; i++) {
+        for (int i = 0; i < args.JoinedPlayers.Count; i++)
             AddLobbyPlayer(args.JoinedPlayers[i].Player);
-        }
     }
 
     public void AddLobbyPlayer(Player player) {
@@ -69,9 +72,6 @@ public class LobbyUIController : MonoBehaviour {
             foreach (KeyValuePair<string, ChangedOrRemovedLobbyValue<PlayerDataObject>> change in playerChanges.Value) {
                 if (change.Key == "isReady" && change.Value.Changed) {
                     bool isReady = bool.Parse(change.Value.Value.Value);
-                    TcgLogger.Log("isReady: " + isReady);
-                    TcgLogger.Log("Player Index: " + playerChanges.Key);
-                    TcgLogger.Log("Number of Lobby Players: " + tcgLobby.Lobby.Players.Count);
                     lobbyUI.UpdateLobbyPlayerData(tcgLobby.Lobby.Players[playerChanges.Key].Id, isReady);
                 }
             }

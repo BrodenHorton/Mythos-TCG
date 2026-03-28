@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
@@ -12,6 +13,15 @@ public class LobbyListUIController : MonoBehaviour {
 
     private void Awake() {
         pollLobbiesTimer = maxPollLobbiesTimerDuration;
+    }
+
+    private void Start() {
+        LobbyUIController lobbyUIController = FindFirstObjectByType<LobbyUIController>();
+        if(lobbyUIController != null) {
+            lobbyUIController.OnLobbyUIOpened += (sender, args) => {
+                lobbyListUI.gameObject.SetActive(false);
+            };
+        }
     }
 
     private void Update() {

@@ -1,16 +1,20 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ProfileUIController : MonoBehaviour {
     [SerializeField] private PlayerProfile playerProfile;
-    [SerializeField] private Button openProfileBtn;
     [SerializeField] private ProfileUI profileUI;
 
-    private void Awake() {
-        openProfileBtn.onClick.AddListener(OpenProfileUI);
-    }
-
     private void Start() {
+        LobbyUIController lobbyUIController = FindFirstObjectByType<LobbyUIController>();
+        if (lobbyUIController != null) {
+            lobbyUIController.OnLobbyUIOpened += (sender, args) => {
+                profileUI.gameObject.SetActive(false);
+            };
+        }
+        HomeMenuUIController homeMenuUIController = FindFirstObjectByType<HomeMenuUIController>();
+        if (homeMenuUIController != null)
+            homeMenuUIController.ProfileBtn.onClick.AddListener(OpenProfileUI);
+
         profileUI.UsernameInputField.onEndEdit.AddListener(UpdatePlayerProfileUsername);
     }
 
