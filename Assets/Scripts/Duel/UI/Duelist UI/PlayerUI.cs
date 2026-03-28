@@ -1,18 +1,28 @@
 ﻿using System;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerUI : DuelistUI {
+    public event EventHandler<SelectHandCardDragEventArgs> OnSelectCardDrag;
+    public event EventHandler<ReleaseHandCardDragEventArgs> OnReleaseCardDrag;
+
     [SerializeField] private Vector3 handHoverOffset;
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
 
     private Camera cam;
+    private PlayerInputActions playerInputActions;
+    private HandCardUI previousSelection;
     private bool isDragging;
     private HandCardUI draggingCard;
 
     private void Awake() {
+        playerInputActions = new PlayerInputActions();
+        playerInputActions.Enable();
+        playerInputActions.Player.Select.started += SelectCardDrag;
+        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
+
+        previousSelection = null;
         isDragging = false;
         draggingCard = null;
     }
@@ -23,6 +33,7 @@ public class PlayerUI : DuelistUI {
 
     private void Update() {
         UpdateDragging();
+        UpdateHovering();
     }
 
     public void UpdateDragging() {
@@ -31,10 +42,31 @@ public class PlayerUI : DuelistUI {
         if (draggingCard == null)
             throw new Exception("Dragging card is null while isDragging is true");
 
-        //Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        //Vector3 dragPosition = ray.GetPoint(cam.transform.position.y - draggingCard.transform.position.y);
         Vector3 dragPosition = GetScreenToWorldSapceVector();
         draggingCard.transform.position = new Vector3(dragPosition.x, draggingCard.transform.position.y, dragPosition.z);
+    }
+
+    public void UpdateHovering() {
+        if (isDragging)
+            return;
+
+        HandCardUI cardUI = HoverDetection();
+        if (cardUI == null && previousSelection != null) {
+            SetDefaultCardPositions();
+            previousSelection = null;
+        }
+        else if (cardUI != null && ContainsCard(cardUI)) {
+            if (previousSelection == null) {
+                HoverHand();
+                HoverCard(cardUI);
+                previousSelection = cardUI;
+            }
+            else if (cardUI != previousSelection) {
+                ExitHoverCard(previousSelection);
+                HoverCard(cardUI);
+                previousSelection = cardUI;
+            }
+        }
     }
 
     private Vector3 GetScreenToWorldSapceVector() {
@@ -93,7 +125,7 @@ public class PlayerUI : DuelistUI {
             cardUI.SetBorderVisibility(isVisiable);
     }
 
-    public void InspectHand() {
+    public void HoverHand() {
         for (int i = 0; i < cardsInHand.Count; i++)
             cardsInHand[i].transform.Translate(handHoverOffset, Space.World);
     }
@@ -108,20 +140,69 @@ public class PlayerUI : DuelistUI {
         card.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    public void SelectCardDrag(HandCardUI cardUI) {
+    public void SelectCardDrag(InputAction.CallbackContext context) {
+        if (!context.started)
+            return;
+        if (isDragging)
+            return;
+        HandCardUI cardUI = RaycastColliderCheck();
+        if (cardUI == null)
+            return;
         if (!ContainsCard(cardUI))
             throw new Exception("Unable to find handCardUI for SelectCardDrag");
 
+        SelectHandCardDragEventArgs args = new SelectHandCardDragEventArgs(this, cardUI, IndexOf(cardUI));
+        OnSelectCardDrag?.Invoke(this, args);
+        if (args.IsCancelled)
+            return;
+
         isDragging = true;
         draggingCard = cardUI;
+        draggingCard.transform.localScale = Vector3.one;
+        draggingCard.transform.eulerAngles = new Vector3(draggingCard.transform.eulerAngles.x, 0f, draggingCard.transform.eulerAngles.z);
+        draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, handOrigin.transform.position.y, draggingCard.transform.position.z);
         SetDefaultCardPositions();
     }
 
-    public void ReleaseCardDrag() {
+    public void ReleaseCardDrag(InputAction.CallbackContext context) {
+        if (!context.canceled)
+            return;
         if (!isDragging)
             return;
+        if (!ContainsCard(draggingCard))
+            throw new Exception("Unable to find draggingCard for ReleaseCardDrag");
 
+        bool isReleasedInPlayableArea = IsHoveringPlayableArea();
+        HandCardUI cardUI = draggingCard;
         ResetCardDragging();
+        OnReleaseCardDrag?.Invoke(this, new ReleaseHandCardDragEventArgs(this, cardUI, IndexOf(cardUI), isReleasedInPlayableArea));
+    }
+
+    private HandCardUI RaycastColliderCheck() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        HandCardUI cardUI = null;
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.GetComponent<HandCardCollisionPointer>()) {
+                cardUI = hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
+                break;
+            }
+        }
+
+        return cardUI;
+    }
+
+    private bool IsHoveringPlayableArea() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.GetComponent<PlayerUIPlayableAreaIndicator>() != null)
+                return true;
+        }
+
+        return false;
     }
 
     public void ResetCardDragging() {
@@ -143,7 +224,7 @@ public class PlayerUI : DuelistUI {
             if(isDragging && i == GetDraggingCardIndex())
                 continue;
 
-            cardsInHand[i].transform.localScale = new Vector3(1f, 1f, 1f);
+            cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
             float xOffset = (i * cardSpacing - handOffsetX);
             float zOffset = (float)Math.Floor(Math.Abs(i - centerCardPoint)) * cardVerticalOffset * 3f;
@@ -152,6 +233,19 @@ public class PlayerUI : DuelistUI {
             cardsInHand[i].transform.eulerAngles = new Vector3(cardsInHand[i].transform.eulerAngles.x, 0f, cardsInHand[i].transform.eulerAngles.z);
             cardsInHand[i].transform.Rotate(new Vector3(0, i * cardRotation - handRotation, 0), Space.World);
         }
+    }
+
+    private HandCardUI HoverDetection() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        if (hits.Length > 0)
+            Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.GetComponent<HandCardCollisionPointer>())
+                return hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
+        }
+
+        return null;
     }
 
     public int IndexOf(HandCardUI cardUI) {

@@ -21,7 +21,7 @@ public class MatchPlayer {
         creatures = new List<CreatureCard>();
         domain = null;
         lifePoints = 20;
-        currentMana = 1;
+        currentMana = 0;
         seriesWinCount = 0;
     }
 

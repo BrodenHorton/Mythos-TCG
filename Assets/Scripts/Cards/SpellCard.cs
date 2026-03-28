@@ -32,11 +32,11 @@ public class SpellCard : Card {
         return true;
     }
 
-    public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
+    public override void PlayCard(MatchPlayer player) {
         
     }
 
-    public override void PlayCardFromHand(DuelManager duelManager, MatchPlayer player, int handIndex) {
+    public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
         
     }
 

@@ -1001,7 +1001,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 3, z: -0}
+  m_LocalPosition: {x: 0, y: 2.7, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3640,7 +3640,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.002, z: 0}
-  m_LocalScale: {x: 0.61123, y: 1, z: 0.265}
+  m_LocalScale: {x: 0.56097776, y: 1, z: 0.265}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 269465233}
@@ -4738,10 +4738,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Opponent UI
       objectReference: {fileID: 0}
-    - target: {fileID: 4910065538378640748, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7844369168081223106, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5085,7 +5081,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5209147395218276680, guid: 0f6bd5a8c4d2ad54d9e863d23e0c8859, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.848
+      value: 2.644
       objectReference: {fileID: 0}
     - target: {fileID: 5209147395218276680, guid: 0f6bd5a8c4d2ad54d9e863d23e0c8859, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5298,14 +5294,6 @@ PrefabInstance:
     - target: {fileID: 4619643054382922744, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_Name
       value: Player UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 5828501337560000564, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.509
-      objectReference: {fileID: 0}
-    - target: {fileID: 5828501337560000564, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -2.67
       objectReference: {fileID: 0}
     - target: {fileID: 7844369168081223106, guid: 3c6fd0b2b53bf324dbf7df0e5b4b08d2, type: 3}
       propertyPath: m_LocalPosition.x

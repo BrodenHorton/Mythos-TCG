@@ -30,6 +30,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
 
     public void Init(MatchPlayer player) {
         this.player = player;
+        playingFieldUI.Init(player.PlayerId);
     }
 
     public void PlayCreatureCard(CreatureCard card) {

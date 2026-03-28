@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
@@ -35,13 +34,11 @@ public partial class CreatureCard : Card {
     }
 
     // TODO: Implement for cards not payed from the hand
-    public override void PlayCard(DuelManager duelManager, MatchPlayer player) {
+    public override void PlayCard(MatchPlayer player) {
         //EventBus.InvokeOnCreatureCardPlayed(this, new PlayCreatureCardFromHandEventArgs(player, this));
-        //player.PlayCreatureCard(this);
     }
 
-    public override void PlayCardFromHand(DuelManager duelManager, MatchPlayer player, int handIndex) {
-        player.PlayCreatureCardFromHand(this, handIndex);
+    public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
         EventBus.InvokeOnCreatureCardSelectedForPlay(this, new PlayCreatureCardFromHandEventArgs(player, this, handIndex));
     }
 

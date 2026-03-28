@@ -65,9 +65,9 @@ public class DuelManager : NetworkBehaviour {
 
     public void PlayCardFromHand(MatchPlayer player, int handIndex) {
         if (player.Hand.Count <= handIndex)
-            return;
+            throw new Exception("Attmepting to play card with invalid hadnIndex: " + handIndex);
 
-        player.Hand[handIndex].PlayCardFromHand(this, player, handIndex);
+        player.Hand[handIndex].PlayCardFromHand(player, handIndex);
     }
 
     public void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {

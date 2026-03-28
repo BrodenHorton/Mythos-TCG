@@ -11,7 +11,12 @@ public class PlayingFieldUI : MonoBehaviour {
     [SerializeField] private CreatureFieldCardUI creatureCardUIPrefab;
     [SerializeField] private SpellFieldCardUI spellCardUIPrefab;
 
+    private ulong playerId;
     private float cardSpacing = 0.6f;
+
+    public void Init(ulong playerId) {
+        this.playerId = playerId;
+    }
 
     public void PlayCreatureCard(CreatureCard card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
@@ -110,4 +115,6 @@ public class PlayingFieldUI : MonoBehaviour {
 
         return null;
     }
+
+    public ulong PlayerId { get { return playerId; } }
 }
