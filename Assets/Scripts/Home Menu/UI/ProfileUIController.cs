@@ -15,6 +15,15 @@ public class ProfileUIController : MonoBehaviour {
         if (homeMenuUIController != null)
             homeMenuUIController.ProfileBtn.onClick.AddListener(OpenProfileUI);
 
+        profileUI.UsernameInputField.onSelect.AddListener((s) => {
+            SwitchToUIActionMap();
+        });
+        profileUI.UsernameInputField.onDeselect.AddListener((s) => {
+            SwitchToPlayerActionMap();
+        });
+        profileUI.UsernameInputField.onSubmit.AddListener((s) => {
+            SwitchToPlayerActionMap();
+        });
         profileUI.UsernameInputField.onEndEdit.AddListener(UpdatePlayerProfileUsername);
     }
 
@@ -30,5 +39,13 @@ public class ProfileUIController : MonoBehaviour {
         }
 
         playerProfile.Username = username;
+    }
+
+    private void SwitchToUIActionMap() {
+        GameInputManager.Instance.SwitchCurrentActionMap(GameInputManager.Instance.PlayerInputActions.UI);
+    }
+
+    private void SwitchToPlayerActionMap() {
+        GameInputManager.Instance.SwitchCurrentActionMap(GameInputManager.Instance.PlayerInputActions.Player);
     }
 }

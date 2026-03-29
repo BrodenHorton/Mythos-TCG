@@ -8,9 +8,8 @@ public class ActionButtonUIController : MonoBehaviour {
     private DuelManager duelManager;
     private DuelStateManager stateManager;
     private Camera cam;
-    private PlayerInputActions playerInputActions;
 
-    private void Awake() {
+    private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
@@ -19,16 +18,24 @@ public class ActionButtonUIController : MonoBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         cam = Camera.main;
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Enable();
-        playerInputActions.Player.Select.performed += ButtonPressedCheck;
-    }
 
-    private void Start() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.performed += ButtonPressedCheck;
+
         stateManager.FirstMainPhase.OnFirstMainPhase += FirstMainPhaseAction;
         stateManager.CombatPhase.OnCombatPhase += CombatPhaseAction;
         stateManager.SecondMainPhase.OnSecondMainPhase += SecondMainPhaseAction;
         duelManager.OnNextPlayerTurn += SetActionButtonInactive;
+    }
+
+    private void OnDestroy() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.performed -= ButtonPressedCheck;
+
+        stateManager.FirstMainPhase.OnFirstMainPhase -= FirstMainPhaseAction;
+        stateManager.CombatPhase.OnCombatPhase -= CombatPhaseAction;
+        stateManager.SecondMainPhase.OnSecondMainPhase -= SecondMainPhaseAction;
+        duelManager.OnNextPlayerTurn -= SetActionButtonInactive;
     }
 
     private void FirstMainPhaseAction(object sender, PlayerEventArgs args) {

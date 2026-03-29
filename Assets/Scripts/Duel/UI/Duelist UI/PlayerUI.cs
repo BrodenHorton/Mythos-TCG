@@ -11,17 +11,11 @@ public class PlayerUI : DuelistUI {
     [SerializeField] private float cardHoverScale;
 
     private Camera cam;
-    private PlayerInputActions playerInputActions;
     private HandCardUI previousSelection;
     private bool isDragging;
     private HandCardUI draggingCard;
 
     private void Awake() {
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Enable();
-        playerInputActions.Player.Select.started += SelectCardDrag;
-        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
-
         previousSelection = null;
         isDragging = false;
         draggingCard = null;
@@ -29,6 +23,16 @@ public class PlayerUI : DuelistUI {
 
     private void Start() {
         cam = Camera.main;
+
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.started += SelectCardDrag;
+        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
+    }
+
+    private void OnDestroy() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.started -= SelectCardDrag;
+        playerInputActions.Player.Select.canceled -= ReleaseCardDrag;
     }
 
     private void Update() {

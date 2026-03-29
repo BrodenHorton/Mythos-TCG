@@ -4,29 +4,24 @@ using UnityEngine.InputSystem;
 public class ConsoleUIController : MonoBehaviour {
     [SerializeField] private ConsoleUI consoleUI;
 
-    private PlayerInputActions playerInputActions;
-
-    private void Awake() {
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Enable();
+    private void Start() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Debug1.performed += ToggleConsole;
         playerInputActions.Player.OpenConsole.performed += OpenConsole;
         playerInputActions.Player.OpenConsoleCommand.performed += OpenConsoleCommand;
         playerInputActions.Player.Escape.performed += CloseConsole;
         playerInputActions.Player.Enter.performed += SubmitInputField;
-    }
 
-    private void Start() {
         TcgLogger.Instance.OnLog += AddChatLog;
     }
 
     private void OnDestroy() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Debug1.performed -= ToggleConsole;
         playerInputActions.Player.OpenConsole.performed -= OpenConsole;
         playerInputActions.Player.OpenConsoleCommand.performed -= OpenConsoleCommand;
         playerInputActions.Player.Escape.performed -= CloseConsole;
         playerInputActions.Player.Enter.performed -= SubmitInputField;
-        playerInputActions.Disable();
 
         TcgLogger.Instance.OnLog -= AddChatLog;
     }

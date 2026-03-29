@@ -11,9 +11,8 @@ public class CombatFieldUIController : NetworkBehaviour {
     private DuelManager duelManager;
     private DuelStateManager stateManager;
     private Camera cam;
-    private PlayerInputActions playerInputActions;
 
-    private void Awake() {
+    private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
@@ -22,9 +21,14 @@ public class CombatFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         cam = Camera.main;
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Enable();
+
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed += SelectCard;
+    }
+
+    public override void OnNetworkDespawn() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.performed -= SelectCard;
     }
 
     public void Init(MatchPlayer player) {

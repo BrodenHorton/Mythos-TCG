@@ -7,21 +7,30 @@ public class LogContainerScrollView : MonoBehaviour {
     [SerializeField] private LogContainerUI logContainerUI;
     [SerializeField] private float scrollSpeed;
 
-    private PlayerInputActions playerInputActions;
     private RectTransform content;
     private float scrollOffset;
 
     private void Awake() {
-        playerInputActions = new PlayerInputActions();
-        playerInputActions.Player.ScrollUp.performed += LogContainerScrollUp;
-        playerInputActions.Player.ScrollDown.performed += LogContainerScrollDown;
-        playerInputActions.Enable();
-
         content = logContainerUI.GetComponent<RectTransform>();
         scrollOffset = 0f;
+    }
+
+    private void Start() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.ScrollUp.performed += LogContainerScrollUp;
+        playerInputActions.Player.ScrollDown.performed += LogContainerScrollDown;
 
         logContainerUI.OnLogAdded += UpdateScrollOffsetOnLogAdded;
         logContainerUI.OnLogRemoved += UpdateScrollOffsetOnLogRemoved;
+    }
+
+    private void OnDestroy() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.ScrollUp.performed -= LogContainerScrollUp;
+        playerInputActions.Player.ScrollDown.performed -= LogContainerScrollDown;
+
+        logContainerUI.OnLogAdded -= UpdateScrollOffsetOnLogAdded;
+        logContainerUI.OnLogRemoved -= UpdateScrollOffsetOnLogRemoved;
     }
 
     private void LogContainerScrollUp(InputAction.CallbackContext context) {
