@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayingFieldUIController : NetworkBehaviour {
     [SerializeField] private PlayingFieldUI playingFieldUI;
@@ -11,7 +10,6 @@ public class PlayingFieldUIController : NetworkBehaviour {
     private MatchPlayer player;
     private DuelManager duelManager;
     private DuelStateManager stateManager;
-    private Camera cam;
 
     private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
@@ -21,15 +19,8 @@ public class PlayingFieldUIController : NetworkBehaviour {
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
-        cam = Camera.main;
-
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed += SelectCard;
-    }
-
-    public override void OnNetworkDespawn() {
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed -= SelectCard;
+        playingFieldUI.OnSelectCardDrag += SelectCardDrag;
+        playingFieldUI.OnReleaseCardDrag += ReleaseCardDrag;
     }
 
     public void Init(MatchPlayer player) {
@@ -66,46 +57,55 @@ public class PlayingFieldUIController : NetworkBehaviour {
         playingFieldUI.UntapCreature(card);
     }
 
-    private void SelectCard(InputAction.CallbackContext context) {
-        if (!context.performed)
+    private void SelectCardDrag(object sender, SelectFieldCardDragEventArgs args) {
+        if (!duelManager.IsLocalClientPlayerTurn()) {
+            args.IsCancelled = true;
             return;
-        if (!duelManager.IsLocalClientPlayerTurn())
+        }
+        if (player != duelManager.LocalClientPlayer) {
+            args.IsCancelled = true;
             return;
-        if (player != duelManager.LocalClientPlayer)
+        }
+        if (stateManager.CurrentState != stateManager.CombatPhase) {
+            args.IsCancelled = true;
+            return;
+        }
+        if (args.CardUI == null) {
+            args.IsCancelled = true;
+            return;
+        }
+        if (!player.ContainsCreatureUuid(args.CardUI.CardUuid)) {
+            args.IsCancelled = true;
+            return;
+        }
+        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
+        if (creatureCard == null) {
+            args.IsCancelled = true;
+            return;
+        }
+        if (!creatureCard.CanAttack()) {
+            args.IsCancelled = true;
+            return;
+        }
+    }
+
+    private void ReleaseCardDrag(object sender, ReleaseFieldCardDragEventArgs args) {
+        if (!args.IsReleasedInCombatArea)
+            return;
+        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
-        CreatureFieldCardUI cardUI = RaycastColliderCheck();
-        if (cardUI == null)
-            return;
-        if (!playingFieldUI.ContainsCreature(cardUI))
-            return;
-        if (!player.ContainsCreatureUuid(cardUI.CardUuid))
-            return;
-        CreatureCard creatureCard = player.GetCreatureByUuid(cardUI.CardUuid);
+        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
             return;
         if (!creatureCard.CanAttack())
             return;
 
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
+        // TODO: Change target to the passed in target instead of hard coding it
         MatchPlayer target = duelManager.Players[(duelManager.GetPlayerIndex(initiator.PlayerId) + 1) % duelManager.Players.Count];
         DeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
-    }
-
-    private CreatureFieldCardUI RaycastColliderCheck() {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray);
-        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        CreatureFieldCardUI fieldCardUI = null;
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
-                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().FieldCardUI;
-                break;
-            }
-        }
-
-        return fieldCardUI;
     }
 
     [Rpc(SendTo.Server)]

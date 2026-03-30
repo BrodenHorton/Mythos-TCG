@@ -165,7 +165,6 @@ public class PlayerUI : DuelistUI {
         draggingCard.transform.localScale = Vector3.one;
         draggingCard.transform.eulerAngles = new Vector3(draggingCard.transform.eulerAngles.x, 0f, draggingCard.transform.eulerAngles.z);
         draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, handOrigin.transform.position.y, draggingCard.transform.position.z);
-        SetDefaultCardPositions();
     }
 
     public void ReleaseCardDrag(InputAction.CallbackContext context) {

@@ -14,6 +14,7 @@ public class GameInputManager : MonoBehaviour {
         }
 
         Instance = this;
+        DontDestroyOnLoad(gameObject);
         playerInputActions = new PlayerInputActions();
         SwitchCurrentActionMap(playerInputActions.Player);
     }

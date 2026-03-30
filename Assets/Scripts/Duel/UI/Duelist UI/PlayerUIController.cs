@@ -5,24 +5,20 @@ using UnityEngine;
 public class PlayerUIController : DuelistUIController {
     [SerializeField] private PlayerUI playerUI;
     
-    private Camera cam;
     private DuelManager duelManager;
 
     private void Awake() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-
         playerUI.OnSelectCardDrag += SelectCardDrag;
         playerUI.OnReleaseCardDrag += ReleaseCardDrag;
     }
 
     private void Start() {
+        duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
         DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
-
-        cam = Camera.main;
 
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
