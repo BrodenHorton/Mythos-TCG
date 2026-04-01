@@ -6,9 +6,13 @@ using UnityEngine.InputSystem;
 public class PlayingFieldUI : MonoBehaviour {
     public event EventHandler<SelectFieldCardDragEventArgs> OnSelectCardDrag;
     public event EventHandler<ReleaseFieldCardDragEventArgs> OnReleaseCardDrag;
+    public event EventHandler<ReleaseFieldCardDragOverCombatFieldEventArgs> OnReleaseCardDragOverCombatField;
 
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
+    [SerializeField] private float cardSpacing;
+    [SerializeField] private float dragOffset;
+    [Header("Field Cards")]
     [SerializeField] private List<CreatureFieldCardUI> creatures;
     [SerializeField] private SpellFieldCardUI domainCard;
     [Header("Prefabs")]
@@ -16,7 +20,6 @@ public class PlayingFieldUI : MonoBehaviour {
     [SerializeField] private SpellFieldCardUI spellCardUIPrefab;
 
     private ulong playerId;
-    private float cardSpacing = 0.6f;
     private Camera cam;
     private bool isDragging;
     private CreatureFieldCardUI draggingCard;
@@ -67,18 +70,16 @@ public class PlayingFieldUI : MonoBehaviour {
         return ray.direction * t + origin;
     }
 
-    public void PlayCreatureCard(CreatureCard card) {
+    public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
         creatureCardUI.transform.parent = creatureSlotOrigin;
         creatureCardUI.Init(card);
-        creatures.Add(creatureCardUI);
-        SetDefaultCardPositions();
+        AddCreatureFieldCard(player, creatureCardUI);
     }
 
-    // TODO: When Adding a field card, make sure to pass the Match Player so you can sort the field cards to match
-    // the players internal creature order
-    public void AddCreatureFieldCard(CreatureFieldCardUI cardUI) {
+    public void AddCreatureFieldCard(MatchPlayer player, CreatureFieldCardUI cardUI) {
         creatures.Add(cardUI);
+        SortCreatures(player);
         SetDefaultCardPositions();
     }
 
@@ -137,7 +138,6 @@ public class PlayingFieldUI : MonoBehaviour {
 
         isDragging = true;
         draggingCard = cardUI;
-        float dragOffset = 1f;
         draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, draggingCard.transform.position.y + dragOffset, draggingCard.transform.position.z);
     }
 
@@ -149,10 +149,12 @@ public class PlayingFieldUI : MonoBehaviour {
         if (!ContainsCreature(draggingCard))
             throw new Exception("Unable to find draggingCard for ReleaseCardDrag");
 
-        bool isReleasedInCombatArea = IsHoveringCombatArea();
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        OnReleaseCardDrag?.Invoke(this, new ReleaseFieldCardDragEventArgs(this, cardUI, isReleasedInCombatArea));
+        OnReleaseCardDrag?.Invoke(this, new ReleaseFieldCardDragEventArgs(this, cardUI));
+        
+        if(IsHoveringCombatArea(out ulong targetPlayerId))
+            OnReleaseCardDragOverCombatField?.Invoke(this, new ReleaseFieldCardDragOverCombatFieldEventArgs(this, cardUI, targetPlayerId));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
@@ -170,14 +172,19 @@ public class PlayingFieldUI : MonoBehaviour {
         return fieldCardUI;
     }
 
-    // TODO: Create combat field areas as indicators
-    private bool IsHoveringCombatArea() {
+    private bool IsHoveringCombatArea(out ulong targetPlayerId) {
+        targetPlayerId = 0;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<PlayerUIPlayableAreaIndicator>() != null)
-                return true;
+            if (hit.collider.GetComponent<CombatFieldCollisionPointer>() != null) {
+                ulong combatFieldPlayerId = hit.collider.GetComponent<CombatFieldCollisionPointer>().CombatFieldUI.TargetPlayerId;
+                if(combatFieldPlayerId != playerId) {
+                    targetPlayerId = combatFieldPlayerId;
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -227,6 +234,18 @@ public class PlayingFieldUI : MonoBehaviour {
             cardPosition.x += i * cardSpacing - handOffset;
             cardUI.transform.position = cardPosition;
         }
+    }
+
+    private void SortCreatures(MatchPlayer player) {
+        List<CreatureFieldCardUI> sortedList = new List<CreatureFieldCardUI>();
+        for(int i = 0; i < player.Creatures.Count; i++) {
+            CreatureFieldCardUI cardUI = GetCreatureFieldCardUIBy(player.Creatures[i].Uuid);
+            if (cardUI == null)
+                continue;
+
+            sortedList.Add(cardUI);
+        }
+        creatures = sortedList;
     }
 
     public CreatureFieldCardUI GetCreatureFieldCardUIBy(Guid uuid) {

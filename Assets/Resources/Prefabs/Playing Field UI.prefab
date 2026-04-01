@@ -80,6 +80,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSlotOrigin: {fileID: 3074724133692166430}
   domainSlotOrigin: {fileID: 3921344399750140061}
+  cardSpacing: 0.6
+  dragOffset: 0.5
   creatures: []
   domainCard: {fileID: 0}
   creatureCardUIPrefab: {fileID: 8696858695724869291, guid: 22c6877d40548284b8208578e672fe58, type: 3}

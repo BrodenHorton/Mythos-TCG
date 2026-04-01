@@ -24,12 +24,7 @@ public class SpellCard : Card {
     }
 
     public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
-        if (player.CurrentMana < cardBase.ManaCost)
-            return false;
-        if (player.Creatures.Count > 6)
-            return false;
-
-        return true;
+        return false;
     }
 
     public override void PlayCard(MatchPlayer player) {

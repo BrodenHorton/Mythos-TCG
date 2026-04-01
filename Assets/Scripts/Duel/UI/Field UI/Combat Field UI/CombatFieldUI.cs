@@ -5,12 +5,18 @@ using UnityEngine;
 public class CombatFieldUI : MonoBehaviour {
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
+    [SerializeField] private float cardSpacing;
+    [Header("Field Cards")]
     [SerializeField] private List<CreatureFieldCardUI> attackers;
     [SerializeField] private List<CreatureFieldCardUI> defenders;
     [Header("Prefab")]
     [SerializeField] private CreatureFieldCardUI creatureFieldCardUIPrefab;
 
-    private float cardSpacing = 0.6f;
+    private ulong targetPlayerId;
+
+    public void Init(ulong targetPlayerId) {
+        this.targetPlayerId = targetPlayerId;
+    }
 
     public void AddAttacker(CreatureCard card) {
         CreatureFieldCardUI cardUI = Instantiate(creatureFieldCardUIPrefab);
@@ -77,4 +83,6 @@ public class CombatFieldUI : MonoBehaviour {
     public List<CreatureFieldCardUI> Attackers { get { return attackers; } }
 
     public List<CreatureFieldCardUI> Defenders { get { return defenders; } }
+
+    public ulong TargetPlayerId { get { return targetPlayerId; } }
 }

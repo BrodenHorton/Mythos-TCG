@@ -20,7 +20,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         playingFieldUI.OnSelectCardDrag += SelectCardDrag;
-        playingFieldUI.OnReleaseCardDrag += ReleaseCardDrag;
+        playingFieldUI.OnReleaseCardDragOverCombatField += ReleaseCardDragOverCombatField;
     }
 
     public void Init(MatchPlayer player) {
@@ -29,7 +29,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
     }
 
     public void PlayCreatureCard(CreatureCard card) {
-        playingFieldUI.PlayCreatureCard(card);
+        playingFieldUI.PlayCreatureCard(player, card);
     }
 
     public void PlayDomainCard(SpellCard card) {
@@ -89,9 +89,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         }
     }
 
-    private void ReleaseCardDrag(object sender, ReleaseFieldCardDragEventArgs args) {
-        if (!args.IsReleasedInCombatArea)
-            return;
+    private void ReleaseCardDragOverCombatField(object sender, ReleaseFieldCardDragOverCombatFieldEventArgs args) {
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
@@ -103,8 +101,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
             return;
 
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        // TODO: Change target to the passed in target instead of hard coding it
-        MatchPlayer target = duelManager.Players[(duelManager.GetPlayerIndex(initiator.PlayerId) + 1) % duelManager.Players.Count];
+        MatchPlayer target = duelManager.GetPlayerById(args.TargetPlayerId);
         DeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
     }
 
@@ -122,7 +119,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
 
     public void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(creatures[i]);
+            playingFieldUI.AddCreatureFieldCard(player, creatures[i]);
     }
 
     public bool ContainsCreature(Guid uuid) {

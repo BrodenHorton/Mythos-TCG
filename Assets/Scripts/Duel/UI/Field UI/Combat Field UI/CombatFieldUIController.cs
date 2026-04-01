@@ -33,6 +33,7 @@ public class CombatFieldUIController : NetworkBehaviour {
 
     public void Init(MatchPlayer player) {
         target = player;
+        combatFieldUI.Init(player.PlayerId);
     }
 
     public void AddAttacker(CreatureCard attacker) {
@@ -110,4 +111,6 @@ public class CombatFieldUIController : NetworkBehaviour {
     public bool ContainsAttacker(Guid uuid) {
         return combatFieldUI.ContainsAttacker(uuid);
     }
+
+    public MatchPlayer Target { get { return target; } }
 }
