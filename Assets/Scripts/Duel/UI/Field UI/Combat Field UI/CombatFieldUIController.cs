@@ -19,21 +19,18 @@ public class CombatFieldUIController : NetworkBehaviour {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
-        PlayingFieldUIController playingFieldUIController = FindFirstObjectByType<PlayingFieldUIController>();
-        if (playingFieldUIController == null)
-            throw new Exception("Could not find PlayingFieldUIController object");
 
         cam = Camera.main;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed += SelectCard;
 
-        playingFieldUIController.OnSelectFieldCardDrag += (sender, initiatorPlayerId) => {
-            if (initiatorPlayerId != target.PlayerId)
+        EventBus.OnSelectFieldCardDrag += (sender, args) => {
+            if (args.Player.PlayerId != target.PlayerId)
                 combatFieldUI.PlayableAreaIndicator.SetActive(true);
         };
-        playingFieldUIController.OnReleaseFieldCardDrag += (sender, initiatorPlayerId) => {
-            if (initiatorPlayerId != target.PlayerId)
+        EventBus.OnReleaseFieldCardDrag += (sender, args) => {
+            if (args.Player.PlayerId != target.PlayerId)
                 combatFieldUI.PlayableAreaIndicator.SetActive(false);
         };
     }

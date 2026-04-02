@@ -119,4 +119,6 @@ public class CombatManager : NetworkBehaviour {
     public void ClearCombats() {
         duelistCombats.Clear();
     }
+
+    public List<DuelistCombat> DuelistCombats { get { return duelistCombats; } }
 }

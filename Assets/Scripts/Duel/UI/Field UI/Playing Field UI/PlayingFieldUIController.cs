@@ -5,9 +5,6 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class PlayingFieldUIController : NetworkBehaviour {
-    public event EventHandler<ulong> OnSelectFieldCardDrag;
-    public event EventHandler<ulong> OnReleaseFieldCardDrag;
-
     [SerializeField] private PlayingFieldUI playingFieldUI;
 
     private MatchPlayer player;
@@ -61,11 +58,11 @@ public class PlayingFieldUIController : NetworkBehaviour {
     }
 
     private void SelectCardDrag(object sender, SelectFieldCardDragEventArgs args) {
-        if (!duelManager.IsLocalClientPlayerTurn()) {
+        if (player != duelManager.LocalClientPlayer) {
             args.IsCancelled = true;
             return;
         }
-        if (player != duelManager.LocalClientPlayer) {
+        if (!duelManager.IsLocalClientPlayerTurn()) {
             args.IsCancelled = true;
             return;
         }
@@ -91,13 +88,13 @@ public class PlayingFieldUIController : NetworkBehaviour {
             return;
         }
 
-        OnSelectFieldCardDrag?.Invoke(this, player.PlayerId);
+        EventBus.InvokeOnSelectFieldCardDrag(this, new PlayerEventArgs(player));
     }
 
     private void ReleaseCardDrag(object sender, ReleaseFieldCardDragOverCombatFieldEventArgs args) {
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
-        OnReleaseFieldCardDrag?.Invoke(this, player.PlayerId);
+        EventBus.InvokeOnReleaseFieldCardDrag(this, new PlayerEventArgs(player));
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
         CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);

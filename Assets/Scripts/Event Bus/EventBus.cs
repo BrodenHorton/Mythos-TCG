@@ -5,6 +5,8 @@ public static class EventBus {
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
     public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
+    public static event EventHandler<PlayerEventArgs> OnSelectFieldCardDrag;
+    public static event EventHandler<PlayerEventArgs> OnReleaseFieldCardDrag;
     public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardSelectedForPlay;
     public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardPlayedFromHand;
     public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardPlayed;
@@ -32,6 +34,14 @@ public static class EventBus {
 
     public static void InvokeOnCardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {
         OnCardRemovedFromHand?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnSelectFieldCardDrag(object sender, PlayerEventArgs args) {
+        OnSelectFieldCardDrag?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnReleaseFieldCardDrag(object sender, PlayerEventArgs args) {
+        OnReleaseFieldCardDrag?.Invoke(sender, args);
     }
 
     public static void InvokeOnCreatureCardSelectedForPlay(object sender, PlayCreatureCardFromHandEventArgs args) {
