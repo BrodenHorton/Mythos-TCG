@@ -5,6 +5,7 @@ using UnityEngine;
 public class CombatFieldUI : MonoBehaviour {
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
+    [SerializeField] private GameObject playableAreaIndicator;
     [SerializeField] private float cardSpacing;
     [Header("Field Cards")]
     [SerializeField] private List<CreatureFieldCardUI> attackers;
@@ -13,6 +14,10 @@ public class CombatFieldUI : MonoBehaviour {
     [SerializeField] private CreatureFieldCardUI creatureFieldCardUIPrefab;
 
     private ulong targetPlayerId;
+
+    private void Awake() {
+        playableAreaIndicator.SetActive(false);
+    }
 
     public void Init(ulong targetPlayerId) {
         this.targetPlayerId = targetPlayerId;
@@ -83,6 +88,8 @@ public class CombatFieldUI : MonoBehaviour {
     public List<CreatureFieldCardUI> Attackers { get { return attackers; } }
 
     public List<CreatureFieldCardUI> Defenders { get { return defenders; } }
+
+    public GameObject PlayableAreaIndicator {  get { return playableAreaIndicator; } }
 
     public ulong TargetPlayerId { get { return targetPlayerId; } }
 }

@@ -6,6 +6,7 @@ public class PlayerUI : DuelistUI {
     public event EventHandler<SelectHandCardDragEventArgs> OnSelectCardDrag;
     public event EventHandler<ReleaseHandCardDragEventArgs> OnReleaseCardDrag;
 
+    [SerializeField] private GameObject playableAreaIndicator;
     [SerializeField] private Vector3 handHoverOffset;
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
@@ -19,6 +20,7 @@ public class PlayerUI : DuelistUI {
         previousSelection = null;
         isDragging = false;
         draggingCard = null;
+        playableAreaIndicator.SetActive(false);
     }
 
     private void Start() {
@@ -165,6 +167,8 @@ public class PlayerUI : DuelistUI {
         draggingCard.transform.localScale = Vector3.one;
         draggingCard.transform.eulerAngles = new Vector3(draggingCard.transform.eulerAngles.x, 0f, draggingCard.transform.eulerAngles.z);
         draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, handOrigin.transform.position.y, draggingCard.transform.position.z);
+        playableAreaIndicator.SetActive(true);
+        SetDefaultCardPositions();
     }
 
     public void ReleaseCardDrag(InputAction.CallbackContext context) {
@@ -178,6 +182,7 @@ public class PlayerUI : DuelistUI {
         bool isReleasedInPlayableArea = IsHoveringPlayableArea();
         HandCardUI cardUI = draggingCard;
         ResetCardDragging();
+        playableAreaIndicator.SetActive(false);
         OnReleaseCardDrag?.Invoke(this, new ReleaseHandCardDragEventArgs(this, cardUI, IndexOf(cardUI), isReleasedInPlayableArea));
     }
 

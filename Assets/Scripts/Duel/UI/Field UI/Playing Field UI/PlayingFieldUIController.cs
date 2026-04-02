@@ -5,6 +5,9 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class PlayingFieldUIController : NetworkBehaviour {
+    public event EventHandler<ulong> OnSelectFieldCardDrag;
+    public event EventHandler<ulong> OnReleaseFieldCardDrag;
+
     [SerializeField] private PlayingFieldUI playingFieldUI;
 
     private MatchPlayer player;
@@ -20,7 +23,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         playingFieldUI.OnSelectCardDrag += SelectCardDrag;
-        playingFieldUI.OnReleaseCardDragOverCombatField += ReleaseCardDragOverCombatField;
+        playingFieldUI.OnReleaseCardDragOverCombatField += ReleaseCardDrag;
     }
 
     public void Init(MatchPlayer player) {
@@ -87,11 +90,14 @@ public class PlayingFieldUIController : NetworkBehaviour {
             args.IsCancelled = true;
             return;
         }
+
+        OnSelectFieldCardDrag?.Invoke(this, player.PlayerId);
     }
 
-    private void ReleaseCardDragOverCombatField(object sender, ReleaseFieldCardDragOverCombatFieldEventArgs args) {
+    private void ReleaseCardDrag(object sender, ReleaseFieldCardDragOverCombatFieldEventArgs args) {
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
+        OnReleaseFieldCardDrag?.Invoke(this, player.PlayerId);
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
         CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
