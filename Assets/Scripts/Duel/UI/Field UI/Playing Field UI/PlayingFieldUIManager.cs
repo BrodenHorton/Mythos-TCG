@@ -20,7 +20,9 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
         EventBus.OnDeclareAttacker += RemoveAttacker;
+        EventBus.OnDeclareDefender += RemoveDefender;
         EventBus.OnUndeclareAttacker += UndeclareAttacker;
+        EventBus.OnUndeclareDefender += UndeclareDefender;
         EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
 
@@ -78,7 +80,14 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         if (controllerByPlayerId[args.Initiator.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Initiator.PlayerId);
 
-        controllerByPlayerId[args.Initiator.PlayerId].RemoveAttacker(args.Attacker);
+        controllerByPlayerId[args.Initiator.PlayerId].RemoveCreature(args.Attacker);
+    }
+
+    private void RemoveDefender(object sender, DeclareDefenderEventArgs args) {
+        if (controllerByPlayerId[args.Target.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Target.PlayerId);
+
+        controllerByPlayerId[args.Target.PlayerId].RemoveCreature(args.Attacker);
     }
 
     public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
@@ -86,6 +95,13 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Initiator.PlayerId);
 
         controllerByPlayerId[args.Initiator.PlayerId].PlayCreatureCard(args.Attacker);
+    }
+
+    public void UndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
+        if (controllerByPlayerId[args.Target.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Target.PlayerId);
+
+        controllerByPlayerId[args.Target.PlayerId].PlayCreatureCard(args.Defender);
     }
 
     private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {

@@ -2,7 +2,6 @@
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CombatFieldUIController : NetworkBehaviour {
     [SerializeField] private CombatFieldUI combatFieldUI;
@@ -22,22 +21,19 @@ public class CombatFieldUIController : NetworkBehaviour {
 
         cam = Camera.main;
 
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed += SelectUndeclareAttacker;
-
-        EventBus.OnSelectFieldCardDrag += (sender, args) => {
-            if (args.Player.PlayerId != target.PlayerId)
+        combatFieldUI.OnSelectFieldCard += SelectUndeclareAttacker;
+        EventBus.OnStartCardDragPlayingField += (sender, args) => {
+            if (args.PlayingFieldUI.PlayerId != target.PlayerId)
                 combatFieldUI.PlayableAreaIndicator.SetActive(true);
         };
-        EventBus.OnReleaseFieldCardDrag += (sender, args) => {
-            if (args.Player.PlayerId != target.PlayerId)
+        EventBus.OnReleaseCardDragPlayingField += (sender, args) => {
+            if (args.PlayingFieldUI.PlayerId != target.PlayerId)
                 combatFieldUI.PlayableAreaIndicator.SetActive(false);
         };
     }
 
     public override void OnNetworkDespawn() {
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed -= SelectUndeclareAttacker;
+        combatFieldUI.OnSelectFieldCard -= SelectUndeclareAttacker;
     }
 
     public void Init(MatchPlayer player) {
@@ -57,6 +53,10 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.RemoveAttacker(attacker.Uuid);
     }
 
+    public void RemoveDefender(CreatureCard attacker) {
+        combatFieldUI.RemoveDefender(attacker.Uuid);
+    }
+
     public void ReleaseCreatureCards(DuelistCombat combat) {
         EventBus.InvokeOnReleaseCombatCreatures(this, new ReleaseCombatCreaturesEventArgs(
             combat.Initiator,
@@ -67,26 +67,45 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.ClearCreatures();
     }
 
-    private void SelectUndeclareAttacker(InputAction.CallbackContext context) {
-        if (!context.performed)
-            return;
+    private void SelectUndeclareAttacker(object sender, CombatFieldCardSelectEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
-        CreatureFieldCardUI cardUI = RaycastColliderCheck();
-        if (cardUI == null)
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
             return;
-        if (!combatFieldUI.ContainsAttacker(cardUI))
+        if (args.CardUI == null)
             return;
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        if (!initiator.ContainsCreatureUuid(cardUI.CardUuid))
+        if (!initiator.ContainsCreatureUuid(args.CardUI.CardUuid))
             return;
-        CreatureCard creatureCard = initiator.GetCreatureByUuid(cardUI.CardUuid);
+        CreatureCard creatureCard = initiator.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
             return;
 
         UndeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
+    }
+
+    private void SelectUndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
+        if (duelManager.IsLocalClientPlayerTurn())
+            return;
+        if (target != duelManager.LocalClientPlayer)
+            return;
+        if (stateManager.CurrentState != stateManager.CombatPhase)
+            return;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+            return;
+        if (args.CardUI == null)
+            return;
+        MatchPlayer localClientPlayer = duelManager.LocalClientPlayer;
+        if (!localClientPlayer.ContainsCreatureUuid(args.CardUI.CardUuid))
+            return;
+        CreatureCard creatureCard = localClientPlayer.GetCreatureByUuid(args.CardUI.CardUuid);
+        if (creatureCard == null)
+            return;
+
+        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
+        UndeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
     }
 
     private CreatureFieldCardUI RaycastColliderCheck() {
@@ -116,8 +135,24 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
     }
 
+    [Rpc(SendTo.Server)]
+    private void UndeclareDefenderServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        UndeclareDefenderClientRpc(initiatorIndex, targetIndex, cardUuidStr);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void UndeclareDefenderClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
+        CreatureCard creatureCard = duelManager.Players[targetIndex].GetCreatureByUuid(cardUuid);
+        EventBus.InvokeOnUndeclareDefender(this, new UndeclareDefenderEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    }
+
     public bool ContainsAttacker(Guid uuid) {
         return combatFieldUI.ContainsAttacker(uuid);
+    }
+
+    public bool ContainsDefender(Guid uuid) {
+        return combatFieldUI.ContainsDefender(uuid);
     }
 
     public MatchPlayer Target { get { return target; } }

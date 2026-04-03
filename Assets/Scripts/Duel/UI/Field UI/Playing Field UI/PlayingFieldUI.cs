@@ -4,9 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayingFieldUI : MonoBehaviour {
-    public event EventHandler<SelectFieldCardDragEventArgs> OnSelectCardDrag;
-    public event EventHandler<ReleaseFieldCardDragEventArgs> OnReleaseCardDrag;
-    public event EventHandler<ReleaseFieldCardDragOverCombatFieldEventArgs> OnReleaseCardDragOverCombatField;
+    public event EventHandler<PlayingFieldCardDragEventArgs> OnSelectingCardDrag;
 
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
@@ -131,11 +129,12 @@ public class PlayingFieldUI : MonoBehaviour {
         if (!ContainsCreature(cardUI))
             return;
 
-        SelectFieldCardDragEventArgs args = new SelectFieldCardDragEventArgs(this, cardUI);
-        OnSelectCardDrag?.Invoke(this, args);
+        PlayingFieldCardDragEventArgs args = new PlayingFieldCardDragEventArgs(this, cardUI);
+        OnSelectingCardDrag?.Invoke(this, args);
         if (args.IsCancelled)
             return;
 
+        EventBus.InvokeOnStartCardDragPlayingField(this, args);
         isDragging = true;
         draggingCard = cardUI;
         draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, draggingCard.transform.position.y + dragOffset, draggingCard.transform.position.z);
@@ -151,10 +150,7 @@ public class PlayingFieldUI : MonoBehaviour {
 
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        OnReleaseCardDrag?.Invoke(this, new ReleaseFieldCardDragEventArgs(this, cardUI));
-        
-        if(IsHoveringCombatArea(out ulong targetPlayerId))
-            OnReleaseCardDragOverCombatField?.Invoke(this, new ReleaseFieldCardDragOverCombatFieldEventArgs(this, cardUI, targetPlayerId));
+        EventBus.InvokeOnReleaseCardDragPlayingField(this, new ReleaseFieldCardDragPlayingFieldEventArgs(this, cardUI));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
@@ -170,24 +166,6 @@ public class PlayingFieldUI : MonoBehaviour {
         }
 
         return fieldCardUI;
-    }
-
-    private bool IsHoveringCombatArea(out ulong targetPlayerId) {
-        targetPlayerId = 0;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray);
-        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<CombatFieldCollisionPointer>() != null) {
-                ulong combatFieldPlayerId = hit.collider.GetComponent<CombatFieldCollisionPointer>().CombatFieldUI.TargetPlayerId;
-                if(combatFieldPlayerId != playerId) {
-                    targetPlayerId = combatFieldPlayerId;
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public void ResetCardDragging() {

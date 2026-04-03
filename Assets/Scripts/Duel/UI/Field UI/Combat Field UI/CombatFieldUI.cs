@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CombatFieldUI : MonoBehaviour {
     private static readonly int MAX_FIELD_CREATURES = 6;
+
+    public event EventHandler<CombatFieldCardSelectEventArgs> OnSelectFieldCard;
 
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
@@ -19,15 +22,18 @@ public class CombatFieldUI : MonoBehaviour {
     private Dictionary<int, CreatureFieldCardUI> attackerByPositionIndex;
     private Dictionary<int, CreatureFieldCardUI> defenderByPositionIndex;
     private Camera cam;
-    private bool isDragging;
-    private FieldCardUI draggingCard;
 
     private void Awake() {
         attackerByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
         defenderByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
-        isDragging = false;
-        draggingCard = null;
         playableAreaIndicator.SetActive(false);
+
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.performed += SelectFieldCard;
+    }
+
+    private void Start() {
+        cam = Camera.main;
     }
 
     public void Init(ulong targetPlayerId) {
@@ -83,12 +89,63 @@ public class CombatFieldUI : MonoBehaviour {
         }
     }
 
+    public void RemoveDefender(Guid uuid) {
+        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in defenderByPositionIndex.ToList()) {
+            if (entry.Value.CardUuid == uuid) {
+                CreatureFieldCardUI cardUI = entry.Value;
+                defenderByPositionIndex.Remove(entry.Key);
+                Destroy(cardUI.gameObject);
+                break;
+            }
+        }
+    }
+
+    private void SelectFieldCard(InputAction.CallbackContext context) {
+        if (!context.started)
+            return;
+        CreatureFieldCardUI cardUI = CreatureFieldCardRaycastColliderCheck();
+        if (cardUI == null)
+            return;
+        if (!ContainsAttacker(cardUI) && !ContainsDefender(cardUI))
+            return;
+
+        OnSelectFieldCard?.Invoke(this, new CombatFieldCardSelectEventArgs(this, cardUI));
+    }
+
+    private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        CreatureFieldCardUI fieldCardUI = null;
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
+                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().FieldCardUI;
+                break;
+            }
+        }
+
+        return fieldCardUI;
+    }
+
     public bool ContainsAttacker(CreatureFieldCardUI cardUI) {
         return attackerByPositionIndex.ContainsValue(cardUI);
     }
 
     public bool ContainsAttacker(Guid cardUuid) {
         foreach (CreatureFieldCardUI cardUI in attackerByPositionIndex.Values) {
+            if (cardUI.CardUuid == cardUuid)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool ContainsDefender(CreatureFieldCardUI cardUI) {
+        return defenderByPositionIndex.ContainsValue(cardUI);
+    }
+
+    public bool ContainsDefender(Guid cardUuid) {
+        foreach (CreatureFieldCardUI cardUI in defenderByPositionIndex.Values) {
             if (cardUI.CardUuid == cardUuid)
                 return true;
         }

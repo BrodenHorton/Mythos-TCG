@@ -1,11 +1,11 @@
 using System;
 
-public class SelectFieldCardDragEventArgs : EventArgs {
+public class PlayingFieldCardDragEventArgs : EventArgs {
     private PlayingFieldUI playingFieldUI;
     private FieldCardUI cardUI;
-    bool isCancelled;
+    private bool isCancelled;
 
-    public SelectFieldCardDragEventArgs(PlayingFieldUI playingFieldUI, FieldCardUI cardUI) {
+    public PlayingFieldCardDragEventArgs(PlayingFieldUI playingFieldUI, FieldCardUI cardUI) {
         this.playingFieldUI = playingFieldUI;
         this.cardUI = cardUI;
     }

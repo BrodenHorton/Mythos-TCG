@@ -22,6 +22,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
         EventBus.OnDeclareAttacker += AddAttacker;
         EventBus.OnDeclareDefender += AddDefender;
         EventBus.OnUndeclareAttacker += RemoveAttacker;
+        EventBus.OnUndeclareDefender += RemoveDefender;
         combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
     }
 
@@ -60,6 +61,15 @@ public class CombatFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find combat field UI controller with creature Uuid: " + args.Attacker.Uuid);
 
         controllerByPlayerId[args.Target.PlayerId].RemoveAttacker(args.Attacker);
+    }
+
+    private void RemoveDefender(object sender, UndeclareDefenderEventArgs args) {
+        if (controllerByPlayerId[args.Target.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Target.PlayerId);
+        if (!controllerByPlayerId[args.Target.PlayerId].ContainsDefender(args.Defender.Uuid))
+            throw new Exception("Unable to find combat field UI controller with creature Uuid: " + args.Defender.Uuid);
+
+        controllerByPlayerId[args.Target.PlayerId].RemoveDefender(args.Defender);
     }
 
     private void ReleaseCreatureCards(object sender, DuelistCombatEventArgs args) {

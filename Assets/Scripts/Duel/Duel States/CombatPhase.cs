@@ -13,8 +13,10 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     [SerializeField] private CombatManager combatManager;
 
     private CombatState combatState;
+    private List<ulong> readyPlayers;
 
     public enum CombatState {
+        None,
         DeclareAttackers,
         DeclareDefenders,
         DeclareSpells,
@@ -23,6 +25,7 @@ public class CombatPhase : NetworkBehaviour, DuelState {
 
     private void Start() {
         combatState = CombatState.DeclareAttackers;
+        readyPlayers = new List<ulong>();
     }
 
     public void EnterState() {
@@ -34,7 +37,19 @@ public class CombatPhase : NetworkBehaviour, DuelState {
         OnStartDeclareAttackers?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
     }
 
-    public void UpdateState() { }
+    public void UpdateState() {
+        if (!IsServer)
+            return;
+        if (combatState != CombatState.DeclareDefenders)
+            return;
+
+        if (readyPlayers.Count == combatManager.DuelistCombats.Count) {
+            combatState = CombatState.ProcessCombat;
+            ProcessCombatClientRpc();
+            combatState = CombatState.None;
+            SwitchToSecondMainPhaseClientRpc();
+        }
+    }
 
     private void StartDefenderDeclaration(object sender, EventArgs args) {
         EventBus.OnActionButtonPressed -= StartDefenderDeclaration;
@@ -50,28 +65,27 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     private void StartDefenderDeclarationClientRpc() {
         combatState = CombatState.DeclareDefenders;
         OnStartDeclareDefenders?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+        EventBus.OnActionButtonPressed += PlayerReadyUp;
     }
 
-    private void ProcessCombat(object sender, EventArgs args) {
-        EventBus.OnActionButtonPressed -= ProcessCombat;
-        ProcessCombatRpc();
-        SwitchToSecondMainPhaseRpc();
+    private void PlayerReadyUp(object sender, EventArgs args) {
+        PlayerReadyUpServerRpc(stateManager.DuelManager.LocalClientPlayer.PlayerId);
     }
 
     [Rpc(SendTo.Server)]
-    private void ProcessCombatRpc() {
-        ProcessCombatClientRpc();
+    private void PlayerReadyUpServerRpc(ulong playerId) {
+        PlayerReadyUpClientRpc(playerId);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void PlayerReadyUpClientRpc(ulong playerId) {
+        readyPlayers.Add(playerId);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void ProcessCombatClientRpc() {
         combatManager.ProcessCombat();
         OnCombatPhaseFinished?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-    }
-
-    [Rpc(SendTo.Server)]
-    private void SwitchToSecondMainPhaseRpc() {
-        SwitchToSecondMainPhaseClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]

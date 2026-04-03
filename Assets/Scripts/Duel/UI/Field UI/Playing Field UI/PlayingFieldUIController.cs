@@ -19,8 +19,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
-        playingFieldUI.OnSelectCardDrag += SelectCardDrag;
-        playingFieldUI.OnReleaseCardDragOverCombatField += ReleaseCardDrag;
+        playingFieldUI.OnSelectingCardDrag += SelectCardDrag;
     }
 
     public void Init(MatchPlayer player) {
@@ -36,11 +35,11 @@ public class PlayingFieldUIController : NetworkBehaviour {
         playingFieldUI.PlayDomainCard(card);
     }
 
-    public void RemoveAttacker(CreatureCard attacker) {
-        if (!playingFieldUI.ContainsCreature(attacker.Uuid))
-            throw new Exception("Playing field UI controller does not contain card uuid: " + attacker.Uuid);
+    public void RemoveCreature(CreatureCard card) {
+        if (!playingFieldUI.ContainsCreature(card.Uuid))
+            throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);
 
-        playingFieldUI.RemoveCreature(attacker.Uuid);
+        playingFieldUI.RemoveCreature(card.Uuid);
     }
 
     public void TapCreature(CreatureCard card) {
@@ -57,45 +56,59 @@ public class PlayingFieldUIController : NetworkBehaviour {
         playingFieldUI.UntapCreature(card);
     }
 
-    private void SelectCardDrag(object sender, SelectFieldCardDragEventArgs args) {
-        if (player != duelManager.LocalClientPlayer) {
+    private void SelectCardDrag(object sender, PlayingFieldCardDragEventArgs args) {
+        if(!CanSelectAttacker(args) && !CanSelectDefender(args))
             args.IsCancelled = true;
-            return;
-        }
-        if (!duelManager.IsLocalClientPlayerTurn()) {
-            args.IsCancelled = true;
-            return;
-        }
-        if (stateManager.CurrentState != stateManager.CombatPhase) {
-            args.IsCancelled = true;
-            return;
-        }
-        if (args.CardUI == null) {
-            args.IsCancelled = true;
-            return;
-        }
-        if (!player.ContainsCreatureUuid(args.CardUI.CardUuid)) {
-            args.IsCancelled = true;
-            return;
-        }
-        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
-        if (creatureCard == null) {
-            args.IsCancelled = true;
-            return;
-        }
-        if (!creatureCard.CanAttack()) {
-            args.IsCancelled = true;
-            return;
-        }
-
-        EventBus.InvokeOnSelectFieldCardDrag(this, new PlayerEventArgs(player));
     }
 
-    private void ReleaseCardDrag(object sender, ReleaseFieldCardDragOverCombatFieldEventArgs args) {
-        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
-            return;
-        EventBus.InvokeOnReleaseFieldCardDrag(this, new PlayerEventArgs(player));
+    private bool CanSelectAttacker(PlayingFieldCardDragEventArgs args) {
+        if (player != duelManager.LocalClientPlayer)
+            return false;
+        if (duelManager.IsLocalClientPlayerTurn())
+            return false;
         if (stateManager.CurrentState != stateManager.CombatPhase)
+            return false;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+            return false;
+        if (args.CardUI == null)
+            return false;
+        if (!player.ContainsCreatureUuid(args.CardUI.CardUuid))
+            return false;
+        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
+        if (creatureCard == null)
+            return false;
+        if (!creatureCard.CanAttack())
+            return false;
+
+        return true;
+    }
+
+    private bool CanSelectDefender(PlayingFieldCardDragEventArgs args) {
+        if (player != duelManager.LocalClientPlayer)
+            return false;
+        if (duelManager.IsLocalClientPlayerTurn())
+            return false;
+        if (stateManager.CurrentState != stateManager.CombatPhase)
+            return false;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+            return false;
+        if (args.CardUI == null)
+            return false;
+        if (!player.ContainsCreatureUuid(args.CardUI.CardUuid))
+            return false;
+        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
+        if (creatureCard == null)
+            return false;
+
+        return true;
+    }
+
+    private void DeclareAttacker(object sender, ReleaseCreatureFieldCardDragOverCombatAreaEventArgs args) {
+        if (player != duelManager.LocalClientPlayer)
+            return;
+        if (stateManager.CurrentState != stateManager.CombatPhase)
+            return;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
             return;
         CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
