@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CombatFieldUI : MonoBehaviour {
+    private static readonly int MAX_FIELD_CREATURES = 6;
+
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
     [SerializeField] private GameObject playableAreaIndicator;
     [SerializeField] private float cardSpacing;
-    [Header("Field Cards")]
-    [SerializeField] private List<CreatureFieldCardUI> attackers;
-    [SerializeField] private List<CreatureFieldCardUI> defenders;
+    [SerializeField] private Vector2 combatFieldForwardVector;
+    [SerializeField] private Vector2 spacingVector;
     [Header("Prefab")]
     [SerializeField] private CreatureFieldCardUI creatureFieldCardUIPrefab;
 
     private ulong targetPlayerId;
+    private Dictionary<int, CreatureFieldCardUI> attackerByPositionIndex;
+    private Dictionary<int, CreatureFieldCardUI> defenderByPositionIndex;
+    private Camera cam;
+    private bool isDragging;
+    private FieldCardUI draggingCard;
 
     private void Awake() {
+        attackerByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
+        defenderByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
+        isDragging = false;
+        draggingCard = null;
         playableAreaIndicator.SetActive(false);
     }
 
@@ -24,45 +35,60 @@ public class CombatFieldUI : MonoBehaviour {
     }
 
     public void AddAttacker(CreatureCard card) {
+        if (attackerByPositionIndex.Count >= MAX_FIELD_CREATURES)
+            throw new Exception("Attempting to add new attacker when there is already " + MAX_FIELD_CREATURES + " attackers");
+
         CreatureFieldCardUI cardUI = Instantiate(creatureFieldCardUIPrefab);
         cardUI.Init(card);
-        attackers.Add(cardUI);
+        for(int i = 0; i < MAX_FIELD_CREATURES; i++) {
+            if (!attackerByPositionIndex.ContainsKey(i)) {
+                attackerByPositionIndex.Add(i, cardUI);
+                break;
+            }
+        }
         SpaceAttackers();
     }
 
-    // TODO: Implement so defenders face corresponding attackers
-    public void AddDefender(CreatureCard card) {
+    public void AddDefender(CreatureCard defender, CreatureCard attacker) {
+        if (defenderByPositionIndex.Count >= MAX_FIELD_CREATURES)
+            throw new Exception("Attempting to add new defender when there is already " + MAX_FIELD_CREATURES + " defenders");
+
+        int attackerIndex = -1;
+        for (int i = 0; i < MAX_FIELD_CREATURES; i++) {
+            if (attackerByPositionIndex.ContainsKey(i) && attackerByPositionIndex[i].CardUuid == attacker.Uuid) {
+                attackerIndex = i;
+                break;
+            }
+        }
+        if (attackerIndex == -1)
+            throw new Exception("Unable to find attacker with Uuid " + attacker.Uuid);
+        if (defenderByPositionIndex.ContainsKey(attackerIndex))
+            throw new Exception("Attempting to add a defender to the position " + attackerIndex + " which already has an active defender");
+
         CreatureFieldCardUI cardUI = Instantiate(creatureFieldCardUIPrefab);
-        cardUI.Init(card);
-        defenders.Add(cardUI);
+        cardUI.Init(defender);
+        defenderByPositionIndex.Add(attackerIndex, cardUI);
+        PlaceDefender(cardUI, attackerIndex);
     }
 
     public void RemoveAttacker(Guid uuid) {
-        foreach (CreatureFieldCardUI cardUI in attackers) {
-            if (cardUI.CardUuid == uuid) {
-                RemoveAttacker(cardUI);
+        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in attackerByPositionIndex.ToList()) {
+            if (entry.Value.CardUuid == uuid) {
+                CreatureFieldCardUI cardUI = entry.Value;
+                attackerByPositionIndex.Remove(entry.Key);
+                Destroy(cardUI.gameObject);
+                SpaceAttackers();
                 break;
             }
         }
     }
 
-    public void RemoveAttacker(CreatureFieldCardUI cardUI) {
-        attackers.Remove(cardUI);
-        Destroy(cardUI.gameObject);
-        SpaceAttackers();
-    }
-
-    public bool ContainsAttacker(CreatureFieldCardUI other) {
-        foreach (CreatureFieldCardUI cardUI in attackers) {
-            if (cardUI == other)
-                return true;
-        }
-
-        return false;
+    public bool ContainsAttacker(CreatureFieldCardUI cardUI) {
+        return attackerByPositionIndex.ContainsValue(cardUI);
     }
 
     public bool ContainsAttacker(Guid cardUuid) {
-        foreach (CreatureFieldCardUI cardUI in attackers) {
+        foreach (CreatureFieldCardUI cardUI in attackerByPositionIndex.Values) {
             if (cardUI.CardUuid == cardUuid)
                 return true;
         }
@@ -71,25 +97,62 @@ public class CombatFieldUI : MonoBehaviour {
     }
 
     private void SpaceAttackers() {
-        int cardCount = attackers.Count;
-        float handOffset = (cardCount - 1) * cardSpacing / 2;
+        FlattenAttackerIndices();
+        int cardCount = attackerByPositionIndex.Count;
+        float fieldOffset = (cardCount - 1) * cardSpacing / 2;
         for (int i = 0; i < cardCount; i++) {
+            if (!attackerByPositionIndex.ContainsKey(i))
+                continue;
+
+            CreatureFieldCardUI cardUI = attackerByPositionIndex[i];
             Vector3 cardPosition = attackerOrigin.position;
-            cardPosition.x += i * cardSpacing - handOffset;
-            attackers[i].transform.position = cardPosition;
+            cardPosition.x += i * cardSpacing - fieldOffset;
+            cardUI.transform.position = cardPosition;
         }
     }
 
-    public void ClearCreatures() {
-        attackers.Clear();
-        defenders.Clear();
+    private void PlaceDefender(CreatureFieldCardUI cardUI, int attackerIndex) {
+        Vector3 positionDiff = attackerByPositionIndex[attackerIndex].transform.position - defenderOrigin.position;
+        cardUI.transform.position = new Vector3(positionDiff.x * spacingVector.x, cardUI.transform.position.y, positionDiff.z * spacingVector.y);
     }
 
-    public List<CreatureFieldCardUI> Attackers { get { return attackers; } }
+    public void ClearCreatures() {
+        attackerByPositionIndex.Clear();
+        defenderByPositionIndex.Clear();
+    }
 
-    public List<CreatureFieldCardUI> Defenders { get { return defenders; } }
+    public void FlattenAttackerIndices() {
+        List<KeyValuePair<int, CreatureFieldCardUI>> attackers = attackerByPositionIndex.ToList();
+        for(int i = 0; i < attackers.Count; i++) {
+            for(int j = 0; j < attackers.Count - i - 1; j++) {
+                if (attackers[j].Key > attackers[j + 1].Key) {
+                    KeyValuePair<int, CreatureFieldCardUI> temp = attackers[j + 1];
+                    attackers[j + 1] = attackers[j];
+                    attackers[j + 1] = temp;
+                }
+            }
+        }
 
-    public GameObject PlayableAreaIndicator {  get { return playableAreaIndicator; } }
+        attackerByPositionIndex.Clear();
+        for(int i = 0; i < attackers.Count; i++)
+            attackerByPositionIndex.Add(i, attackers[i].Value);
+    }
+
+    public int GetHighestAttackerPositionIndex() {
+        int highestPositionIndex = -1;
+        foreach(int index in attackerByPositionIndex.Keys) {
+            if(index > highestPositionIndex)
+                highestPositionIndex = index;
+        }
+
+        return highestPositionIndex;
+    }
 
     public ulong TargetPlayerId { get { return targetPlayerId; } }
+
+    public List<CreatureFieldCardUI> Attackers { get { return attackerByPositionIndex.Values.ToList(); } }
+
+    public List<CreatureFieldCardUI> Defenders { get { return defenderByPositionIndex.Values.ToList(); } }
+
+    public GameObject PlayableAreaIndicator {  get { return playableAreaIndicator; } }
 }

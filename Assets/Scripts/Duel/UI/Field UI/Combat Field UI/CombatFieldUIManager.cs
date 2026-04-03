@@ -50,7 +50,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
         if (controllerByPlayerId[args.Target.PlayerId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + args.Target.PlayerId);
 
-        controllerByPlayerId[args.Target.PlayerId].AddDefender(args.Defender);
+        controllerByPlayerId[args.Target.PlayerId].AddDefender(args.Defender, args.Attacker);
     }
 
     private void RemoveAttacker(object sender, UndeclareAttackerEventArgs args) {

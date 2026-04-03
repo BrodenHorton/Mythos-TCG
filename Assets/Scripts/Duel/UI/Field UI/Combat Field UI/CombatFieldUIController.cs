@@ -23,7 +23,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         cam = Camera.main;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed += SelectCard;
+        playerInputActions.Player.Select.performed += SelectUndeclareAttacker;
 
         EventBus.OnSelectFieldCardDrag += (sender, args) => {
             if (args.Player.PlayerId != target.PlayerId)
@@ -37,7 +37,7 @@ public class CombatFieldUIController : NetworkBehaviour {
 
     public override void OnNetworkDespawn() {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed -= SelectCard;
+        playerInputActions.Player.Select.performed -= SelectUndeclareAttacker;
     }
 
     public void Init(MatchPlayer player) {
@@ -49,9 +49,8 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.AddAttacker(attacker);
     }
 
-    // TODO: Implement so the defender corresponds to a given attacker
-    public void AddDefender(CreatureCard defender) {
-        combatFieldUI.AddDefender(defender);
+    public void AddDefender(CreatureCard defender, CreatureCard attacker) {
+        combatFieldUI.AddDefender(defender, attacker);
     }
 
     public void RemoveAttacker(CreatureCard attacker) {
@@ -68,7 +67,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.ClearCreatures();
     }
 
-    private void SelectCard(InputAction.CallbackContext context) {
+    private void SelectUndeclareAttacker(InputAction.CallbackContext context) {
         if (!context.performed)
             return;
         if (!duelManager.IsLocalClientPlayerTurn())
