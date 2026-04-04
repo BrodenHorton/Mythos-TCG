@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 
 public class CombatManager : NetworkBehaviour {
     public event EventHandler<DuelistCombatEventArgs> OnDuelistCombatFinsihed;
@@ -118,6 +117,16 @@ public class CombatManager : NetworkBehaviour {
 
     public void ClearCombats() {
         duelistCombats.Clear();
+    }
+
+    public List<MatchPlayer> GetTargets() {
+        List<MatchPlayer> targets = new List<MatchPlayer>();
+        foreach(DuelistCombat combat in duelistCombats) {
+            if(!targets.Contains(combat.Target))
+                targets.Add(combat.Target);
+        }
+
+        return targets;
     }
 
     public List<DuelistCombat> DuelistCombats { get { return duelistCombats; } }

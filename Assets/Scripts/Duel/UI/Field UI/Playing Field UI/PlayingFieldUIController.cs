@@ -20,6 +20,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         playingFieldUI.OnSelectingCardDrag += SelectCardDrag;
+        EventBus.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
     }
 
     public void Init(MatchPlayer player) {
@@ -56,15 +57,15 @@ public class PlayingFieldUIController : NetworkBehaviour {
         playingFieldUI.UntapCreature(card);
     }
 
-    private void SelectCardDrag(object sender, PlayingFieldCardDragEventArgs args) {
-        if(!CanSelectAttacker(args) && !CanSelectDefender(args))
+    private void SelectCardDrag(object sender, PlayingFieldCreatureCardDragEventArgs args) {
+        if (!CanSelectAttacker(args) && !CanSelectDefender(args))
             args.IsCancelled = true;
     }
 
-    private bool CanSelectAttacker(PlayingFieldCardDragEventArgs args) {
+    private bool CanSelectAttacker(PlayingFieldCreatureCardDragEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return false;
-        if (duelManager.IsLocalClientPlayerTurn())
+        if (!duelManager.IsLocalClientPlayerTurn())
             return false;
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return false;
@@ -83,7 +84,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         return true;
     }
 
-    private bool CanSelectDefender(PlayingFieldCardDragEventArgs args) {
+    private bool CanSelectDefender(PlayingFieldCreatureCardDragEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return false;
         if (duelManager.IsLocalClientPlayerTurn())
@@ -103,7 +104,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         return true;
     }
 
-    private void DeclareAttacker(object sender, ReleaseCreatureFieldCardDragOverCombatAreaEventArgs args) {
+    private void DeclareAttacker(object sender, CreatureFieldCardEnteringCombatAreaEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)

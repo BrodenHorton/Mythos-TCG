@@ -2334,6 +2334,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Combat Field UI 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7243036786812047451, guid: c22934d85decf194a92117535ba101cf, type: 3}
+      propertyPath: combatFieldForwardVector.y
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 8476063783691046019, guid: c22934d85decf194a92117535ba101cf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

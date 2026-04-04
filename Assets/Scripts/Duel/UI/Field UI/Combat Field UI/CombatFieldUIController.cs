@@ -22,14 +22,6 @@ public class CombatFieldUIController : NetworkBehaviour {
         cam = Camera.main;
 
         combatFieldUI.OnSelectFieldCard += SelectUndeclareAttacker;
-        EventBus.OnStartCardDragPlayingField += (sender, args) => {
-            if (args.PlayingFieldUI.PlayerId != target.PlayerId)
-                combatFieldUI.PlayableAreaIndicator.SetActive(true);
-        };
-        EventBus.OnReleaseCardDragPlayingField += (sender, args) => {
-            if (args.PlayingFieldUI.PlayerId != target.PlayerId)
-                combatFieldUI.PlayableAreaIndicator.SetActive(false);
-        };
     }
 
     public override void OnNetworkDespawn() {
@@ -115,7 +107,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         CreatureFieldCardUI fieldCardUI = null;
         foreach (RaycastHit hit in hits) {
             if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
-                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().FieldCardUI;
+                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
                 break;
             }
         }

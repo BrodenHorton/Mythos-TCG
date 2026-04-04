@@ -18,9 +18,10 @@ public static class EventBus {
     public static event EventHandler<AttackEventArgs> OnAttack;
     public static event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     public static event EventHandler OnActionButtonPressed;
-    public static event EventHandler<PlayingFieldCardDragEventArgs> OnStartCardDragPlayingField;
-    public static event EventHandler<ReleaseFieldCardDragPlayingFieldEventArgs> OnReleaseCardDragPlayingField;
-    public static event EventHandler<ReleaseCreatureFieldCardDragOverCombatAreaEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
+    public static event EventHandler<PlayingFieldCreatureCardDragEventArgs> OnStartCardDragPlayingField;
+    public static event EventHandler<ReleaseCreatureFieldCardDragEventArgs> OnReleaseCardDragPlayingField;
+    public static event EventHandler<CreatureFieldCardEnteringCombatAreaEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
+    public static event EventHandler OnLocalClientPlayerReadyUp;
 
     public static void InvokeOnLifePointsChanged(object sender, LifePointsChangedEventArgs args) {
         OnLifePointsChanged?.Invoke(sender, args);
@@ -87,18 +88,24 @@ public static class EventBus {
     }
 
     public static void InvokeOnActionButtonPressed(object sender, EventArgs args) {
+        TcgLogger.Log("ActionButtonPressed Invoked Entered");
         OnActionButtonPressed?.Invoke(sender, args);
     }
 
-    public static void InvokeOnStartCardDragPlayingField(object sender, PlayingFieldCardDragEventArgs args) {
+    public static void InvokeOnStartCardDragPlayingField(object sender, PlayingFieldCreatureCardDragEventArgs args) {
         OnStartCardDragPlayingField?.Invoke(sender, args);
     }
 
-    public static void InvokeOnReleaseCardDragPlayingField(object sender, ReleaseFieldCardDragPlayingFieldEventArgs args) {
+    public static void InvokeOnReleaseCardDragPlayingField(object sender, ReleaseCreatureFieldCardDragEventArgs args) {
         OnReleaseCardDragPlayingField?.Invoke(sender, args);
     }
 
-    public static void InvokeOnReleaseCreatureFieldCardOverCombatArea(object sender, ReleaseCreatureFieldCardDragOverCombatAreaEventArgs args) {
+    public static void InvokeOnReleaseCreatureFieldCardOverCombatArea(object sender, CreatureFieldCardEnteringCombatAreaEventArgs args) {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnLocalClientPlayerReadyUp(object sender, EventArgs args) {
+        TcgLogger.Log("InvokeOnLocalClientPlayerReadyUp Entered");
+        OnLocalClientPlayerReadyUp?.Invoke(sender, args);
     }
 }

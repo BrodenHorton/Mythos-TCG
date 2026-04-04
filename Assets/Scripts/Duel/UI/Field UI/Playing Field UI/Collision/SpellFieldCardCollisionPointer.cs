@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class SpellFieldCardCollisionPointer : MonoBehaviour {
-    [SerializeField] private SpellFieldCardUI fieldCardUI;
+    [SerializeField] private SpellFieldCardUI cardUI;
 
-    public SpellFieldCardUI FieldCardUI { get { return fieldCardUI; } }
+    public SpellFieldCardUI CardUI { get { return cardUI; } }
 }

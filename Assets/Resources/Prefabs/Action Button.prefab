@@ -248,8 +248,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 1.25
-  m_fontSizeBase: 1.25
+  m_fontSize: 1
+  m_fontSizeBase: 1
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -556,4 +556,4 @@ MonoBehaviour:
   actionText: {fileID: 7068889995139248933}
   actionBtnCenter: {fileID: 2394142341803444106}
   activeColor: {r: 0.16470589, g: 0.41960785, b: 0.85490197, a: 1}
-  inactiveColor: {r: 0.7798742, g: 0.7798742, b: 0.7798742, a: 1}
+  inactiveColor: {r: 0.67295593, g: 0.67295593, b: 0.67295593, a: 1}

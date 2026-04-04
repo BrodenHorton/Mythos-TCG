@@ -1,11 +1,11 @@
 ﻿using System;
 
-public class ReleaseCreatureFieldCardDragOverCombatAreaEventArgs : EventArgs {
+public class CreatureFieldCardEnteringCombatAreaEventArgs : EventArgs {
     private CombatFieldUI combatFieldUI;
     private ulong targetPlayerId;
     private CreatureFieldCardUI cardUI;
 
-    public ReleaseCreatureFieldCardDragOverCombatAreaEventArgs(CombatFieldUI combatFieldUI, CreatureFieldCardUI cardUI) {
+    public CreatureFieldCardEnteringCombatAreaEventArgs(CombatFieldUI combatFieldUI, CreatureFieldCardUI cardUI) {
         this.combatFieldUI = combatFieldUI;
         targetPlayerId = combatFieldUI.TargetPlayerId;
         this.cardUI = cardUI;

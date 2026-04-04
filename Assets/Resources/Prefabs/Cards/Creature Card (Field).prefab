@@ -636,7 +636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f160d5826da936842ac3ee6cc2073777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fieldCardUI: {fileID: 8696858695724869291}
+  cardUI: {fileID: 8696858695724869291}
 --- !u!1 &6068144397991091520
 GameObject:
   m_ObjectHideFlags: 0

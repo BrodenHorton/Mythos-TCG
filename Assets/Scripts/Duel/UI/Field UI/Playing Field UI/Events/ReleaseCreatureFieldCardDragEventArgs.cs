@@ -1,10 +1,10 @@
 ﻿using System;
 
-public class ReleaseFieldCardDragPlayingFieldEventArgs : EventArgs {
+public class ReleaseCreatureFieldCardDragEventArgs : EventArgs {
     private PlayingFieldUI playingFieldUI;
     private CreatureFieldCardUI cardUI;
 
-    public ReleaseFieldCardDragPlayingFieldEventArgs(PlayingFieldUI playingFieldUI, CreatureFieldCardUI cardUI) {
+    public ReleaseCreatureFieldCardDragEventArgs(PlayingFieldUI playingFieldUI, CreatureFieldCardUI cardUI) {
         this.playingFieldUI = playingFieldUI;
         this.cardUI = cardUI;
     }

@@ -11,7 +11,6 @@ public class CombatFieldUI : MonoBehaviour {
 
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
-    [SerializeField] private GameObject playableAreaIndicator;
     [SerializeField] private float cardSpacing;
     [SerializeField] private Vector2 combatFieldForwardVector;
     [SerializeField] private Vector2 spacingVector;
@@ -26,10 +25,9 @@ public class CombatFieldUI : MonoBehaviour {
     private void Awake() {
         attackerByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
         defenderByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
-        playableAreaIndicator.SetActive(false);
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.performed += SelectFieldCard;
+        playerInputActions.Player.Select.started += SelectFieldCard;
     }
 
     private void Start() {
@@ -53,6 +51,7 @@ public class CombatFieldUI : MonoBehaviour {
             }
         }
         SpaceAttackers();
+        TcgLogger.Log("Added Attacker to Combat Field");
     }
 
     public void AddDefender(CreatureCard defender, CreatureCard attacker) {
@@ -116,15 +115,15 @@ public class CombatFieldUI : MonoBehaviour {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        CreatureFieldCardUI fieldCardUI = null;
+        CreatureFieldCardUI cardUI = null;
         foreach (RaycastHit hit in hits) {
             if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
-                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().FieldCardUI;
+                cardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
                 break;
             }
         }
 
-        return fieldCardUI;
+        return cardUI;
     }
 
     public bool ContainsAttacker(CreatureFieldCardUI cardUI) {
@@ -210,6 +209,4 @@ public class CombatFieldUI : MonoBehaviour {
     public List<CreatureFieldCardUI> Attackers { get { return attackerByPositionIndex.Values.ToList(); } }
 
     public List<CreatureFieldCardUI> Defenders { get { return defenderByPositionIndex.Values.ToList(); } }
-
-    public GameObject PlayableAreaIndicator {  get { return playableAreaIndicator; } }
 }

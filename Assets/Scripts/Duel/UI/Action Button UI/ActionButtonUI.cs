@@ -20,15 +20,15 @@ public class ActionButtonUI : MonoBehaviour {
         EventBus.InvokeOnActionButtonPressed(this, EventArgs.Empty);
     }
 
-    public void SetActiveAction(string text) {
+    public void SetActive(string text) {
         isActive = true;
         actionText.text = text;
         actionBtnCenter.color = activeColor;
     }
 
-    public void SetInactive() {
+    public void SetInactive(string text) {
         isActive = false;
-        actionText.text = "";
+        actionText.text = text;
         actionBtnCenter.color = inactiveColor;
     }
 

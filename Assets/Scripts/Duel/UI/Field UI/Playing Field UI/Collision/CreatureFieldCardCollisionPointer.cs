@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class CreatureFieldCardCollisionPointer : MonoBehaviour {
-    [SerializeField] private CreatureFieldCardUI fieldCardUI;
+    [SerializeField] private CreatureFieldCardUI cardUI;
 
-    public CreatureFieldCardUI FieldCardUI { get { return fieldCardUI; } }
+    public CreatureFieldCardUI CardUI { get { return cardUI; } }
 }

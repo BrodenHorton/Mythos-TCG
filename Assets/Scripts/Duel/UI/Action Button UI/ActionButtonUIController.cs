@@ -23,9 +23,12 @@ public class ActionButtonUIController : MonoBehaviour {
         playerInputActions.Player.Select.performed += ButtonPressedCheck;
 
         stateManager.FirstMainPhase.OnFirstMainPhase += FirstMainPhaseAction;
-        stateManager.CombatPhase.OnCombatPhase += CombatPhaseAction;
+        stateManager.CombatPhase.OnStartDeclareAttackers += CombatPhaseDeclareAttackersAction;
+        stateManager.CombatPhase.OnStartDeclareDefenders += CombatPhaseDeclareDefendersAction;
+        stateManager.CombatPhase.OnSetDeclareDefeners += CombatPhaseSetDefenders;
+        EventBus.OnLocalClientPlayerReadyUp += SetInactiveAfterLocalClientPlayerReadyUp;
         stateManager.SecondMainPhase.OnSecondMainPhase += SecondMainPhaseAction;
-        duelManager.OnNextPlayerTurn += SetActionButtonInactive;
+        duelManager.OnNextPlayerTurn += SetActionButtonInactiveOpponentsTurn;
     }
 
     private void OnDestroy() {
@@ -33,48 +36,63 @@ public class ActionButtonUIController : MonoBehaviour {
         playerInputActions.Player.Select.performed -= ButtonPressedCheck;
 
         stateManager.FirstMainPhase.OnFirstMainPhase -= FirstMainPhaseAction;
-        stateManager.CombatPhase.OnCombatPhase -= CombatPhaseAction;
+        stateManager.CombatPhase.OnStartDeclareAttackers -= CombatPhaseDeclareAttackersAction;
+        stateManager.CombatPhase.OnStartDeclareDefenders -= CombatPhaseDeclareDefendersAction;
+        stateManager.CombatPhase.OnSetDeclareDefeners -= CombatPhaseSetDefenders;
+        EventBus.OnLocalClientPlayerReadyUp -= SetInactiveAfterLocalClientPlayerReadyUp;
         stateManager.SecondMainPhase.OnSecondMainPhase -= SecondMainPhaseAction;
-        duelManager.OnNextPlayerTurn -= SetActionButtonInactive;
+        duelManager.OnNextPlayerTurn -= SetActionButtonInactiveOpponentsTurn;
     }
 
     private void FirstMainPhaseAction(object sender, PlayerEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
-        actionButtonUI.SetActiveAction("Combat Phase");
+        actionButtonUI.SetActive("Combat");
     }
 
-    private void CombatPhaseAction(object sender, PlayerEventArgs args) {
+    private void CombatPhaseDeclareAttackersAction(object sender, PlayerEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
-        actionButtonUI.SetActiveAction("Next");
+        actionButtonUI.SetActive("Commit");
+    }
+
+    private void CombatPhaseDeclareDefendersAction(object sender, PlayerEventArgs args) {
+        if (!duelManager.IsLocalClientPlayerTurn())
+            return;
+
+        actionButtonUI.SetInactive("Waiting for Opponent");
+    }
+
+    private void CombatPhaseSetDefenders(object sender, PlayerEventArgs args) {
+        actionButtonUI.SetActive("Commit");
+    }
+
+    private void SetInactiveAfterLocalClientPlayerReadyUp(object sender, EventArgs args) {
+        actionButtonUI.SetInactive("Waiting for Opponent");
     }
 
     private void SecondMainPhaseAction(object sender, PlayerEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
 
-        actionButtonUI.SetActiveAction("End");
+        actionButtonUI.SetActive("End");
     }
 
-    private void SetActionButtonInactive(object sender, NextPlayerTurnEventArgs args) {
+    private void SetActionButtonInactiveOpponentsTurn(object sender, NextPlayerTurnEventArgs args) {
         if(actionButtonUI.IsActive)
-            actionButtonUI.SetInactive();
+            actionButtonUI.SetInactive("Opponents Turn");
     }
 
     private void ButtonPressedCheck(InputAction.CallbackContext context) {
         if (!context.performed)
-            return;
-        if (!duelManager.IsLocalClientPlayerTurn())
             return;
         if (!actionButtonUI.IsActive)
             return;
         if (actionButtonUI != RaycastColliderCheck())
             return;
 
-        Debug.Log("Action Buttoned Pressed");
         actionButtonUI.Execute();
     }
 

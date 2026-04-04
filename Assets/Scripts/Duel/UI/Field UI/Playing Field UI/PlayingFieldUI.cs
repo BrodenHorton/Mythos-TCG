@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayingFieldUI : MonoBehaviour {
-    public event EventHandler<PlayingFieldCardDragEventArgs> OnSelectingCardDrag;
+    public event EventHandler<PlayingFieldCreatureCardDragEventArgs> OnSelectingCardDrag;
 
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
@@ -129,7 +129,7 @@ public class PlayingFieldUI : MonoBehaviour {
         if (!ContainsCreature(cardUI))
             return;
 
-        PlayingFieldCardDragEventArgs args = new PlayingFieldCardDragEventArgs(this, cardUI);
+        PlayingFieldCreatureCardDragEventArgs args = new PlayingFieldCreatureCardDragEventArgs(this, cardUI);
         OnSelectingCardDrag?.Invoke(this, args);
         if (args.IsCancelled)
             return;
@@ -150,7 +150,7 @@ public class PlayingFieldUI : MonoBehaviour {
 
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        EventBus.InvokeOnReleaseCardDragPlayingField(this, new ReleaseFieldCardDragPlayingFieldEventArgs(this, cardUI));
+        EventBus.InvokeOnReleaseCardDragPlayingField(this, new ReleaseCreatureFieldCardDragEventArgs(this, cardUI));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
@@ -160,7 +160,7 @@ public class PlayingFieldUI : MonoBehaviour {
         CreatureFieldCardUI fieldCardUI = null;
         foreach (RaycastHit hit in hits) {
             if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
-                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().FieldCardUI;
+                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
                 break;
             }
         }
