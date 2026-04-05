@@ -14,7 +14,10 @@ public abstract class DuelistUI : MonoBehaviour {
     [SerializeField] protected SpellHandCardUI spellCardPrefab;
     [SerializeField] protected NullHandCardUI nullCardPrefab;
 
+    protected ulong playerId;
+
     public void Init(MatchPlayer player) {
+        playerId = player.PlayerId;
         SetLifePoints(player.LifePoints);
         SetManaCount(player.CurrentMana);
     }
@@ -41,6 +44,8 @@ public abstract class DuelistUI : MonoBehaviour {
 
         return false;
     }
+
+    public ulong PlayerId { get { return playerId; } }
 
     public TextMeshPro LifePoints { get { return lifePoints; } }
 

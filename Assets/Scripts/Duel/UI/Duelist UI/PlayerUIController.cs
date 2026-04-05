@@ -7,11 +7,6 @@ public class PlayerUIController : DuelistUIController {
     
     private DuelManager duelManager;
 
-    private void Awake() {
-        playerUI.OnSelectCardDrag += SelectCardDrag;
-        playerUI.OnReleaseCardDrag += ReleaseCardDrag;
-    }
-
     private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
@@ -20,6 +15,8 @@ public class PlayerUIController : DuelistUIController {
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
+        playerUI.OnSelectingCardDrag += SelectCardDrag;
+        EventBus.OnHandCardEnteringPlayingField += PlayHandCard;
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
         stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
@@ -90,7 +87,7 @@ public class PlayerUIController : DuelistUIController {
         playerUI.SetBorderVisibilityAll(false);
     }
 
-    private void SelectCardDrag(object sender, SelectHandCardDragEventArgs args) {
+    private void SelectCardDrag(object sender, HandCardDragEventArgs args) {
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId) {
             args.IsCancelled = true;
             return;
@@ -105,9 +102,7 @@ public class PlayerUIController : DuelistUIController {
         }
     }
 
-    private void ReleaseCardDrag(object sender, ReleaseHandCardDragEventArgs args) {
-        if (!args.IsReleasedInPlayableArea)
-            return;
+    private void PlayHandCard(object sender, HandCardEnteringPlayingFieldEventArgs args) {
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (args.CardIndex < 0 || args.CardIndex >= player.Hand.Count)

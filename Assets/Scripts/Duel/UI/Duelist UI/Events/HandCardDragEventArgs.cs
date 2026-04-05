@@ -1,15 +1,16 @@
 ﻿using System;
 
-public class SelectHandCardDragEventArgs : EventArgs {
+public class HandCardDragEventArgs : EventArgs {
     private PlayerUI playerUI;
     private HandCardUI cardUI;
     private int cardIndex;
-    bool isCancelled;
+    private bool isCancelled;
 
-    public SelectHandCardDragEventArgs(PlayerUI playerUI, HandCardUI cardUI, int cardIndex) {
+    public HandCardDragEventArgs(PlayerUI playerUI, HandCardUI cardUI, int cardIndex) {
         this.playerUI = playerUI;
         this.cardUI = cardUI;
         this.cardIndex = cardIndex;
+        isCancelled = false;
     }
 
     public PlayerUI PlayerUI { get { return playerUI; } }

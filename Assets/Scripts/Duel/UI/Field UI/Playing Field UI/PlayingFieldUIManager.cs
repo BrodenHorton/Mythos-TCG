@@ -87,7 +87,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         if (controllerByPlayerId[args.Target.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Target.PlayerId);
 
-        controllerByPlayerId[args.Target.PlayerId].RemoveCreature(args.Attacker);
+        controllerByPlayerId[args.Target.PlayerId].RemoveCreature(args.Defender);
     }
 
     public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {

@@ -76,9 +76,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4533630574535736870}
-  - component: {fileID: 4089334445435813692}
+  - component: {fileID: 8096435437274755594}
   m_Layer: 0
-  m_Name: Combat Field Playable Area
+  m_Name: Playable Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,7 +101,7 @@ Transform:
   - {fileID: 1239153686694507562}
   m_Father: {fileID: 8476063783691046019}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4089334445435813692
+--- !u!114 &8096435437274755594
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2854056797024821240}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d20e54a7b1ae8e4180b66101bdd8a6c, type: 3}
+  m_Script: {fileID: 11500000, guid: 03337b77bc14e064fbdcaf80b7f59224, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   combatFieldUI: {fileID: 7243036786812047451}
@@ -157,6 +157,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8476063783691046019}
   - component: {fileID: 7243036786812047451}
+  - component: {fileID: 8184768766828169918}
   m_Layer: 0
   m_Name: Combat Field UI
   m_TagString: Untagged
@@ -200,6 +201,18 @@ MonoBehaviour:
   combatFieldForwardVector: {x: 0, y: 1}
   spacingVector: {x: 1, y: 0}
   creatureFieldCardUIPrefab: {fileID: 8696858695724869291, guid: 22c6877d40548284b8208578e672fe58, type: 3}
+--- !u!114 &8184768766828169918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3757984834520461964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20c21e21f514c974f8537a4e9f472f94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7521183134167319789
 GameObject:
   m_ObjectHideFlags: 0

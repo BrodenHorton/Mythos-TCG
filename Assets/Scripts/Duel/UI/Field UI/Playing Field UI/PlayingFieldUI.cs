@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayingFieldUI : MonoBehaviour {
-    public event EventHandler<PlayingFieldCreatureCardDragEventArgs> OnSelectingCardDrag;
+    public event EventHandler<CreatureFieldCardDragEventArgs> OnSelectingCardDrag;
 
     [SerializeField] private Transform creatureSlotOrigin;
     [SerializeField] private Transform domainSlotOrigin;
@@ -129,7 +129,7 @@ public class PlayingFieldUI : MonoBehaviour {
         if (!ContainsCreature(cardUI))
             return;
 
-        PlayingFieldCreatureCardDragEventArgs args = new PlayingFieldCreatureCardDragEventArgs(this, cardUI);
+        CreatureFieldCardDragEventArgs args = new CreatureFieldCardDragEventArgs(this, cardUI);
         OnSelectingCardDrag?.Invoke(this, args);
         if (args.IsCancelled)
             return;

@@ -4,11 +4,16 @@ using UnityEngine;
 public class CombatFieldPlayableArea : MonoBehaviour {
     [SerializeField] private CombatFieldUI combatFieldUI;
     [SerializeField] private Collider playableAreaCollider;
-    [SerializeField] private GameObject playableAreaVisual; 
+    [SerializeField] private GameObject playableAreaVisual;
 
+    private DuelStateManager stateManager;
     private Camera cam;
 
     private void Start() {
+        stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find DuelStateManager object");
+
         cam = Camera.main;
         playableAreaVisual.SetActive(false);
 
@@ -16,7 +21,11 @@ public class CombatFieldPlayableArea : MonoBehaviour {
         EventBus.OnReleaseCardDragPlayingField += PlayCardOnReleaseDrag;
     }
 
-    private void ShowPlayableAreaVisual(object sender, PlayingFieldCreatureCardDragEventArgs args) {
+    private void ShowPlayableAreaVisual(object sender, CreatureFieldCardDragEventArgs args) {
+        if (stateManager.CurrentState != stateManager.CombatPhase)
+            return;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+            return;
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
 
@@ -24,12 +33,16 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     }
 
     private void PlayCardOnReleaseDrag(object sender, ReleaseCreatureFieldCardDragEventArgs args) {
+        if (stateManager.CurrentState != stateManager.CombatPhase)
+            return;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+            return;
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(false);
         if (IsHoveringCombatArea())
-            EventBus.InvokeOnReleaseCreatureFieldCardOverCombatArea(this, new CreatureFieldCardEnteringCombatAreaEventArgs(combatFieldUI, args.CardUI));
+            EventBus.InvokeOnReleaseCreatureFieldCardOverCombatArea(this, new CreatureFieldCardEnteringCombatFieldEventArgs(combatFieldUI, args.CardUI));
     }
 
     private bool IsHoveringCombatArea() {

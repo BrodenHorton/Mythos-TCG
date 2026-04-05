@@ -1,13 +1,14 @@
 using System;
 
-public class PlayingFieldCreatureCardDragEventArgs : EventArgs {
+public class CreatureFieldCardDragEventArgs : EventArgs {
     private PlayingFieldUI playingFieldUI;
     private CreatureFieldCardUI cardUI;
     private bool isCancelled;
 
-    public PlayingFieldCreatureCardDragEventArgs(PlayingFieldUI playingFieldUI, CreatureFieldCardUI cardUI) {
+    public CreatureFieldCardDragEventArgs(PlayingFieldUI playingFieldUI, CreatureFieldCardUI cardUI) {
         this.playingFieldUI = playingFieldUI;
         this.cardUI = cardUI;
+        isCancelled = false;
     }
 
     public PlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }

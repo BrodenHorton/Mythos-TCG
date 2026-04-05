@@ -20,7 +20,9 @@ public class PlayingFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         playingFieldUI.OnSelectingCardDrag += SelectCardDrag;
+        // These dont go in the DuelistUIManager since they only apply to the local client player
         EventBus.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
+        EventBus.OnSelectAttackerToDefend += DeclareDefender;
     }
 
     public void Init(MatchPlayer player) {
@@ -57,12 +59,12 @@ public class PlayingFieldUIController : NetworkBehaviour {
         playingFieldUI.UntapCreature(card);
     }
 
-    private void SelectCardDrag(object sender, PlayingFieldCreatureCardDragEventArgs args) {
+    private void SelectCardDrag(object sender, CreatureFieldCardDragEventArgs args) {
         if (!CanSelectAttacker(args) && !CanSelectDefender(args))
             args.IsCancelled = true;
     }
 
-    private bool CanSelectAttacker(PlayingFieldCreatureCardDragEventArgs args) {
+    private bool CanSelectAttacker(CreatureFieldCardDragEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return false;
         if (!duelManager.IsLocalClientPlayerTurn())
@@ -84,7 +86,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         return true;
     }
 
-    private bool CanSelectDefender(PlayingFieldCreatureCardDragEventArgs args) {
+    private bool CanSelectDefender(CreatureFieldCardDragEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return false;
         if (duelManager.IsLocalClientPlayerTurn())
@@ -104,7 +106,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         return true;
     }
 
-    private void DeclareAttacker(object sender, CreatureFieldCardEnteringCombatAreaEventArgs args) {
+    private void DeclareAttacker(object sender, CreatureFieldCardEnteringCombatFieldEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return;
         if (stateManager.CurrentState != stateManager.CombatPhase)
@@ -131,7 +133,43 @@ public class PlayingFieldUIController : NetworkBehaviour {
     private void DeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
         Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
         CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
-        EventBus.InvokeOnDelcareAttacker(this, new DeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+        EventBus.InvokeOnDeclareAttacker(this, new DeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    }
+
+    private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
+        if (player != duelManager.LocalClientPlayer)
+            return;
+        if (stateManager.CurrentState != stateManager.CombatPhase)
+            return;
+        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+            return;
+        if (args.CombatFieldUI.TargetPlayerId != player.PlayerId)
+            return;
+        if (!player.ContainsCreatureUuid(args.Defender.CardUuid))
+            return;
+        CreatureCard defender = player.GetCreatureByUuid(args.Defender.CardUuid);
+        if (defender == null)
+            return;
+        if (!defender.CanDefend())
+            return;
+
+        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
+        MatchPlayer target = duelManager.GetPlayerById(args.TargetPlayerId);
+        DeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), args.Attacker.CardUuid.ToString(), defender.Uuid.ToString());
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DeclareDefenderServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes attackerCardUuidStr, FixedString128Bytes defenderCardUuidStr) {
+        DeclareDefenderClientRpc(initiatorIndex, targetIndex, attackerCardUuidStr, defenderCardUuidStr);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void DeclareDefenderClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes attackerCardUuidStr, FixedString128Bytes defenderCardUuidStr) {
+        Guid attackerUuid = Guid.Parse(attackerCardUuidStr.ToString());
+        Guid defenderUuid = Guid.Parse(defenderCardUuidStr.ToString());
+        CreatureCard attacker = duelManager.Players[initiatorIndex].GetCreatureByUuid(attackerUuid);
+        CreatureCard defender = duelManager.Players[targetIndex].GetCreatureByUuid(defenderUuid);
+        EventBus.InvokeOnDeclareDefender(this, new DeclareDefenderEventArgs(duelManager.Players[targetIndex], defender, attacker));
     }
 
     public void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {

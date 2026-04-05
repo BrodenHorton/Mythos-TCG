@@ -9,7 +9,6 @@ public class CombatFieldUIController : NetworkBehaviour {
     private MatchPlayer target;
     private DuelManager duelManager;
     private DuelStateManager stateManager;
-    private Camera cam;
 
     private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
@@ -18,8 +17,6 @@ public class CombatFieldUIController : NetworkBehaviour {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
-
-        cam = Camera.main;
 
         combatFieldUI.OnSelectFieldCard += SelectUndeclareAttacker;
     }
@@ -37,8 +34,8 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.AddAttacker(attacker);
     }
 
-    public void AddDefender(CreatureCard defender, CreatureCard attacker) {
-        combatFieldUI.AddDefender(defender, attacker);
+    public void AddDefender(CreatureCard defender, Guid attackerCardUuid) {
+        combatFieldUI.AddDefender(defender, attackerCardUuid);
     }
 
     public void RemoveAttacker(CreatureCard attacker) {
@@ -78,6 +75,18 @@ public class CombatFieldUIController : NetworkBehaviour {
         UndeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
     }
 
+    [Rpc(SendTo.Server)]
+    private void UndeclareAttackerServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        UndeclareAttackerClientRpc(initiatorIndex, targetIndex, cardUuidStr);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void UndeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
+        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
+        CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
+        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    }
+
     private void SelectUndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
         if (duelManager.IsLocalClientPlayerTurn())
             return;
@@ -98,33 +107,6 @@ public class CombatFieldUIController : NetworkBehaviour {
 
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
         UndeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
-    }
-
-    private CreatureFieldCardUI RaycastColliderCheck() {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray);
-        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        CreatureFieldCardUI fieldCardUI = null;
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
-                fieldCardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
-                break;
-            }
-        }
-
-        return fieldCardUI;
-    }
-
-    [Rpc(SendTo.Server)]
-    private void UndeclareAttackerServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
-        UndeclareAttackerClientRpc(initiatorIndex, targetIndex, cardUuidStr);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void UndeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
-        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
-        CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
-        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
     }
 
     [Rpc(SendTo.Server)]

@@ -54,19 +54,19 @@ public class CombatFieldUI : MonoBehaviour {
         TcgLogger.Log("Added Attacker to Combat Field");
     }
 
-    public void AddDefender(CreatureCard defender, CreatureCard attacker) {
+    public void AddDefender(CreatureCard defender, Guid attackerCardUuid) {
         if (defenderByPositionIndex.Count >= MAX_FIELD_CREATURES)
             throw new Exception("Attempting to add new defender when there is already " + MAX_FIELD_CREATURES + " defenders");
 
         int attackerIndex = -1;
         for (int i = 0; i < MAX_FIELD_CREATURES; i++) {
-            if (attackerByPositionIndex.ContainsKey(i) && attackerByPositionIndex[i].CardUuid == attacker.Uuid) {
+            if (attackerByPositionIndex.ContainsKey(i) && attackerByPositionIndex[i].CardUuid == attackerCardUuid) {
                 attackerIndex = i;
                 break;
             }
         }
         if (attackerIndex == -1)
-            throw new Exception("Unable to find attacker with Uuid " + attacker.Uuid);
+            throw new Exception("Unable to find attacker with Uuid " + attackerCardUuid);
         if (defenderByPositionIndex.ContainsKey(attackerIndex))
             throw new Exception("Attempting to add a defender to the position " + attackerIndex + " which already has an active defender");
 
@@ -168,8 +168,12 @@ public class CombatFieldUI : MonoBehaviour {
     }
 
     private void PlaceDefender(CreatureFieldCardUI cardUI, int attackerIndex) {
+        cardUI.transform.position = defenderOrigin.position;
         Vector3 positionDiff = attackerByPositionIndex[attackerIndex].transform.position - defenderOrigin.position;
-        cardUI.transform.position = new Vector3(positionDiff.x * spacingVector.x, cardUI.transform.position.y, positionDiff.z * spacingVector.y);
+        cardUI.transform.position = new Vector3(
+            cardUI.transform.position.x + (positionDiff.x * spacingVector.x),
+            cardUI.transform.position.y,
+            cardUI.transform.position.z + (positionDiff.z * spacingVector.y));
     }
 
     public void ClearCreatures() {
