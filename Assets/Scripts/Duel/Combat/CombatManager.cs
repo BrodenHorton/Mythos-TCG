@@ -19,7 +19,8 @@ public class CombatManager : NetworkBehaviour {
     private void Start() {
         EventBus.OnDeclareAttacker += DeclareAttacker;
         EventBus.OnUndeclareAttacker += UndeclareAttacker;
-        // TODO: Add defender listeners
+        EventBus.OnDeclareDefender += DeclareDefender;
+        EventBus.OnUndeclareDefender += UndeclareDefender;
     }
 
     private void DeclareAttacker(object sender, DeclareAttackerEventArgs args) {
@@ -40,6 +41,14 @@ public class CombatManager : NetworkBehaviour {
             combat.AddAttacker(card);
             InsertCombat(combat);
         }
+    }
+
+    private void DeclareDefender(object sender, DeclareDefenderEventArgs args) {
+        AddDefender(args.Initiator, args.Target, args.Attacker, args.Defender);
+    }
+
+    private void UndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
+        RemoveDefender(args.Initiator, args.Target, args.Defender);
     }
 
     public void AddDefender(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker, CreatureCard defender) {

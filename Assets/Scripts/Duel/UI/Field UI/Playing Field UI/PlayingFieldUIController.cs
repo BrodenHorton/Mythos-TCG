@@ -169,7 +169,7 @@ public class PlayingFieldUIController : NetworkBehaviour {
         Guid defenderUuid = Guid.Parse(defenderCardUuidStr.ToString());
         CreatureCard attacker = duelManager.Players[initiatorIndex].GetCreatureByUuid(attackerUuid);
         CreatureCard defender = duelManager.Players[targetIndex].GetCreatureByUuid(defenderUuid);
-        EventBus.InvokeOnDeclareDefender(this, new DeclareDefenderEventArgs(duelManager.Players[targetIndex], defender, attacker));
+        EventBus.InvokeOnDeclareDefender(this, new DeclareDefenderEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], attacker, defender));
     }
 
     public void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {

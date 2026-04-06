@@ -19,10 +19,12 @@ public class CombatFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
 
         combatFieldUI.OnSelectFieldCard += SelectUndeclareAttacker;
+        combatFieldUI.OnSelectFieldCard += SelectUndeclareDefender;
     }
 
     public override void OnNetworkDespawn() {
         combatFieldUI.OnSelectFieldCard -= SelectUndeclareAttacker;
+        combatFieldUI.OnSelectFieldCard -= SelectUndeclareDefender;
     }
 
     public void Init(MatchPlayer player) {
@@ -42,8 +44,8 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.RemoveAttacker(attacker.Uuid);
     }
 
-    public void RemoveDefender(CreatureCard attacker) {
-        combatFieldUI.RemoveDefender(attacker.Uuid);
+    public void RemoveDefender(CreatureCard defender) {
+        combatFieldUI.RemoveDefender(defender.Uuid);
     }
 
     public void ReleaseCreatureCards(DuelistCombat combat) {
