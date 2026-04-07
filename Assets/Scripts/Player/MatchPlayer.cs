@@ -97,7 +97,9 @@ public class MatchPlayer {
         if (!ContainsCreatureUuid(card.Uuid))
             throw new Exception("Player does not contain specified creature card");
 
+        TcgLogger.Log("Creature Removed From Play");
         creatures.Remove(card);
+        EventBus.InvokeOnCreatureDestroyed(this, new PlayerCreatureCardEventArgs(this, card));
     }
 
     public ulong PlayerId { get { return playerId; } }

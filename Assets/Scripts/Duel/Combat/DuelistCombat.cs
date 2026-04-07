@@ -20,9 +20,11 @@ public class DuelistCombat {
     }
 
     public void AddDefender(CreatureCard attacker, CreatureCard defender) {
+        if (!HasAttacker(attacker))
+            throw new Exception("Attempted to add a defender to an attacker that is not in combat");
         if (HasDefender(defender))
             throw new Exception("Attempted to add a defender that is already in combat");
-        CreatureCombat combat = GetCreatureCombatByDefender(attacker);
+        CreatureCombat combat = GetCreatureCombatByAttacker(attacker);
         if(combat.Defender != null)
             throw new Exception("Attempted to add a defender to a combat that already has a defender");
 

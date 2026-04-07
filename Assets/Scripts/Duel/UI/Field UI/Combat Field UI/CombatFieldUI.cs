@@ -105,11 +105,9 @@ public class CombatFieldUI : MonoBehaviour {
         CreatureFieldCardUI cardUI = CreatureFieldCardRaycastColliderCheck();
         if (cardUI == null)
             return;
-        TcgLogger.Log("Combat SelectFieldCard 1");
         if (!ContainsAttacker(cardUI) && !ContainsDefender(cardUI))
             return;
 
-        TcgLogger.Log("Combat SelectFieldCard 2");
         OnSelectFieldCard?.Invoke(this, new CombatFieldCardSelectEventArgs(this, cardUI));
     }
 
