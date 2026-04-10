@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class PlayingFieldPlayableArea : MonoBehaviour {
-    [SerializeField] private PlayingFieldUI playingFieldUI;
+    [SerializeField] private PlayerPlayingFieldUI playingFieldUI;
     [SerializeField] private Collider playableAreaCollider;
     [SerializeField] private GameObject playableAreaVisual;
 

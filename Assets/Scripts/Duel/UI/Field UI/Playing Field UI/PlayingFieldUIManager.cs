@@ -56,7 +56,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     public void TapCreature(object sender, CreatureCardEventArgs args) {
-        foreach(PlayingFieldUIController controller in controllerByPlayerId.Values) {
+        foreach(PlayerPlayingFieldUIController controller in controllerByPlayerId.Values) {
             if(controller.ContainsCreature(args.Card.Uuid)) {
                 controller.TapCreature(args.Card);
                 return;
@@ -67,7 +67,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     public void UntapCreature(object sender, CreatureCardEventArgs args) {
-        foreach (PlayingFieldUIController controller in controllerByPlayerId.Values) {
+        foreach (PlayerPlayingFieldUIController controller in controllerByPlayerId.Values) {
             if (controller.ContainsCreature(args.Card.Uuid)) {
                 controller.UntapCreature(args.Card);
                 return;

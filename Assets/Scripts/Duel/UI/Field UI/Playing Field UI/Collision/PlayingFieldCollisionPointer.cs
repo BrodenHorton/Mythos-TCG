@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class PlayingFieldCollisionPointer : MonoBehaviour {
-    [SerializeField] private PlayingFieldUI playingFieldUI;
+    [SerializeField] private PlayerPlayingFieldUI playingFieldUI;
 
-    public PlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }
+    public PlayerPlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }
 }
