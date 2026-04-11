@@ -30,4 +30,12 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
     private void SwitchToEndPhaseClientRpc() {
         stateManager.SwitchState(stateManager.EndPhase);
     }
+
+    public bool CanPlaySetupCards() {
+        return true;
+    }
+
+    public bool CanPlayCombatCards() {
+        return true;
+    }
 }

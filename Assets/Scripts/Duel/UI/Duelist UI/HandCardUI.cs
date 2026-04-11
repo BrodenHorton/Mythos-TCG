@@ -7,6 +7,8 @@ public abstract class HandCardUI : MonoBehaviour {
     [SerializeField] protected TextMeshPro cardName;
     [SerializeField] protected TextMeshPro manaCost;
 
+    protected Guid cardUuid;
+
     private void Awake() {
         selectableBorder.SetActive(false);
     }
@@ -14,4 +16,6 @@ public abstract class HandCardUI : MonoBehaviour {
     public void SetBorderVisibility(bool isVisible) {
         selectableBorder.SetActive(isVisible);
     }
+
+    public Guid CardUuid { get { return cardUuid; } }
 }

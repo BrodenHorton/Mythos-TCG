@@ -49,15 +49,17 @@ public class MatchPlayer {
         EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCreatureCardFromHandEventArgs(this, card, handIndex));
     }
 
-    public void PlaySpellCard(SpellCard card) {
+    public void PlaySpellCardFromHand(SpellCard card, int handIndex) {
+        RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
-        //player.Spells.Add(card);
+        EventBus.InvokeOnSpellCardPlayedFromHand(this, new PlaySpellCardFromHandEventArgs(this, card, handIndex));
     }
 
-    public void PlayDomainCard(SpellCard card) {
+    public void PlayDomainCardFromHand(SpellCard card, int handIndex) {
+        RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         domain = card;
-        EventBus.InvokeOnDomainCardPlayed(this, new PlayerSpellCardEventArgs(this, card));
+        EventBus.InvokeOnDomainCardPlayedFromHand(this, new PlaySpellCardFromHandEventArgs(this, card, handIndex));
     }
 
     public void RemoveCardFromHandAt(int handIndex) {
@@ -93,14 +95,9 @@ public class MatchPlayer {
         EventBus.InvokeOnLifePointsChanged(this, new LifePointsChangedEventArgs(this, lifePoints));
     }
 
-    /*public void RemoveCreatureFromPlay(CreatureCard card) {
-        if (!ContainsCreatureUuid(card.Uuid))
-            throw new Exception("Player does not contain specified creature card");
-
-        TcgLogger.Log("Creature Removed From Play");
-        creatures.Remove(card);
-        EventBus.InvokeOnCreatureDestroyed(this, new PlayerCreatureCardEventArgs(this, card));
-    }*/
+    public void OnCreatureHealthChangedCallback(CreatureCard card) {
+        EventBus.InvokeOnCreatureHealthChanged(this, new PlayerCreatureCardEventArgs(this, card));
+    }
 
     public void OnCreatureDamagedCallback(CreatureCard card) {
         EventBus.InvokeOnCreatureDamaged(this, new PlayerCreatureCardEventArgs(this, card));
@@ -121,15 +118,7 @@ public class MatchPlayer {
 
     public List<CreatureCard> Creatures { get { return creatures; } }
 
-    public SpellCard Domain {
-        get {
-            return domain;
-        }
-        set {
-            domain = value;
-            EventBus.InvokeOnDomainCardPlayed(this, new PlayerSpellCardEventArgs(this, domain));
-        }
-    }
+    public SpellCard Domain { get { return domain; } }
 
     public int LifePoints { get { return lifePoints; } }
 

@@ -24,6 +24,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
         EventBus.OnUndeclareAttacker += RemoveAttacker;
         EventBus.OnUndeclareDefender += RemoveDefender;
         EventBus.OnCreatureDamaged += UpdateCreatureFieldCard;
+        EventBus.OnCreatureHealthChanged += UpdateCreatureFieldCard;
         EventBus.OnCreatureDestroyed += DestroyCreature;
         combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
     }
@@ -59,10 +60,11 @@ public class CombatFieldUIManager : NetworkBehaviour {
     private void RemoveAttacker(object sender, UndeclareAttackerEventArgs args) {
         if (controllerByPlayerId[args.Target.PlayerId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + args.Target.PlayerId);
-        if(!controllerByPlayerId[args.Target.PlayerId].ContainsAttacker(args.Attacker.Uuid))
+        if (!controllerByPlayerId[args.Target.PlayerId].ContainsAttacker(args.Attacker.Uuid))
             throw new Exception("Unable to find combat field UI controller with creature Uuid: " + args.Attacker.Uuid);
 
-        controllerByPlayerId[args.Target.PlayerId].RemoveAttacker(args.Attacker);
+        if (controllerByPlayerId[args.Target.PlayerId].ContainsAttacker(args.Attacker.Uuid))
+            controllerByPlayerId[args.Target.PlayerId].RemoveAttacker(args.Attacker);
     }
 
     private void RemoveDefender(object sender, UndeclareDefenderEventArgs args) {
@@ -71,22 +73,25 @@ public class CombatFieldUIManager : NetworkBehaviour {
         if (!controllerByPlayerId[args.Target.PlayerId].ContainsDefender(args.Defender.Uuid))
             throw new Exception("Unable to find combat field UI controller with creature Uuid: " + args.Defender.Uuid);
 
-        controllerByPlayerId[args.Target.PlayerId].RemoveDefender(args.Defender);
+        if (controllerByPlayerId[args.Target.PlayerId].ContainsDefender(args.Defender.Uuid))
+            controllerByPlayerId[args.Target.PlayerId].RemoveDefender(args.Defender);
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCreatureCardEventArgs args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + args.Player.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
+        if (controllerByPlayerId[args.Player.PlayerId].ContainsAttacker(args.Card.Uuid) || controllerByPlayerId[args.Player.PlayerId].ContainsDefender(args.Card.Uuid))
+            controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
     public void DestroyCreature(object sender, PlayerCreatureCardEventArgs args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 
-        // TODO: Change this to check for both attackers and defenders to be removed
-        if (controllerByPlayerId[args.Player.PlayerId].ContainsDefender(args.Card.Uuid))
+        if (controllerByPlayerId[args.Player.PlayerId].ContainsAttacker(args.Card.Uuid))
+            controllerByPlayerId[args.Player.PlayerId].RemoveAttacker(args.Card);
+        else if (controllerByPlayerId[args.Player.PlayerId].ContainsDefender(args.Card.Uuid))
             controllerByPlayerId[args.Player.PlayerId].RemoveDefender(args.Card);
     }
 

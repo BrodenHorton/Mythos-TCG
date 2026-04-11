@@ -19,12 +19,19 @@ public class SpellCard : Card {
         cardBase = CardDatabase.Instance.GetSpellCardByIndex(networkSerializationObject.cardBaseIndex);
     }
 
-    public override int GetManaCost() {
-        return cardBase.ManaCost;
-    }
+    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
+        if (cardBase.SpellType == SpellType.Instant) {
+            if (!stateManager.CurrentState.CanPlayCombatCards())
+                return false;
+        }
+        else {
+            if (!stateManager.CurrentState.CanPlaySetupCards())
+                return false;
+        }
+        if (player.CurrentMana < cardBase.ManaCost)
+            return false;
 
-    public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
-        return false;
+        return true;
     }
 
     public override void PlayCard(MatchPlayer player) {
@@ -32,7 +39,14 @@ public class SpellCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        
+        if (cardBase.SpellType == SpellType.Domain)
+            EventBus.InvokeOnDomainCardSelectedForPlay(this, new PlaySpellCardFromHandEventArgs(player, this, handIndex));
+        else
+            EventBus.InvokeOnSpellCardSelectedForPlay(this, new PlaySpellCardFromHandEventArgs(player, this, handIndex));
+    }
+
+    public override int GetManaCost() {
+        return cardBase.ManaCost;
     }
 
     public SpellCardNetworkSerializable GetNetworkSerializableObject() {

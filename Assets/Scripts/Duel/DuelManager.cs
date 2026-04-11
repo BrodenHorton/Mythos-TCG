@@ -83,9 +83,19 @@ public class DuelManager : NetworkBehaviour {
     private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
         MatchPlayer player = Players[playerIndex];
         CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
+        card.CreatureHealthChangedCallback = player.OnCreatureHealthChangedCallback;
         card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
         card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
         player.PlayCreatureCardFromHand(card, handIndex);
+    }
+
+    public void EndOfTurnRegenerateCreaturesHealth() {
+        foreach(MatchPlayer player in Players) {
+            for(int i = 0; i < player.Creatures.Count; i++) {
+                if (player.Creatures[i].CurrentDamage > 0)
+                    player.Creatures[i].CurrentDamage = 0;
+            }
+        }
     }
 
     public void NextTurn() {

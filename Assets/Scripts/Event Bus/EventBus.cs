@@ -1,9 +1,7 @@
 using System;
+using System.Data;
 
 public static class EventBus {
-    // Player Status Changes
-    public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
-    public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Duelist UI Actions
     public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
     public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
@@ -18,8 +16,15 @@ public static class EventBus {
     // Playing Cards
     public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardSelectedForPlay;
     public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardPlayedFromHand;
-    public static event EventHandler<PlayerSpellCardEventArgs> OnSpellCardPlayed;
-    public static event EventHandler<PlayerSpellCardEventArgs> OnDomainCardPlayed;
+    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnSpellCardSelectedForPlay;
+    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnSpellCardPlayedFromHand;
+    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnDomainCardSelectedForPlay;
+    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnDomainCardPlayedFromHand;
+    // Player Status Changes
+    public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
+    public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
+    // Creature Status Changes
+    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureHealthChanged;
     // Declaring and Undeclaring creatures
     public static event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
     public static event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
@@ -37,16 +42,6 @@ public static class EventBus {
     // Player Actions
     public static event EventHandler OnActionButtonPressed;
     public static event EventHandler OnLocalClientPlayerReadyUp;
-
-    #region Player Status Changes
-    public static void InvokeOnLifePointsChanged(object sender, LifePointsChangedEventArgs args) {
-        OnLifePointsChanged?.Invoke(sender, args);
-    }
-
-    public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
-        OnManaCountChanged?.Invoke(sender, args);
-    }
-    #endregion
 
     #region Duelist UI Actions
     public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs args) {
@@ -95,12 +90,36 @@ public static class EventBus {
         OnCreatureCardPlayedFromHand?.Invoke(sender, args);
     }
 
-    public static void InvokeOnSpellCardPlayed(object sender, PlayerSpellCardEventArgs args) {
-        OnSpellCardPlayed?.Invoke(sender, args);
+    public static void InvokeOnSpellCardSelectedForPlay(object sender, PlaySpellCardFromHandEventArgs args) {
+        OnSpellCardSelectedForPlay?.Invoke(sender, args);
     }
 
-    public static void InvokeOnDomainCardPlayed(object sender, PlayerSpellCardEventArgs args) {
-        OnDomainCardPlayed?.Invoke(sender, args);
+    public static void InvokeOnSpellCardPlayedFromHand(object sender, PlaySpellCardFromHandEventArgs args) {
+        OnSpellCardPlayedFromHand?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnDomainCardSelectedForPlay(object sender, PlaySpellCardFromHandEventArgs args) {
+        OnDomainCardSelectedForPlay?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnDomainCardPlayedFromHand(object sender, PlaySpellCardFromHandEventArgs args) {
+        OnDomainCardPlayedFromHand?.Invoke(sender, args);
+    }
+    #endregion
+
+    #region Player Status Changes
+    public static void InvokeOnLifePointsChanged(object sender, LifePointsChangedEventArgs args) {
+        OnLifePointsChanged?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
+        OnManaCountChanged?.Invoke(sender, args);
+    }
+    #endregion
+
+    #region Creature Status Changes
+    public static void InvokeOnCreatureHealthChanged(object sender, PlayerCreatureCardEventArgs args) {
+        OnCreatureHealthChanged?.Invoke(sender, args);
     }
     #endregion
 

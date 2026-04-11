@@ -9,6 +9,7 @@ public partial class CreatureCard : Card {
     [SerializeField] private bool isTapped;
     [SerializeField] private int damage;
 
+    private Action<CreatureCard> creatureHealthChangedCallback;
     private Action<CreatureCard> creatureDamagedCallback;
     private Action<CreatureCard> creatureDestroyedCallback;
 
@@ -27,7 +28,9 @@ public partial class CreatureCard : Card {
         damage = networkSerializationObject.damage;
     }
 
-    public override bool IsPlayable(DuelManager duelManager, MatchPlayer player) {
+    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
+        if (!stateManager.CurrentState.CanPlaySetupCards())
+            return false;
         if (player.CurrentMana < cardBase.ManaCost)
             return false;
         if (player.Creatures.Count > 6)
@@ -75,7 +78,7 @@ public partial class CreatureCard : Card {
         return !isTapped;
     }
 
-    public void Damage(int amt) {
+    public void InflictDamage(int amt) {
         damage += amt;
         creatureDamagedCallback?.Invoke(this);
         if(GetHealth() <= 0)
@@ -93,6 +96,8 @@ public partial class CreatureCard : Card {
 
     public string CardName { get { return cardBase.CardName; } }
 
+    public int BaseManaCost { get { return cardBase.ManaCost; } }
+
     public int BaseAtk { get { return cardBase.Atk; } }
 
     public int BaseHealth { get { return cardBase.Health; } }
@@ -100,6 +105,20 @@ public partial class CreatureCard : Card {
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }
 
     public bool IsTapped { get { return isTapped; } }
+
+    public int CurrentDamage {
+        get {
+            return damage;
+        }
+        set {
+            if(damage != value) {
+                damage = value;
+                creatureHealthChangedCallback?.Invoke(this);
+            }
+        }
+    }
+
+    public Action<CreatureCard> CreatureHealthChangedCallback { get { return creatureDamagedCallback; } set { creatureHealthChangedCallback = value; } }
 
     public Action<CreatureCard> CreatureDamagedCallback { get { return creatureDamagedCallback; } set { creatureDamagedCallback = value; } }
 

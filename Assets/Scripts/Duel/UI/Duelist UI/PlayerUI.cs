@@ -113,14 +113,11 @@ public class PlayerUI : DuelistUI {
         SetDefaultCardPositions();
     }
 
-    public void SetSelectableCards(MatchPlayer player) {
-        if (player.Hand.Count != cardsInHand.Count)
-            throw new Exception("Cards in MatchPlayer hand and PlayerUI hand do not match");
+    public void SetCardSelectable(Guid cardUuid) {
+        if (!ContainsCard(cardUuid))
+            throw new Exception("Attempting to set selectable card border visibility to card that is not in the PlayUI hand");
 
-        for (int i = 0; i < cardsInHand.Count; i++) {
-            DuelManager duelManager = FindFirstObjectByType<DuelManager>(); 
-            cardsInHand[i].SetBorderVisibility(player.Hand[i].IsPlayable(duelManager, player));
-        }
+        GetCardByUuid(cardUuid).SetBorderVisibility(true);
     }
 
     public void SetBorderVisibilityAll(bool isVisiable) {
@@ -261,6 +258,14 @@ public class PlayerUI : DuelistUI {
                 return i;
         }
         throw new Exception("Unable to find dragging card");
+    }
+
+    public HandCardUI GetCardByUuid(Guid cardUuid) {
+        foreach(HandCardUI cardUI in cardsInHand) {
+            if(cardUI.CardUuid == cardUuid)
+                return cardUI;
+        }
+        throw new Exception("Attempted to get cardUI that does not exists in PlayerUI hand");
     }
 
     public bool IsDragging { get { return isDragging; } }

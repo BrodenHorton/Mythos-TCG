@@ -28,30 +28,18 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     public override void RemoveCreature(CreatureCard card) {
-        if (!playingFieldUI.ContainsCreature(card.Uuid))
-            throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);
-
         playingFieldUI.RemoveCreature(card.Uuid);
     }
 
     public override void UpdateCreatureFieldCard(CreatureCard card) {
-        if (!ContainsCreature(card.Uuid))
-            return;
-
         playingFieldUI.UpdateCreatureFieldCard(card);
     }
 
     public override void TapCreature(CreatureCard card) {
-        if (!playingFieldUI.ContainsCreature(card.Uuid))
-            throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);
-
         playingFieldUI.TapCreature(card);
     }
 
     public override void UntapCreature(CreatureCard card) {
-        if (!playingFieldUI.ContainsCreature(card.Uuid))
-            throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);
-
         playingFieldUI.UntapCreature(card);
     }
 

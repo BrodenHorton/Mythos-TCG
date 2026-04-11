@@ -33,14 +33,15 @@ public class PlayingFieldUI : MonoBehaviour {
     }
 
     public void PlayDomainCard(SpellCard card) {
-        SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab, domainSlotOrigin);
+        SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab);
+        domainCardUI.transform.parent = domainSlotOrigin;
         domainCardUI.Init(card);
         domainCard = domainCardUI;
     }
 
     public void UpdateCreatureFieldCard(CreatureCard card) {
         if (!ContainsCreature(card.Uuid))
-            throw new Exception("Attempting to update creature field card that is not in playing field");
+            throw new Exception("Attempting to update creature field card that is not in the playing field");
 
         GetCreatureFieldCardUIBy(card.Uuid).UpdateCreatureFieldCard(card);
     }
@@ -49,30 +50,39 @@ public class PlayingFieldUI : MonoBehaviour {
         foreach (CreatureFieldCardUI cardUI in creatures) {
             if (cardUI.CardUuid == card.Uuid) {
                 cardUI.Tap();
-                break;
+                return;
             }
         }
+
+        throw new Exception("Attempting to tap creature that is not in the playing field");
     }
 
     public void UntapCreature(CreatureCard card) {
         foreach (CreatureFieldCardUI cardUI in creatures) {
             if (cardUI.CardUuid == card.Uuid) {
                 cardUI.Untap();
-                break;
+                return;
             }
         }
+
+        throw new Exception("Attempting to untap creature that is not in the playing field");
     }
 
     public void RemoveCreature(Guid uuid) {
         foreach (CreatureFieldCardUI cardUI in creatures) {
             if (cardUI.CardUuid == uuid) {
                 RemoveCreature(cardUI);
-                break;
+                return;
             }
         }
+
+        throw new Exception("Attempting to remove creature that is not in the playing field");
     }
 
     public void RemoveCreature(CreatureFieldCardUI cardUI) {
+        if(!creatures.Contains(cardUI))
+            throw new Exception("Attempting to remove creature that is not in the playing field");
+
         creatures.Remove(cardUI);
         Destroy(cardUI.gameObject);
         SetDefaultCardPositions();

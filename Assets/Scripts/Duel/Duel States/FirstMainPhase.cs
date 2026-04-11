@@ -30,4 +30,12 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
     private void SwitchToCombatPhaseClientRpc() {
         stateManager.SwitchState(stateManager.CombatPhase);
     }
+
+    public bool CanPlaySetupCards() {
+        return true;
+    }
+
+    public bool CanPlayCombatCards() {
+        return true;
+    }
 }

@@ -23,7 +23,13 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 
-    public void UpdateState() {
+    public void UpdateState() { }
 
+    public bool CanPlaySetupCards() {
+        return false;
+    }
+
+    public bool CanPlayCombatCards() {
+        return false;
     }
 }

@@ -82,9 +82,10 @@ public class CombatFieldUI : MonoBehaviour {
                 attackerByPositionIndex.Remove(entry.Key);
                 Destroy(cardUI.gameObject);
                 SpaceAttackers();
-                break;
+                return;
             }
         }
+        throw new Exception("Attempting to remove attacker that is not in combat field");
     }
 
     public void RemoveDefender(Guid uuid) {
@@ -93,9 +94,10 @@ public class CombatFieldUI : MonoBehaviour {
                 CreatureFieldCardUI cardUI = entry.Value;
                 defenderByPositionIndex.Remove(entry.Key);
                 Destroy(cardUI.gameObject);
-                break;
+                return;
             }
         }
+        throw new Exception("Attempting to remove defender that is not in combat field");
     }
 
     public void UpdateCreatureFieldCard(CreatureCard card) {
@@ -104,7 +106,7 @@ public class CombatFieldUI : MonoBehaviour {
         else if (ContainsDefender(card.Uuid))
             GetDefender(card.Uuid).UpdateCreatureFieldCard(card);
         else
-            throw new Exception("Attempting to update creature field card that is not in combat Field");
+            throw new Exception("Attempting to update creature field card that is not in combat field");
     }
 
     private void SelectFieldCard(InputAction.CallbackContext context) {

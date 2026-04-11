@@ -10,9 +10,18 @@ public class EndPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("End of Turn");
         OnEndPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+        stateManager.DuelManager.EndOfTurnRegenerateCreaturesHealth();
         stateManager.DuelManager.NextTurn();
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 
     public void UpdateState() { }
+
+    public bool CanPlaySetupCards() {
+        return false;
+    }
+
+    public bool CanPlayCombatCards() {
+        return false;
+    }
 }

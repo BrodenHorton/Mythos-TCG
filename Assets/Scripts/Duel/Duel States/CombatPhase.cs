@@ -116,5 +116,13 @@ public class CombatPhase : NetworkBehaviour, DuelState {
         stateManager.SwitchState(stateManager.SecondMainPhase);
     }
 
+    public bool CanPlaySetupCards() {
+        return false;
+    }
+
+    public bool CanPlayCombatCards() {
+        return true;
+    }
+
     public CombatState CombateState { get { return combatState; } }
 }

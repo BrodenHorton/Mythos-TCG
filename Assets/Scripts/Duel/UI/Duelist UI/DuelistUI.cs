@@ -36,6 +36,15 @@ public abstract class DuelistUI : MonoBehaviour {
 
     public abstract void SetDefaultCardPositions();
 
+    public bool ContainsCard(Guid cardUuid) {
+        foreach (HandCardUI card in cardsInHand) {
+            if (card.CardUuid == cardUuid)
+                return true;
+        }
+
+        return false;
+    }
+
     public bool ContainsCard(HandCardUI handCardUI) {
         foreach (HandCardUI card in cardsInHand) {
             if (card.Equals(handCardUI))

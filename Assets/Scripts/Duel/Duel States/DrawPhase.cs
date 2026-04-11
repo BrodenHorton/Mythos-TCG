@@ -17,4 +17,12 @@ public class DrawPhase : NetworkBehaviour, DuelState {
     }
 
     public void UpdateState() { }
+
+    public bool CanPlaySetupCards() {
+        return false;
+    }
+
+    public bool CanPlayCombatCards() {
+        return false;
+    }
 }

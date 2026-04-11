@@ -6,21 +6,23 @@ public class PlayerUIController : DuelistUIController {
     [SerializeField] private PlayerUI playerUI;
     
     private DuelManager duelManager;
+    private DuelStateManager stateManager;
 
     private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
-        DuelStateManager stateManager = FindFirstObjectByType<DuelStateManager>();
+        stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
         playerUI.OnSelectingCardDrag += SelectCardDrag;
         EventBus.OnHandCardEnteringPlayingField += PlayHandCard;
-        stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
+        stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCardsOnPhaseChange;
         stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
-        stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
+        stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCardsOnPhaseChange;
         stateManager.EndPhase.OnEndPhase += HideAllClientsSelectionBorders;
+        EventBus.OnManaCountChanged += SetSelectableCardsAfterManaCountChanged;
     }
 
     public override void Init(MatchPlayer player) {
@@ -34,7 +36,6 @@ public class PlayerUIController : DuelistUIController {
 
     public override void SetManaCount(int manaCount) {
         playerUI.SetManaCount(manaCount);
-        SetSelectableCardsAfterManaCountChanged();
     }
 
     public override void DrawCard(Card card) {
@@ -45,19 +46,28 @@ public class PlayerUIController : DuelistUIController {
         playerUI.RemoveCardFromHand(handIndex);
     }
 
-    private void SetSelectableCards(object sender, PlayerEventArgs args) {
+    private void SetSelectableCardsOnPhaseChange(object sender, PlayerEventArgs args) {
         if (player.PlayerId != args.Player.PlayerId)
             return;
 
-        playerUI.SetSelectableCards(player);
+        SetSelectableCards();
     }
 
-    private void SetSelectableCardsAfterManaCountChanged() {
+    private void SetSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
         if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
             return;
-        // TODO: Add a boolean to tell if we are in a state that we can play selectable cards in
+        if (!stateManager.CurrentState.CanPlaySetupCards() && !stateManager.CurrentState.CanPlayCombatCards())
+            return;
 
-        playerUI.SetSelectableCards(player);
+        SetSelectableCards();
+    }
+
+    public void SetSelectableCards() {
+        playerUI.SetBorderVisibilityAll(false);
+        for (int i = 0; i < player.Hand.Count; i++) {
+            if (player.Hand[i].IsPlayable(duelManager, stateManager, player))
+                playerUI.SetCardSelectable(player.Hand[i].Uuid);
+        }
     }
 
     private void HideSelectionBorders(object sender, PlayerEventArgs args) {
@@ -96,7 +106,7 @@ public class PlayerUIController : DuelistUIController {
             args.IsCancelled = true;
             throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);
         }
-        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, player)) {
+        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, player)) {
             args.IsCancelled = true;
             return;
         }
@@ -107,7 +117,7 @@ public class PlayerUIController : DuelistUIController {
             return;
         if (args.CardIndex < 0 || args.CardIndex >= player.Hand.Count)
             throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);
-        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, player))
+        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, player))
             return;
 
         duelManager.PlayCardFromHand(player, args.CardIndex);
