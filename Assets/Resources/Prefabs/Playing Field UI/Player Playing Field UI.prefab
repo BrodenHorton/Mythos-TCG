@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cec33a87eda12b54f94ca409166088a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playingFieldUI: {fileID: 0}
+  playingFieldUI: {fileID: 2121813918429068511}
   playableAreaCollider: {fileID: 5681576184872425004}
   playableAreaVisual: {fileID: 3025622732599146495}
 --- !u!1 &9040775679754799836

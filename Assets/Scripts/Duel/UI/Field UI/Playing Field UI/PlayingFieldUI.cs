@@ -38,6 +38,13 @@ public class PlayingFieldUI : MonoBehaviour {
         domainCard = domainCardUI;
     }
 
+    public void UpdateCreatureFieldCard(CreatureCard card) {
+        if (!ContainsCreature(card.Uuid))
+            throw new Exception("Attempting to update creature field card that is not in playing field");
+
+        GetCreatureFieldCardUIBy(card.Uuid).UpdateCreatureFieldCard(card);
+    }
+
     public void TapCreature(CreatureCard card) {
         foreach (CreatureFieldCardUI cardUI in creatures) {
             if (cardUI.CardUuid == card.Uuid) {

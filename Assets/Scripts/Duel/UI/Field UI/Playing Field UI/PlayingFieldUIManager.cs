@@ -23,6 +23,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         EventBus.OnDeclareDefender += RemoveDefender;
         EventBus.OnUndeclareAttacker += UndeclareAttacker;
         EventBus.OnUndeclareDefender += UndeclareDefender;
+        EventBus.OnCreatureDamaged += UpdateCreatureFieldCard;
         EventBus.OnCreatureDestroyed += DestroyCreature;
         EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
@@ -103,6 +104,13 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Target.PlayerId);
 
         controllerByPlayerId[args.Target.PlayerId].PlayCreatureCard(args.Defender);
+    }
+
+    public void UpdateCreatureFieldCard(object sender, PlayerCreatureCardEventArgs args) {
+        if (controllerByPlayerId[args.Player.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+
+        controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
     public void DestroyCreature(object sender, PlayerCreatureCardEventArgs args) {

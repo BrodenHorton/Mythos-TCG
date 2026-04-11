@@ -83,11 +83,12 @@ public class DuelManager : NetworkBehaviour {
     private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
         MatchPlayer player = Players[playerIndex];
         CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
+        card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
+        card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
         player.PlayCreatureCardFromHand(card, handIndex);
     }
 
     public void NextTurn() {
-        Debug.Log("Current player index: " + currentPlayerTurnIndex);
         currentPlayerTurnIndex = ++currentPlayerTurnIndex % players.Count;
         OnNextPlayerTurn?.Invoke(this, new NextPlayerTurnEventArgs(GetCurrentPlayerTurn(), currentPlayerTurnIndex));
         if (currentPlayerTurnIndex == 0) {

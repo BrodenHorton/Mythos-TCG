@@ -24,6 +24,8 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
 
     public abstract void RemoveCreature(CreatureCard card);
 
+    public abstract void UpdateCreatureFieldCard(CreatureCard card);
+
     public abstract void TapCreature(CreatureCard card);
 
     public abstract void UntapCreature(CreatureCard card);

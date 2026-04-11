@@ -9,14 +9,14 @@ public class SpellCard : Card {
 
     public SpellCard() { }
 
-    public SpellCard(SpellCardNetworkSerializable networkSerializationObject) {
-        uuid = Guid.Parse(networkSerializationObject.uuidStr.ToString());
-        cardBase = CardDatabase.Instance.GetSpellCardByIndex(networkSerializationObject.cardBaseIndex);
-    }
-
     public SpellCard(SpellCardBase cardBase) {
         this.cardBase = cardBase;
         //effects = new List<SpellCardEffect>();
+    }
+
+    public SpellCard(SpellCardNetworkSerializable networkSerializationObject) {
+        uuid = Guid.Parse(networkSerializationObject.uuidStr.ToString());
+        cardBase = CardDatabase.Instance.GetSpellCardByIndex(networkSerializationObject.cardBaseIndex);
     }
 
     public override int GetManaCost() {

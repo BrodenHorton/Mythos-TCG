@@ -1,15 +1,15 @@
 ﻿using System;
 
 public class CombatFieldCardSelectEventArgs : EventArgs {
-    private PlayerCombatFieldUI combatFieldUI;
+    private CombatFieldUI combatFieldUI;
     private FieldCardUI cardUI;
 
-    public CombatFieldCardSelectEventArgs(PlayerCombatFieldUI combatFieldUI, FieldCardUI cardUI) {
+    public CombatFieldCardSelectEventArgs(CombatFieldUI combatFieldUI, FieldCardUI cardUI) {
         this.combatFieldUI = combatFieldUI;
         this.cardUI = cardUI;
     }
 
-    public PlayerCombatFieldUI CombatFieldUI { get { return combatFieldUI; } }
+    public CombatFieldUI CombatFieldUI { get { return combatFieldUI; } }
 
     public FieldCardUI CardUI { get { return cardUI; } }
 }

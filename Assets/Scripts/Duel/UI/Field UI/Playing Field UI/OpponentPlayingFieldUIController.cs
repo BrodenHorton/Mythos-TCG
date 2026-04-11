@@ -25,6 +25,13 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.RemoveCreature(card.Uuid);
     }
 
+    public override void UpdateCreatureFieldCard(CreatureCard card) {
+        if (!ContainsCreature(card.Uuid))
+            return;
+
+        playingFieldUI.UpdateCreatureFieldCard(card);
+    }
+
     public override void TapCreature(CreatureCard card) {
         if (!playingFieldUI.ContainsCreature(card.Uuid))
             throw new Exception("Playing field UI controller does not contain card uuid: " + card.Uuid);

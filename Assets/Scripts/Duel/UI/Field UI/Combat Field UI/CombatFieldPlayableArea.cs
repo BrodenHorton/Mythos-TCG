@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class CombatFieldPlayableArea : MonoBehaviour {
-    [SerializeField] private PlayerCombatFieldUI combatFieldUI;
+    [SerializeField] private CombatFieldUI combatFieldUI;
     [SerializeField] private Collider playableAreaCollider;
     [SerializeField] private GameObject playableAreaVisual;
 

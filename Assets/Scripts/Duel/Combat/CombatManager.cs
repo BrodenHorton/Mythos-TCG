@@ -83,11 +83,8 @@ public class CombatManager : NetworkBehaviour {
                 CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
                 if (creatureCombat.Defender == null)
                     duelistCombat.Target.LifePointsDamage(creatureCombat.Attacker.GetAtk());
-                else {
+                else
                     creatureCombat.Defender.Damage(creatureCombat.Attacker.GetAtk());
-                    if (creatureCombat.Defender.GetHealth() <= 0)
-                        duelistCombat.Target.RemoveCreatureFromPlay(creatureCombat.Defender);
-                }
             }
             OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(duelistCombat));
             duelistCombats.Remove(duelistCombat);

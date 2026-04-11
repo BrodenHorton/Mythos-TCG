@@ -93,13 +93,22 @@ public class MatchPlayer {
         EventBus.InvokeOnLifePointsChanged(this, new LifePointsChangedEventArgs(this, lifePoints));
     }
 
-    public void RemoveCreatureFromPlay(CreatureCard card) {
+    /*public void RemoveCreatureFromPlay(CreatureCard card) {
         if (!ContainsCreatureUuid(card.Uuid))
             throw new Exception("Player does not contain specified creature card");
 
         TcgLogger.Log("Creature Removed From Play");
         creatures.Remove(card);
         EventBus.InvokeOnCreatureDestroyed(this, new PlayerCreatureCardEventArgs(this, card));
+    }*/
+
+    public void OnCreatureDamagedCallback(CreatureCard card) {
+        EventBus.InvokeOnCreatureDamaged(this, new PlayerCreatureCardEventArgs(this, card));
+    }
+
+    public void OnCreatureDestroyCallback(CreatureCard card) {
+        EventBus.InvokeOnCreatureDestroyed(this, new PlayerCreatureCardEventArgs(this, card));
+        creatures.Remove(card);
     }
 
     public ulong PlayerId { get { return playerId; } }

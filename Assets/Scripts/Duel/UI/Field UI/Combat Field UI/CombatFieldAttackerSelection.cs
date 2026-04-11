@@ -8,7 +8,7 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
     private Camera cam;
 
     private void Start() {
-        combatFieldUI = GetComponent<PlayerCombatFieldUI>();
+        combatFieldUI = GetComponent<CombatFieldUI>();
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");

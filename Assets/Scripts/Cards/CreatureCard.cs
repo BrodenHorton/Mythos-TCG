@@ -9,6 +9,9 @@ public partial class CreatureCard : Card {
     [SerializeField] private bool isTapped;
     [SerializeField] private int damage;
 
+    private Action<CreatureCard> creatureDamagedCallback;
+    private Action<CreatureCard> creatureDestroyedCallback;
+
     public CreatureCard() { }
 
     public CreatureCard(CreatureCardBase cardBase) {
@@ -74,6 +77,9 @@ public partial class CreatureCard : Card {
 
     public void Damage(int amt) {
         damage += amt;
+        creatureDamagedCallback?.Invoke(this);
+        if(GetHealth() <= 0)
+            creatureDestroyedCallback?.Invoke(this);
     }
 
     public CreatureCardNetworkSerializable GetNetworkSerializableObject() {
@@ -87,7 +93,15 @@ public partial class CreatureCard : Card {
 
     public string CardName { get { return cardBase.CardName; } }
 
+    public int BaseAtk { get { return cardBase.Atk; } }
+
+    public int BaseHealth { get { return cardBase.Health; } }
+
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }
 
     public bool IsTapped { get { return isTapped; } }
+
+    public Action<CreatureCard> CreatureDamagedCallback { get { return creatureDamagedCallback; } set { creatureDamagedCallback = value; } }
+
+    public Action<CreatureCard> CreatureDestroyedCallback { get { return creatureDestroyedCallback; } set { creatureDestroyedCallback = value; } }
 }
