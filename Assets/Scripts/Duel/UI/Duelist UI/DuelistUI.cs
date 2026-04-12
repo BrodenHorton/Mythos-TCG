@@ -12,6 +12,7 @@ public abstract class DuelistUI : MonoBehaviour {
     [Header("Prefabs")]
     [SerializeField] protected CreatureHandCardUI creatureCardPrefab;
     [SerializeField] protected SpellHandCardUI spellCardPrefab;
+    [SerializeField] protected DomainHandCardUI domainCardPrefab;
     [SerializeField] protected NullHandCardUI nullCardPrefab;
 
     protected ulong playerId;

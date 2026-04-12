@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
 public enum SpellType {
-    Spell,
     Instant,
-    Relic,
+    Fast,
+    Slow,
     Domain
 }

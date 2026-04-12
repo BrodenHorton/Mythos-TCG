@@ -8,7 +8,7 @@ public class MatchPlayer {
     private List<Card> hand;
     private List<Card> discardPile;
     private List<CreatureCard> creatures;
-    private SpellCard domain;
+    private DomainCard domain;
     private int lifePoints;
     private int currentMana;
     private int seriesWinCount;
@@ -38,7 +38,7 @@ public class MatchPlayer {
         Card card = deck[deck.Count - 1];
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
-        EventBus.InvokeOnCardDrawn(this, new PlayerCardEventArgs(this, card));
+        EventBus.InvokeOnCardDrawn(this, new PlayerCardEventArgs<Card>(this, card));
         return card;
     }
 
@@ -46,20 +46,20 @@ public class MatchPlayer {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         creatures.Add(card);
-        EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCreatureCardFromHandEventArgs(this, card, handIndex));
+        EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCardFromHandEventArgs<CreatureCard>(this, card, handIndex));
     }
 
     public void PlaySpellCardFromHand(SpellCard card, int handIndex) {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
-        EventBus.InvokeOnSpellCardPlayedFromHand(this, new PlaySpellCardFromHandEventArgs(this, card, handIndex));
+        EventBus.InvokeOnSpellCardPlayedFromHand(this, new PlayCardFromHandEventArgs<SpellCard>(this, card, handIndex));
     }
 
-    public void PlayDomainCardFromHand(SpellCard card, int handIndex) {
+    public void PlayDomainCardFromHand(DomainCard card, int handIndex) {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         domain = card;
-        EventBus.InvokeOnDomainCardPlayedFromHand(this, new PlaySpellCardFromHandEventArgs(this, card, handIndex));
+        EventBus.InvokeOnDomainCardPlayedFromHand(this, new PlayCardFromHandEventArgs<DomainCard>(this, card, handIndex));
     }
 
     public void RemoveCardFromHandAt(int handIndex) {
@@ -96,15 +96,15 @@ public class MatchPlayer {
     }
 
     public void OnCreatureHealthChangedCallback(CreatureCard card) {
-        EventBus.InvokeOnCreatureHealthChanged(this, new PlayerCreatureCardEventArgs(this, card));
+        EventBus.InvokeOnCreatureHealthChanged(this, new PlayerCardEventArgs<CreatureCard>(this, card));
     }
 
     public void OnCreatureDamagedCallback(CreatureCard card) {
-        EventBus.InvokeOnCreatureDamaged(this, new PlayerCreatureCardEventArgs(this, card));
+        EventBus.InvokeOnCreatureDamaged(this, new PlayerCardEventArgs<CreatureCard>(this, card));
     }
 
     public void OnCreatureDestroyCallback(CreatureCard card) {
-        EventBus.InvokeOnCreatureDestroyed(this, new PlayerCreatureCardEventArgs(this, card));
+        EventBus.InvokeOnCreatureDestroyed(this, new PlayerCardEventArgs<CreatureCard>(this, card));
         creatures.Remove(card);
     }
 
@@ -118,7 +118,7 @@ public class MatchPlayer {
 
     public List<CreatureCard> Creatures { get { return creatures; } }
 
-    public SpellCard Domain { get { return domain; } }
+    public DomainCard Domain { get { return domain; } }
 
     public int LifePoints { get { return lifePoints; } }
 

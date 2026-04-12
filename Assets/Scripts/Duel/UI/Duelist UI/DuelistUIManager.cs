@@ -49,7 +49,7 @@ public class DuelistUIManager : NetworkBehaviour {
         controllerByPlayerId[args.Player.PlayerId].SetManaCount(args.CurrentMana);
     }
 
-    private void CardDrawn(object sender, PlayerCardEventArgs args) {
+    private void CardDrawn(object sender, PlayerCardEventArgs<Card> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
 

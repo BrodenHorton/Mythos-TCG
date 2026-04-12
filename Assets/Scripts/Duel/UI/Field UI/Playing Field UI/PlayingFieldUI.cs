@@ -8,10 +8,11 @@ public class PlayingFieldUI : MonoBehaviour {
     [SerializeField] protected float cardSpacing;
     [Header("Field Cards")]
     [SerializeField] protected List<CreatureFieldCardUI> creatures;
-    [SerializeField] protected SpellFieldCardUI domainCard;
+    [SerializeField] protected DomainFieldCardUI domainCard;
     [Header("Prefabs")]
     [SerializeField] protected CreatureFieldCardUI creatureCardUIPrefab;
     [SerializeField] protected SpellFieldCardUI spellCardUIPrefab;
+    [SerializeField] protected DomainFieldCardUI domainCardUIPrefab;
 
     protected ulong playerId;
 
@@ -32,9 +33,10 @@ public class PlayingFieldUI : MonoBehaviour {
         SetDefaultCardPositions();
     }
 
-    public void PlayDomainCard(SpellCard card) {
-        SpellFieldCardUI domainCardUI = Instantiate(spellCardUIPrefab);
+    public void PlayDomainCard(DomainCard card) {
+        DomainFieldCardUI domainCardUI = Instantiate(domainCardUIPrefab);
         domainCardUI.transform.parent = domainSlotOrigin;
+        domainCardUI.transform.localPosition = Vector3.zero;
         domainCardUI.Init(card);
         domainCard = domainCardUI;
     }

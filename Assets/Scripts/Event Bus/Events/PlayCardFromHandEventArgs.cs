@@ -1,11 +1,11 @@
 ﻿using System;
 
-public class PlayCreatureCardFromHandEventArgs : EventArgs {
+public class PlayCardFromHandEventArgs<T> : EventArgs where T : Card {
     private MatchPlayer player;
-    private CreatureCard card;
+    private T card;
     private int handIndex;
 
-    public PlayCreatureCardFromHandEventArgs(MatchPlayer player, CreatureCard card, int handIndex) {
+    public PlayCardFromHandEventArgs(MatchPlayer player, T card, int handIndex) {
         this.player = player;
         this.card = card;
         this.handIndex = handIndex;
@@ -13,7 +13,7 @@ public class PlayCreatureCardFromHandEventArgs : EventArgs {
 
     public MatchPlayer Player { get { return player; } }
 
-    public CreatureCard Card { get { return card; } }
+    public T Card { get { return card; } }
 
     public int HandIndex { get { return handIndex; } }
 }

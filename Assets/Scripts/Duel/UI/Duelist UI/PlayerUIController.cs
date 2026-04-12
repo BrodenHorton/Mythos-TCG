@@ -113,6 +113,7 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void PlayHandCard(object sender, HandCardEnteringPlayingFieldEventArgs args) {
+        TcgLogger.Log("PlayHandCard entered");
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (args.CardIndex < 0 || args.CardIndex >= player.Hand.Count)
@@ -120,6 +121,7 @@ public class PlayerUIController : DuelistUIController {
         if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, player))
             return;
 
+        TcgLogger.Log("PlayHandCard complete");
         duelManager.PlayCardFromHand(player, args.CardIndex);
     }
 

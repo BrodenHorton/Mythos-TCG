@@ -77,7 +77,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
             controllerByPlayerId[args.Target.PlayerId].RemoveDefender(args.Defender);
     }
 
-    public void UpdateCreatureFieldCard(object sender, PlayerCreatureCardEventArgs args) {
+    public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + args.Player.PlayerId);
 
@@ -85,7 +85,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
             controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
-    public void DestroyCreature(object sender, PlayerCreatureCardEventArgs args) {
+    public void DestroyCreature(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 

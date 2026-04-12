@@ -1,12 +1,11 @@
-﻿using System;
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Netcode;
 
-public struct SpellCardNetworkSerializable : INetworkSerializable {
+public struct DomainCardNetworkSerializable : INetworkSerializable {
     public FixedString128Bytes uuidStr;
     public int cardBaseIndex;
 
-    public SpellCardNetworkSerializable(FixedString128Bytes uuidStr, int cardBaseIndex) {
+    public DomainCardNetworkSerializable(FixedString128Bytes uuidStr, int cardBaseIndex) {
         this.uuidStr = uuidStr;
         this.cardBaseIndex = cardBaseIndex;
     }

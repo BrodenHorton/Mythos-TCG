@@ -22,6 +22,7 @@ public class DuelManager : NetworkBehaviour {
     private void Start() {
         GameManager.Instance.OnGameStart += InitializePlayers;
         EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCard;
+        EventBus.OnDomainCardSelectedForPlay += PlayDomainCard;
     }
 
     public void InitializePlayers(object sender, StartGameEventArgs args) {
@@ -70,7 +71,7 @@ public class DuelManager : NetworkBehaviour {
         player.Hand[handIndex].PlayCardFromHand(player, handIndex);
     }
 
-    public void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {
+    public void PlayCreatureCard(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
         PlayCreatureCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
@@ -87,6 +88,22 @@ public class DuelManager : NetworkBehaviour {
         card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
         card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
         player.PlayCreatureCardFromHand(card, handIndex);
+    }
+
+    public void PlayDomainCard(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
+        PlayDomainCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void PlayDomainCardFromHandServerRpc(int playerIndex, DomainCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+        PlayDomainCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlayDomainCardFromHandClientRpc(int playerIndex, DomainCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+        MatchPlayer player = Players[playerIndex];
+        DomainCard card = new DomainCard(cardNetworkSerializableObject);
+        player.PlayDomainCardFromHand(card, handIndex);
     }
 
     public void EndOfTurnRegenerateCreaturesHealth() {

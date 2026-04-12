@@ -94,6 +94,12 @@ public class PlayerUI : DuelistUI {
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
+        else if (card is DomainCard domainCard) {
+            DomainHandCardUI cardUI = Instantiate(domainCardPrefab, handOrigin);
+            cardUI.Init(domainCard);
+            cardUI.transform.Rotate(90f, 0, 0);
+            cardsInHand.Add(cardUI);
+        }
         else {
             NullHandCardUI cardUI = Instantiate(nullCardPrefab, handOrigin);
             cardUI.transform.Rotate(90f, 0, 0);

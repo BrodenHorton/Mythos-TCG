@@ -45,7 +45,7 @@ public partial class CreatureCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        EventBus.InvokeOnCreatureCardSelectedForPlay(this, new PlayCreatureCardFromHandEventArgs(player, this, handIndex));
+        EventBus.InvokeOnCreatureCardSelectedForPlay(this, new PlayCardFromHandEventArgs<CreatureCard>(player, this, handIndex));
     }
 
     public override int GetManaCost() {

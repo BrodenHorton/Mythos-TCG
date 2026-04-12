@@ -85,6 +85,7 @@ MonoBehaviour:
   domainCard: {fileID: 0}
   creatureCardUIPrefab: {fileID: 8696858695724869291, guid: 22c6877d40548284b8208578e672fe58, type: 3}
   spellCardUIPrefab: {fileID: 2365724326917806165, guid: 65603f203dde6f54da27889cd3168450, type: 3}
+  domainCardUIPrefab: {fileID: 4368443066705305381, guid: d59822a3cccd6f34982fe32cae9797e5, type: 3}
 --- !u!1 &8649806919628490686
 GameObject:
   m_ObjectHideFlags: 0

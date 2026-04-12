@@ -27,9 +27,12 @@ public class PlayingFieldPlayableArea : MonoBehaviour {
         if (playingFieldUI.PlayerId != args.PlayerUI.PlayerId)
             return;
 
+        TcgLogger.Log("Released hand card");
         playableAreaVisual.SetActive(false);
-        if (IsHoveringPlayableArea())
+        if (IsHoveringPlayableArea()) {
+            TcgLogger.Log("Released hand card over playable area");
             EventBus.InvokeOnHandCardEnteringPlayingField(this, new HandCardEnteringPlayingFieldEventArgs(playingFieldUI, args.CardUI, args.CardIndex));
+        }
     }
 
     private bool IsHoveringPlayableArea() {

@@ -43,14 +43,14 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         }
     }
 
-    private void PlayCreatureCard(object sender, PlayCreatureCardFromHandEventArgs args) {
+    private void PlayCreatureCard(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 
         controllerByPlayerId[args.Player.PlayerId].PlayCreatureCard(args.Card);
     }
 
-    public void PlayDomainCard(object sender, PlaySpellCardFromHandEventArgs args) {
+    public void PlayDomainCard(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 
@@ -109,7 +109,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         controllerByPlayerId[args.Target.PlayerId].PlayCreatureCard(args.Defender);
     }
 
-    public void UpdateCreatureFieldCard(object sender, PlayerCreatureCardEventArgs args) {
+    public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 
@@ -117,7 +117,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
-    public void DestroyCreature(object sender, PlayerCreatureCardEventArgs args) {
+    public void DestroyCreature(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 

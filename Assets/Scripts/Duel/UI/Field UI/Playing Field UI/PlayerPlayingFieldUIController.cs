@@ -23,7 +23,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.PlayCreatureCard(player, card);
     }
 
-    public override void PlayDomainCard(SpellCard card) {
+    public override void PlayDomainCard(DomainCard card) {
         playingFieldUI.PlayDomainCard(card);
     }
 
@@ -43,12 +43,12 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.UntapCreature(card);
     }
 
-    private void SelectCardDrag(object sender, CreatureFieldCardDragEventArgs args) {
+    private void SelectCardDrag(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
         if (!CanSelectAttacker(args) && !CanSelectDefender(args))
             args.IsCancelled = true;
     }
 
-    private bool CanSelectAttacker(CreatureFieldCardDragEventArgs args) {
+    private bool CanSelectAttacker(FieldCardDragEventArgs<CreatureFieldCardUI> args) {
         if (player != duelManager.LocalClientPlayer)
             return false;
         if (!duelManager.IsLocalClientPlayerTurn())
@@ -70,7 +70,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         return true;
     }
 
-    private bool CanSelectDefender(CreatureFieldCardDragEventArgs args) {
+    private bool CanSelectDefender(FieldCardDragEventArgs<CreatureFieldCardUI> args) {
         if (player != duelManager.LocalClientPlayer)
             return false;
         if (duelManager.IsLocalClientPlayerTurn())

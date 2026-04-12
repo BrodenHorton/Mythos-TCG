@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerPlayingFieldUI : PlayingFieldUI {
-    public event EventHandler<CreatureFieldCardDragEventArgs> OnSelectingCardDrag;
+    public event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnSelectingCardDrag;
 
     [Header("Card Drag")]
     [SerializeField] private float dragOffset;
@@ -63,7 +63,7 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
         if (!ContainsCreature(cardUI))
             return;
 
-        CreatureFieldCardDragEventArgs args = new CreatureFieldCardDragEventArgs(this, cardUI);
+        FieldCardDragEventArgs<CreatureFieldCardUI> args = new FieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI);
         OnSelectingCardDrag?.Invoke(this, args);
         if (args.IsCancelled)
             return;
@@ -84,7 +84,7 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
 
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        EventBus.InvokeOnReleaseCardDragPlayingField(this, new ReleaseCreatureFieldCardDragEventArgs(this, cardUI));
+        EventBus.InvokeOnReleaseCardDragPlayingField(this, new ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {

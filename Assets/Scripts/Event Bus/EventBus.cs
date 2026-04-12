@@ -1,30 +1,29 @@
 using System;
-using System.Data;
 
 public static class EventBus {
     // Duelist UI Actions
-    public static event EventHandler<PlayerCardEventArgs> OnCardDrawn;
+    public static event EventHandler<PlayerCardEventArgs<Card>> OnCardDrawn;
     public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
     // PlayerUI Card Drag
     public static event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
     public static event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
     public static event EventHandler<HandCardEnteringPlayingFieldEventArgs> OnHandCardEnteringPlayingField;
     // PlayingField Card Drag
-    public static event EventHandler<CreatureFieldCardDragEventArgs> OnStartCardDragPlayingField;
-    public static event EventHandler<ReleaseCreatureFieldCardDragEventArgs> OnReleaseCardDragPlayingField;
+    public static event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
+    public static event EventHandler<ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
     public static event EventHandler<CreatureFieldCardEnteringCombatFieldEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
     // Playing Cards
-    public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardSelectedForPlay;
-    public static event EventHandler<PlayCreatureCardFromHandEventArgs> OnCreatureCardPlayedFromHand;
-    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnSpellCardSelectedForPlay;
-    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnSpellCardPlayedFromHand;
-    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnDomainCardSelectedForPlay;
-    public static event EventHandler<PlaySpellCardFromHandEventArgs> OnDomainCardPlayedFromHand;
+    public static event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
+    public static event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
+    public static event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
+    public static event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
+    public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
+    public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardPlayedFromHand;
     // Player Status Changes
     public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Creature Status Changes
-    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureHealthChanged;
+    public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealthChanged;
     // Declaring and Undeclaring creatures
     public static event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
     public static event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
@@ -33,8 +32,8 @@ public static class EventBus {
     public static event EventHandler<SelectAttackerToDefendEventArgs> OnSelectAttackerToDefend;
     // Combat
     public static event EventHandler<AttackEventArgs> OnAttack;
-    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureDamaged;
-    public static event EventHandler<PlayerCreatureCardEventArgs> OnCreatureDestroyed;
+    public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDamaged;
+    public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
     public static event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
     public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
@@ -44,7 +43,7 @@ public static class EventBus {
     public static event EventHandler OnLocalClientPlayerReadyUp;
 
     #region Duelist UI Actions
-    public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs args) {
+    public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs<Card> args) {
         OnCardDrawn?.Invoke(sender, args);
     }
 
@@ -68,11 +67,11 @@ public static class EventBus {
     #endregion
 
     #region PlayingField Card Drag
-    public static void InvokeOnStartCardDragPlayingField(object sender, CreatureFieldCardDragEventArgs args) {
+    public static void InvokeOnStartCardDragPlayingField(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
         OnStartCardDragPlayingField?.Invoke(sender, args);
     }
 
-    public static void InvokeOnReleaseCardDragPlayingField(object sender, ReleaseCreatureFieldCardDragEventArgs args) {
+    public static void InvokeOnReleaseCardDragPlayingField(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCardDragPlayingField?.Invoke(sender, args);
     }
 
@@ -82,27 +81,27 @@ public static class EventBus {
     #endregion
 
     #region Playing Cards
-    public static void InvokeOnCreatureCardSelectedForPlay(object sender, PlayCreatureCardFromHandEventArgs args) {
+    public static void InvokeOnCreatureCardSelectedForPlay(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
         OnCreatureCardSelectedForPlay?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureCardPlayedFromHand(object sender, PlayCreatureCardFromHandEventArgs args) {
+    public static void InvokeOnCreatureCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
         OnCreatureCardPlayedFromHand?.Invoke(sender, args);
     }
 
-    public static void InvokeOnSpellCardSelectedForPlay(object sender, PlaySpellCardFromHandEventArgs args) {
+    public static void InvokeOnSpellCardSelectedForPlay(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
         OnSpellCardSelectedForPlay?.Invoke(sender, args);
     }
 
-    public static void InvokeOnSpellCardPlayedFromHand(object sender, PlaySpellCardFromHandEventArgs args) {
+    public static void InvokeOnSpellCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
         OnSpellCardPlayedFromHand?.Invoke(sender, args);
     }
 
-    public static void InvokeOnDomainCardSelectedForPlay(object sender, PlaySpellCardFromHandEventArgs args) {
+    public static void InvokeOnDomainCardSelectedForPlay(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         OnDomainCardSelectedForPlay?.Invoke(sender, args);
     }
 
-    public static void InvokeOnDomainCardPlayedFromHand(object sender, PlaySpellCardFromHandEventArgs args) {
+    public static void InvokeOnDomainCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         OnDomainCardPlayedFromHand?.Invoke(sender, args);
     }
     #endregion
@@ -118,7 +117,7 @@ public static class EventBus {
     #endregion
 
     #region Creature Status Changes
-    public static void InvokeOnCreatureHealthChanged(object sender, PlayerCreatureCardEventArgs args) {
+    public static void InvokeOnCreatureHealthChanged(object sender, PlayerCardEventArgs<CreatureCard> args) {
         OnCreatureHealthChanged?.Invoke(sender, args);
     }
     #endregion
@@ -150,11 +149,11 @@ public static class EventBus {
         OnAttack?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureDamaged(object sender, PlayerCreatureCardEventArgs args) {
+    public static void InvokeOnCreatureDamaged(object sender, PlayerCardEventArgs<CreatureCard> args) {
         OnCreatureDamaged?.Invoke(sender, args);
     }
 
-    public static void InvokeOnCreatureDestroyed(object sender, PlayerCreatureCardEventArgs args) {
+    public static void InvokeOnCreatureDestroyed(object sender, PlayerCardEventArgs<CreatureCard> args) {
         OnCreatureDestroyed?.Invoke(sender, args);
     }
 

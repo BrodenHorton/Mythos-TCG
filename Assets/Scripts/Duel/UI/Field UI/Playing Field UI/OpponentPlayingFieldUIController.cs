@@ -14,7 +14,7 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.PlayCreatureCard(player, card);
     }
 
-    public override void PlayDomainCard(SpellCard card) {
+    public override void PlayDomainCard(DomainCard card) {
         playingFieldUI.PlayDomainCard(card);
     }
 

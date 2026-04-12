@@ -1,11 +1,11 @@
 using System;
 
-public class CreatureFieldCardDragEventArgs : EventArgs {
+public class FieldCardDragEventArgs<T> : EventArgs where T : FieldCardUI {
     private PlayerPlayingFieldUI playingFieldUI;
-    private CreatureFieldCardUI cardUI;
+    private T cardUI;
     private bool isCancelled;
 
-    public CreatureFieldCardDragEventArgs(PlayerPlayingFieldUI playingFieldUI, CreatureFieldCardUI cardUI) {
+    public FieldCardDragEventArgs(PlayerPlayingFieldUI playingFieldUI, T cardUI) {
         this.playingFieldUI = playingFieldUI;
         this.cardUI = cardUI;
         isCancelled = false;
@@ -13,7 +13,7 @@ public class CreatureFieldCardDragEventArgs : EventArgs {
 
     public PlayerPlayingFieldUI PlayingFieldUI { get { return playingFieldUI; } }
 
-    public CreatureFieldCardUI CardUI { get { return cardUI; } }
+    public T CardUI { get { return cardUI; } }
 
     public bool IsCancelled { get { return isCancelled; } set { isCancelled = value; } }
 }

@@ -21,7 +21,7 @@ public class CombatFieldPlayableArea : MonoBehaviour {
         EventBus.OnReleaseCardDragPlayingField += PlayCardOnReleaseDrag;
     }
 
-    private void ShowPlayableAreaVisual(object sender, CreatureFieldCardDragEventArgs args) {
+    private void ShowPlayableAreaVisual(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
         if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
@@ -32,7 +32,7 @@ public class CombatFieldPlayableArea : MonoBehaviour {
         playableAreaVisual.SetActive(true);
     }
 
-    private void PlayCardOnReleaseDrag(object sender, ReleaseCreatureFieldCardDragEventArgs args) {
+    private void PlayCardOnReleaseDrag(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
         if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)

@@ -20,12 +20,10 @@ public class SpellCard : Card {
     }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
-        if (cardBase.SpellType == SpellType.Instant) {
+        if (!stateManager.CurrentState.CanPlaySetupCards()) {
             if (!stateManager.CurrentState.CanPlayCombatCards())
                 return false;
-        }
-        else {
-            if (!stateManager.CurrentState.CanPlaySetupCards())
+            else if (cardBase.SpellType != SpellType.Instant)
                 return false;
         }
         if (player.CurrentMana < cardBase.ManaCost)
@@ -39,10 +37,7 @@ public class SpellCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        if (cardBase.SpellType == SpellType.Domain)
-            EventBus.InvokeOnDomainCardSelectedForPlay(this, new PlaySpellCardFromHandEventArgs(player, this, handIndex));
-        else
-            EventBus.InvokeOnSpellCardSelectedForPlay(this, new PlaySpellCardFromHandEventArgs(player, this, handIndex));
+        EventBus.InvokeOnSpellCardSelectedForPlay(this, new PlayCardFromHandEventArgs<SpellCard>(player, this, handIndex));
     }
 
     public override int GetManaCost() {

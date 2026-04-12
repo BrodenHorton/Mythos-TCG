@@ -231,6 +231,7 @@ MonoBehaviour:
   cardsInHand: []
   creatureCardPrefab: {fileID: 6147231164332936400, guid: cf6a5725ea4823c4eaac7f033a9cef82, type: 3}
   spellCardPrefab: {fileID: 5094083861015089267, guid: c3036fe677f8497438c4a62fcf67299c, type: 3}
+  domainCardPrefab: {fileID: 2400238693149347805, guid: 37cbd70cf9edb504c9bde1e47d23e69b, type: 3}
   nullCardPrefab: {fileID: 625759080499668512, guid: da08aa9105a9ef24caa9ce349890a424, type: 3}
   handHoverOffset: {x: 0, y: 0.8, z: 0.85}
   cardHoverOffset: {x: 0, y: 0.05, z: 0.23}

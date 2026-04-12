@@ -18,7 +18,7 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
         EventBus.OnReleaseCardDragPlayingField += SelectAttackerToDefend;
     }
 
-    private void SelectAttackerToDefend(object sender, ReleaseCreatureFieldCardDragEventArgs args) {
+    private void SelectAttackerToDefend(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
         if (stateManager.CurrentState != stateManager.CombatPhase)
             return;
         if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)

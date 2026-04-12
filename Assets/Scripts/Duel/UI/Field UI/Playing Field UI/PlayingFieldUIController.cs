@@ -20,7 +20,7 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
 
     public abstract void PlayCreatureCard(CreatureCard card);
 
-    public abstract void PlayDomainCard(SpellCard card);
+    public abstract void PlayDomainCard(DomainCard card);
 
     public abstract void RemoveCreature(CreatureCard card);
 
