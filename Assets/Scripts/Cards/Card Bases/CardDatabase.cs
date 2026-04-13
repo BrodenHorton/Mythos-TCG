@@ -5,9 +5,9 @@ using UnityEngine;
 public class CardDatabase : MonoBehaviour {
     public static CardDatabase Instance { get; private set; }
 
-    [SerializeField] private List<CreatureCardBase> creatureCards;
-    [SerializeField] private List<SpellCardBase> spellCards;
-    [SerializeField] private List<DomainCardBase> domainCards;
+    [SerializeField] private CreatureCardBases creatureBases;
+    [SerializeField] private SpellCardBases spellBases;
+    [SerializeField] private DomainCardBases domainBases;
     
     private List<CardBase> cards;
 
@@ -22,9 +22,9 @@ public class CardDatabase : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
 
         cards = new List<CardBase>();
-        cards.AddRange(creatureCards);
-        cards.AddRange(spellCards);
-        cards.AddRange(domainCards);
+        cards.AddRange(creatureBases.Cards);
+        cards.AddRange(spellBases.Cards);
+        cards.AddRange(domainBases.Cards);
     }
 
     public CardBase GetCardByIndex(int index) {
@@ -50,24 +50,24 @@ public class CardDatabase : MonoBehaviour {
         if (index > cards.Count)
             throw new Exception("Card index Out of Bounds for index: " + index);
 
-        return creatureCards[index];
+        return creatureBases.Cards[index];
     }
 
     public CreatureCardBase GetCreatureCardByName(string name) {
         if (name == null)
             throw new Exception("Search by card name cannot be null");
 
-        for (int i = 0; i < creatureCards.Count; i++) {
-            if (name.ToLower() == creatureCards[i].CardName.ToLower())
-                return creatureCards[i];
+        for (int i = 0; i < creatureBases.Cards.Count; i++) {
+            if (name.ToLower() == creatureBases.Cards[i].CardName.ToLower())
+                return creatureBases.Cards[i];
         }
 
         throw new Exception("Unable to find card with name: " + name);
     }
 
     public int GetIndexOf(CreatureCardBase creatureCard) {
-        for(int i = 0; i < creatureCards.Count; i++) {
-            if (creatureCards[i] == creatureCard)
+        for(int i = 0; i < creatureBases.Cards.Count; i++) {
+            if (creatureBases.Cards[i] == creatureCard)
                 return i;
         }
 
@@ -75,27 +75,27 @@ public class CardDatabase : MonoBehaviour {
     }
 
     public SpellCardBase GetSpellCardByIndex(int index) {
-        if (index > spellCards.Count)
+        if (index > spellBases.Cards.Count)
             throw new Exception("Card index Out of Bounds for index: " + index);
 
-        return spellCards[index];
+        return spellBases.Cards[index];
     }
 
     public SpellCardBase GetSpellCardByName(string name) {
         if (name == null)
             throw new Exception("Search by card name cannot be null");
 
-        for (int i = 0; i < spellCards.Count; i++) {
-            if (name.ToLower() == spellCards[i].CardName.ToLower())
-                return spellCards[i];
+        for (int i = 0; i < spellBases.Cards.Count; i++) {
+            if (name.ToLower() == spellBases.Cards[i].CardName.ToLower())
+                return spellBases.Cards[i];
         }
 
         throw new Exception("Unable to find card with name: " + name);
     }
 
     public int GetIndexOf(SpellCardBase spellCard) {
-        for (int i = 0; i < spellCards.Count; i++) {
-            if (spellCards[i] == spellCard)
+        for (int i = 0; i < spellBases.Cards.Count; i++) {
+            if (spellBases.Cards[i] == spellCard)
                 return i;
         }
 
@@ -103,27 +103,27 @@ public class CardDatabase : MonoBehaviour {
     }
 
     public DomainCardBase GetDomainCardByIndex(int index) {
-        if (index > domainCards.Count)
+        if (index > domainBases.Cards.Count)
             throw new Exception("Card index Out of Bounds for index: " + index);
 
-        return domainCards[index];
+        return domainBases.Cards[index];
     }
 
     public DomainCardBase GetDomainCardByName(string name) {
         if (name == null)
             throw new Exception("Search by card name cannot be null");
 
-        for (int i = 0; i < domainCards.Count; i++) {
-            if (name.ToLower() == domainCards[i].CardName.ToLower())
-                return domainCards[i];
+        for (int i = 0; i < domainBases.Cards.Count; i++) {
+            if (name.ToLower() == domainBases.Cards[i].CardName.ToLower())
+                return domainBases.Cards[i];
         }
 
         throw new Exception("Unable to find card with name: " + name);
     }
 
     public int GetIndexOf(DomainCardBase spellCard) {
-        for (int i = 0; i < domainCards.Count; i++) {
-            if (domainCards[i] == spellCard)
+        for (int i = 0; i < domainBases.Cards.Count; i++) {
+            if (domainBases.Cards[i] == spellCard)
                 return i;
         }
 
@@ -132,9 +132,9 @@ public class CardDatabase : MonoBehaviour {
 
     public List<CardBase> Cards { get { return cards; } }
 
-    public List<CreatureCardBase> CreatureCards { get { return creatureCards; } }
+    public List<CreatureCardBase> CreatureCards { get { return creatureBases.Cards; } }
 
-    public List<SpellCardBase> SpellCards { get { return spellCards; } }
+    public List<SpellCardBase> SpellCards { get { return spellBases.Cards; } }
 
-    public List<DomainCardBase> DomainCards { get { return domainCards; } }
+    public List<DomainCardBase> DomainCards { get { return domainBases.Cards; } }
 }

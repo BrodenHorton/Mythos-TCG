@@ -1544,6 +1544,10 @@ PrefabInstance:
       propertyPath: playerIndex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3689575478617416704, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_Name
       value: Opponent Playing Field UI
@@ -1551,6 +1555,10 @@ PrefabInstance:
     - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921344399750140061, guid: a3e764a6402af2547be6b938def11486, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8641841102797122468, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1657,22 +1665,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec1c059ae876832419f644ad140a685e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cards:
-  - {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
-  - {fileID: 11400000, guid: f13b282707b13d94f937dd29ef663bc4, type: 2}
-  - {fileID: 11400000, guid: 68aafd42cede4eb40942e7c77b728c6e, type: 2}
-  - {fileID: 11400000, guid: 8ee001a240ce3d947abca3a1272af321, type: 2}
-  - {fileID: 11400000, guid: 1cdd9111a7832ae439c09351c9b6db3c, type: 2}
-  - {fileID: 11400000, guid: 70ad5fe5db2c1844597d327fcc2020be, type: 2}
-  creatureCards:
-  - {fileID: 11400000, guid: 464bef3e314fa5a40aa11aaa4b9fd7b3, type: 2}
-  - {fileID: 11400000, guid: f13b282707b13d94f937dd29ef663bc4, type: 2}
-  - {fileID: 11400000, guid: 68aafd42cede4eb40942e7c77b728c6e, type: 2}
-  - {fileID: 11400000, guid: 8ee001a240ce3d947abca3a1272af321, type: 2}
-  spellCards:
-  - {fileID: 11400000, guid: 1cdd9111a7832ae439c09351c9b6db3c, type: 2}
-  domainCards:
-  - {fileID: 11400000, guid: 70ad5fe5db2c1844597d327fcc2020be, type: 2}
+  creatureBases: {fileID: 11400000, guid: 4246183e2b902e6498e7983b88078318, type: 2}
+  spellBases: {fileID: 11400000, guid: 790dd841ec504224b8bb017fc501e6a9, type: 2}
+  domainBases: {fileID: 11400000, guid: d2cc910ce5a6a26439318f86dbf6d109, type: 2}
 --- !u!1 &745788449
 GameObject:
   m_ObjectHideFlags: 0
