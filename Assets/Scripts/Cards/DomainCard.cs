@@ -22,6 +22,8 @@ public class DomainCard : Card {
             return false;
         if (player.CurrentMana < cardBase.ManaCost)
             return false;
+        if (player.Domain != null)
+            return false;
 
         return true;
     }

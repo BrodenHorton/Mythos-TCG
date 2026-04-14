@@ -16,21 +16,19 @@ public class DuelStateManager : NetworkBehaviour {
     private DuelManager duelManager;
 
     private void Awake() {
-        duelManager = GetComponent<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("DuelManager not found on GameObject");
-        CombatManager combatManager = FindFirstObjectByType<CombatManager>();
-        if(combatManager == null)
-            throw new Exception("Unable to find GameObject with CombatManager component");
-
         currentState = initializationPhase;
     }
 
     private void Start() {
-        if (!IsServer)
-            return;
+        duelManager = GetComponent<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("DuelManager not found on GameObject");
+        CombatManager combatManager = FindFirstObjectByType<CombatManager>();
+        if (combatManager == null)
+            throw new Exception("Unable to find GameObject with CombatManager component");
 
-        DuelManager.OnPlayersInitializationFinished += StartStateMachine;
+        if (IsServer)
+            DuelManager.OnPlayersInitializationFinished += StartStateMachine;
     }
 
     private void Update() {
