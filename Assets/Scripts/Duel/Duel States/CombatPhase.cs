@@ -8,11 +8,8 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnCombatPhaseFinished;
 
     [SerializeField] private DuelStateManager stateManager;
+    [SerializeField] private CombatStateManager combatStateManager;
     [SerializeField] private CombatManager combatManager;
-
-    private void Start() {
-        
-    }
 
     public void EnterState() {
         Debug.Log("Entered Combat Phase");
@@ -34,11 +31,15 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     }
 
     public bool CanPlaySetupCards() {
-        return false;
+        return combatStateManager.CurrentState.CanPlaySetupCards();
     }
 
-    public bool CanPlayCombatCards() {
-        return true;
+    public bool CanPlaySpellCards() {
+        return combatStateManager.CurrentState.CanPlaySpellCards();
+    }
+
+    public bool CanDeclareCombatants() {
+        return combatStateManager.CurrentState.CanDeclareCombatants();
     }
 }
 

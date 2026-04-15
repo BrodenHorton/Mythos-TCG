@@ -1,11 +1,7 @@
 using UnityEngine;
 
-public interface DuelState {
+public interface DuelState : PlayableState {
     void EnterState();
 
     void UpdateState();
-
-    bool CanPlaySetupCards();
-
-    bool CanPlayCombatCards();
 }

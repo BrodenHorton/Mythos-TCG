@@ -35,7 +35,7 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
         return true;
     }
 
-    public bool CanPlayCombatCards() {
+    public bool CanDeclareCombatants() {
         return true;
     }
 }

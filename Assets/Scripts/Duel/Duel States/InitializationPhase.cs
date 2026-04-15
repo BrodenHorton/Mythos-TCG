@@ -29,7 +29,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         return false;
     }
 
-    public bool CanPlayCombatCards() {
+    public bool CanDeclareCombatants() {
         return false;
     }
 }

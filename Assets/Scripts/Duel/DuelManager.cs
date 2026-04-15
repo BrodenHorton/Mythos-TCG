@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 
 public class DuelManager : NetworkBehaviour {
     public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitialization;

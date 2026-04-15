@@ -81,4 +81,16 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     private void SwitchToDeclareSpellsClientRpc() {
         combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
     }
+
+    public bool CanPlaySetupCards() {
+        return false;
+    }
+
+    public bool CanPlaySpellCards() {
+        return false;
+    }
+
+    public bool CanDeclareCombatants() {
+        return false;
+    }
 }

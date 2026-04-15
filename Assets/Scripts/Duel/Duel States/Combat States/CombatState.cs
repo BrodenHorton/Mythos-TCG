@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public interface CombatState {
+public interface CombatState : PlayableState {
     void EnterState();
 
     void UpdateState();
