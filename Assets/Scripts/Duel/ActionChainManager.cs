@@ -38,7 +38,7 @@ public class ActionChainManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    private void AddAction() {
+    private void AddActionServerRpc() {
 
     }
 }

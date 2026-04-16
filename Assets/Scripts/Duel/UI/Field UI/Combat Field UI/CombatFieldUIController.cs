@@ -9,6 +9,7 @@ public class CombatFieldUIController : NetworkBehaviour {
     protected MatchPlayer target;
     protected DuelManager duelManager;
     protected DuelStateManager stateManager;
+    protected CombatStateManager combatStateManager;
 
     protected virtual void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
@@ -17,6 +18,9 @@ public class CombatFieldUIController : NetworkBehaviour {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
 
         combatFieldUI.OnSelectFieldCard += SelectUndeclareAttacker;
         combatFieldUI.OnSelectFieldCard += SelectUndeclareDefender;
@@ -68,9 +72,7 @@ public class CombatFieldUIController : NetworkBehaviour {
     private void SelectUndeclareAttacker(object sender, CombatFieldCardSelectEventArgs args) {
         if (!duelManager.IsLocalClientPlayerTurn())
             return;
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
         if (args.CardUI == null)
             return;
@@ -101,9 +103,7 @@ public class CombatFieldUIController : NetworkBehaviour {
             return;
         if (target != duelManager.LocalClientPlayer)
             return;
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+        if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
         if (args.CardUI == null)
             return;

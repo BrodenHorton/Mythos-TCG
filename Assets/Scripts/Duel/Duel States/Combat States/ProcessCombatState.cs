@@ -3,8 +3,17 @@ using UnityEngine;
 using Unity.Netcode;
 
 public class ProcessCombatState : NetworkBehaviour, CombatState {
-    [SerializeField] private CombatStateManager combatStateManager;
-    [SerializeField] private CombatManager combatManager;
+    private CombatStateManager combatStateManager;
+    private CombatManager combatManager;
+
+    private void Start() {
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
+        combatManager = FindFirstObjectByType<CombatManager>();
+        if (combatManager == null)
+            throw new Exception("Could not find CombatManager object");
+    }
 
     public void EnterState() {
         if (IsServer) {

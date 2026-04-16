@@ -56,7 +56,7 @@ public class PlayerUIController : DuelistUIController {
     private void SetSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
         if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
             return;
-        if (!stateManager.CurrentState.CanPlaySetupCards() && !stateManager.CurrentState.CanDeclareCombatants())
+        if (!stateManager.CurrentState.CanPlaySetupCards() && !stateManager.CurrentState.CanPlaySpellCards())
             return;
 
         SetSelectableCards();

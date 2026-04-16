@@ -4,11 +4,17 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class InitializationPhase : NetworkBehaviour, DuelState {
+    public static readonly int INITIAL_HAND_SIZE = 5;
+
     public event EventHandler OnInitializationPhase;
 
-    [SerializeField] private DuelStateManager stateManager;
+    private DuelStateManager stateManager;
 
-    private int initialHandSize = 5;
+    private void Start() {
+        stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find DuelStateManager object");
+    }
 
     public void EnterState() {
         Debug.Log("Entered Initialization Phase");
@@ -17,7 +23,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         player.ShuffleDeck();
         List<MatchPlayer> players = stateManager.DuelManager.Players;
         for(int i = 0; i < players.Count; i++) {
-            for (int j = 0; j < initialHandSize; j++)
+            for (int j = 0; j < INITIAL_HAND_SIZE; j++)
                 players[i].DrawCard();
         }
         stateManager.SwitchState(stateManager.UntapPhase);

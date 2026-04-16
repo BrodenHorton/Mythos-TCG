@@ -7,14 +7,26 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     public event EventHandler<PlayerEventArgs> OnStartDeclareDefenders;
     public event EventHandler<PlayerEventArgs> OnSetDeclareDefeners;
 
-    [SerializeField] private CombatStateManager combatStateManager;
-    [SerializeField] private DuelManager duelManager;
-    [SerializeField] private CombatManager combatManager;
+    private CombatStateManager combatStateManager;
+    private DuelManager duelManager;
+    private CombatManager combatManager;
 
     private List<ulong> readyPlayers;
 
-    private void Start() {
+    private void Awake() {
         readyPlayers = new List<ulong>();
+    }
+
+    private void Start() {
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
+        duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
+        combatManager = FindFirstObjectByType<CombatManager>();
+        if (combatManager == null)
+            throw new Exception("Could not find CombatManager object");
     }
 
     public void EnterState() {

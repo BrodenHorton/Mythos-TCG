@@ -7,12 +7,16 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     [SerializeField] private GameObject playableAreaVisual;
 
     private DuelStateManager stateManager;
+    private CombatStateManager combatStateManager;
     private Camera cam;
 
     private void Start() {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
 
         cam = Camera.main;
         playableAreaVisual.SetActive(false);
@@ -22,9 +26,7 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     }
 
     private void ShowPlayableAreaVisual(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
@@ -33,9 +35,7 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     }
 
     private void PlayCardOnReleaseDrag(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;

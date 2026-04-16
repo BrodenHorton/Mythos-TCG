@@ -5,6 +5,7 @@ using UnityEngine;
 public class CombatFieldAttackerSelection : MonoBehaviour {
     private CombatFieldUI combatFieldUI;
     private DuelStateManager stateManager;
+    private CombatStateManager combatStateManager;
     private Camera cam;
 
     private void Start() {
@@ -12,6 +13,9 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
 
         cam = Camera.main;
 
@@ -19,9 +23,7 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
     }
 
     private void SelectAttackerToDefend(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+        if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
         if (combatFieldUI.TargetPlayerId != args.PlayingFieldUI.PlayerId)
             return;

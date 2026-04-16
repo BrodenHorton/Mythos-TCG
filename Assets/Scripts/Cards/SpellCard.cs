@@ -20,12 +20,8 @@ public class SpellCard : Card {
     }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
-        if (!stateManager.CurrentState.CanPlaySetupCards()) {
-            if (!stateManager.CurrentState.CanDeclareCombatants())
-                return false;
-            else if (cardBase.SpellType != SpellType.Instant)
-                return false;
-        }
+        if (!stateManager.CurrentState.CanPlaySpellCards())
+            return false;
         if (player.CurrentMana < cardBase.ManaCost)
             return false;
 

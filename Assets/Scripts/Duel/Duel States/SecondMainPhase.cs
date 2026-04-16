@@ -5,7 +5,13 @@ using UnityEngine;
 public class SecondMainPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnSecondMainPhase;
 
-    [SerializeField] private DuelStateManager stateManager;
+    private DuelStateManager stateManager;
+
+    private void Start() {
+        stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find DuelStateManager object");
+    }
 
     public void EnterState() {
         Debug.Log("Entered Second Main Phase");

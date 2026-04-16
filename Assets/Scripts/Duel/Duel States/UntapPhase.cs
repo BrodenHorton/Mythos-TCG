@@ -5,7 +5,13 @@ using UnityEngine;
 public class UntapPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnUntapPhase;
 
-    [SerializeField] private DuelStateManager stateManager;
+    private DuelStateManager stateManager;
+
+    private void Start() {
+        stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find DuelStateManager object");
+    }
 
     public void EnterState() {
         Debug.Log("Entered Untap Phase");

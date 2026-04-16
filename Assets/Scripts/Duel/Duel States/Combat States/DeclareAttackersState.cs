@@ -5,7 +5,13 @@ using UnityEngine;
 public class DeclareAttackersState : MonoBehaviour, CombatState {
     public event EventHandler<PlayerEventArgs> OnStartDeclareAttackers;
 
-    [SerializeField] private CombatStateManager combatStateManager;
+    private CombatStateManager combatStateManager;
+
+    private void Start() {
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
+    }
 
     public void EnterState() {
         if (combatStateManager.DuelManager.IsLocalClientPlayerTurn())

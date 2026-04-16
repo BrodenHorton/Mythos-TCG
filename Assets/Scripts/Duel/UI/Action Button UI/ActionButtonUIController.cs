@@ -7,6 +7,7 @@ public class ActionButtonUIController : MonoBehaviour {
 
     private DuelManager duelManager;
     private DuelStateManager stateManager;
+    private CombatStateManager combatStateManager;
     private Camera cam;
 
     private void Start() {
@@ -16,6 +17,9 @@ public class ActionButtonUIController : MonoBehaviour {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
 
         cam = Camera.main;
 
@@ -23,9 +27,9 @@ public class ActionButtonUIController : MonoBehaviour {
         playerInputActions.Player.Select.performed += ButtonPressedCheck;
 
         stateManager.FirstMainPhase.OnFirstMainPhase += FirstMainPhaseAction;
-        stateManager.CombatPhase.OnStartDeclareAttackers += CombatPhaseDeclareAttackersAction;
-        stateManager.CombatPhase.OnStartDeclareDefenders += CombatPhaseDeclareDefendersAction;
-        stateManager.CombatPhase.OnSetDeclareDefeners += CombatPhaseSetDefenders;
+        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += CombatPhaseDeclareAttackersAction;
+        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += CombatPhaseDeclareDefendersAction;
+        combatStateManager.DeclareDefendersState.OnSetDeclareDefeners += CombatPhaseSetDefenders;
         EventBus.OnLocalClientPlayerReadyUp += SetInactiveAfterLocalClientPlayerReadyUp;
         stateManager.SecondMainPhase.OnSecondMainPhase += SecondMainPhaseAction;
         duelManager.OnNextPlayerTurn += SetActionButtonInactiveOpponentsTurn;
@@ -36,9 +40,9 @@ public class ActionButtonUIController : MonoBehaviour {
         playerInputActions.Player.Select.performed -= ButtonPressedCheck;
 
         stateManager.FirstMainPhase.OnFirstMainPhase -= FirstMainPhaseAction;
-        stateManager.CombatPhase.OnStartDeclareAttackers -= CombatPhaseDeclareAttackersAction;
-        stateManager.CombatPhase.OnStartDeclareDefenders -= CombatPhaseDeclareDefendersAction;
-        stateManager.CombatPhase.OnSetDeclareDefeners -= CombatPhaseSetDefenders;
+        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers -= CombatPhaseDeclareAttackersAction;
+        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders -= CombatPhaseDeclareDefendersAction;
+        combatStateManager.DeclareDefendersState.OnSetDeclareDefeners -= CombatPhaseSetDefenders;
         EventBus.OnLocalClientPlayerReadyUp -= SetInactiveAfterLocalClientPlayerReadyUp;
         stateManager.SecondMainPhase.OnSecondMainPhase -= SecondMainPhaseAction;
         duelManager.OnNextPlayerTurn -= SetActionButtonInactiveOpponentsTurn;

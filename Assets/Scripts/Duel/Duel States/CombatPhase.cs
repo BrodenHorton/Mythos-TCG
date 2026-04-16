@@ -7,8 +7,17 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnCombatPhase;
     public event EventHandler<PlayerEventArgs> OnCombatPhaseFinished;
 
-    [SerializeField] private DuelStateManager stateManager;
-    [SerializeField] private CombatStateManager combatStateManager;
+    private DuelStateManager stateManager;
+    private CombatStateManager combatStateManager;
+
+    private void Start() {
+        combatStateManager = FindFirstObjectByType<CombatStateManager>();
+        if (combatStateManager == null)
+            throw new Exception("Could not find CombatStateManager object");
+        stateManager = FindFirstObjectByType<DuelStateManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find DuelStateManager object");
+    }
 
     public void EnterState() {
         Debug.Log("Entered Combat Phase");

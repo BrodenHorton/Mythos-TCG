@@ -53,9 +53,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return false;
         if (!duelManager.IsLocalClientPlayerTurn())
             return false;
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return false;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return false;
         if (args.CardUI == null)
             return false;
@@ -75,9 +73,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return false;
         if (duelManager.IsLocalClientPlayerTurn())
             return false;
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return false;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+        if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return false;
         if (args.CardUI == null)
             return false;
@@ -93,9 +89,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     private void DeclareAttacker(object sender, CreatureFieldCardEnteringCombatFieldEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return;
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareAttackers)
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
         CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
@@ -123,9 +117,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
         if (player != duelManager.LocalClientPlayer)
             return;
-        if (stateManager.CurrentState != stateManager.CombatPhase)
-            return;
-        if (stateManager.CombatPhase.CombateState != CombatPhase.CombatState.DeclareDefenders)
+        if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
         if (args.CombatFieldUI.TargetPlayerId != player.PlayerId)
             return;
