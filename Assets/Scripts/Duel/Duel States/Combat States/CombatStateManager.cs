@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public class CombatStateManager : MonoBehaviour {
@@ -32,6 +33,16 @@ public class CombatStateManager : MonoBehaviour {
     public void SwitchState(CombatState state) {
         currentState = state;
         currentState.EnterState();
+    }
+
+    [Rpc(SendTo.Server)]
+    public void StartCombatServerRpc() {
+        StartCombatClientRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void StartCombatClientRpc() {
+        SwitchState(declareAttackersState);
     }
 
     public DuelManager DuelManager { get { return duelManager; } }

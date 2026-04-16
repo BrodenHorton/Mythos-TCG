@@ -2,6 +2,4 @@
     bool CanPlaySetupCards();
 
     bool CanPlaySpellCards();
-
-    bool CanDeclareCombatants();
 }

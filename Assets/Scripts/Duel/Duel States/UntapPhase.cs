@@ -24,7 +24,7 @@ public class UntapPhase : NetworkBehaviour, DuelState {
         return false;
     }
 
-    public bool CanDeclareCombatants() {
+    public bool CanPlaySpellCards() {
         return false;
     }
 }

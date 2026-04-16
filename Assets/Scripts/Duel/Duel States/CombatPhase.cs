@@ -9,20 +9,26 @@ public class CombatPhase : NetworkBehaviour, DuelState {
 
     [SerializeField] private DuelStateManager stateManager;
     [SerializeField] private CombatStateManager combatStateManager;
-    [SerializeField] private CombatManager combatManager;
 
     public void EnterState() {
         Debug.Log("Entered Combat Phase");
         OnCombatPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        // TODO: Start CombatStateManager
+        if(IsServer) {
+            combatStateManager.OutOfCombatState.OnOutOfCombatEntered += SwitchToSecondMainPhase;
+            combatStateManager.StartCombatServerRpc();
+        }
     }
 
     public void UpdateState() { }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void ProcessCombatClientRpc() {
-        combatManager.ProcessCombat();
-        OnCombatPhaseFinished?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
+    private void SwitchToSecondMainPhase(object sender, EventArgs args) {
+        SwitchToSecondMainPhaseServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SwitchToSecondMainPhaseServerRpc() {
+        combatStateManager.OutOfCombatState.OnOutOfCombatEntered -= SwitchToSecondMainPhase;
+        SwitchToSecondMainPhaseClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -36,10 +42,6 @@ public class CombatPhase : NetworkBehaviour, DuelState {
 
     public bool CanPlaySpellCards() {
         return combatStateManager.CurrentState.CanPlaySpellCards();
-    }
-
-    public bool CanDeclareCombatants() {
-        return combatStateManager.CurrentState.CanDeclareCombatants();
     }
 }
 

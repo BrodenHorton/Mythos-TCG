@@ -25,9 +25,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         }
     }
 
-    public void UpdateState() {
-
-    }
+    public void UpdateState() { }
 
     [Rpc(SendTo.Server)]
     private void StartDefenderDeclarationServerRpc() {
@@ -90,7 +88,11 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         return false;
     }
 
-    public bool CanDeclareCombatants() {
+    public bool CanDeclareAttackers() {
         return false;
+    }
+
+    public bool CanDeclareDefenders() {
+        return true;
     }
 }

@@ -29,4 +29,20 @@ public class DeclareAttackersState : MonoBehaviour, CombatState {
     private void SwitchToDeclareDefendersClientRpc() {
         combatStateManager.SwitchState(combatStateManager.DeclareDefendersState);
     }
+
+    public bool CanPlaySetupCards() {
+        return false;
+    }
+
+    public bool CanPlaySpellCards() {
+        return false;
+    }
+
+    public bool CanDeclareAttackers() {
+        return true;
+    }
+
+    public bool CanDeclareDefenders() {
+        return false;
+    }
 }

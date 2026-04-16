@@ -12,12 +12,20 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
 
     private List<ulong> readyPlayers;
 
-    public void EnterState() {
-
+    private void Awake() {
+        readyPlayers = new List<ulong>();
     }
 
-    public void UpdateState() {
+    public void EnterState() {
+        if (IsServer)
+            SwitchToProcessCombatClientRpc();
+    }
 
+    public void UpdateState() { }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SwitchToProcessCombatClientRpc() {
+        combatStateManager.SwitchState(combatStateManager.ProcessCombatState);
     }
 
     public bool CanPlaySetupCards() {
@@ -28,7 +36,11 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         return true;
     }
 
-    public bool CanDeclareCombatants() {
+    public bool CanDeclareAttackers() {
+        return false;
+    }
+
+    public bool CanDeclareDefenders() {
         return false;
     }
 }
