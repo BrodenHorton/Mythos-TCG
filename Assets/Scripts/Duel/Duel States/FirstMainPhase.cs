@@ -16,13 +16,16 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered First Main Phase");
         OnFirstMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
+        if (stateManager.DuelManager.IsLocalClientPlayerTurn()) {
+            TcgLogger.Log("Added switch to combat phase action to action button");
             EventBus.OnActionButtonPressed += NextPhase;
+        }
     }
 
     public void UpdateState() { }
 
     private void NextPhase(object sender, EventArgs args) {
+        TcgLogger.Log("Action button pressed for going to combat phase");
         EventBus.OnActionButtonPressed -= NextPhase;
         SwitchToCombatPhaseRpc();
     }

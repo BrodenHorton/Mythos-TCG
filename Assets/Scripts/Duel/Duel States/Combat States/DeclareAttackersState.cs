@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class DeclareAttackersState : MonoBehaviour, CombatState {
+public class DeclareAttackersState : NetworkBehaviour, CombatState {
     public event EventHandler<PlayerEventArgs> OnStartDeclareAttackers;
 
     private CombatStateManager combatStateManager;
@@ -14,8 +14,11 @@ public class DeclareAttackersState : MonoBehaviour, CombatState {
     }
 
     public void EnterState() {
-        if (combatStateManager.DuelManager.IsLocalClientPlayerTurn())
+        TcgLogger.Log("DeclareAttackersState Entered");
+        if (combatStateManager.DuelManager.IsLocalClientPlayerTurn()) {
+            TcgLogger.Log("Switch to DeclareDefendersState action added to action button");
             EventBus.OnActionButtonPressed += SwitchToDeclareDefenders;
+        }
         OnStartDeclareAttackers?.Invoke(this, new PlayerEventArgs(combatStateManager.DuelManager.GetCurrentPlayerTurn()));
     }
 

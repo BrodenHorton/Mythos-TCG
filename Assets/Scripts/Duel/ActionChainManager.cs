@@ -5,15 +5,17 @@ using Unity.Netcode;
 public class ActionChainManager : NetworkBehaviour {
     public event EventHandler<ulong> OnActionChainStart;
     public event EventHandler<ulong> OnActionChainUpdate;
-    public event EventHandler<ulong> OnActionChainFinished;
+    public event EventHandler OnActionChainFinished;
 
     private DuelManager duelManager;
     private int startingIndex;
     private int currentIndex;
-    private Stack<SpellCard> actionChain; // Create a class that holds a spell the initiator and its target
+    private Stack<SpellCardAction> actionChain;
 
     private void Awake() {
-        actionChain = new Stack<SpellCard>();
+        startingIndex = 0;
+        currentIndex = 0;
+        actionChain = new Stack<SpellCardAction>();
     }
 
     private void Start() {
@@ -21,24 +23,89 @@ public class ActionChainManager : NetworkBehaviour {
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
 
-        // TODO: Listen for a PlayCard event then start an action chain if the card played isn't an Instant
+        EventBus.OnSpellCardPlayedFromHand += AddAction;
         // TODO: Listen for a AddActionToActionChain event
     }
 
+    private void AddAction(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        if (args.Card.SpellType == SpellType.Instant)
+            return;
+        if (args.Card.SpellType == SpellType.Slow && actionChain.Count != 0)
+            throw new Exception("Slow spells can only start an action chain");
+
+        if (actionChain.Count == 0)
+            StartActionChainServerRpc(duelManager.GetPlayerIndex(args.Player), args.Card.GetNetworkSerializableObject());
+        else
+            AddActionServerRpc(args.Card.GetNetworkSerializableObject());
+    }
+
     [Rpc(SendTo.Server)]
-    private void StartActionChainServerRpc(int playerIndex) {
-        StartActionChainClientRpc(playerIndex);
+    private void StartActionChainServerRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
+        StartActionChainClientRpc(playerIndex, spellCardNetworkSerializable);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void StartActionChainClientRpc(int playerIndex) {
+    private void StartActionChainClientRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
         startingIndex = playerIndex;
         currentIndex = playerIndex;
         OnActionChainStart?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
+        SpellCard card = new SpellCard(spellCardNetworkSerializable);
+        SpellCardAction action = new SpellCardAction(card, duelManager.Players[playerIndex]);
+        actionChain.Push(action);
+        OnActionChainUpdate?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
+        currentIndex++;
     }
 
     [Rpc(SendTo.Server)]
-    private void AddActionServerRpc() {
-
+    private void AddActionServerRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
+        AddActionClientRpc(spellCardNetworkSerializable);
     }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void AddActionClientRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
+        SpellCard card = new SpellCard(spellCardNetworkSerializable);
+        SpellCardAction action = new SpellCardAction(card, duelManager.Players[currentIndex]);
+        actionChain.Push(action);
+        OnActionChainUpdate?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
+        startingIndex = currentIndex;
+        currentIndex++;
+    }
+
+    [Rpc(SendTo.Server)]
+    private void PassActionServerRpc() {
+        PassActionClientRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PassActionClientRpc() {
+        currentIndex++;
+
+        if (currentIndex == startingIndex)
+            ExecuteActionChain();
+    }
+
+    private void ExecuteActionChain() {
+        while(actionChain.Count > 0) {
+            // DuelManager.ExecuteSpellCard
+        }
+        OnActionChainFinished?.Invoke(this, EventArgs.Empty);
+    }
+}
+
+public class SpellCardAction {
+    private SpellCard card;
+    private MatchPlayer initiator;
+    private MatchPlayer target;
+
+    public SpellCardAction(SpellCard card, MatchPlayer initiator, MatchPlayer target = null) {
+        this.card = card;
+        this.initiator = initiator;
+        this.target = target;
+    }
+
+    public SpellCard Card { get { return card; } }
+
+    public MatchPlayer Initiator { get { return initiator; } }
+
+    public MatchPlayer Target { get { return target; } }
 }

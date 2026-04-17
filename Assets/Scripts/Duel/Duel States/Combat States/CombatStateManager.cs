@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class CombatStateManager : MonoBehaviour {
+public class CombatStateManager : NetworkBehaviour {
     [SerializeField] private OutOfCombatState outOfCombatState;
     [SerializeField] private DeclareAttackersState declareAttackersState;
     [SerializeField] private DeclareDefendersState declareDefendersState;
