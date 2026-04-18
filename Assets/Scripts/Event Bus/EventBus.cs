@@ -19,6 +19,7 @@ public static class EventBus {
     public static event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
     public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
     public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardPlayedFromHand;
+    public static event EventHandler<PlayerCardEventArgs<SpellCard>> OnActionChainSpellCardPlayed;
     // Player Status Changes
     public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
@@ -103,6 +104,10 @@ public static class EventBus {
 
     public static void InvokeOnDomainCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         OnDomainCardPlayedFromHand?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnActionChainSpellCardPlayed(object sender, PlayerCardEventArgs<SpellCard> args) {
+        OnActionChainSpellCardPlayed?.Invoke(sender, args);
     }
     #endregion
 

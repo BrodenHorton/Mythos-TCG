@@ -23,13 +23,12 @@ public class ActionChainManager : NetworkBehaviour {
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
 
-        EventBus.OnSpellCardPlayedFromHand += AddAction;
-        // TODO: Listen for a AddActionToActionChain event
+        EventBus.OnActionChainSpellCardPlayed += AddAction;
     }
 
-    private void AddAction(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+    private void AddAction(object sender, PlayerCardEventArgs<SpellCard> args) {
         if (args.Card.SpellType == SpellType.Instant)
-            return;
+            throw new Exception("Instant spells should not be added to an action chain");
         if (args.Card.SpellType == SpellType.Slow && actionChain.Count != 0)
             throw new Exception("Slow spells can only start an action chain");
 
@@ -86,7 +85,8 @@ public class ActionChainManager : NetworkBehaviour {
 
     private void ExecuteActionChain() {
         while(actionChain.Count > 0) {
-            // DuelManager.ExecuteSpellCard
+            SpellCardAction action = actionChain.Pop();
+            //duelManager.ExecuteSpellServerRpc();
         }
         OnActionChainFinished?.Invoke(this, EventArgs.Empty);
     }
@@ -95,17 +95,13 @@ public class ActionChainManager : NetworkBehaviour {
 public class SpellCardAction {
     private SpellCard card;
     private MatchPlayer initiator;
-    private MatchPlayer target;
 
-    public SpellCardAction(SpellCard card, MatchPlayer initiator, MatchPlayer target = null) {
+    public SpellCardAction(SpellCard card, MatchPlayer initiator) {
         this.card = card;
         this.initiator = initiator;
-        this.target = target;
     }
 
     public SpellCard Card { get { return card; } }
 
     public MatchPlayer Initiator { get { return initiator; } }
-
-    public MatchPlayer Target { get { return target; } }
 }

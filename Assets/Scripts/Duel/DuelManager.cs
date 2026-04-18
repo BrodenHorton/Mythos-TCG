@@ -20,8 +20,9 @@ public class DuelManager : NetworkBehaviour {
 
     private void Start() {
         GameManager.Instance.OnGameStart += InitializePlayers;
-        EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCard;
-        EventBus.OnDomainCardSelectedForPlay += PlayDomainCard;
+        EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
+        EventBus.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
+        EventBus.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
     }
 
     public void InitializePlayers(object sender, StartGameEventArgs args) {
@@ -70,7 +71,7 @@ public class DuelManager : NetworkBehaviour {
         player.Hand[handIndex].PlayCardFromHand(player, handIndex);
     }
 
-    public void PlayCreatureCard(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
+    public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
         PlayCreatureCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
@@ -89,7 +90,7 @@ public class DuelManager : NetworkBehaviour {
         player.PlayCreatureCardFromHand(card, handIndex);
     }
 
-    public void PlayDomainCard(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
+    public void PlayDomainCardFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         PlayDomainCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
@@ -103,6 +104,44 @@ public class DuelManager : NetworkBehaviour {
         MatchPlayer player = Players[playerIndex];
         DomainCard card = new DomainCard(cardNetworkSerializableObject);
         player.PlayDomainCardFromHand(card, handIndex);
+    }
+
+    public void PlaySpellCardFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        PlaySpellCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void PlaySpellCardFromHandServerRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+        PlaySpellCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlaySpellCardFromHandClientRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+        MatchPlayer player = Players[playerIndex];
+        SpellCard card = new SpellCard(cardNetworkSerializableObject);
+        player.PlaySpellCardFromHand(card, handIndex);
+    }
+
+    public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        if (args.Card.SpellType == SpellType.Instant)
+            ExecuteSpellServerRpc(GetPlayerIndex(args.Player), args.Card.GetNetworkSerializableObject());
+        else
+            EventBus.InvokeOnActionChainSpellCardPlayed(this, new PlayerCardEventArgs<SpellCard>(args.Player, args.Card));
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ExecuteSpellServerRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject) {
+        ExecuteSpellClientRpc(playerIndex, cardNetworkSerializableObject);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void ExecuteSpellClientRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject) {
+        MatchPlayer player = Players[playerIndex];
+        SpellCard spellCard = new SpellCard(cardNetworkSerializableObject);
+        for (int i = 0; i < spellCard.BaseEffects.Count; i++) {
+            spellCard.BaseEffects[i].Execute();
+            // TODO: Execute spells the additional effects on the SpellCard class
+        }
     }
 
     public void EndOfTurnRegenerateCreaturesHealth() {
