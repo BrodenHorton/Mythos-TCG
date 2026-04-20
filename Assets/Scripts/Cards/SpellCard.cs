@@ -46,6 +46,8 @@ public class SpellCard : Card {
 
     public string CardName { get { return cardBase.CardName; } }
 
+    public Sprite SplashArt { get { return cardBase.SplashArt; } }
+
     public SpellType SpellType { get { return cardBase.SpellType; } }
 
     public List<SpellCardEffect> BaseEffects { get { return cardBase.BaseEffects; } }

@@ -4,7 +4,7 @@ using Unity.Netcode;
 
 public class ActionChainManager : NetworkBehaviour {
     public event EventHandler<ulong> OnActionChainStart;
-    public event EventHandler<ulong> OnActionChainUpdate;
+    public event EventHandler<SpellCardAction> OnActionAddedToActionChain;
     public event EventHandler OnActionChainFinished;
 
     private DuelManager duelManager;
@@ -51,7 +51,7 @@ public class ActionChainManager : NetworkBehaviour {
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[playerIndex]);
         actionChain.Push(action);
-        OnActionChainUpdate?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
+        OnActionAddedToActionChain?.Invoke(this, action);
         currentIndex++;
     }
 
@@ -65,7 +65,7 @@ public class ActionChainManager : NetworkBehaviour {
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[currentIndex]);
         actionChain.Push(action);
-        OnActionChainUpdate?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
+        OnActionAddedToActionChain?.Invoke(this, action);
         startingIndex = currentIndex;
         currentIndex++;
     }
@@ -86,22 +86,8 @@ public class ActionChainManager : NetworkBehaviour {
     private void ExecuteActionChain() {
         while(actionChain.Count > 0) {
             SpellCardAction action = actionChain.Pop();
-            //duelManager.ExecuteSpellServerRpc();
+            duelManager.ExecuteSpellServerRpc(duelManager.GetPlayerIndex(action.Initiator), action.Card.GetNetworkSerializableObject());
         }
         OnActionChainFinished?.Invoke(this, EventArgs.Empty);
     }
-}
-
-public class SpellCardAction {
-    private SpellCard card;
-    private MatchPlayer initiator;
-
-    public SpellCardAction(SpellCard card, MatchPlayer initiator) {
-        this.card = card;
-        this.initiator = initiator;
-    }
-
-    public SpellCard Card { get { return card; } }
-
-    public MatchPlayer Initiator { get { return initiator; } }
 }
