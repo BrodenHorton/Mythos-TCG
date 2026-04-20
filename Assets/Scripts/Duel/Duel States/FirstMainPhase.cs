@@ -6,32 +6,30 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
     public event EventHandler<PlayerEventArgs> OnFirstMainPhase;
 
     private DuelStateManager stateManager;
+    private ActionManager actionManager;
 
     private void Start() {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
     }
 
     public void EnterState() {
         Debug.Log("Entered First Main Phase");
         OnFirstMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
         if (stateManager.DuelManager.IsLocalClientPlayerTurn()) {
-            TcgLogger.Log("Added switch to combat phase action to action button");
-            EventBus.OnActionButtonPressed += NextPhase;
+            actionManager.AddAction(SwitchToCombatPhaseServerRpc, "Combat", "Waiting for Opponent");
+            actionManager.SetCanPerformAction(true);
         }
     }
 
     public void UpdateState() { }
 
-    private void NextPhase(object sender, EventArgs args) {
-        TcgLogger.Log("Action button pressed for going to combat phase");
-        EventBus.OnActionButtonPressed -= NextPhase;
-        SwitchToCombatPhaseRpc();
-    }
-
     [Rpc(SendTo.Server)]
-    private void SwitchToCombatPhaseRpc() {
+    private void SwitchToCombatPhaseServerRpc() {
         SwitchToCombatPhaseClientRpc();
     }
 

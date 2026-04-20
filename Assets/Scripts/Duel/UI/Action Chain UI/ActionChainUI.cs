@@ -47,20 +47,3 @@ public class ActionChainUI : MonoBehaviour {
         }
     }
 }
-
-public class ActionChainUIController : MonoBehaviour {
-    [SerializeField] private ActionChainUI actionChainUI;
-    [SerializeField] private ActionChainManager actionChainManager;
-
-    private void Start() {
-        actionChainManager.OnActionAddedToActionChain += AddAction;
-    }
-
-    public void AddAction(object sender, SpellCardAction action) {
-        actionChainUI.AddAction(action.Card);
-    }
-
-    public void RemoveAction(Guid cardUuid) {
-        actionChainUI.RemoveAction(cardUuid);
-    }
-}

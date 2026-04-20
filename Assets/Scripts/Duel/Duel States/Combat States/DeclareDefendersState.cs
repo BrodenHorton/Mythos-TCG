@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 
 public class DeclareDefendersState : NetworkBehaviour, CombatState {
     public event EventHandler<PlayerEventArgs> OnStartDeclareDefenders;
@@ -10,6 +9,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     private CombatStateManager combatStateManager;
     private DuelManager duelManager;
     private CombatManager combatManager;
+    private ActionManager actionManager;
 
     private List<ulong> readyPlayers;
 
@@ -27,6 +27,9 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         combatManager = FindFirstObjectByType<CombatManager>();
         if (combatManager == null)
             throw new Exception("Could not find CombatManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
     }
 
     public void EnterState() {
@@ -57,12 +60,12 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
 
     [Rpc(SendTo.SpecifiedInParams)]
     private void SetDeclareDefenderActionClientRpc(RpcParams rpcParams) {
-        EventBus.OnActionButtonPressed += PlayerReadyUp;
+        actionManager.AddAction(PlayerReadyUp, "Commit", "Waiting for Opponents");
+        actionManager.SetCanPerformAction(true);
         OnSetDeclareDefeners?.Invoke(this, new PlayerEventArgs(duelManager.GetCurrentPlayerTurn()));
     }
 
-    private void PlayerReadyUp(object sender, EventArgs args) {
-        EventBus.OnActionButtonPressed -= PlayerReadyUp;
+    private void PlayerReadyUp() {
         EventBus.InvokeOnLocalClientPlayerReadyUp(this, EventArgs.Empty);
         PlayerReadyUpServerRpc(duelManager.LocalClientPlayer.PlayerId);
     }

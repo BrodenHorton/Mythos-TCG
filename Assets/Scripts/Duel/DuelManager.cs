@@ -140,7 +140,7 @@ public class DuelManager : NetworkBehaviour {
         SpellCard spellCard = new SpellCard(cardNetworkSerializableObject);
         for (int i = 0; i < spellCard.BaseEffects.Count; i++) {
             spellCard.BaseEffects[i].Execute();
-            // TODO: Execute spells the additional effects on the SpellCard class
+            // TODO: Execute the additional effects on the SpellCard class
         }
     }
 

@@ -1,33 +1,31 @@
 ﻿using System;
 using Unity.Netcode;
-using UnityEngine;
 
 public class DeclareAttackersState : NetworkBehaviour, CombatState {
     public event EventHandler<PlayerEventArgs> OnStartDeclareAttackers;
 
     private CombatStateManager combatStateManager;
+    private ActionManager actionManager;
 
     private void Start() {
         combatStateManager = FindFirstObjectByType<CombatStateManager>();
         if (combatStateManager == null)
             throw new Exception("Could not find CombatStateManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
     }
 
     public void EnterState() {
         TcgLogger.Log("DeclareAttackersState Entered");
         if (combatStateManager.DuelManager.IsLocalClientPlayerTurn()) {
-            TcgLogger.Log("Switch to DeclareDefendersState action added to action button");
-            EventBus.OnActionButtonPressed += SwitchToDeclareDefenders;
+            actionManager.AddAction(SwitchToDeclareDefendersServerRpc, "Commit", "Waiting for Opponent");
+            actionManager.SetCanPerformAction(true);
         }
         OnStartDeclareAttackers?.Invoke(this, new PlayerEventArgs(combatStateManager.DuelManager.GetCurrentPlayerTurn()));
     }
 
     public void UpdateState() { }
-
-    private void SwitchToDeclareDefenders(object sender, EventArgs args) {
-        EventBus.OnActionButtonPressed -= SwitchToDeclareDefenders;
-        SwitchToDeclareDefendersServerRpc();
-    }
 
     [Rpc(SendTo.Server)]
     private void SwitchToDeclareDefendersServerRpc() {
