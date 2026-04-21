@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class ActionManager : NetworkBehaviour {
     public event EventHandler<int> OnActionFocusChanged;
-    public event EventHandler<DuelAction> OnDuelActionAdded;
     public event EventHandler<bool> OnCanPerformActionChanged;
     public event EventHandler<string> OnInactiveActionTextChanged;
 
@@ -16,7 +15,7 @@ public class ActionManager : NetworkBehaviour {
 
     private void Awake() {
         actions = new Stack<DuelAction>();
-        actionFocusPlayerIndex = -1;
+        actionFocusPlayerIndex = 0;
         inactiveActionText = "";
     }
 
@@ -37,7 +36,6 @@ public class ActionManager : NetworkBehaviour {
 
     public void AddAction(DuelAction duelAction) {
         actions.Push(duelAction);
-        OnDuelActionAdded?.Invoke(this, duelAction);
     }
 
     public void SetCanPerformAction(bool canPerformAction) {

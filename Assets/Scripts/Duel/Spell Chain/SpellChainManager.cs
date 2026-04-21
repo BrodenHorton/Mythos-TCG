@@ -2,69 +2,79 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 
-public class ActionChainManager : NetworkBehaviour {
+public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<ulong> OnActionChainStart;
     public event EventHandler<SpellCardAction> OnActionAddedToActionChain;
     public event EventHandler OnActionChainFinished;
 
     private DuelManager duelManager;
+    private ActionManager actionManager;
     private int startingIndex;
     private int currentIndex;
-    private Stack<SpellCardAction> actionChain;
+    private Stack<SpellCardAction> spellChain;
 
     private void Awake() {
         startingIndex = 0;
         currentIndex = 0;
-        actionChain = new Stack<SpellCardAction>();
+        spellChain = new Stack<SpellCardAction>();
     }
 
     private void Start() {
         duelManager = GetComponent<DuelManager>();
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
 
-        EventBus.OnActionChainSpellCardPlayed += AddAction;
+        EventBus.OnActionChainSpellCardPlayed += AddSpellToChain;
     }
 
-    private void AddAction(object sender, PlayerCardEventArgs<SpellCard> args) {
+    private void AddSpellToChain(object sender, PlayerCardEventArgs<SpellCard> args) {
         if (args.Card.SpellType == SpellType.Instant)
             throw new Exception("Instant spells should not be added to an action chain");
-        if (args.Card.SpellType == SpellType.Slow && actionChain.Count != 0)
+        if (args.Card.SpellType == SpellType.Slow && spellChain.Count != 0)
             throw new Exception("Slow spells can only start an action chain");
 
-        if (actionChain.Count == 0)
-            StartActionChainServerRpc(duelManager.GetPlayerIndex(args.Player), args.Card.GetNetworkSerializableObject());
+        if (spellChain.Count == 0)
+            StartSpellChainServerRpc(duelManager.GetPlayerIndex(args.Player), args.Card.GetNetworkSerializableObject());
         else
-            AddActionServerRpc(args.Card.GetNetworkSerializableObject());
+            AddSpellToChainServerRpc(args.Card.GetNetworkSerializableObject());
     }
 
     [Rpc(SendTo.Server)]
-    private void StartActionChainServerRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
-        StartActionChainClientRpc(playerIndex, spellCardNetworkSerializable);
+    private void StartSpellChainServerRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
+        StartSpellChainClientRpc(playerIndex, spellCardNetworkSerializable);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void StartActionChainClientRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
+    private void StartSpellChainClientRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
         startingIndex = playerIndex;
         currentIndex = playerIndex;
         OnActionChainStart?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[playerIndex]);
-        actionChain.Push(action);
+        spellChain.Push(action);
         OnActionAddedToActionChain?.Invoke(this, action);
         currentIndex++;
+
+        if(duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) != playerIndex) {
+            actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
+        }
+
+        actionManager.ActionFocusPlayerIndex = currentIndex;
     }
 
     [Rpc(SendTo.Server)]
-    private void AddActionServerRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
-        AddActionClientRpc(spellCardNetworkSerializable);
+    private void AddSpellToChainServerRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
+        AddSpellToChainClientRpc(spellCardNetworkSerializable);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void AddActionClientRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
+    private void AddSpellToChainClientRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[currentIndex]);
-        actionChain.Push(action);
+        spellChain.Push(action);
         OnActionAddedToActionChain?.Invoke(this, action);
         startingIndex = currentIndex;
         currentIndex++;
@@ -78,14 +88,15 @@ public class ActionChainManager : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     private void PassActionClientRpc() {
         currentIndex++;
+        actionManager.ActionFocusPlayerIndex = currentIndex;
 
         if (currentIndex == startingIndex)
             ExecuteActionChain();
     }
 
     private void ExecuteActionChain() {
-        while(actionChain.Count > 0) {
-            SpellCardAction action = actionChain.Pop();
+        while(spellChain.Count > 0) {
+            SpellCardAction action = spellChain.Pop();
             duelManager.ExecuteSpellServerRpc(duelManager.GetPlayerIndex(action.Initiator), action.Card.GetNetworkSerializableObject());
         }
         OnActionChainFinished?.Invoke(this, EventArgs.Empty);

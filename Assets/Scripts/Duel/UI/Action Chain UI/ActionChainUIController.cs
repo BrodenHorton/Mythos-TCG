@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ActionChainUIController : MonoBehaviour {
     [SerializeField] private ActionChainUI actionChainUI;
-    [SerializeField] private ActionChainManager actionChainManager;
+    [SerializeField] private SpellChainManager actionChainManager;
 
     private void Start() {
         actionChainManager.OnActionAddedToActionChain += AddAction;
