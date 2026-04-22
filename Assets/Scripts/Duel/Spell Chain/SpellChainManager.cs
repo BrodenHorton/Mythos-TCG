@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 public class SpellChainManager : NetworkBehaviour {
-    public event EventHandler<ulong> OnActionChainStart;
+    public event EventHandler<PlayerEventArgs> OnActionChainStart;
+    public event EventHandler<PlayerEventArgs> OnPlayerSpellChainTurn;
     public event EventHandler<SpellCardAction> OnActionAddedToActionChain;
     public event EventHandler OnActionChainFinished;
 
@@ -45,24 +46,18 @@ public class SpellChainManager : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     private void StartSpellChainServerRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
         StartSpellChainClientRpc(playerIndex, spellCardNetworkSerializable);
+        PassActionServerRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void StartSpellChainClientRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
         startingIndex = playerIndex;
         currentIndex = playerIndex;
-        OnActionChainStart?.Invoke(this, duelManager.Players[currentIndex].PlayerId);
+        OnActionChainStart?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[playerIndex]);
         spellChain.Push(action);
         OnActionAddedToActionChain?.Invoke(this, action);
-        currentIndex++;
-
-        if(duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) != playerIndex) {
-            actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
-        }
-
-        actionManager.ActionFocusPlayerIndex = currentIndex;
     }
 
     [Rpc(SendTo.Server)]
@@ -92,6 +87,11 @@ public class SpellChainManager : NetworkBehaviour {
 
         if (currentIndex == startingIndex)
             ExecuteActionChain();
+        else {
+            if (duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) == currentIndex)
+                actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
+            OnPlayerSpellChainTurn?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
+        }
     }
 
     private void ExecuteActionChain() {

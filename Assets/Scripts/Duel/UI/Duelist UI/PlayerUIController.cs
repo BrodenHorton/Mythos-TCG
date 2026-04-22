@@ -7,6 +7,13 @@ public class PlayerUIController : DuelistUIController {
     
     private DuelManager duelManager;
     private DuelStateManager stateManager;
+    private ActionManager actionManager;
+    private SpellChainManager spellChainManager;
+    private bool canSelectCards;
+
+    private void Awake() {
+        canSelectCards = false;
+    }
 
     private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
@@ -15,14 +22,21 @@ public class PlayerUIController : DuelistUIController {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
+        spellChainManager = FindFirstObjectByType<SpellChainManager>();
+        if (spellChainManager == null)
+            throw new Exception("Could not find SpellChainManager object");
 
         playerUI.OnSelectingCardDrag += SelectCardDrag;
         EventBus.OnHandCardEnteringPlayingField += PlayHandCard;
-        stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCardsOnPhaseChange;
-        stateManager.CombatPhase.OnCombatPhase += HideSelectionBorders;
-        stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCardsOnPhaseChange;
-        stateManager.EndPhase.OnEndPhase += HideAllClientsSelectionBorders;
-        EventBus.OnManaCountChanged += SetSelectableCardsAfterManaCountChanged;
+        stateManager.FirstMainPhase.OnFirstMainPhase += EnableSelectableCardsOnPlayerEvent;
+        stateManager.CombatPhase.OnCombatPhase += DisableSelectableCardsOnPlayerEvent;
+        stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
+        stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
+        EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
+        spellChainManager.OnPlayerSpellChainTurn += SetSelectableCardsOnSpellChainPlayerUpdate;
     }
 
     public override void Init(MatchPlayer player) {
@@ -46,23 +60,62 @@ public class PlayerUIController : DuelistUIController {
         playerUI.RemoveCardFromHand(handIndex);
     }
 
-    private void SetSelectableCardsOnPhaseChange(object sender, PlayerEventArgs args) {
+    private void EnableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
         if (player.PlayerId != args.Player.PlayerId)
             return;
 
-        SetSelectableCards();
+        SetCanSelectCards(true);
     }
 
-    private void SetSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
+    private void EnableSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
         if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
             return;
         if (!stateManager.CurrentState.CanPlaySetupCards() && !stateManager.CurrentState.CanPlaySpellCards())
             return;
 
-        SetSelectableCards();
+        SetCanSelectCards(true);
     }
 
-    public void SetSelectableCards() {
+    private void SetSelectableCardsOnSpellChainPlayerUpdate(object sender, PlayerEventArgs args) {
+        if (player.PlayerId == args.Player.PlayerId)
+            SetCanSelectCards(true);
+        else
+            SetCanSelectCards(false);
+    }
+
+    private void DisableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
+        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
+            return;
+        if (player.PlayerId != args.Player.PlayerId)
+            return;
+
+        SetCanSelectCards(false);
+    }
+
+    private void DisableAllClientSelectableCards(object sender, PlayerEventArgs args) {
+        DisableAllClientsSelectionCardsServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DisableAllClientsSelectionCardsServerRpc() {
+        DisableAllClientsSelectionCardsClientRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void DisableAllClientsSelectionCardsClientRpc() {
+        SetCanSelectCards(false);
+    }
+
+    public void SetCanSelectCards(bool canSelectCards) {
+        this.canSelectCards = canSelectCards;
+
+        if (this.canSelectCards)
+            ShowSelectionBorders();
+        else
+            HideSelectionBorders();
+    }
+
+    private void ShowSelectionBorders() {
         playerUI.SetBorderVisibilityAll(false);
         for (int i = 0; i < player.Hand.Count; i++) {
             if (player.Hand[i].IsPlayable(duelManager, stateManager, player))
@@ -70,35 +123,16 @@ public class PlayerUIController : DuelistUIController {
         }
     }
 
-    private void HideSelectionBorders(object sender, PlayerEventArgs args) {
-        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
-            return;
-        if (player.PlayerId != args.Player.PlayerId)
-            return;
-
-        HideSelectionBorders();
-    }
-
     private void HideSelectionBorders() {
         playerUI.SetBorderVisibilityAll(false);
     }
 
-    private void HideAllClientsSelectionBorders(object sender, PlayerEventArgs args) {
-        HideAllClientsSelectionBordersServerRpc();
-    }
-
-    [Rpc(SendTo.Server)]
-    private void HideAllClientsSelectionBordersServerRpc() {
-        HideAllClientsSelectionBordersClientRpc();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void HideAllClientsSelectionBordersClientRpc() {
-        playerUI.SetBorderVisibilityAll(false);
-    }
-
     private void SelectCardDrag(object sender, HandCardDragEventArgs args) {
-        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId) {
+        if(!canSelectCards) {
+            args.IsCancelled = true;
+            return;
+        }
+        if (duelManager.GetPlayerIndex(player) != actionManager.ActionFocusPlayerIndex) {
             args.IsCancelled = true;
             return;
         }
@@ -113,7 +147,6 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void PlayHandCard(object sender, HandCardEnteringPlayingFieldEventArgs args) {
-        TcgLogger.Log("PlayHandCard entered");
         if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (args.CardIndex < 0 || args.CardIndex >= player.Hand.Count)
@@ -121,7 +154,6 @@ public class PlayerUIController : DuelistUIController {
         if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, player))
             return;
 
-        TcgLogger.Log("PlayHandCard complete");
         duelManager.PlayCardFromHand(player, args.CardIndex);
     }
 
