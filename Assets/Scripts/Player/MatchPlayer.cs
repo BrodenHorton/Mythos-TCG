@@ -49,17 +49,17 @@ public class MatchPlayer {
         EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCardFromHandEventArgs<CreatureCard>(this, card, handIndex));
     }
 
-    public void PlaySpellCardFromHand(SpellCard card, int handIndex) {
-        RemoveCardFromHandAt(handIndex);
-        CurrentMana -= card.GetManaCost();
-        EventBus.InvokeOnSpellCardPlayedFromHand(this, new PlayCardFromHandEventArgs<SpellCard>(this, card, handIndex));
-    }
-
     public void PlayDomainCardFromHand(DomainCard card, int handIndex) {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         domain = card;
         EventBus.InvokeOnDomainCardPlayedFromHand(this, new PlayCardFromHandEventArgs<DomainCard>(this, card, handIndex));
+    }
+
+    public void PlaySpellCardFromHand(SpellCard card, int handIndex) {
+        RemoveCardFromHandAt(handIndex);
+        CurrentMana -= card.GetManaCost();
+        EventBus.InvokeOnSpellCardPlayedFromHand(this, new PlayCardFromHandEventArgs<SpellCard>(this, card, handIndex));
     }
 
     public void RemoveCardFromHandAt(int handIndex) {

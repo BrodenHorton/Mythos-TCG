@@ -17,6 +17,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         duelManager.OnPlayersInitialization += Init;
         EventBus.OnCreatureCardPlayedFromHand += PlayCreatureCard;
         EventBus.OnDomainCardPlayedFromHand += PlayDomainCard;
+        //EventBus.OnSpellCardPlayedFromHand += PlaySpellCard;
         EventBus.OnCreatureTapped += TapCreature;
         EventBus.OnCreatureUntapped += UntapCreature;
         EventBus.OnDeclareAttacker += RemoveAttacker;
@@ -55,6 +56,13 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
 
         controllerByPlayerId[args.Player.PlayerId].PlayDomainCard(args.Card);
+    }
+
+    public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        if (controllerByPlayerId[args.Player.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+
+        //controllerByPlayerId[args.Player.PlayerId].PlaySpellCard(args.Card);
     }
 
     public void TapCreature(object sender, CreatureCardEventArgs args) {

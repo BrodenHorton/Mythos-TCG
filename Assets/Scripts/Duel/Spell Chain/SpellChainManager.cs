@@ -46,7 +46,7 @@ public class SpellChainManager : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     private void StartSpellChainServerRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
         StartSpellChainClientRpc(playerIndex, spellCardNetworkSerializable);
-        PassActionServerRpc();
+        PassActionClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -63,6 +63,7 @@ public class SpellChainManager : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     private void AddSpellToChainServerRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
         AddSpellToChainClientRpc(spellCardNetworkSerializable);
+        PassActionClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -72,7 +73,6 @@ public class SpellChainManager : NetworkBehaviour {
         spellChain.Push(action);
         OnActionAddedToActionChain?.Invoke(this, action);
         startingIndex = currentIndex;
-        currentIndex++;
     }
 
     [Rpc(SendTo.Server)]
@@ -83,13 +83,15 @@ public class SpellChainManager : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     private void PassActionClientRpc() {
         currentIndex++;
-        actionManager.ActionFocusPlayerIndex = currentIndex;
 
-        if (currentIndex == startingIndex)
+        if (currentIndex == startingIndex) {
             ExecuteActionChain();
+            actionManager.ActionFocusPlayerIndex = duelManager.GetLocalClientPlayerIndex();
+        }
         else {
             if (duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) == currentIndex)
                 actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
+            actionManager.ActionFocusPlayerIndex = currentIndex;
             OnPlayerSpellChainTurn?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
         }
     }

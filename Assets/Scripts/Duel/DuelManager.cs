@@ -23,6 +23,7 @@ public class DuelManager : NetworkBehaviour {
         EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
         EventBus.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
         EventBus.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
+        EventBus.OnSpellCardPlayedFromHand += PlaySpellCard;
     }
 
     public void InitializePlayers(object sender, StartGameEventArgs args) {
@@ -40,8 +41,8 @@ public class DuelManager : NetworkBehaviour {
         if (localClientPlayer == null)
             throw new Exception("Local Client Id not found in start game player list");
 
-        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
-        OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetPlayerIndex(localClientPlayer)));
+        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetLocalClientPlayerIndex()));
+        OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetLocalClientPlayerIndex()));
     }
 
     private List<Card> Temp_PopulateDeck() {
@@ -203,6 +204,10 @@ public class DuelManager : NetworkBehaviour {
         }
 
         throw new Exception("Player index could not be found for playerId: " + playerId);
+    }
+
+    public int GetLocalClientPlayerIndex() {
+        return GetPlayerIndex(localClientPlayer.PlayerId);
     }
 
     public List<MatchPlayer> Players { get { return players; } }

@@ -61,7 +61,6 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     [Rpc(SendTo.SpecifiedInParams)]
     private void SetDeclareDefenderActionClientRpc(RpcParams rpcParams) {
         actionManager.AddAction(PlayerReadyUp, "Commit", "Waiting for Opponents");
-        actionManager.SetCanPerformAction(true);
         OnSetDeclareDefeners?.Invoke(this, new PlayerEventArgs(duelManager.GetCurrentPlayerTurn()));
     }
 

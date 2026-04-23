@@ -36,7 +36,7 @@ public class PlayerUIController : DuelistUIController {
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
         stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
         EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        spellChainManager.OnPlayerSpellChainTurn += SetSelectableCardsOnSpellChainPlayerUpdate;
+        spellChainManager.OnPlayerSpellChainTurn += SetSelectableCardsOnPlayerSpellChainTurnUpdate;
     }
 
     public override void Init(MatchPlayer player) {
@@ -76,7 +76,7 @@ public class PlayerUIController : DuelistUIController {
         SetCanSelectCards(true);
     }
 
-    private void SetSelectableCardsOnSpellChainPlayerUpdate(object sender, PlayerEventArgs args) {
+    private void SetSelectableCardsOnPlayerSpellChainTurnUpdate(object sender, PlayerEventArgs args) {
         if (player.PlayerId == args.Player.PlayerId)
             SetCanSelectCards(true);
         else

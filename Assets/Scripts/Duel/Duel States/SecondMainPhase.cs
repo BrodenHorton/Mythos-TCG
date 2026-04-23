@@ -20,10 +20,8 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered Second Main Phase");
         OnSecondMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (stateManager.DuelManager.IsLocalClientPlayerTurn()) {
+        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
             actionManager.AddAction(SwitchToEndPhaseServerRpc, "End", "Waiting for Opponent");
-            actionManager.SetCanPerformAction(true);
-        }
     }
 
     public void UpdateState() { }

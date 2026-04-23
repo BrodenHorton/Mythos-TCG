@@ -30,19 +30,17 @@ public class ActionButtonUIController : MonoBehaviour {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed += ButtonPressedCheck;
 
-        actionManager.OnCanPerformActionChanged += UpdateActionButtonAfterCanPerformActionChanged;
+        actionManager.OnActionFocusChanged += UpdateActionButtonOnActionFocusChanged;
         actionManager.OnInactiveActionTextChanged += UpdateInactiveText;
     }
 
     private void OnDestroy() {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed -= ButtonPressedCheck;
-
-        actionManager.OnCanPerformActionChanged -= UpdateActionButtonAfterCanPerformActionChanged;
     }
 
-    private void UpdateActionButtonAfterCanPerformActionChanged(object sender, bool canPerformAction) {
-        if(canPerformAction)
+    private void UpdateActionButtonOnActionFocusChanged(object sender, int playerIndex) {
+        if(playerIndex == duelManager.GetLocalClientPlayerIndex())
             SetActionButtonActive(actionManager.Actions.Peek().ActiveActionMessage());
         else
             SetActionButtonInactive("");

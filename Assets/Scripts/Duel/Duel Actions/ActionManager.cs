@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class ActionManager : NetworkBehaviour {
     public event EventHandler<int> OnActionFocusChanged;
-    public event EventHandler<bool> OnCanPerformActionChanged;
     public event EventHandler<string> OnInactiveActionTextChanged;
 
+    private DuelManager duelManager;
     private Stack<DuelAction> actions;
     private int actionFocusPlayerIndex;
-    private bool canPerformAction;
     private string inactiveActionText;
 
     private void Awake() {
@@ -20,7 +19,7 @@ public class ActionManager : NetworkBehaviour {
     }
 
     private void Start() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
+        duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
@@ -38,15 +37,7 @@ public class ActionManager : NetworkBehaviour {
         actions.Push(duelAction);
     }
 
-    public void SetCanPerformAction(bool canPerformAction) {
-        this.canPerformAction = canPerformAction;
-        OnCanPerformActionChanged?.Invoke(this, canPerformAction);
-        if (this.canPerformAction)
-            UpdateInactiveActionTextServerRpc(actions.Peek().InactiveActionMessage());
-    }
-
     private void ExecuteDuelAction(object sender, EventArgs args) {
-        SetCanPerformAction(false);
         DuelAction action = actions.Pop();
         action.Execute();
     }
@@ -73,6 +64,8 @@ public class ActionManager : NetworkBehaviour {
 
             actionFocusPlayerIndex = value;
             OnActionFocusChanged?.Invoke(this, actionFocusPlayerIndex);
+            if(actionFocusPlayerIndex == duelManager.GetLocalClientPlayerIndex())
+                UpdateInactiveActionTextServerRpc(actions.Peek().InactiveActionMessage());
         }
     }
 

@@ -20,10 +20,8 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
     public void EnterState() {
         Debug.Log("Entered First Main Phase");
         OnFirstMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (stateManager.DuelManager.IsLocalClientPlayerTurn()) {
+        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
             actionManager.AddAction(SwitchToCombatPhaseServerRpc, "Combat", "Waiting for Opponent");
-            actionManager.SetCanPerformAction(true);
-        }
     }
 
     public void UpdateState() { }
