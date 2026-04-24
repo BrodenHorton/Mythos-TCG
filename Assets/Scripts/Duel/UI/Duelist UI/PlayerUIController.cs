@@ -132,7 +132,7 @@ public class PlayerUIController : DuelistUIController {
             args.IsCancelled = true;
             return;
         }
-        if (duelManager.GetPlayerIndex(player) != actionManager.ActionFocusPlayerIndex) {
+        if (!actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player))) {
             args.IsCancelled = true;
             return;
         }

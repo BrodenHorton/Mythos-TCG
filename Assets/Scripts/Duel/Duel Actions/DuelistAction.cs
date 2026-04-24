@@ -1,7 +1,4 @@
-﻿public interface DuelAction {
-    void AddListeners();
-
-    void RemoveListeners();
+﻿public interface DuelistAction {
 
     void Execute();
 

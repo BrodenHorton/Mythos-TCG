@@ -214,5 +214,7 @@ public class DuelManager : NetworkBehaviour {
 
     public MatchPlayer LocalClientPlayer { get { return localClientPlayer; } }
 
+    public int CurrentPlayerTurnIndex {  get { return currentPlayerTurnIndex; } }
+
     public int FullTurnCount { get { return fullTurnCount; } }
 }

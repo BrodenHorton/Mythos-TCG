@@ -2,11 +2,11 @@
 using UnityEngine;
 
 public class SpellActionUI : MonoBehaviour {
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private MeshRenderer meshRenderer;
     private Guid cardUuid;
 
     public void Init(SpellCard spellCard) {
-        spriteRenderer.sprite = spellCard.SplashArt;
+        meshRenderer.material = spellCard.SplashArt;
         cardUuid = spellCard.Uuid;
     }
 

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 public class SpellChainManager : NetworkBehaviour {
-    public event EventHandler<PlayerEventArgs> OnActionChainStart;
+    public event EventHandler<PlayerEventArgs> OnSpellChainStart;
     public event EventHandler<PlayerEventArgs> OnPlayerSpellChainTurn;
-    public event EventHandler<SpellCardAction> OnActionAddedToActionChain;
-    public event EventHandler OnActionChainFinished;
+    public event EventHandler<SpellCardAction> OnSpellAddedToSpellChain;
+    public event EventHandler OnSpellChainFinished;
 
     private DuelManager duelManager;
     private ActionManager actionManager;
@@ -21,9 +21,9 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     private void Start() {
-        duelManager = GetComponent<DuelManager>();
+        duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
-            throw new Exception("DuelManager not found on GameObject");
+            throw new Exception("Could not find DuelManager object");
         actionManager = FindFirstObjectByType<ActionManager>();
         if (actionManager == null)
             throw new Exception("Could not find ActionManager object");
@@ -53,11 +53,11 @@ public class SpellChainManager : NetworkBehaviour {
     private void StartSpellChainClientRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
         startingIndex = playerIndex;
         currentIndex = playerIndex;
-        OnActionChainStart?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
+        OnSpellChainStart?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[playerIndex]);
         spellChain.Push(action);
-        OnActionAddedToActionChain?.Invoke(this, action);
+        OnSpellAddedToSpellChain?.Invoke(this, action);
     }
 
     [Rpc(SendTo.Server)]
@@ -71,7 +71,7 @@ public class SpellChainManager : NetworkBehaviour {
         SpellCard card = new SpellCard(spellCardNetworkSerializable);
         SpellCardAction action = new SpellCardAction(card, duelManager.Players[currentIndex]);
         spellChain.Push(action);
-        OnActionAddedToActionChain?.Invoke(this, action);
+        OnSpellAddedToSpellChain?.Invoke(this, action);
         startingIndex = currentIndex;
     }
 
@@ -86,12 +86,12 @@ public class SpellChainManager : NetworkBehaviour {
 
         if (currentIndex == startingIndex) {
             ExecuteActionChain();
-            actionManager.ActionFocusPlayerIndex = duelManager.GetLocalClientPlayerIndex();
+            actionManager.SetActionFocusPlayerIndices(duelManager.GetLocalClientPlayerIndex());
         }
         else {
             if (duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) == currentIndex)
                 actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
-            actionManager.ActionFocusPlayerIndex = currentIndex;
+            actionManager.SetActionFocusPlayerIndices(currentIndex);
             OnPlayerSpellChainTurn?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
         }
     }
@@ -101,6 +101,6 @@ public class SpellChainManager : NetworkBehaviour {
             SpellCardAction action = spellChain.Pop();
             duelManager.ExecuteSpellServerRpc(duelManager.GetPlayerIndex(action.Initiator), action.Card.GetNetworkSerializableObject());
         }
-        OnActionChainFinished?.Invoke(this, EventArgs.Empty);
+        OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
     }
 }

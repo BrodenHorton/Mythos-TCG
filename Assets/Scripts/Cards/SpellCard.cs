@@ -46,7 +46,7 @@ public class SpellCard : Card {
 
     public string CardName { get { return cardBase.CardName; } }
 
-    public Sprite SplashArt { get { return cardBase.SplashArt; } }
+    public Material SplashArt { get { return cardBase.SplashArt; } }
 
     public SpellType SpellType { get { return cardBase.SpellType; } }
 

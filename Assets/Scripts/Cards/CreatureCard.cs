@@ -96,6 +96,8 @@ public partial class CreatureCard : Card {
 
     public string CardName { get { return cardBase.CardName; } }
 
+    public Material SplashArt { get { return cardBase.SplashArt; } }
+
     public int BaseManaCost { get { return cardBase.ManaCost; } }
 
     public int BaseAtk { get { return cardBase.Atk; } }

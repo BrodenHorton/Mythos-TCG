@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class CardBase : ScriptableObject {
     [SerializeField] protected string cardName;
-    [SerializeField] Sprite splashArt;
+    [SerializeField] Material splashArt;
     [SerializeField] protected int manaCost;
     [SerializeField] protected Domain domain;
 
@@ -10,7 +10,7 @@ public abstract class CardBase : ScriptableObject {
 
     public string CardName { get { return cardName; } }
 
-    public Sprite SplashArt { get { return splashArt; } }
+    public Material SplashArt { get { return splashArt; } }
 
     public int ManaCost { get { return manaCost; } }
 

@@ -14,28 +14,34 @@ public class SpellChainUI : MonoBehaviour {
         spellChain = new List<SpellActionUI>();
     }
 
-    private void Start() {
-        
-    }
-
-    public void AddAction(SpellCard card) {
+    public void AddSpellToChain(SpellCard card) {
         SpellActionUI actionUI = Instantiate(spellActionUIPrefab);
-        actionUI.transform.position = spellActionUIPrefab.transform.position;
+        actionUI.transform.parent = spellChainOrigin;
         actionUI.Init(card);
         spellChain.Add(actionUI);
         SpaceActions();
     }
 
-    public void RemoveAction(Guid cardUuid) {
+    public void RemoveSpellFromChain(Guid cardUuid) {
         for(int i = 0; i < spellChain.Count; i++) {
             if (spellChain[i].CardUuid == cardUuid) {
+                SpellActionUI spellActionUI = spellChain[i];
                 spellChain.RemoveAt(i);
+                Destroy(spellActionUI.gameObject);
                 SpaceActions();
                 return;
             }
         }
 
         throw new Exception("Attempted to remove action UI that is not in the action chain");
+    }
+
+    public void ClearSpellChain() {
+        for (int i = 0; i < spellChain.Count; i++) {
+            SpellActionUI spellActionUI = spellChain[i];
+            spellChain.RemoveAt(i);
+            Destroy(spellActionUI.gameObject);
+        }
     }
 
     private void SpaceActions() {
@@ -50,15 +56,4 @@ public class SpellChainUI : MonoBehaviour {
             cardUI.transform.position = cardPosition;
         }
     }
-}
-
-public class SpellChainUIController : MonoBehaviour {
-    [SerializeField] private SpellChainManager spellChainManager;
-    [SerializeField] private SpellChainUI spellChainUI;
-
-    private void Start() {
-        
-    }
-
-
 }

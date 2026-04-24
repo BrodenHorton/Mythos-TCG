@@ -50,7 +50,6 @@ public class CombatFieldUI : MonoBehaviour {
             }
         }
         SpaceAttackers();
-        TcgLogger.Log("Added Attacker to Combat Field");
     }
 
     public void AddDefender(CreatureCard defender, Guid attackerCardUuid) {

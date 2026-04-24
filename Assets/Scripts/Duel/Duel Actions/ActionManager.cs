@@ -4,17 +4,19 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class ActionManager : NetworkBehaviour {
-    public event EventHandler<int> OnActionFocusChanged;
+    public event EventHandler OnActionFocusChanged;
+    public event EventHandler OnActionAdded;
+    public event EventHandler OnActionRemoved;
     public event EventHandler<string> OnInactiveActionTextChanged;
 
     private DuelManager duelManager;
-    private Stack<DuelAction> actions;
-    private int actionFocusPlayerIndex;
+    private Stack<DuelistAction> actions;
+    private List<int> actionFocusPlayerIndices;
     private string inactiveActionText;
 
     private void Awake() {
-        actions = new Stack<DuelAction>();
-        actionFocusPlayerIndex = 0;
+        actions = new Stack<DuelistAction>();
+        actionFocusPlayerIndices = new List<int>();
         inactiveActionText = "";
     }
 
@@ -24,22 +26,38 @@ public class ActionManager : NetworkBehaviour {
             throw new Exception("Could not find DuelManager object");
 
         duelManager.OnNextPlayerTurn += (sender, args) => {
-            ActionFocusPlayerIndex = args.PlayerIndex;
+            SetActionFocusPlayerIndices(args.PlayerIndex);
         };
         EventBus.OnActionButtonPressed += ExecuteDuelAction;
     }
 
     public void AddAction(Action callback, string activeActionMessage, string inactiveActionMessage) {
-        AddAction(new CallbackAction(callback, activeActionMessage, inactiveActionMessage));
+        TcgLogger.Log("Action Added with action message: " + activeActionMessage);
+        AddAction(new SimpleDuelistAction(callback, activeActionMessage, inactiveActionMessage));
     }
 
-    public void AddAction(DuelAction duelAction) {
+    public void AddAction(DuelistAction duelAction) {
         actions.Push(duelAction);
+        OnActionAdded?.Invoke(this, EventArgs.Empty);
+        UpdateInactiveActionText();
     }
 
     private void ExecuteDuelAction(object sender, EventArgs args) {
-        DuelAction action = actions.Pop();
+        if (actions.Count == 0)
+            throw new Exception("Attempting to execute an action when there are no actions on the stack");
+
+        DuelistAction action = actions.Pop();
         action.Execute();
+        OnActionRemoved?.Invoke(this, EventArgs.Empty);
+        UpdateInactiveActionText();
+    }
+
+    private void UpdateInactiveActionText() {
+        if (!actionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex()))
+            return;
+
+        string updatedInvalidActionText = actions.Count > 0 ? actions.Peek().InactiveActionMessage() : "";
+        UpdateInactiveActionTextServerRpc(updatedInvalidActionText);
     }
 
     [Rpc(SendTo.Server)]
@@ -52,22 +70,33 @@ public class ActionManager : NetworkBehaviour {
         InactiveActionText = text;
     }
 
-    public Stack<DuelAction> Actions { get { return actions; } }
-
-    public int ActionFocusPlayerIndex {
-        get {
-            return actionFocusPlayerIndex;
-        }
-        set {
-            if (actionFocusPlayerIndex == value)
-                throw new Exception("Attempting to set the action focus to the player who already has the action focus");
-
-            actionFocusPlayerIndex = value;
-            OnActionFocusChanged?.Invoke(this, actionFocusPlayerIndex);
-            if(actionFocusPlayerIndex == duelManager.GetLocalClientPlayerIndex())
-                UpdateInactiveActionTextServerRpc(actions.Peek().InactiveActionMessage());
-        }
+    public void SetActionFocusPlayerIndices(int playerIndex) {
+        TcgLogger.Log("Action Focus set to player index: " + playerIndex);
+        actionFocusPlayerIndices.Clear();
+        actionFocusPlayerIndices.Add(playerIndex);
+        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
+        UpdateInactiveActionText();
     }
+
+    public void SetActionFocusPlayerIndices(List<int> playerIndices) {
+        actionFocusPlayerIndices.Clear();
+        actionFocusPlayerIndices.AddRange(playerIndices);
+        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
+        UpdateInactiveActionText();
+    }
+
+    public void RemoveActionFocusIndex(int playerIndex) {
+        if (!actionFocusPlayerIndices.Contains(playerIndex))
+            throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
+
+        actionFocusPlayerIndices.Remove(playerIndex);
+        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
+        UpdateInactiveActionText();
+    }
+
+    public Stack<DuelistAction> Actions { get { return actions; } }
+
+    public List<int> ActionFocusPlayerIndices { get { return actionFocusPlayerIndices; } }
 
     public string InactiveActionText {
         get {

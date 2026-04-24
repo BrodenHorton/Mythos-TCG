@@ -2716,6 +2716,52 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!1 &992355114
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 992355115}
+  - component: {fileID: 992355116}
+  m_Layer: 0
+  m_Name: SpellChainUIController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &992355115
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992355114}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1151302305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &992355116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992355114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cbe48f0c2781324ea26c075e82d9086, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spellChainManager: {fileID: 1065170591}
+  spellChainUI: {fileID: 5916366222310076826}
 --- !u!1 &1065170589
 GameObject:
   m_ObjectHideFlags: 0
@@ -3098,6 +3144,7 @@ Transform:
   - {fileID: 1226748135}
   - {fileID: 575881073}
   - {fileID: 1065170590}
+  - {fileID: 992355115}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1151302306
@@ -5931,6 +5978,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6607065640291196014, guid: a6790b251949d3941a6dcf2b2881118c, type: 3}
   m_PrefabInstance: {fileID: 5916366222310076824}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5916366222310076826 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7649484206241812248, guid: a6790b251949d3941a6dcf2b2881118c, type: 3}
+  m_PrefabInstance: {fileID: 5916366222310076824}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2050e833186e90d4999f41d58b865fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8194893199317920640
 PrefabInstance:
   m_ObjectHideFlags: 0

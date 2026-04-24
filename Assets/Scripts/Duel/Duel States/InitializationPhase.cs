@@ -9,11 +9,15 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
     public event EventHandler OnInitializationPhase;
 
     private DuelStateManager stateManager;
+    private ActionManager actionManager;
 
     private void Start() {
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (stateManager == null)
+            throw new Exception("Could not find ActionManager object");
     }
 
     public void EnterState() {
@@ -26,6 +30,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
             for (int j = 0; j < INITIAL_HAND_SIZE; j++)
                 players[i].DrawCard();
         }
+        actionManager.SetActionFocusPlayerIndices(0);
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 
