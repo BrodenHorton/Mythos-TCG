@@ -9,8 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c0fb7d8eb48b3c49b9ab6f22e069cea, type: 3}
-  m_Name: SpellCardList
+  m_Script: {fileID: 11500000, guid: 82eb959bdf7d37944ba567dd02c4998c, type: 3}
+  m_Name: Pyre
   m_EditorClassIdentifier: 
-  cards:
-  - {fileID: 11400000, guid: 1cdd9111a7832ae439c09351c9b6db3c, type: 2}
+  cardName: Pyre
+  splashArt: {fileID: 2100000, guid: 99660b6d9d7b6214b8f63abbe7d8bbbb, type: 2}
+  manaCost: 3
+  domain: 0
+  spellType: 1
+  baseEffects: []
+  references:
+    version: 2
+    RefIds: []

@@ -108,6 +108,7 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlaySpellCardFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        TcgLogger.Log("Playing spell card from hand");
         PlaySpellCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
@@ -124,21 +125,14 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        TcgLogger.Log("PlaySpellCard Entered");
         if (args.Card.SpellType == SpellType.Instant)
-            ExecuteSpellServerRpc(GetPlayerIndex(args.Player), args.Card.GetNetworkSerializableObject());
+            ExecuteSpell(args.Player, args.Card);
         else
             EventBus.InvokeOnActionChainSpellCardPlayed(this, new PlayerCardEventArgs<SpellCard>(args.Player, args.Card));
     }
 
-    [Rpc(SendTo.Server)]
-    public void ExecuteSpellServerRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject) {
-        ExecuteSpellClientRpc(playerIndex, cardNetworkSerializableObject);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    public void ExecuteSpellClientRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject) {
-        MatchPlayer player = Players[playerIndex];
-        SpellCard spellCard = new SpellCard(cardNetworkSerializableObject);
+    public void ExecuteSpell(MatchPlayer player, SpellCard spellCard) {
         for (int i = 0; i < spellCard.BaseEffects.Count; i++) {
             spellCard.BaseEffects[i].Execute();
             // TODO: Execute the additional effects on the SpellCard class

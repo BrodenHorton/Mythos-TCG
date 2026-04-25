@@ -19,9 +19,15 @@ public class SpellCard : Card {
         cardBase = CardDatabase.Instance.GetSpellCardByIndex(networkSerializationObject.cardBaseIndex);
     }
 
-    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
-        if (!stateManager.CurrentState.CanPlaySpellCards())
-            return false;
+    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
+        if(spellChainManager.IsSpellChainActive()) {
+            if (SpellType == SpellType.Slow)
+                return false;
+        }
+        else {
+            if (!stateManager.CurrentState.CanPlaySpellCards())
+                return false;
+        }
         if (player.CurrentMana < cardBase.ManaCost)
             return false;
 

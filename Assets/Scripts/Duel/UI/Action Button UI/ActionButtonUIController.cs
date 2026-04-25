@@ -1,4 +1,6 @@
 ﻿using System;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -30,10 +32,10 @@ public class ActionButtonUIController : MonoBehaviour {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed += ButtonPressedCheck;
 
-        actionManager.OnActionFocusChanged += UpdateActionButtonOnActionManagerUpdate;
-        actionManager.OnActionAdded += UpdateActionButtonOnActionManagerUpdate;
-        actionManager.OnActionRemoved += UpdateActionButtonOnActionManagerUpdate;
-        actionManager.OnInactiveActionTextChanged += UpdateInactiveText;
+        actionManager.OnActionFocusChanged += UpdateActionButtonForActionFocusPlayer;
+        actionManager.OnActionAdded += UpdateActionButtonForActionFocusPlayer;
+        actionManager.OnActionRemoved += UpdateActionButtonForActionFocusPlayer;
+        actionManager.InactiveActionText.OnValueChanged += UpdateInactiveText;
     }
 
     private void OnDestroy() {
@@ -41,34 +43,22 @@ public class ActionButtonUIController : MonoBehaviour {
         playerInputActions.Player.Select.performed -= ButtonPressedCheck;
     }
 
-    private void UpdateActionButtonOnActionManagerUpdate(object sender, EventArgs args) {
-        UpdateActionButton();
-    }
-
-    private void UpdateActionButton() {
+    private void UpdateActionButtonForActionFocusPlayer(object sender, EventArgs args) {
         if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex())) {
             if (actionManager.Actions.Count > 0)
-                SetActionButtonActive(actionManager.Actions.Peek().ActiveActionMessage());
+                actionButtonUI.SetActive(actionManager.Actions.Peek().ActiveActionMessage());
             else
-                SetActionButtonInactive("");
+                actionButtonUI.SetInactive("");
         }
         else
-            SetActionButtonInactive(actionManager.InactiveActionText);
+            actionButtonUI.SetInactive(actionManager.InactiveActionText.Value.ToString());
     }
 
-    private void UpdateInactiveText(object sender, string inactiveActionText) {
-        if (actionButtonUI.IsActive)
+    private void UpdateInactiveText(FixedString128Bytes oldInactiveActionText, FixedString128Bytes inactiveActionText) {
+        if (actionButtonUI.IsActive || actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex()))
             return;
 
-        SetActionButtonInactive(inactiveActionText);
-    }
-
-    public void SetActionButtonActive(string actionText) {
-        actionButtonUI.SetActive(actionText);
-    }
-
-    public void SetActionButtonInactive(string actionText) {
-        actionButtonUI.SetInactive(actionText);
+        actionButtonUI.SetInactive(inactiveActionText.ToString());
     }
 
     private void ButtonPressedCheck(InputAction.CallbackContext context) {

@@ -6,6 +6,7 @@ public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<PlayerEventArgs> OnSpellChainStart;
     public event EventHandler<PlayerEventArgs> OnPlayerSpellChainTurn;
     public event EventHandler<SpellCardAction> OnSpellAddedToSpellChain;
+    public event EventHandler<SpellCardAction> OnSpellRemovedFromSpellChain;
     public event EventHandler OnSpellChainFinished;
 
     private DuelManager duelManager;
@@ -38,41 +39,34 @@ public class SpellChainManager : NetworkBehaviour {
             throw new Exception("Slow spells can only start an action chain");
 
         if (spellChain.Count == 0)
-            StartSpellChainServerRpc(duelManager.GetPlayerIndex(args.Player), args.Card.GetNetworkSerializableObject());
+            StartSpellChain(args.Player, args.Card);
         else
-            AddSpellToChainServerRpc(args.Card.GetNetworkSerializableObject());
+            AddSpellToChain(args.Player, args.Card);
     }
 
-    [Rpc(SendTo.Server)]
-    private void StartSpellChainServerRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
-        StartSpellChainClientRpc(playerIndex, spellCardNetworkSerializable);
-        PassActionClientRpc();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void StartSpellChainClientRpc(int playerIndex, SpellCardNetworkSerializable spellCardNetworkSerializable) {
+    private void StartSpellChain(MatchPlayer player, SpellCard spellCard) {
+        int playerIndex = duelManager.GetPlayerIndex(player);
         startingIndex = playerIndex;
         currentIndex = playerIndex;
         OnSpellChainStart?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
-        SpellCard card = new SpellCard(spellCardNetworkSerializable);
-        SpellCardAction action = new SpellCardAction(card, duelManager.Players[playerIndex]);
+        SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[playerIndex]);
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
+
+        if(IsServer)
+            PassActionServerRpc();
     }
 
-    [Rpc(SendTo.Server)]
-    private void AddSpellToChainServerRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
-        AddSpellToChainClientRpc(spellCardNetworkSerializable);
-        PassActionClientRpc();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void AddSpellToChainClientRpc(SpellCardNetworkSerializable spellCardNetworkSerializable) {
-        SpellCard card = new SpellCard(spellCardNetworkSerializable);
-        SpellCardAction action = new SpellCardAction(card, duelManager.Players[currentIndex]);
+    private void AddSpellToChain(MatchPlayer player, SpellCard spellCard) {
+        SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[currentIndex]);
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
         startingIndex = currentIndex;
+        if (currentIndex == duelManager.GetLocalClientPlayerIndex())
+            actionManager.PopAction();
+
+        if(IsServer)
+            PassActionServerRpc();
     }
 
     [Rpc(SendTo.Server)]
@@ -82,11 +76,11 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void PassActionClientRpc() {
-        currentIndex++;
+        currentIndex = (currentIndex + 1) % duelManager.Players.Count;
 
         if (currentIndex == startingIndex) {
             ExecuteActionChain();
-            actionManager.SetActionFocusPlayerIndices(duelManager.GetLocalClientPlayerIndex());
+            actionManager.SetActionFocusPlayerIndices(duelManager.GetPlayerIndex(duelManager.GetCurrentPlayerTurn()));
         }
         else {
             if (duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) == currentIndex)
@@ -99,8 +93,13 @@ public class SpellChainManager : NetworkBehaviour {
     private void ExecuteActionChain() {
         while(spellChain.Count > 0) {
             SpellCardAction action = spellChain.Pop();
-            duelManager.ExecuteSpellServerRpc(duelManager.GetPlayerIndex(action.Initiator), action.Card.GetNetworkSerializableObject());
+            duelManager.ExecuteSpell(action.Initiator, action.Card);
+            OnSpellRemovedFromSpellChain?.Invoke(this, action);
         }
         OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
+    }
+
+    public bool IsSpellChainActive() {
+        return spellChain.Count > 0;
     }
 }

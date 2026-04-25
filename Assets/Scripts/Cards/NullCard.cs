@@ -1,6 +1,6 @@
 ﻿public class NullCard : Card {
 
-    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
+    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
         return false;
     }
 

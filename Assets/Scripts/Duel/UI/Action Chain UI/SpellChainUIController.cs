@@ -7,6 +7,7 @@ public class SpellChainUIController : MonoBehaviour {
 
     private void Start() {
         spellChainManager.OnSpellAddedToSpellChain += AddSpellToChain;
+        spellChainManager.OnSpellRemovedFromSpellChain += RemoveSpellFromChain;
         spellChainManager.OnSpellChainFinished += ClearSpellChain;
     }
 

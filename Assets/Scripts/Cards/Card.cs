@@ -8,7 +8,7 @@ public abstract class Card {
         uuid = Guid.NewGuid();
     }
 
-    public abstract bool IsPlayable(DuelManager duelManager, DuelStateManager stateMaager, MatchPlayer player);
+    public abstract bool IsPlayable(DuelManager duelManager, DuelStateManager stateMaager, SpellChainManager spellChainManager, MatchPlayer player);
 
     public abstract void PlayCard(MatchPlayer player);
 

@@ -28,8 +28,10 @@ public partial class CreatureCard : Card {
         damage = networkSerializationObject.damage;
     }
 
-    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, MatchPlayer player) {
+    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
         if (!stateManager.CurrentState.CanPlaySetupCards())
+            return false;
+        if (spellChainManager.IsSpellChainActive())
             return false;
         if (player.CurrentMana < cardBase.ManaCost)
             return false;

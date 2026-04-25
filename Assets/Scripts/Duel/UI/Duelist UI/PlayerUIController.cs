@@ -36,7 +36,8 @@ public class PlayerUIController : DuelistUIController {
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
         stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
         EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        spellChainManager.OnPlayerSpellChainTurn += SetSelectableCardsOnPlayerSpellChainTurnUpdate;
+        spellChainManager.OnPlayerSpellChainTurn += SetSelectableCardsOnPlayerSpellChainTurn;
+        spellChainManager.OnSpellChainFinished += SetSelectableCardsOnSpellChainFinished;
     }
 
     public override void Init(MatchPlayer player) {
@@ -76,11 +77,18 @@ public class PlayerUIController : DuelistUIController {
         SetCanSelectCards(true);
     }
 
-    private void SetSelectableCardsOnPlayerSpellChainTurnUpdate(object sender, PlayerEventArgs args) {
+    private void SetSelectableCardsOnPlayerSpellChainTurn(object sender, PlayerEventArgs args) {
         if (player.PlayerId == args.Player.PlayerId)
             SetCanSelectCards(true);
         else
             SetCanSelectCards(false);
+    }
+
+    private void SetSelectableCardsOnSpellChainFinished(object sender, EventArgs args) {
+        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
+            return;
+
+        SetCanSelectCards(true);
     }
 
     private void DisableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
@@ -118,7 +126,7 @@ public class PlayerUIController : DuelistUIController {
     private void ShowSelectionBorders() {
         playerUI.SetBorderVisibilityAll(false);
         for (int i = 0; i < player.Hand.Count; i++) {
-            if (player.Hand[i].IsPlayable(duelManager, stateManager, player))
+            if (player.Hand[i].IsPlayable(duelManager, stateManager, spellChainManager, player))
                 playerUI.SetCardSelectable(player.Hand[i].Uuid);
         }
     }
@@ -140,18 +148,18 @@ public class PlayerUIController : DuelistUIController {
             args.IsCancelled = true;
             throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);
         }
-        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, player)) {
+        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, spellChainManager, player)) {
             args.IsCancelled = true;
             return;
         }
     }
 
     private void PlayHandCard(object sender, HandCardEnteringPlayingFieldEventArgs args) {
-        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
+        if (!actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player)))
             return;
         if (args.CardIndex < 0 || args.CardIndex >= player.Hand.Count)
             throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);
-        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, player))
+        if (!player.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, spellChainManager, player))
             return;
 
         duelManager.PlayCardFromHand(player, args.CardIndex);
