@@ -45,7 +45,7 @@ public class ActionButtonUIController : MonoBehaviour {
     private void UpdateActionButtonForActionFocusPlayer(object sender, EventArgs args) {
         if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex())) {
             if (actionManager.Actions.Count > 0)
-                actionButtonUI.SetActive(actionManager.Actions.Peek().ActiveActionMessage());
+                actionButtonUI.SetActive(actionManager.Actions.Peek().ActiveActionMessage);
             else
                 actionButtonUI.SetInactive("");
         }

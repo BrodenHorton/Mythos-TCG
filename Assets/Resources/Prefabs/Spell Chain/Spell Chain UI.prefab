@@ -77,5 +77,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellChainOrigin: {fileID: 7028898550581166875}
-  spellActionSpacing: 0.5
+  spellActionSpacing: 0.4
   spellActionUIPrefab: {fileID: 6741644228428017964, guid: aad468a09e205c54895691bb615c1a81, type: 3}

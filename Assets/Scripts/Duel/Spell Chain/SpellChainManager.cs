@@ -62,15 +62,13 @@ public class SpellChainManager : NetworkBehaviour {
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
         startingIndex = currentIndex;
-        if (currentIndex == duelManager.GetLocalClientPlayerIndex())
-            actionManager.PopAction();
 
         if(IsServer)
             PassActionServerRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void PassActionServerRpc() {
+    public void PassActionServerRpc() {
         IncrementCurrentIndexClientRpc();
         if (currentIndex == startingIndex) {
             ExecuteActionChainClientRpc();
@@ -94,7 +92,8 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.SpecifiedInParams)]
     private void AddPassActionToPlayerClientRpc(RpcParams rpcParams) {
-        actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
+        PassSpellChainDuelistAction duelistAction = new PassSpellChainDuelistAction(duelManager, this);
+        actionManager.AddAction(duelistAction);
     }
 
     [Rpc(SendTo.ClientsAndHost)]

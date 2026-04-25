@@ -1,8 +1,22 @@
-﻿public interface DuelistAction {
+﻿using System;
 
-    void Execute();
+public abstract class DuelistAction {
+    public event EventHandler OnRemoveAction;
 
-    string ActiveActionMessage();
+    protected string activeActionMessage;
+    protected string inactiveActionMessage;
 
-    string InactiveActionMessage();
+    public abstract void Execute();
+
+    protected void InvokeOnRemoveAction() {
+        OnRemoveAction?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ResetOnRemoveAction() {
+        OnRemoveAction = null;
+    }
+
+    public string ActiveActionMessage { get { return activeActionMessage; } }
+
+    public string InactiveActionMessage { get { return inactiveActionMessage; } }
 }
