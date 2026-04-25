@@ -36,7 +36,7 @@ public class PlayerUIController : DuelistUIController {
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
         stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
         EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        spellChainManager.OnPlayerSpellChainTurn += SetSelectableCardsOnPlayerSpellChainTurn;
+        spellChainManager.OnEndSpellChainTurn += SetSelectableCardsOnPlayerSpellChainTurn;
         spellChainManager.OnSpellChainFinished += SetSelectableCardsOnSpellChainFinished;
     }
 
@@ -69,7 +69,7 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void EnableSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
-        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
+        if (player.PlayerId != args.Player.PlayerId)
             return;
         if (!stateManager.CurrentState.CanPlaySetupCards() && !stateManager.CurrentState.CanPlaySpellCards())
             return;
@@ -85,14 +85,14 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void SetSelectableCardsOnSpellChainFinished(object sender, EventArgs args) {
-        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
-            return;
-
-        SetCanSelectCards(true);
+        if (player.PlayerId == duelManager.GetCurrentPlayerTurn().PlayerId)
+            SetCanSelectCards(true);
+        else
+            SetCanSelectCards(false);
     }
 
     private void DisableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
-        if (player.PlayerId != NetworkManager.Singleton.LocalClientId)
+        if (player.PlayerId != duelManager.LocalClientPlayer.PlayerId)
             return;
         if (player.PlayerId != args.Player.PlayerId)
             return;

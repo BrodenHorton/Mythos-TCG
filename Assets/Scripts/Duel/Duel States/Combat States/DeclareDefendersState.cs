@@ -56,7 +56,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         }
         BaseRpcTarget rpcTarget = RpcTarget.Group(targetIds, RpcTargetUse.Temp);
         SetDeclareDefenderActionClientRpc(rpcTarget);
-        SetActionFocusIndicesClientRpc(targetIndices.ToArray());
+        actionManager.SetActionFocusPlayerIndicesClientRpc(targetIndices.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -68,12 +68,6 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     private void SetDeclareDefenderActionClientRpc(RpcParams rpcParams) {
         actionManager.AddAction(PlayerReadyUp, "Commit", "Waiting for Opponents");
         OnSetDeclareDefeners?.Invoke(this, new PlayerEventArgs(duelManager.GetCurrentPlayerTurn()));
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SetActionFocusIndicesClientRpc(int[] targetPlayerIndicesArr) {
-        List<int> targetPlayerIndices = new List<int>(targetPlayerIndicesArr);
-        actionManager.SetActionFocusPlayerIndices(targetPlayerIndices);
     }
 
     private void PlayerReadyUp() {
@@ -99,24 +93,26 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         if (readyPlayers.Count < combatManager.DuelistCombats.Count)
             return;
 
-        UpdatePlayerReadyStateClientRpc();
+        actionManager.SetActionFocusPlayerIndicesClientRpc(duelManager.CurrentPlayerTurnIndex);
+        ClearReadyPlayersClientRpc();
+        if (combatManager.DuelistCombats.Count > 0)
+            SwitchToDeclareSpellsClientRpc();
+        else
+            SwitchToOutOfCombatClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void UpdatePlayerReadyStateClientRpc() {
+    private void ClearReadyPlayersClientRpc() {
         readyPlayers.Clear();
-        actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
-        if (combatManager.DuelistCombats.Count > 0)
-            SwitchToDeclareSpells();
-        else
-            SwitchToOutOfCombat();
     }
 
-    private void SwitchToDeclareSpells() {
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SwitchToDeclareSpellsClientRpc() {
         combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
     }
 
-    private void SwitchToOutOfCombat() {
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SwitchToOutOfCombatClientRpc() {
         combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
     }
 

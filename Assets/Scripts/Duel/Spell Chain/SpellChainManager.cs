@@ -4,7 +4,7 @@ using Unity.Netcode;
 
 public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<PlayerEventArgs> OnSpellChainStart;
-    public event EventHandler<PlayerEventArgs> OnPlayerSpellChainTurn;
+    public event EventHandler<PlayerEventArgs> OnEndSpellChainTurn;
     public event EventHandler<SpellCardAction> OnSpellAddedToSpellChain;
     public event EventHandler<SpellCardAction> OnSpellRemovedFromSpellChain;
     public event EventHandler OnSpellChainFinished;
@@ -71,32 +71,45 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     private void PassActionServerRpc() {
-        PassActionClientRpc();
+        IncrementCurrentIndexClientRpc();
+        if (currentIndex == startingIndex) {
+            ExecuteActionChainClientRpc();
+            actionManager.SetActionFocusPlayerIndicesClientRpc(duelManager.GetPlayerIndex(duelManager.GetCurrentPlayerTurn()));
+        }
+        else {
+            List<ulong> currentIndexPlayerId = new List<ulong> {
+                duelManager.Players[currentIndex].PlayerId
+            };
+            BaseRpcTarget rpcTarget = RpcTarget.Group(currentIndexPlayerId, RpcTargetUse.Temp);
+            AddPassActionToPlayerClientRpc(rpcTarget);
+            actionManager.SetActionFocusPlayerIndicesClientRpc(currentIndex);
+            EndSpellChainTurnClientRpc();
+        }
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void PassActionClientRpc() {
+    private void IncrementCurrentIndexClientRpc() {
         currentIndex = (currentIndex + 1) % duelManager.Players.Count;
-
-        if (currentIndex == startingIndex) {
-            ExecuteActionChain();
-            actionManager.SetActionFocusPlayerIndices(duelManager.GetPlayerIndex(duelManager.GetCurrentPlayerTurn()));
-        }
-        else {
-            if (duelManager.GetPlayerIndex(duelManager.LocalClientPlayer) == currentIndex)
-                actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
-            actionManager.SetActionFocusPlayerIndices(currentIndex);
-            OnPlayerSpellChainTurn?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
-        }
     }
 
-    private void ExecuteActionChain() {
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void AddPassActionToPlayerClientRpc(RpcParams rpcParams) {
+        actionManager.AddAction(PassActionServerRpc, "Pass", "Waiting for Opponent");
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void ExecuteActionChainClientRpc() {
         while(spellChain.Count > 0) {
             SpellCardAction action = spellChain.Pop();
             duelManager.ExecuteSpell(action.Initiator, action.Card);
             OnSpellRemovedFromSpellChain?.Invoke(this, action);
         }
         OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void EndSpellChainTurnClientRpc() {
+        OnEndSpellChainTurn?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
     }
 
     public bool IsSpellChainActive() {

@@ -30,11 +30,19 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
             for (int j = 0; j < INITIAL_HAND_SIZE; j++)
                 players[i].DrawCard();
         }
-        actionManager.SetActionFocusPlayerIndices(0);
-        stateManager.SwitchState(stateManager.UntapPhase);
+
+        if(IsServer) {
+            actionManager.SetActionFocusPlayerIndicesClientRpc(0);
+            SwitchToUntapPhaseClientRpc();
+        }
     }
 
     public void UpdateState() { }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SwitchToUntapPhaseClientRpc() {
+        stateManager.SwitchState(stateManager.UntapPhase);
+    }
 
     public bool CanPlaySetupCards() {
         return false;

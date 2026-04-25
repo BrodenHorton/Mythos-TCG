@@ -25,7 +25,7 @@ public class ActionManager : NetworkBehaviour {
             throw new Exception("Could not find DuelManager object");
 
         duelManager.OnNextPlayerTurn += (sender, args) => {
-            SetActionFocusPlayerIndices(args.PlayerIndex);
+            SetActionFocusPlayerIndicesClientRpc(args.PlayerIndex);
         };
         EventBus.OnActionButtonPressed += ExecuteDuelistAction;
     }
@@ -62,7 +62,9 @@ public class ActionManager : NetworkBehaviour {
             SetInactiveActionText();
     }
 
-    public void SetActionFocusPlayerIndices(int playerIndex) {
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SetActionFocusPlayerIndicesClientRpc(int playerIndex) {
         actionFocusPlayerIndices.Clear();
         actionFocusPlayerIndices.Add(playerIndex);
         OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
@@ -71,7 +73,8 @@ public class ActionManager : NetworkBehaviour {
             SetInactiveActionText();
     }
 
-    public void SetActionFocusPlayerIndices(List<int> playerIndices) {
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SetActionFocusPlayerIndicesClientRpc(int[] playerIndices) {
         actionFocusPlayerIndices.Clear();
         actionFocusPlayerIndices.AddRange(playerIndices);
         OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
