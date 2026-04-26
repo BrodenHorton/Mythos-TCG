@@ -125,7 +125,6 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
-        TcgLogger.Log("PlaySpellCard Entered");
         if (args.Card.SpellType == SpellType.Instant)
             ExecuteSpell(args.Player, args.Card);
         else

@@ -4,7 +4,8 @@ using Unity.Netcode;
 
 public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<PlayerEventArgs> OnSpellChainStart;
-    public event EventHandler<PlayerEventArgs> OnEndSpellChainTurn;
+    public event EventHandler<PlayerEventArgs> OnSpellChainTurnEnd;
+    public event EventHandler<PlayerEventArgs> OnPassActionFinished;
     public event EventHandler<SpellCardAction> OnSpellAddedToSpellChain;
     public event EventHandler<SpellCardAction> OnSpellRemovedFromSpellChain;
     public event EventHandler OnSpellChainFinished;
@@ -69,10 +70,11 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     public void PassActionServerRpc() {
+        SpellChainTurnEndClientRpc();
         IncrementCurrentIndexClientRpc();
         if (currentIndex == startingIndex) {
             ExecuteActionChainClientRpc();
-            actionManager.SetActionFocusPlayerIndicesClientRpc(duelManager.GetPlayerIndex(duelManager.GetCurrentPlayerTurn()));
+            actionManager.QueueActionFocusPlayerIndicesClientRpc(duelManager.CurrentPlayerTurnIndex);
         }
         else {
             List<ulong> currentIndexPlayerId = new List<ulong> {
@@ -80,9 +82,9 @@ public class SpellChainManager : NetworkBehaviour {
             };
             BaseRpcTarget rpcTarget = RpcTarget.Group(currentIndexPlayerId, RpcTargetUse.Temp);
             AddPassActionToPlayerClientRpc(rpcTarget);
-            actionManager.SetActionFocusPlayerIndicesClientRpc(currentIndex);
-            EndSpellChainTurnClientRpc();
+            actionManager.QueueActionFocusPlayerIndicesClientRpc(currentIndex);
         }
+        PassActionFinishedClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -107,8 +109,13 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void EndSpellChainTurnClientRpc() {
-        OnEndSpellChainTurn?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
+    private void SpellChainTurnEndClientRpc() {
+        OnSpellChainTurnEnd?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PassActionFinishedClientRpc() {
+        OnPassActionFinished?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
     }
 
     public bool IsSpellChainActive() {

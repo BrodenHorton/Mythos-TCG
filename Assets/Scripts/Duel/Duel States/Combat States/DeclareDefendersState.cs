@@ -33,7 +33,6 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     }
 
     public void EnterState() {
-        TcgLogger.Log("Entered DeclareDefendersState");
         if(IsServer) {
             StartDefenderDeclarationServerRpc();
             if (combatManager.GetTargets().Count == 0)
@@ -45,7 +44,6 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
 
     [Rpc(SendTo.Server)]
     private void StartDefenderDeclarationServerRpc() {
-        TcgLogger.Log("StartDefenderDeclarationServerRpc Entered");
         StartDeclareDefenderCombatStateClientRpc();
         List<MatchPlayer> targets = combatManager.GetTargets();
         List<ulong> targetIds = new List<ulong>();

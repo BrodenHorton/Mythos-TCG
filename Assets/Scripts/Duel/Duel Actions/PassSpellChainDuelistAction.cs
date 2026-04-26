@@ -9,15 +9,15 @@ public class PassSpellChainDuelistAction : DuelistAction {
         this.duelManager = duelManager;
         this.spellChainManager = spellChainManager;
 
-        spellChainManager.OnSpellAddedToSpellChain += ReomveAction;
+        spellChainManager.OnPassActionFinished += ReomveAction;
     }
 
     public override void Execute() {
         spellChainManager.PassActionServerRpc();
     }
 
-    private void ReomveAction(object sender, SpellCardAction action) {
-        if (action.Initiator.PlayerId != duelManager.LocalClientPlayer.PlayerId)
+    private void ReomveAction(object sender, PlayerEventArgs args) {
+        if (args.Player.PlayerId != duelManager.LocalClientPlayer.PlayerId)
             return;
 
         InvokeOnRemoveAction();

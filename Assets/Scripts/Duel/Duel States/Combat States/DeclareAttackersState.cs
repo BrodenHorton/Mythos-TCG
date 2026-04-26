@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Netcode;
+using UnityEngine;
 
 public class DeclareAttackersState : NetworkBehaviour, CombatState {
     public event EventHandler<PlayerEventArgs> OnStartDeclareAttackers;
@@ -17,7 +18,6 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
     }
 
     public void EnterState() {
-        TcgLogger.Log("DeclareAttackersState Entered");
         if (combatStateManager.DuelManager.IsLocalClientPlayerTurn())
             actionManager.AddAction(SwitchToDeclareDefendersServerRpc, "Commit", "Waiting for Opponent");
         OnStartDeclareAttackers?.Invoke(this, new PlayerEventArgs(combatStateManager.DuelManager.GetCurrentPlayerTurn()));

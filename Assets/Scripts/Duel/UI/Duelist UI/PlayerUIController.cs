@@ -36,7 +36,8 @@ public class PlayerUIController : DuelistUIController {
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
         stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
         EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        spellChainManager.OnEndSpellChainTurn += SetSelectableCardsOnPlayerSpellChainTurn;
+        actionManager.OnActionFocusChanged += SetSelectableCardsOnActionFocusChanged;
+        spellChainManager.OnSpellChainTurnEnd += SetSelectableCardsOnPlayerSpellChainTurn;
         spellChainManager.OnSpellChainFinished += SetSelectableCardsOnSpellChainFinished;
     }
 
@@ -61,17 +62,8 @@ public class PlayerUIController : DuelistUIController {
         playerUI.RemoveCardFromHand(handIndex);
     }
 
-    private void EnableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
-        if (player.PlayerId != args.Player.PlayerId)
-            return;
-
-        SetCanSelectCards(true);
-    }
-
     private void EnableSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
         if (player.PlayerId != args.Player.PlayerId)
-            return;
-        if (!stateManager.CurrentState.CanPlaySetupCards() && !stateManager.CurrentState.CanPlaySpellCards())
             return;
 
         SetCanSelectCards(true);
@@ -91,9 +83,21 @@ public class PlayerUIController : DuelistUIController {
             SetCanSelectCards(false);
     }
 
-    private void DisableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
-        if (player.PlayerId != duelManager.LocalClientPlayer.PlayerId)
+    private void SetSelectableCardsOnActionFocusChanged(object sender, EventArgs args) {
+        if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player)))
+            SetCanSelectCards(true);
+        else
+            SetCanSelectCards(false);
+    }
+
+    private void EnableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
+        if (player.PlayerId != args.Player.PlayerId)
             return;
+
+        SetCanSelectCards(true);
+    }
+
+    private void DisableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
         if (player.PlayerId != args.Player.PlayerId)
             return;
 

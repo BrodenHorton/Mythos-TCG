@@ -12,11 +12,13 @@ public class ActionManager : NetworkBehaviour {
     private DuelManager duelManager;
     private Stack<DuelistAction> actions;
     private List<int> actionFocusPlayerIndices;
+    private List<int> queuedActionFocusPlayerIndices;
     private NetworkVariable<FixedString128Bytes> inactiveActionText = new NetworkVariable<FixedString128Bytes>("");
 
     private void Awake() {
         actions = new Stack<DuelistAction>();
         actionFocusPlayerIndices = new List<int>();
+        queuedActionFocusPlayerIndices = new List<int>();
     }
 
     private void Start() {
@@ -29,6 +31,14 @@ public class ActionManager : NetworkBehaviour {
                 SetActionFocusPlayerIndicesClientRpc(args.PlayerIndex);
         };
         EventBus.OnActionButtonPressed += ExecuteAction;
+    }
+
+    private void LateUpdate() {
+        if (!IsServer)
+            return;
+
+        if(queuedActionFocusPlayerIndices.Count > 0)
+            ProcessQueuedActionFocusPlayerIndicesServerRpc();
     }
 
     public void AddAction(Action callback, string activeActionMessage, string inactiveActionMessage) {
@@ -51,7 +61,10 @@ public class ActionManager : NetworkBehaviour {
         action.ResetOnRemoveAction();
         action.Execute();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateOnNewActionAvailable();
+        if (queuedActionFocusPlayerIndices.Count > 0)
+            ProcessQueuedActionFocusPlayerIndicesServerRpc();
+        else
+            UpdateOnNewActionAvailable();
     }
 
     public void PopAction(object sender, EventArgs args) {
@@ -65,7 +78,10 @@ public class ActionManager : NetworkBehaviour {
         DuelistAction action = actions.Pop();
         action.ResetOnRemoveAction();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateOnNewActionAvailable();
+        if (queuedActionFocusPlayerIndices.Count > 0)
+            ProcessQueuedActionFocusPlayerIndicesServerRpc();
+        else
+            UpdateOnNewActionAvailable();
     }
 
     private void UpdateOnNewActionAvailable() {
@@ -77,6 +93,7 @@ public class ActionManager : NetworkBehaviour {
         SetInactiveActionText();
     }
 
+    // Should only be called when you want the action focus to immediately switch to the specified player
     [Rpc(SendTo.ClientsAndHost)]
     public void SetActionFocusPlayerIndicesClientRpc(int playerIndex) {
         actionFocusPlayerIndices.Clear();
@@ -85,6 +102,7 @@ public class ActionManager : NetworkBehaviour {
         UpdateOnNewActionAvailable();
     }
 
+    // Should only be called when you want the action focus to immediately switch to the specified players
     [Rpc(SendTo.ClientsAndHost)]
     public void SetActionFocusPlayerIndicesClientRpc(int[] playerIndices) {
         actionFocusPlayerIndices.Clear();
@@ -92,6 +110,31 @@ public class ActionManager : NetworkBehaviour {
         OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
         // Fix this later. Currently will update inactive action text for each player index
         UpdateOnNewActionAvailable();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void QueueActionFocusPlayerIndicesClientRpc(int playerIndex) {
+        queuedActionFocusPlayerIndices.Add(playerIndex);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void QueueActionFocusPlayerIndicesClientRpc(int[] playerIndices) {
+        queuedActionFocusPlayerIndices.AddRange(playerIndices);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ProcessQueuedActionFocusPlayerIndicesServerRpc() {
+        if (queuedActionFocusPlayerIndices.Count == 0)
+            throw new Exception("Attempting to process queued action focus player indices when the list is empty");
+
+        int[] playerIndices = queuedActionFocusPlayerIndices.ToArray();
+        ClearQueuedActionFocusPlayerIndicesClientRpc();
+        SetActionFocusPlayerIndicesClientRpc(playerIndices);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void ClearQueuedActionFocusPlayerIndicesClientRpc() {
+        queuedActionFocusPlayerIndices.Clear();
     }
 
     public void RemoveActionFocusIndex(int playerIndex) {
