@@ -26,7 +26,7 @@ public class ProcessCombatState : NetworkBehaviour, CombatState {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void ProcessCombatClientRpc() {
-        combatManager.ProcessCombat();
+        combatManager.ProcessNextDuelistCombat();
     }
 
     [Rpc(SendTo.ClientsAndHost)]

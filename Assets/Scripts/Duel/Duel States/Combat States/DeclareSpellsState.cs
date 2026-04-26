@@ -9,11 +9,13 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
     private CombatStateManager combatStateManager;
     private DuelManager duelManager;
     private CombatManager combatManager;
+    private ActionManager actionManager;
+    private SpellChainManager spellChainManager;
 
-    private List<ulong> readyPlayers;
+    private DuelistCombat duelistCombat;
 
     private void Awake() {
-        readyPlayers = new List<ulong>();
+        duelistCombat = null;
     }
 
     private void Start() {
@@ -26,18 +28,45 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         combatManager = FindFirstObjectByType<CombatManager>();
         if (combatManager == null)
             throw new Exception("Could not find CombatManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
+        spellChainManager = FindFirstObjectByType<SpellChainManager>();
+        if (spellChainManager == null)
+            throw new Exception("Could not find SpellChainManager object");
     }
 
     public void EnterState() {
-        if (IsServer)
-            SwitchToProcessCombatClientRpc();
+        if(IsServer) {
+            if (combatManager.DuelistCombats.Count == 0)
+                SwitchToOutOfCombatClientRpc();
+            else {
+                SetDuelistCombatClientRpc();
+                SetInitiatorActionClientRpc();
+            }
+        }
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
+    private void SetDuelistCombatClientRpc() {
+        duelistCombat = combatManager.DuelistCombats[0];
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SetInitiatorActionClientRpc() {
+        // Add the skip action to the initiator and give the initiator the action focus
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
     private void SwitchToProcessCombatClientRpc() {
         combatStateManager.SwitchState(combatStateManager.ProcessCombatState);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SwitchToOutOfCombatClientRpc() {
+        combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
     }
 
     public bool CanPlaySetupCards() {

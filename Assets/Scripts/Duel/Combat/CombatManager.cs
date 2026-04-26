@@ -75,20 +75,20 @@ public class CombatManager : NetworkBehaviour {
         GetDuelistCombat(initiator, target).RemoveDefender(defender);
     }
 
-    public void ProcessCombat() {
-        Queue<DuelistCombat> combatQueue = new Queue<DuelistCombat>(duelistCombats);
-        while(combatQueue.Count > 0) {
-            DuelistCombat duelistCombat = combatQueue.Dequeue();
-            for(int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
-                CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
-                if (creatureCombat.Defender == null)
-                    duelistCombat.Target.LifePointsDamage(creatureCombat.Attacker.GetAtk());
-                else
-                    creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
-            }
-            OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(duelistCombat));
-            duelistCombats.Remove(duelistCombat);
+    public void ProcessNextDuelistCombat() {
+        if (duelistCombats.Count == 0)
+            throw new Exception("Attempting to process the next DuelistCombat when the duelistCombats list is empty");
+
+        DuelistCombat duelistCombat = duelistCombats[0];
+        for (int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
+            CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
+            if (creatureCombat.Defender == null)
+                duelistCombat.Target.LifePointsDamage(creatureCombat.Attacker.GetAtk());
+            else
+                creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
         }
+        OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(duelistCombat));
+        duelistCombats.Remove(duelistCombat);
     }
 
     private bool HasExistingDuelistCombat(MatchPlayer initiator, MatchPlayer target) {
