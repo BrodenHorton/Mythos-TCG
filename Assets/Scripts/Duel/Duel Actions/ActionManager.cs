@@ -93,13 +93,22 @@ public class ActionManager : NetworkBehaviour {
         SetInactiveActionText();
     }
 
-    // Should only be called when you want the action focus to immediately switch to the specified player
+    public void SetActionFocusPlayerIndices(int playerIndex) {
+        SetActionFocusPlayerIndices(new int[] { playerIndex });
+    }
+
+    // Should only be called when you want the action focus to immediately switch to the specified players
+    public void SetActionFocusPlayerIndices(int[] playerIndices) {
+        actionFocusPlayerIndices.Clear();
+        actionFocusPlayerIndices.AddRange(playerIndices);
+        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
+        // Fix this later. Currently will update inactive action text for each player index
+        UpdateOnNewActionAvailable();
+    }
+
     [Rpc(SendTo.ClientsAndHost)]
     public void SetActionFocusPlayerIndicesClientRpc(int playerIndex) {
-        actionFocusPlayerIndices.Clear();
-        actionFocusPlayerIndices.Add(playerIndex);
-        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
-        UpdateOnNewActionAvailable();
+        SetActionFocusPlayerIndicesClientRpc(new int[] { playerIndex });
     }
 
     // Should only be called when you want the action focus to immediately switch to the specified players

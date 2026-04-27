@@ -13,9 +13,11 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
     private SpellChainManager spellChainManager;
 
     private DuelistCombat duelistCombat;
+    private List<int> declareSpellsPlayerIndices;
 
     private void Awake() {
         duelistCombat = null;
+        declareSpellsPlayerIndices = new List<int>();
     }
 
     private void Start() {
@@ -34,39 +36,58 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         spellChainManager = FindFirstObjectByType<SpellChainManager>();
         if (spellChainManager == null)
             throw new Exception("Could not find SpellChainManager object");
+
+        // TODO: Add listener for OnSpellChainFinish and go to the next players turn if declareSpellsPlayerIndices isn't empty
     }
 
     public void EnterState() {
         if(IsServer) {
             if (combatManager.DuelistCombats.Count == 0)
-                SwitchToOutOfCombatClientRpc();
-            else {
-                SetDuelistCombatClientRpc();
-                SetInitiatorActionClientRpc();
-            }
+                throw new Exception("DeclareSpellsState entered when there are no duelist combats to process");
+
+            InitializeDeclareSpellsStateClientRpc();
+            AddNextSpellActionServerRpc();
         }
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SetDuelistCombatClientRpc() {
+    private void InitializeDeclareSpellsStateClientRpc() {
         duelistCombat = combatManager.DuelistCombats[0];
+        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Initiator));
+        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Target));
+    }
+
+    [Rpc(SendTo.Server)]
+    private void AddNextSpellActionServerRpc() {
+        AddNextSpellActionClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SetInitiatorActionClientRpc() {
-        // Add the skip action to the initiator and give the initiator the action focus
+    private void AddNextSpellActionClientRpc() {
+        if (declareSpellsPlayerIndices.Count == 0)
+            throw new Exception("Attempting to add next spell action when declareSpellsPlayerIndices is empty");
+
+        int playerIndex = declareSpellsPlayerIndices[0];
+        declareSpellsPlayerIndices.RemoveAt(0);
+        if(playerIndex == duelManager.GetLocalClientPlayerIndex())
+            actionManager.AddAction(new SkipDeclareSpellDuelistAction(duelManager, spellChainManager, this));
+        actionManager.SetActionFocusPlayerIndices(playerIndex);
     }
+
+    [Rpc(SendTo.Server)]
+    public void SkipActionServerRpc() {
+        if(declareSpellsPlayerIndices.Count > 0)
+            AddNextSpellActionServerRpc();
+        else
+            SwitchToProcessCombatClientRpc();
+    }
+
 
     [Rpc(SendTo.ClientsAndHost)]
     private void SwitchToProcessCombatClientRpc() {
         combatStateManager.SwitchState(combatStateManager.ProcessCombatState);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToOutOfCombatClientRpc() {
-        combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
     }
 
     public bool CanPlaySetupCards() {
