@@ -4,6 +4,7 @@ using Unity.Netcode;
 
 public class CombatManager : NetworkBehaviour {
     public event EventHandler<DuelistCombatEventArgs> OnDuelistCombatFinsihed;
+    public event EventHandler OnCombatFinsihed;
 
     private DuelManager duelManager;
     private List<DuelistCombat> duelistCombats;

@@ -5,7 +5,6 @@ using Unity.Netcode;
 public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<PlayerEventArgs> OnSpellChainStart;
     public event EventHandler<PlayerEventArgs> OnSpellChainTurnEnd;
-    public event EventHandler<PlayerEventArgs> OnPassActionFinished;
     public event EventHandler<SpellCardAction> OnSpellAddedToSpellChain;
     public event EventHandler<SpellCardAction> OnSpellRemovedFromSpellChain;
     public event EventHandler OnSpellChainFinished;
@@ -30,7 +29,7 @@ public class SpellChainManager : NetworkBehaviour {
         if (actionManager == null)
             throw new Exception("Could not find ActionManager object");
 
-        EventBus.OnActionChainSpellCardPlayed += AddSpellToChain;
+        EventBus.OnSpellChainCardPlayed += AddSpellToChain;
     }
 
     private void AddSpellToChain(object sender, PlayerCardEventArgs<SpellCard> args) {
@@ -70,11 +69,12 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     public void PassActionServerRpc() {
-        SpellChainTurnEndClientRpc();
+        InvokeOnSpellChainTurnEndClientRpc();
         IncrementCurrentIndexClientRpc();
         if (currentIndex == startingIndex) {
             ExecuteActionChainClientRpc();
-            actionManager.QueueActionFocusPlayerIndicesClientRpc(duelManager.CurrentPlayerTurnIndex);
+            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
+            InvokeOnSpellChainFinishedClientRpc();
         }
         else {
             List<ulong> currentIndexPlayerId = new List<ulong> {
@@ -82,9 +82,8 @@ public class SpellChainManager : NetworkBehaviour {
             };
             BaseRpcTarget rpcTarget = RpcTarget.Group(currentIndexPlayerId, RpcTargetUse.Temp);
             AddPassActionToPlayerClientRpc(rpcTarget);
-            actionManager.QueueActionFocusPlayerIndicesClientRpc(currentIndex);
+            actionManager.SetActionFocusPlayerIndices(currentIndex);
         }
-        PassActionFinishedClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -105,17 +104,16 @@ public class SpellChainManager : NetworkBehaviour {
             duelManager.ExecuteSpell(action.Initiator, action.Card);
             OnSpellRemovedFromSpellChain?.Invoke(this, action);
         }
-        OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SpellChainTurnEndClientRpc() {
+    private void InvokeOnSpellChainTurnEndClientRpc() {
         OnSpellChainTurnEnd?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void PassActionFinishedClientRpc() {
-        OnPassActionFinished?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
+    private void InvokeOnSpellChainFinishedClientRpc() {
+        OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
     }
 
     public bool IsSpellChainActive() {

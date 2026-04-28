@@ -9,7 +9,7 @@ public class PassSpellChainDuelistAction : DuelistAction {
         this.duelManager = duelManager;
         this.spellChainManager = spellChainManager;
 
-        spellChainManager.OnPassActionFinished += ReomveAction;
+        spellChainManager.OnSpellChainTurnEnd += ReomveAction;
     }
 
     public override void Execute() {

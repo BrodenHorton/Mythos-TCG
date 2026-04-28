@@ -5,20 +5,16 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class ActionManager : NetworkBehaviour {
-    public event EventHandler OnActionFocusChanged;
     public event EventHandler OnActionAdded;
     public event EventHandler OnActionRemoved;
 
     private DuelManager duelManager;
     private Stack<DuelistAction> actions;
-    private List<int> actionFocusPlayerIndices;
-    private List<int> queuedActionFocusPlayerIndices;
+    private NetworkList<int> actionFocusPlayerIndices = new NetworkList<int>();
     private NetworkVariable<FixedString128Bytes> inactiveActionText = new NetworkVariable<FixedString128Bytes>("");
 
     private void Awake() {
         actions = new Stack<DuelistAction>();
-        actionFocusPlayerIndices = new List<int>();
-        queuedActionFocusPlayerIndices = new List<int>();
     }
 
     private void Start() {
@@ -28,17 +24,9 @@ public class ActionManager : NetworkBehaviour {
 
         duelManager.OnNextPlayerTurn += (sender, args) => {
             if(IsServer)
-                SetActionFocusPlayerIndicesClientRpc(args.PlayerIndex);
+                SetActionFocusPlayerIndices(args.PlayerIndex);
         };
         EventBus.OnActionButtonPressed += ExecuteAction;
-    }
-
-    private void LateUpdate() {
-        if (!IsServer)
-            return;
-
-        if(queuedActionFocusPlayerIndices.Count > 0)
-            ProcessQueuedActionFocusPlayerIndicesServerRpc();
     }
 
     public void AddAction(Action callback, string activeActionMessage, string inactiveActionMessage) {
@@ -61,10 +49,7 @@ public class ActionManager : NetworkBehaviour {
         action.ResetOnRemoveAction();
         action.Execute();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        if (queuedActionFocusPlayerIndices.Count > 0)
-            ProcessQueuedActionFocusPlayerIndicesServerRpc();
-        else
-            UpdateOnNewActionAvailable();
+        UpdateOnNewActionAvailable();
     }
 
     public void PopAction(object sender, EventArgs args) {
@@ -78,10 +63,7 @@ public class ActionManager : NetworkBehaviour {
         DuelistAction action = actions.Pop();
         action.ResetOnRemoveAction();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        if (queuedActionFocusPlayerIndices.Count > 0)
-            ProcessQueuedActionFocusPlayerIndicesServerRpc();
-        else
-            UpdateOnNewActionAvailable();
+        UpdateOnNewActionAvailable();
     }
 
     private void UpdateOnNewActionAvailable() {
@@ -94,56 +76,17 @@ public class ActionManager : NetworkBehaviour {
     }
 
     public void SetActionFocusPlayerIndices(int playerIndex) {
-        SetActionFocusPlayerIndices(new int[] { playerIndex });
+        actionFocusPlayerIndices.Clear();
+        actionFocusPlayerIndices.Add(playerIndex);
+        UpdateOnNewActionAvailable();
     }
 
-    // Should only be called when you want the action focus to immediately switch to the specified players
     public void SetActionFocusPlayerIndices(int[] playerIndices) {
         actionFocusPlayerIndices.Clear();
-        actionFocusPlayerIndices.AddRange(playerIndices);
-        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
+        for(int i = 0; i < playerIndices.Length; i++)
+            actionFocusPlayerIndices.Add(playerIndices[i]);
         // Fix this later. Currently will update inactive action text for each player index
         UpdateOnNewActionAvailable();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    public void SetActionFocusPlayerIndicesClientRpc(int playerIndex) {
-        SetActionFocusPlayerIndicesClientRpc(new int[] { playerIndex });
-    }
-
-    // Should only be called when you want the action focus to immediately switch to the specified players
-    [Rpc(SendTo.ClientsAndHost)]
-    public void SetActionFocusPlayerIndicesClientRpc(int[] playerIndices) {
-        actionFocusPlayerIndices.Clear();
-        actionFocusPlayerIndices.AddRange(playerIndices);
-        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
-        // Fix this later. Currently will update inactive action text for each player index
-        UpdateOnNewActionAvailable();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    public void QueueActionFocusPlayerIndicesClientRpc(int playerIndex) {
-        queuedActionFocusPlayerIndices.Add(playerIndex);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    public void QueueActionFocusPlayerIndicesClientRpc(int[] playerIndices) {
-        queuedActionFocusPlayerIndices.AddRange(playerIndices);
-    }
-
-    [Rpc(SendTo.Server)]
-    public void ProcessQueuedActionFocusPlayerIndicesServerRpc() {
-        if (queuedActionFocusPlayerIndices.Count == 0)
-            throw new Exception("Attempting to process queued action focus player indices when the list is empty");
-
-        int[] playerIndices = queuedActionFocusPlayerIndices.ToArray();
-        ClearQueuedActionFocusPlayerIndicesClientRpc();
-        SetActionFocusPlayerIndicesClientRpc(playerIndices);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    public void ClearQueuedActionFocusPlayerIndicesClientRpc() {
-        queuedActionFocusPlayerIndices.Clear();
     }
 
     public void RemoveActionFocusIndex(int playerIndex) {
@@ -151,7 +94,6 @@ public class ActionManager : NetworkBehaviour {
             throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
 
         actionFocusPlayerIndices.Remove(playerIndex);
-        OnActionFocusChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetInactiveActionText() {
@@ -160,7 +102,7 @@ public class ActionManager : NetworkBehaviour {
 
     public Stack<DuelistAction> Actions { get { return actions; } }
 
-    public List<int> ActionFocusPlayerIndices { get { return actionFocusPlayerIndices; } }
+    public NetworkList<int> ActionFocusPlayerIndices { get { return actionFocusPlayerIndices; } }
 
     public NetworkVariable<FixedString128Bytes> InactiveActionText { get { return inactiveActionText; } }
 }

@@ -37,7 +37,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         if (spellChainManager == null)
             throw new Exception("Could not find SpellChainManager object");
 
-        // TODO: Add listener for OnSpellChainFinish and go to the next players turn if declareSpellsPlayerIndices isn't empty
+        spellChainManager.OnSpellChainFinished += SkipActionOnSpellChainFinished;
     }
 
     public void EnterState() {
@@ -45,23 +45,18 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             if (combatManager.DuelistCombats.Count == 0)
                 throw new Exception("DeclareSpellsState entered when there are no duelist combats to process");
 
-            InitializeDeclareSpellsStateClientRpc();
-            AddNextSpellActionServerRpc();
+            InitializeStateClientRpc();
+            AddNextSpellActionClientRpc();
         }
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InitializeDeclareSpellsStateClientRpc() {
+    private void InitializeStateClientRpc() {
         duelistCombat = combatManager.DuelistCombats[0];
         declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Initiator));
         declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Target));
-    }
-
-    [Rpc(SendTo.Server)]
-    private void AddNextSpellActionServerRpc() {
-        AddNextSpellActionClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -70,18 +65,44 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             throw new Exception("Attempting to add next spell action when declareSpellsPlayerIndices is empty");
 
         int playerIndex = declareSpellsPlayerIndices[0];
-        declareSpellsPlayerIndices.RemoveAt(0);
-        if(playerIndex == duelManager.GetLocalClientPlayerIndex())
+        if (playerIndex == duelManager.GetLocalClientPlayerIndex())
             actionManager.AddAction(new SkipDeclareSpellDuelistAction(duelManager, spellChainManager, this));
         actionManager.SetActionFocusPlayerIndices(playerIndex);
     }
 
+    private void SkipActionOnSpellChainFinished(object sender, EventArgs args) {
+        if (!IsServer)
+            return;
+        if (duelistCombat == null)
+            return;
+
+        SkipActionServerRpc();
+    }
+
     [Rpc(SendTo.Server)]
     public void SkipActionServerRpc() {
-        if(declareSpellsPlayerIndices.Count > 0)
-            AddNextSpellActionServerRpc();
-        else
+        RemoveTopPlayerIndexClientRpc();
+        if (declareSpellsPlayerIndices.Count > 0)
+            AddNextSpellActionClientRpc();
+        else {
+            ResetStateClientRpc();
+            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
             SwitchToProcessCombatClientRpc();
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void RemoveTopPlayerIndexClientRpc() {
+        if (declareSpellsPlayerIndices.Count == 0)
+            throw new Exception("Attempting to remove element when declareSpellsPlayerIndices is empty");
+
+        declareSpellsPlayerIndices.RemoveAt(0);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void ResetStateClientRpc() {
+        duelistCombat = null;
+        declareSpellsPlayerIndices.Clear();
     }
 
 

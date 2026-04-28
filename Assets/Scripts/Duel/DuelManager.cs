@@ -108,7 +108,6 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlaySpellCardFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
-        TcgLogger.Log("Playing spell card from hand");
         PlaySpellCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
@@ -128,7 +127,7 @@ public class DuelManager : NetworkBehaviour {
         if (args.Card.SpellType == SpellType.Instant)
             ExecuteSpell(args.Player, args.Card);
         else
-            EventBus.InvokeOnActionChainSpellCardPlayed(this, new PlayerCardEventArgs<SpellCard>(args.Player, args.Card));
+            EventBus.InvokeOnSpellChainCardPlayed(this, new PlayerCardEventArgs<SpellCard>(args.Player, args.Card));
     }
 
     public void ExecuteSpell(MatchPlayer player, SpellCard spellCard) {

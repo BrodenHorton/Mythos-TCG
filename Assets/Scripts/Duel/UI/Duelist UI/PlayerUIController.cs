@@ -36,8 +36,7 @@ public class PlayerUIController : DuelistUIController {
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
         stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
         EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        actionManager.OnActionFocusChanged += SetSelectableCardsOnActionFocusChanged;
-        spellChainManager.OnSpellChainTurnEnd += SetSelectableCardsOnPlayerSpellChainTurn;
+        actionManager.ActionFocusPlayerIndices.OnListChanged += SetSelectableCardsOnActionFocusChanged;
         spellChainManager.OnSpellChainFinished += SetSelectableCardsOnSpellChainFinished;
     }
 
@@ -83,7 +82,7 @@ public class PlayerUIController : DuelistUIController {
             SetCanSelectCards(false);
     }
 
-    private void SetSelectableCardsOnActionFocusChanged(object sender, EventArgs args) {
+    private void SetSelectableCardsOnActionFocusChanged(NetworkListEvent<int> changedEvent) {
         if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player)))
             SetCanSelectCards(true);
         else

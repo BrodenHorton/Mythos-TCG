@@ -54,7 +54,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         }
         BaseRpcTarget rpcTarget = RpcTarget.Group(targetIds, RpcTargetUse.Temp);
         SetDeclareDefenderActionClientRpc(rpcTarget);
-        actionManager.SetActionFocusPlayerIndicesClientRpc(targetIndices.ToArray());
+        actionManager.SetActionFocusPlayerIndices(targetIndices.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -91,7 +91,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         if (readyPlayers.Count < combatManager.DuelistCombats.Count)
             return;
 
-        actionManager.SetActionFocusPlayerIndicesClientRpc(duelManager.CurrentPlayerTurnIndex);
+        actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
         ClearReadyPlayersClientRpc();
         if (combatManager.DuelistCombats.Count > 0)
             SwitchToDeclareSpellsClientRpc();

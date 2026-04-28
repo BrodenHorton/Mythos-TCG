@@ -18,7 +18,10 @@ public class ProcessCombatState : NetworkBehaviour, CombatState {
     public void EnterState() {
         if (IsServer) {
             ProcessCombatClientRpc();
-            SwitchToOutOfCombatClientRpc();
+            if(combatManager.DuelistCombats.Count > 0)
+                SwitchToDeclareSpellsStateClientRpc();
+            else
+                SwitchToOutOfCombatClientRpc();
         }
     }
 
@@ -27,6 +30,11 @@ public class ProcessCombatState : NetworkBehaviour, CombatState {
     [Rpc(SendTo.ClientsAndHost)]
     private void ProcessCombatClientRpc() {
         combatManager.ProcessNextDuelistCombat();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SwitchToDeclareSpellsStateClientRpc() {
+        combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
     }
 
     [Rpc(SendTo.ClientsAndHost)]

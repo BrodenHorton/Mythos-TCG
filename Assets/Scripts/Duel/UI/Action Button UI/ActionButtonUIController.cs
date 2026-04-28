@@ -31,9 +31,15 @@ public class ActionButtonUIController : MonoBehaviour {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed += ButtonPressedCheck;
 
-        actionManager.OnActionFocusChanged += UpdateActionButtonForActionFocusPlayer;
-        actionManager.OnActionAdded += UpdateActionButtonForActionFocusPlayer;
-        actionManager.OnActionRemoved += UpdateActionButtonForActionFocusPlayer;
+        actionManager.ActionFocusPlayerIndices.OnListChanged += (changeEvent) => {
+            UpdateActionButtonForActionFocusPlayer();
+        };
+        actionManager.OnActionAdded += (sender, args) => {
+            UpdateActionButtonForActionFocusPlayer();
+        };
+        actionManager.OnActionRemoved += (sender, args) => {
+            UpdateActionButtonForActionFocusPlayer();
+        };
         actionManager.InactiveActionText.OnValueChanged += UpdateInactiveText;
     }
 
@@ -42,7 +48,7 @@ public class ActionButtonUIController : MonoBehaviour {
         playerInputActions.Player.Select.performed -= ButtonPressedCheck;
     }
 
-    private void UpdateActionButtonForActionFocusPlayer(object sender, EventArgs args) {
+    private void UpdateActionButtonForActionFocusPlayer() {
         if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex())) {
             if (actionManager.Actions.Count > 0)
                 actionButtonUI.SetActive(actionManager.Actions.Peek().ActiveActionMessage);

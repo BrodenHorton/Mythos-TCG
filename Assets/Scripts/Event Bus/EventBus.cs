@@ -19,7 +19,7 @@ public static class EventBus {
     public static event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
     public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
     public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardPlayedFromHand;
-    public static event EventHandler<PlayerCardEventArgs<SpellCard>> OnActionChainSpellCardPlayed; // This event should only ever be invoked by the server
+    public static event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed; // This event should only ever be invoked by the server
     // Player Status Changes
     public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
@@ -107,8 +107,8 @@ public static class EventBus {
     }
 
     // This event should only ever be invoked by the server
-    public static void InvokeOnActionChainSpellCardPlayed(object sender, PlayerCardEventArgs<SpellCard> args) {
-        OnActionChainSpellCardPlayed?.Invoke(sender, args);
+    public static void InvokeOnSpellChainCardPlayed(object sender, PlayerCardEventArgs<SpellCard> args) {
+        OnSpellChainCardPlayed?.Invoke(sender, args);
     }
     #endregion
 
