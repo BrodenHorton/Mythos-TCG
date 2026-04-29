@@ -15,6 +15,10 @@ public class ActionManager : NetworkBehaviour {
 
     private void Awake() {
         actions = new Stack<DuelistAction>();
+
+        actionFocusPlayerIndices.OnListChanged += (changedEvent) => {
+            SetInactiveActionText();
+        };
     }
 
     private void Start() {
@@ -38,7 +42,7 @@ public class ActionManager : NetworkBehaviour {
             actions.Peek().ResetOnRemoveAction();
         actions.Push(duelistAction);
         OnActionAdded?.Invoke(this, EventArgs.Empty);
-        UpdateOnNewActionAvailable();
+        UpdateNewActionAvailable();
     }
 
     private void ExecuteAction(object sender, EventArgs args) {
@@ -49,7 +53,7 @@ public class ActionManager : NetworkBehaviour {
         action.ResetOnRemoveAction();
         action.Execute();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateOnNewActionAvailable();
+        UpdateNewActionAvailable();
     }
 
     public void PopAction(object sender, EventArgs args) {
@@ -63,30 +67,29 @@ public class ActionManager : NetworkBehaviour {
         DuelistAction action = actions.Pop();
         action.ResetOnRemoveAction();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateOnNewActionAvailable();
+        UpdateNewActionAvailable();
     }
 
-    private void UpdateOnNewActionAvailable() {
-        if (!actionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex()))
-            return;
-
+    private void UpdateNewActionAvailable() {
+        TcgLogger.Log("UpdatingOnNewActionAvailable");
         if (actions.Count != 0)
             actions.Peek().OnRemoveAction += PopAction;
-        SetInactiveActionText();
+
+        if (!actionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex()))
+            SetInactiveActionText();
     }
 
     public void SetActionFocusPlayerIndices(int playerIndex) {
         actionFocusPlayerIndices.Clear();
         actionFocusPlayerIndices.Add(playerIndex);
-        UpdateOnNewActionAvailable();
+        TcgLogger.Log("Set action focus to: " + playerIndex);
+        TcgLogger.Log("Current action focus index: " + actionFocusPlayerIndices[0]);
     }
 
     public void SetActionFocusPlayerIndices(int[] playerIndices) {
         actionFocusPlayerIndices.Clear();
         for(int i = 0; i < playerIndices.Length; i++)
             actionFocusPlayerIndices.Add(playerIndices[i]);
-        // Fix this later. Currently will update inactive action text for each player index
-        UpdateOnNewActionAvailable();
     }
 
     public void RemoveActionFocusIndex(int playerIndex) {

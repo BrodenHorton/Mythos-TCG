@@ -65,9 +65,13 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             throw new Exception("Attempting to add next spell action when declareSpellsPlayerIndices is empty");
 
         int playerIndex = declareSpellsPlayerIndices[0];
-        if (playerIndex == duelManager.GetLocalClientPlayerIndex())
+        TcgLogger.Log("Adding next skip action to player index:: " + playerIndex);
+        if (playerIndex == duelManager.GetLocalClientPlayerIndex()) {
+            TcgLogger.Log("Adding Skip action to player");
             actionManager.AddAction(new SkipDeclareSpellDuelistAction(duelManager, spellChainManager, this));
-        actionManager.SetActionFocusPlayerIndices(playerIndex);
+            TcgLogger.Log("Current number of actions for player: " + actionManager.Actions.Count);
+            actionManager.SetActionFocusPlayerIndices(playerIndex);
+        }
     }
 
     private void SkipActionOnSpellChainFinished(object sender, EventArgs args) {
@@ -81,6 +85,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
 
     [Rpc(SendTo.Server)]
     public void SkipActionServerRpc() {
+        TcgLogger.Log("Entered SkipActinServerRpc");
         RemoveTopPlayerIndexClientRpc();
         if (declareSpellsPlayerIndices.Count > 0)
             AddNextSpellActionClientRpc();

@@ -108,6 +108,8 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnSpellChainTurnEndClientRpc() {
+        TcgLogger.Log("Invoking OnSpellChainTurnEndClientRpc");
+        TcgLogger.Log("Actions count: " + actionManager.Actions.Count);
         OnSpellChainTurnEnd?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
     }
 

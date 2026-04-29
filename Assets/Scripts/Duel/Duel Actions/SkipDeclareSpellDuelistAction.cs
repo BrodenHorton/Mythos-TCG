@@ -20,6 +20,7 @@ public class SkipDeclareSpellDuelistAction : DuelistAction {
         if (args.Player.PlayerId != duelManager.LocalClientPlayer.PlayerId)
             return;
 
+        TcgLogger.Log("Remove Action executed for SkipDeclareSpellDuelistAction");
         InvokeOnRemoveAction();
     }
 }
