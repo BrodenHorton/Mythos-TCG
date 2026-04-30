@@ -36,7 +36,7 @@ public class PlayerUIController : DuelistUIController {
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
         stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
         EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        actionManager.ActionFocusPlayerIndices.OnListChanged += SetSelectableCardsOnActionFocusChanged;
+        actionManager.OnCanPerformActionChanged += SetSelectableCardsOnActionFocusChanged;
         spellChainManager.OnSpellChainFinished += SetSelectableCardsOnSpellChainFinished;
     }
 
@@ -82,8 +82,8 @@ public class PlayerUIController : DuelistUIController {
             SetCanSelectCards(false);
     }
 
-    private void SetSelectableCardsOnActionFocusChanged(NetworkListEvent<int> changedEvent) {
-        if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player)))
+    private void SetSelectableCardsOnActionFocusChanged(object sender, EventArgs args) {
+        if (actionManager.CanPerformAction)
             SetCanSelectCards(true);
         else
             SetCanSelectCards(false);
@@ -143,7 +143,7 @@ public class PlayerUIController : DuelistUIController {
             args.IsCancelled = true;
             return;
         }
-        if (!actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player))) {
+        if (!actionManager.CanPerformAction) {
             args.IsCancelled = true;
             return;
         }
@@ -158,7 +158,7 @@ public class PlayerUIController : DuelistUIController {
     }
 
     private void PlayHandCard(object sender, HandCardEnteringPlayingFieldEventArgs args) {
-        if (!actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetPlayerIndex(player)))
+        if (!actionManager.CanPerformAction)
             return;
         if (args.CardIndex < 0 || args.CardIndex >= player.Hand.Count)
             throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);

@@ -32,7 +32,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         }
 
         if(IsServer) {
-            actionManager.SetActionFocusPlayerIndices(0);
+            actionManager.SetActionFocusPlayerIndicesServerRpc(0);
             SwitchToUntapPhaseClientRpc();
         }
     }

@@ -70,7 +70,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             TcgLogger.Log("Adding Skip action to player");
             actionManager.AddAction(new SkipDeclareSpellDuelistAction(duelManager, spellChainManager, this));
             TcgLogger.Log("Current number of actions for player: " + actionManager.Actions.Count);
-            actionManager.SetActionFocusPlayerIndices(playerIndex);
+            actionManager.SetActionFocusPlayerIndicesServerRpc(playerIndex);
         }
     }
 
@@ -91,7 +91,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             AddNextSpellActionClientRpc();
         else {
             ResetStateClientRpc();
-            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
+            actionManager.SetActionFocusPlayerIndicesServerRpc(duelManager.CurrentPlayerTurnIndex);
             SwitchToProcessCombatClientRpc();
         }
     }

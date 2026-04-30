@@ -31,7 +31,7 @@ public class ActionButtonUIController : MonoBehaviour {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.performed += ButtonPressedCheck;
 
-        actionManager.ActionFocusPlayerIndices.OnListChanged += (changeEvent) => {
+        actionManager.OnCanPerformActionChanged += (sender, args) => {
             UpdateActionButtonForActionFocusPlayer();
         };
         actionManager.OnActionAdded += (sender, args) => {
@@ -49,26 +49,23 @@ public class ActionButtonUIController : MonoBehaviour {
     }
 
     private void UpdateActionButtonForActionFocusPlayer() {
-        TcgLogger.Log("Updating action button");
-        if (actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex())) {
-            TcgLogger.Log("Action Button: action focus contains player index");
+        if (actionManager.CanPerformAction) {
             if (actionManager.Actions.Count > 0) {
-                TcgLogger.Log("Action Button: Action stack contains actions. Setting button to active");
                 actionButtonUI.SetActive(actionManager.Actions.Peek().ActiveActionMessage);
             }
             else {
-                TcgLogger.Log("Action Button: Action stack doesn't contain actions. Setting button to inactive");
                 actionButtonUI.SetInactive("");
             }
         }
         else {
-            TcgLogger.Log("Action Button: action focus doesn't contain player index");
             actionButtonUI.SetInactive(actionManager.InactiveActionText.Value.ToString());
         }
     }
 
     private void UpdateInactiveText(FixedString128Bytes oldInactiveActionText, FixedString128Bytes inactiveActionText) {
-        if (actionButtonUI.IsActive || actionManager.ActionFocusPlayerIndices.Contains(duelManager.GetLocalClientPlayerIndex()))
+        if (actionButtonUI.IsActive)
+            return;
+        if (actionManager.CanPerformAction)
             return;
 
         actionButtonUI.SetInactive(inactiveActionText.ToString());

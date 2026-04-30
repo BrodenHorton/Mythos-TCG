@@ -34,9 +34,10 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
 
     public void EnterState() {
         if(IsServer) {
-            StartDefenderDeclarationServerRpc();
             if (combatManager.GetTargets().Count == 0)
                 UpdatePlayerReadyStateServerRpc();
+            else
+                StartDefenderDeclarationServerRpc();
         }
     }
 
@@ -54,7 +55,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         }
         BaseRpcTarget rpcTarget = RpcTarget.Group(targetIds, RpcTargetUse.Temp);
         SetDeclareDefenderActionClientRpc(rpcTarget);
-        actionManager.SetActionFocusPlayerIndices(targetIndices.ToArray());
+        actionManager.SetActionFocusPlayerIndicesServerRpc(targetIndices.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -69,7 +70,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     }
 
     private void PlayerReadyUp() {
-        actionManager.RemoveActionFocusIndex(duelManager.GetLocalClientPlayerIndex());
+        actionManager.RemoveActionFocusIndexServerRpc(duelManager.GetLocalClientPlayerIndex());
         EventBus.InvokeOnLocalClientPlayerReadyUp(this, EventArgs.Empty);
         PlayerReadyUpServerRpc(duelManager.LocalClientPlayer.PlayerId);
     }
@@ -91,7 +92,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         if (readyPlayers.Count < combatManager.DuelistCombats.Count)
             return;
 
-        actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
+        actionManager.SetActionFocusPlayerIndicesServerRpc(duelManager.CurrentPlayerTurnIndex);
         ClearReadyPlayersClientRpc();
         if (combatManager.DuelistCombats.Count > 0)
             SwitchToDeclareSpellsClientRpc();
