@@ -8,17 +8,21 @@ public class ActionManager : NetworkBehaviour {
     public event EventHandler OnActionAdded;
     public event EventHandler OnActionRemoved;
     public event EventHandler OnCanPerformActionChanged;
+    public event EventHandler<string> OnInactiveActionTextChanged;
 
     private DuelManager duelManager;
     private Stack<DuelistAction> actions;
-    private List<int> actionFocusPlayerIndices; // Only used by the server
     private bool canPerformAction;
-    private NetworkVariable<FixedString128Bytes> inactiveActionText = new NetworkVariable<FixedString128Bytes>("");
+
+    // Server Fields
+    private List<int> actionFocusPlayerIndices;
+    private FixedString128Bytes inactiveActionText;
 
     private void Awake() {
         actions = new Stack<DuelistAction>();
-        actionFocusPlayerIndices = new List<int>();
         canPerformAction = false;
+        actionFocusPlayerIndices = new List<int>();
+        inactiveActionText = "";
     }
 
     private void Start() {
@@ -84,7 +88,8 @@ public class ActionManager : NetworkBehaviour {
     public void SetActionFocusPlayerIndicesServerRpc(int playerIndex) {
         actionFocusPlayerIndices.Clear();
         actionFocusPlayerIndices.Add(playerIndex);
-        UpdateCanPerformClientRpc(actionFocusPlayerIndices.ToArray());
+        UpdateCanPerformActionClientRpc(actionFocusPlayerIndices.ToArray());
+        UpdateInactiveActionTextServerRpc();
     }
 
     [Rpc(SendTo.Server)]
@@ -92,11 +97,21 @@ public class ActionManager : NetworkBehaviour {
         actionFocusPlayerIndices.Clear();
         for(int i = 0; i < playerIndices.Length; i++)
             actionFocusPlayerIndices.Add(playerIndices[i]);
-        UpdateCanPerformClientRpc(actionFocusPlayerIndices.ToArray());
+        UpdateCanPerformActionClientRpc(actionFocusPlayerIndices.ToArray());
+        UpdateInactiveActionTextServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    public void RemoveActionFocusIndexServerRpc(int playerIndex) {
+        if (!actionFocusPlayerIndices.Contains(playerIndex))
+            throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
+
+        actionFocusPlayerIndices.Remove(playerIndex);
+        UpdateCanPerformActionClientRpc(actionFocusPlayerIndices.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void UpdateCanPerformClientRpc(int[] playerIndices) {
+    private void UpdateCanPerformActionClientRpc(int[] playerIndices) {
         bool containsPlayerIndex = false;
         for(int i = 0; i < playerIndices.Length; i++) {
             if (playerIndices[i] == duelManager.GetLocalClientPlayerIndex()) {
@@ -106,21 +121,43 @@ public class ActionManager : NetworkBehaviour {
         }
 
         canPerformAction = containsPlayerIndex;
-        SetInactiveActionText();
         OnCanPerformActionChanged?.Invoke(this, EventArgs.Empty);
     }
 
     [Rpc(SendTo.Server)]
-    public void RemoveActionFocusIndexServerRpc(int playerIndex) {
-        if (!actionFocusPlayerIndices.Contains(playerIndex))
-            throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
+    private void UpdateInactiveActionTextServerRpc() {
+        List<ulong> actionFocusPlayerIds = new List<ulong>();
+        for(int i = 0; i < actionFocusPlayerIndices.Count; i++)
+            actionFocusPlayerIds.Add(duelManager.Players[actionFocusPlayerIndices[i]].PlayerId);
+        BaseRpcTarget rpcTarget = RpcTarget.Group(actionFocusPlayerIds, RpcTargetUse.Temp);
+        UpdateInactiveActionTextClientRpc(rpcTarget);
+    }
 
-        actionFocusPlayerIndices.Remove(playerIndex);
-        UpdateCanPerformClientRpc(actionFocusPlayerIndices.ToArray());
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void UpdateInactiveActionTextClientRpc(RpcParams rpcParams) {
+        if (!canPerformAction)
+            throw new Exception("Attmepting to update inactive action text when canPerformAction is false");
+
+        SetInactiveActionText();
     }
 
     private void SetInactiveActionText() {
-        inactiveActionText.Value = actions.Count > 0 ? actions.Peek().InactiveActionMessage : "";
+        string inactiveActionMessage = actions.Count > 0 ? actions.Peek().InactiveActionMessage : "";
+        SetInactiveActionTextServerRpc(duelManager.GetLocalClientPlayerIndex(), inactiveActionMessage);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SetInactiveActionTextServerRpc(int senderIndex, FixedString128Bytes message) {
+        if (!actionFocusPlayerIndices.Contains(senderIndex))
+            return;
+
+        inactiveActionText = message;
+        InvokeOnInactiveActionTextChangedClientRpc(senderIndex, inactiveActionText);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)] 
+    private void InvokeOnInactiveActionTextChangedClientRpc(int senderIndex, FixedString128Bytes inactiveActionMessage) {
+        OnInactiveActionTextChanged?.Invoke(this, inactiveActionMessage.ToString());
     }
 
     public Stack<DuelistAction> Actions { get { return actions; } }
@@ -129,5 +166,5 @@ public class ActionManager : NetworkBehaviour {
 
     public bool CanPerformAction { get { return canPerformAction; } }
 
-    public NetworkVariable<FixedString128Bytes> InactiveActionText { get { return inactiveActionText; } }
+    public FixedString128Bytes InactiveActionText { get { return inactiveActionText; } }
 }

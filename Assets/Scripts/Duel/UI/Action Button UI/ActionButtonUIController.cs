@@ -40,7 +40,7 @@ public class ActionButtonUIController : MonoBehaviour {
         actionManager.OnActionRemoved += (sender, args) => {
             UpdateActionButtonForActionFocusPlayer();
         };
-        actionManager.InactiveActionText.OnValueChanged += UpdateInactiveText;
+        actionManager.OnInactiveActionTextChanged += UpdateInactiveText;
     }
 
     private void OnDestroy() {
@@ -50,19 +50,16 @@ public class ActionButtonUIController : MonoBehaviour {
 
     private void UpdateActionButtonForActionFocusPlayer() {
         if (actionManager.CanPerformAction) {
-            if (actionManager.Actions.Count > 0) {
+            if (actionManager.Actions.Count > 0)
                 actionButtonUI.SetActive(actionManager.Actions.Peek().ActiveActionMessage);
-            }
-            else {
+            else
                 actionButtonUI.SetInactive("");
-            }
         }
-        else {
+        else
             actionButtonUI.SetInactive(actionManager.InactiveActionText.Value.ToString());
-        }
     }
 
-    private void UpdateInactiveText(FixedString128Bytes oldInactiveActionText, FixedString128Bytes inactiveActionText) {
+    private void UpdateInactiveText(object sender, string inactiveActionText) {
         if (actionButtonUI.IsActive)
             return;
         if (actionManager.CanPerformAction)
