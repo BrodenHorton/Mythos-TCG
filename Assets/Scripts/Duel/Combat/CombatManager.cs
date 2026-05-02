@@ -87,12 +87,14 @@ public class CombatManager : NetworkBehaviour {
             if (creatureCombat.Defender == null)
                 duelistCombat.Target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
             else {
+                TcgLogger.Log("[CombatManager] Creature attacked");
                 CreatureDamagedByCreatureEventArgs args = new CreatureDamagedByCreatureEventArgs(duelistCombat.Initiator,
                                                                                                  duelistCombat.Target,
                                                                                                  creatureCombat,
                                                                                                  creatureCombat.Attacker.GetAtk());
                 EventBus.InvokeOnCreatureDamagedByCreature(this, args);
-                if(!args.IsCanceled)
+                TcgLogger.Log("[CombatManager] args.IsCanceled: " + args.IsCanceled);
+                if (!args.IsCanceled)
                     creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
 
             }

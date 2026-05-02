@@ -78,9 +78,11 @@ public class CombatFieldUIManager : NetworkBehaviour {
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
+        TcgLogger.Log("[CombatFieldUIManager] UpdatingCreatureFieldCard after creature damaged");
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + args.Player.PlayerId);
 
+        TcgLogger.Log("[CombatFieldUIManager] PlayerId: " + args.Player.PlayerId);
         if (controllerByPlayerId[args.Player.PlayerId].ContainsAttacker(args.Card.Uuid) || controllerByPlayerId[args.Player.PlayerId].ContainsDefender(args.Card.Uuid))
             controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
     }

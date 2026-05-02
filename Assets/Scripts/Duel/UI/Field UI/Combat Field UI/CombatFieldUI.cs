@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.GPUSort;
 
 public class CombatFieldUI : MonoBehaviour {
     private static readonly int MAX_FIELD_CREATURES = 6;
@@ -100,7 +101,8 @@ public class CombatFieldUI : MonoBehaviour {
     }
 
     public void UpdateCreatureFieldCard(CreatureCard card) {
-        if(ContainsAttacker(card.Uuid))
+        TcgLogger.Log("[CombatFieldUI] Updating Creature Field Card");
+        if (ContainsAttacker(card.Uuid))
             GetAttacker(card.Uuid).UpdateCreatureFieldCard(card);
         else if (ContainsDefender(card.Uuid))
             GetDefender(card.Uuid).UpdateCreatureFieldCard(card);

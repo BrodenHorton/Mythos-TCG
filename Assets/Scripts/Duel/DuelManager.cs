@@ -73,16 +73,33 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
-        PlayCreatureCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
+        List<ulong> playerIds = new List<ulong>();
+        for(int i = 0; i < players.Count; i++) {
+            if(players[i].PlayerId != localClientPlayer.PlayerId)
+                playerIds.Add(players[i].PlayerId);
+        }
+        BaseRpcTarget rpcTarget = RpcTarget.Group(playerIds, RpcTargetUse.Temp);
+        PlayCreatureCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId),
+                                          args.Card.GetNetworkSerializableObject(),
+                                          args.HandIndex,
+                                          rpcTarget);
+
+        TcgLogger.Log("Creature Card Uuid before rpc: " + args.Card.Uuid);
+        args.Card.CreatureHealthChangedCallback = localClientPlayer.OnCreatureHealthChangedCallback;
+        args.Card.CreatureDamagedCallback = localClientPlayer.OnCreatureDamagedCallback;
+        args.Card.CreatureDestroyedCallback = localClientPlayer.OnCreatureDestroyCallback;
+        localClientPlayer.PlayCreatureCardFromHand(args.Card, args.HandIndex);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable creatureCardNetworkObject, int handIndex, RpcParams rpcParams) {
         MatchPlayer player = Players[playerIndex];
-        CreatureCard card = new CreatureCard(cardNetworkSerializableObject);
+        CreatureCard card = new CreatureCard(creatureCardNetworkObject);
+        TcgLogger.Log("Creature Card Uuid after rpc: " + card.Uuid);
         card.CreatureHealthChangedCallback = player.OnCreatureHealthChangedCallback;
         card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
         card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
+
         player.PlayCreatureCardFromHand(card, handIndex);
     }
 
