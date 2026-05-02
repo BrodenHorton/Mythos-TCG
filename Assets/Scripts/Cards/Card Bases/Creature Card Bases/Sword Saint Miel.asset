@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: Sword Saint Miel
   m_EditorClassIdentifier: 
   cardName: Sword Saint Miel
+  splashArt: {fileID: 0}
   manaCost: 6
   domain: 0
   atk: 6
   health: 6
   creatureClasses: 0200000022000000
-  baseEffects: []
+  baseEffects:
+  - rid: 4397248320320045126
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 4397248320320045126
+      type: {class: OverwhelmEffect, ns: , asm: Assembly-CSharp}
+      data: 

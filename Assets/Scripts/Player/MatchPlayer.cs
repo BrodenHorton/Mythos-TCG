@@ -89,7 +89,7 @@ public class MatchPlayer {
         return null;
     }
 
-    public void LifePointsDamage(int amt) {
+    public void DamageLifePoints(int amt) {
         int temp = lifePoints;
         lifePoints -= amt;
         EventBus.InvokeOnLifePointsChanged(this, new LifePointsChangedEventArgs(this, lifePoints));

@@ -32,7 +32,8 @@ public static class EventBus {
     public static event EventHandler<UndeclareDefenderEventArgs> OnUndeclareDefender;
     public static event EventHandler<SelectAttackerToDefendEventArgs> OnSelectAttackerToDefend;
     // Combat
-    public static event EventHandler<AttackEventArgs> OnAttack;
+    public static event EventHandler<CreatureAttackEventArgs> OnCreatureAttack;
+    public static event EventHandler<CreatureDamagedByCreatureEventArgs> OnCreatureDamagedByCreature;
     public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDamaged;
     public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
     public static event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
@@ -151,8 +152,12 @@ public static class EventBus {
     #endregion
 
     #region Combat
-    public static void InvokeOnAttack(object sender, AttackEventArgs args) {
-        OnAttack?.Invoke(sender, args);
+    public static void InvokeOnCreatureAttack(object sender, CreatureAttackEventArgs args) {
+        OnCreatureAttack?.Invoke(sender, args);
+    }
+
+    public static void InvokeOnCreatureDamagedByCreature(object sender, CreatureDamagedByCreatureEventArgs args) {
+        OnCreatureDamagedByCreature?.Invoke(sender, args);
     }
 
     public static void InvokeOnCreatureDamaged(object sender, PlayerCardEventArgs<CreatureCard> args) {

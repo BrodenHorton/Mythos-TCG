@@ -8,13 +8,20 @@ public struct CreatureCardNetworkSerializable : INetworkSerializable {
     public bool hasSummoningSickness;
     public bool isTapped;
     public int damage;
+    public CreatureCardEffectContainer effectContainer;
 
-    public CreatureCardNetworkSerializable(FixedString128Bytes uuidStr, int cardBaseIndex, bool hasSummoningSickness, bool isTapped, int damage) {
+    public CreatureCardNetworkSerializable(FixedString128Bytes uuidStr,
+                                           int cardBaseIndex,
+                                           bool hasSummoningSickness,
+                                           bool isTapped,
+                                           int damage,
+                                           CreatureCardEffectContainer effectContainer) {
         this.uuidStr = uuidStr;
         this.cardBaseIndex = cardBaseIndex;
         this.hasSummoningSickness = hasSummoningSickness;
         this.isTapped = isTapped;
         this.damage = damage;
+        this.effectContainer = effectContainer;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
@@ -23,5 +30,7 @@ public struct CreatureCardNetworkSerializable : INetworkSerializable {
         serializer.SerializeValue(ref hasSummoningSickness);
         serializer.SerializeValue(ref isTapped);
         serializer.SerializeValue(ref damage);
+        serializer.SerializeValue(ref effectContainer);
+        serializer.SerializeNetworkSerializable(ref effectContainer);
     }
 }

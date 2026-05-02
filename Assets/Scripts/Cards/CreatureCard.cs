@@ -8,6 +8,7 @@ public partial class CreatureCard : Card {
     [SerializeField] private bool hasSummoningSickness;
     [SerializeField] private bool isTapped;
     [SerializeField] private int damage;
+    [SerializeField] private List<CreatureCardEffect> effects;
 
     private Action<CreatureCard> creatureHealthChangedCallback;
     private Action<CreatureCard> creatureDamagedCallback;
@@ -17,15 +18,26 @@ public partial class CreatureCard : Card {
 
     public CreatureCard(CreatureCardBase cardBase) {
         this.cardBase = cardBase;
-        //effects = new List<CreatureCardEffect>();
+        effects = new List<CreatureCardEffect>();
+        for(int i = 0; i < cardBase.BaseEffects.Count; i++) {
+            CreatureCardEffect effect = cardBase.BaseEffects[i].DeepCopy();
+            effect.Init(uuid);
+            effects.Add(effect);
+        }
     }
 
-    public CreatureCard(CreatureCardNetworkSerializable networkSerializationObject) {
-        uuid = Guid.Parse(networkSerializationObject.uuidStr.ToString());
-        cardBase = CardDatabase.Instance.GetCreatureCardByIndex(networkSerializationObject.cardBaseIndex);
-        hasSummoningSickness = networkSerializationObject.hasSummoningSickness;
-        isTapped = networkSerializationObject.isTapped;
-        damage = networkSerializationObject.damage;
+    public CreatureCard(CreatureCardNetworkSerializable creatureCardNetworkObject) {
+        uuid = Guid.Parse(creatureCardNetworkObject.uuidStr.ToString());
+        cardBase = CardDatabase.Instance.GetCreatureCardByIndex(creatureCardNetworkObject.cardBaseIndex);
+        hasSummoningSickness = creatureCardNetworkObject.hasSummoningSickness;
+        isTapped = creatureCardNetworkObject.isTapped;
+        damage = creatureCardNetworkObject.damage;
+        effects = new List<CreatureCardEffect>();
+        for (int i = 0; i < creatureCardNetworkObject.effectContainer.effects.Length; i++) {
+            CreatureCardEffect effect = creatureCardNetworkObject.effectContainer.effects[i];
+            effect.Init(uuid);
+            effects.Add(effect);
+        }
     }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
@@ -88,12 +100,14 @@ public partial class CreatureCard : Card {
     }
 
     public CreatureCardNetworkSerializable GetNetworkSerializableObject() {
-        return new CreatureCardNetworkSerializable(
-            uuid.ToString(),
-            CardDatabase.Instance.GetIndexOf(cardBase),
-            hasSummoningSickness,
-            isTapped,
-            damage);
+        CreatureCardEffectContainer effectContainer = new CreatureCardEffectContainer();
+        effectContainer.effects = effects.ToArray();
+        return new CreatureCardNetworkSerializable(uuid.ToString(),
+                                                   CardDatabase.Instance.GetIndexOf(cardBase),
+                                                   hasSummoningSickness,
+                                                   isTapped,
+                                                   damage,
+                                                   effectContainer);
     }
 
     public string CardName { get { return cardBase.CardName; } }

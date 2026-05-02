@@ -83,10 +83,19 @@ public class CombatManager : NetworkBehaviour {
         DuelistCombat duelistCombat = duelistCombats[0];
         for (int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
             CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
+            EventBus.InvokeOnCreatureAttack(this, new CreatureAttackEventArgs(duelistCombat.Initiator, duelistCombat.Target, creatureCombat));
             if (creatureCombat.Defender == null)
-                duelistCombat.Target.LifePointsDamage(creatureCombat.Attacker.GetAtk());
-            else
-                creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
+                duelistCombat.Target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
+            else {
+                CreatureDamagedByCreatureEventArgs args = new CreatureDamagedByCreatureEventArgs(duelistCombat.Initiator,
+                                                                                                 duelistCombat.Target,
+                                                                                                 creatureCombat,
+                                                                                                 creatureCombat.Attacker.GetAtk());
+                EventBus.InvokeOnCreatureDamagedByCreature(this, args);
+                if(!args.IsCanceled)
+                    creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
+
+            }
         }
         OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(duelistCombat));
         duelistCombats.Remove(duelistCombat);

@@ -73,12 +73,7 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
-        PlayCreatureCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
-    }
-
-    [Rpc(SendTo.Server)]
-    private void PlayCreatureCardFromHandServerRpc(int playerIndex, CreatureCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        PlayCreatureCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
+        PlayCreatureCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]

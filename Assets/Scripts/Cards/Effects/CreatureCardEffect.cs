@@ -1,18 +1,20 @@
-using UnityEngine;
+using System;
+using Unity.Netcode;
 
-[System.Serializable]
-public abstract class CreatureCardEffect {
-    protected CreatureCard card;
+[Serializable]
+public abstract class CreatureCardEffect : INetworkSerializable {
+    protected CreatureCardEffectType effectType;
+    protected Guid creatureCardUuid;
 
-    public CreatureCardEffect() {}
+    public CreatureCardEffect() { }
 
-    public void Init(CreatureCard card) {
-        this.card = card;
-    }
+    public abstract void Init(Guid creatureCardUuid);
 
-    public abstract void AddListener();
+    public abstract void RemoveListeners();
 
-    public abstract void RemoveListener();
+    public abstract CreatureCardEffect DeepCopy();
 
-    public abstract void Execute();
+    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
+
+    public CreatureCardEffectType EffectType { get { return effectType; } }
 }
