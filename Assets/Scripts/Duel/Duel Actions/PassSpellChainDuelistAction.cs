@@ -3,7 +3,8 @@ public class PassSpellChainDuelistAction : DuelistAction {
     private DuelManager duelManager;
     private SpellChainManager spellChainManager;
 
-    public PassSpellChainDuelistAction(DuelManager duelManager, SpellChainManager spellChainManager) {
+    public PassSpellChainDuelistAction(ulong playerId, DuelManager duelManager, SpellChainManager spellChainManager) {
+        this.playerId = playerId;
         activeActionMessage = "Pass";
         inactiveActionMessage = "Waiting for Opponent";
         this.duelManager = duelManager;

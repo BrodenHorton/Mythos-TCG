@@ -29,7 +29,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
             for (int j = 0; j < DuelManager.INITIAL_HAND_SIZE; j++)
                 players[i].DrawCard();
         }
-        actionManager.SetActionFocusPlayerIndicesServerRpc(0);
+        actionManager.SetActionFocusPlayerIndices(0);
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 

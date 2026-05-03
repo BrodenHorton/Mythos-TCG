@@ -3,7 +3,8 @@
 public class SimpleDuelistAction : DuelistAction {
     private Action callback;
 
-    public SimpleDuelistAction(Action callback, string activeActionMessage, string inactiveActionMessage) {
+    public SimpleDuelistAction(ulong playerId, Action callback, string activeActionMessage, string inactiveActionMessage) {
+        this.playerId = playerId;
         this.callback = callback;
         this.activeActionMessage = activeActionMessage;
         this.inactiveActionMessage = inactiveActionMessage;

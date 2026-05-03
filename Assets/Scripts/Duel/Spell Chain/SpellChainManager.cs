@@ -73,7 +73,7 @@ public class SpellChainManager : NetworkBehaviour {
         IncrementCurrentIndexClientRpc();
         if (currentIndex == startingIndex) {
             ExecuteActionChainClientRpc();
-            actionManager.SetActionFocusPlayerIndicesServerRpc(duelManager.CurrentPlayerTurnIndex);
+            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
             InvokeOnSpellChainFinishedClientRpc();
         }
         else {
@@ -82,7 +82,7 @@ public class SpellChainManager : NetworkBehaviour {
             };
             BaseRpcTarget rpcTarget = RpcTarget.Group(currentIndexPlayerId, RpcTargetUse.Temp);
             AddPassActionToPlayerClientRpc(rpcTarget);
-            actionManager.SetActionFocusPlayerIndicesServerRpc(currentIndex);
+            actionManager.SetActionFocusPlayerIndices(currentIndex);
         }
     }
 

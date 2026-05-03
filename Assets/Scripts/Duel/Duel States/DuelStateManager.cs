@@ -12,8 +12,8 @@ public class DuelStateManager : NetworkBehaviour {
     [SerializeField] private SecondMainPhase secondMainPhase;
     [SerializeField] private EndPhase endPhase;
     
-    private DuelState currentState;
     private DuelManager duelManager;
+    private DuelState currentState;
 
     private void Awake() {
         currentState = initializationPhase;

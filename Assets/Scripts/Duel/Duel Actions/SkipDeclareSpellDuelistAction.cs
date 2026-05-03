@@ -3,7 +3,8 @@ public class SkipDeclareSpellDuelistAction : DuelistAction {
     private DuelManager duelManager;
     private DeclareSpellsState declareSpellsState;
 
-    public SkipDeclareSpellDuelistAction(DuelManager duelManager, SpellChainManager spellChainManager, DeclareSpellsState declareSpellsState) {
+    public SkipDeclareSpellDuelistAction(ulong playerId, DuelManager duelManager, SpellChainManager spellChainManager, DeclareSpellsState declareSpellsState) {
+        this.playerId = playerId;
         activeActionMessage = "Skip";
         inactiveActionMessage = "Waiting for Opponent";
         this.duelManager = duelManager;

@@ -67,7 +67,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         int playerIndex = declareSpellsPlayerIndices[0];
         if (playerIndex == duelManager.GetLocalClientPlayerIndex()) {
             actionManager.AddAction(new SkipDeclareSpellDuelistAction(duelManager, spellChainManager, this));
-            actionManager.SetActionFocusPlayerIndicesServerRpc(playerIndex);
+            actionManager.SetActionFocusPlayerIndices(playerIndex);
         }
     }
 
@@ -88,7 +88,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             AddNextSpellActionClientRpc();
         else {
             ResetStateClientRpc();
-            actionManager.SetActionFocusPlayerIndicesServerRpc(duelManager.CurrentPlayerTurnIndex);
+            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
             SwitchToProcessCombatClientRpc();
         }
     }

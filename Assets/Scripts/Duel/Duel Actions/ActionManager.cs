@@ -11,160 +11,142 @@ public class ActionManager : NetworkBehaviour {
     public event EventHandler<string> OnInactiveActionTextChanged;
 
     private DuelManager duelManager;
-    private Stack<DuelistAction> actions;
-    private bool canPerformAction;
-
-    // Server Fields
-    private List<int> actionFocusPlayerIndices;
+    private List<ulong> actionFocusPlayerIds;
+    private Dictionary<ulong, Stack<DuelistAction>> actionsByPlayerId;
     private FixedString128Bytes inactiveActionText;
 
     private void Awake() {
-        actions = new Stack<DuelistAction>();
-        canPerformAction = false;
-        actionFocusPlayerIndices = new List<int>();
+        actionFocusPlayerIds = new List<ulong>();
+        actionsByPlayerId = new Dictionary<ulong, Stack<DuelistAction>>();
         inactiveActionText = "";
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
+        duelManager.OnPlayersInitialization += InitializeActionManager;
         duelManager.OnNextPlayerTurn += (sender, args) => {
             if(IsServer)
-                SetActionFocusPlayerIndicesServerRpc(args.PlayerIndex);
+                SetActionFocusPlayerIndices(args.Player.PlayerId);
         };
-        EventBus.OnActionButtonPressed += ExecuteAction;
     }
 
-    public void AddAction(Action callback, string activeActionMessage, string inactiveActionMessage) {
-        AddAction(new SimpleDuelistAction(callback, activeActionMessage, inactiveActionMessage));
+    private void InitializeActionManager(object sender, PlayersInitializedEventArgs args) {
+        if (!IsServer)
+            return;
+
+        for(int i = 0; i < args.PlayerOrder.Count; i++)
+            actionsByPlayerId.Add(args.PlayerOrder[i], new Stack<DuelistAction>());
     }
 
-    public void AddAction(DuelistAction duelistAction) {
-        if (actions.Count > 0)
-            actions.Peek().ResetOnRemoveAction();
-        actions.Push(duelistAction);
+    public void AddAction(ulong playerId, Action callback, string activeActionMessage, string inactiveActionMessage) {
+        if (!IsServer)
+            return;
+
+        AddAction(playerId, new SimpleDuelistAction(playerId, callback, activeActionMessage, inactiveActionMessage));
+    }
+
+    public void AddAction(ulong playerId, DuelistAction duelistAction) {
+        if (!IsServer)
+            return;
+
+        if (actionsByPlayerId.Count > 0)
+            actionsByPlayerId[playerId].Peek().ResetOnRemoveAction();
+        actionsByPlayerId[playerId].Push(duelistAction);
         OnActionAdded?.Invoke(this, EventArgs.Empty);
-        UpdateNewActionAvailable();
+        UpdateNewActionAvailable(playerId);
     }
 
-    private void ExecuteAction(object sender, EventArgs args) {
-        if (actions.Count == 0)
+    [Rpc(SendTo.Server)]
+    public void ExecuteActionServerRpc(ServerRpcParams rpcParams = default) {
+        if (!IsServer)
+            return;
+        ulong playerId = rpcParams.Receive.SenderClientId;
+        if (!actionFocusPlayerIds.Contains(playerId))
+            throw new Exception("Attempting to execute action for playerId that is not currently in actionFocusPlayerIds: " + playerId);
+        if (actionsByPlayerId.Count == 0)
             throw new Exception("Attempting to execute an action when there are no actions on the stack");
-        if(!canPerformAction)
-            throw new Exception("Attempting to execute an action when canPerformAction is false");
 
-        DuelistAction action = actions.Pop();
+        DuelistAction action = actionsByPlayerId[playerId].Pop();
         action.ResetOnRemoveAction();
         action.Execute();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateNewActionAvailable();
+        UpdateNewActionAvailable(playerId);
     }
 
-    public void PopAction(object sender, EventArgs args) {
-        PopAction();
-    }
-
-    public void PopAction() {
-        if (actions.Count == 0)
+    public void PopAction(ulong playerId) {
+        if (!IsServer)
+            return;
+        if (actionsByPlayerId.Count == 0)
             throw new Exception("Attempting to remove an action when the action stack is empty");
 
-        DuelistAction action = actions.Pop();
+        DuelistAction action = actionsByPlayerId[playerId].Pop();
         action.ResetOnRemoveAction();
         OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateNewActionAvailable();
+        UpdateNewActionAvailable(playerId);
     }
 
-    private void UpdateNewActionAvailable() {
-        if (actions.Count != 0)
-            actions.Peek().OnRemoveAction += PopAction;
+    private void UpdateNewActionAvailable(ulong playerId) {
+        if (!IsServer)
+            return;
+        if (actionsByPlayerId[playerId].Count != 0)
+            actionsByPlayerId[playerId].Peek().OnRemoveAction += (sender, playerId) => {
+                PopAction(playerId);
+            };
 
-        if (canPerformAction)
+        if (actionFocusPlayerIds.Contains(playerId))
             SetInactiveActionText();
     }
 
-    [Rpc(SendTo.Server)]
-    public void SetActionFocusPlayerIndicesServerRpc(int playerIndex) {
-        actionFocusPlayerIndices.Clear();
-        actionFocusPlayerIndices.Add(playerIndex);
-        UpdateCanPerformActionClientRpc(actionFocusPlayerIndices.ToArray());
-        UpdateInactiveActionTextServerRpc();
-    }
+    public void SetActionFocusPlayerIndices(ulong playerId) {
+        if (!IsServer)
+            return;
 
-    [Rpc(SendTo.Server)]
-    public void SetActionFocusPlayerIndicesServerRpc(int[] playerIndices) {
-        actionFocusPlayerIndices.Clear();
-        for(int i = 0; i < playerIndices.Length; i++)
-            actionFocusPlayerIndices.Add(playerIndices[i]);
-        UpdateCanPerformActionClientRpc(actionFocusPlayerIndices.ToArray());
-        UpdateInactiveActionTextServerRpc();
-    }
-
-    [Rpc(SendTo.Server)]
-    public void RemoveActionFocusIndexServerRpc(int playerIndex) {
-        if (!actionFocusPlayerIndices.Contains(playerIndex))
-            throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
-
-        actionFocusPlayerIndices.Remove(playerIndex);
-        UpdateCanPerformActionClientRpc(actionFocusPlayerIndices.ToArray());
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void UpdateCanPerformActionClientRpc(int[] playerIndices) {
-        bool containsPlayerIndex = false;
-        for(int i = 0; i < playerIndices.Length; i++) {
-            if (playerIndices[i] == duelManager.GetLocalClientPlayerIndex()) {
-                containsPlayerIndex = true;
-                break;
-            }
-        }
-
-        canPerformAction = containsPlayerIndex;
-        OnCanPerformActionChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    [Rpc(SendTo.Server)]
-    private void UpdateInactiveActionTextServerRpc() {
-        List<ulong> actionFocusPlayerIds = new List<ulong>();
-        for(int i = 0; i < actionFocusPlayerIndices.Count; i++)
-            actionFocusPlayerIds.Add(duelManager.Players[actionFocusPlayerIndices[i]].PlayerId);
-        BaseRpcTarget rpcTarget = RpcTarget.Group(actionFocusPlayerIds, RpcTargetUse.Temp);
-        UpdateInactiveActionTextClientRpc(rpcTarget);
-    }
-
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void UpdateInactiveActionTextClientRpc(RpcParams rpcParams) {
-        if (!canPerformAction)
-            throw new Exception("Attmepting to update inactive action text when canPerformAction is false");
-
+        actionFocusPlayerIds.Clear();
+        actionFocusPlayerIds.Add(playerId);
         SetInactiveActionText();
     }
 
-    private void SetInactiveActionText() {
-        string inactiveActionMessage = actions.Count > 0 ? actions.Peek().InactiveActionMessage : "";
-        SetInactiveActionTextServerRpc(duelManager.GetLocalClientPlayerIndex(), inactiveActionMessage);
-    }
-
-    [Rpc(SendTo.Server)]
-    private void SetInactiveActionTextServerRpc(int senderIndex, FixedString128Bytes message) {
-        if (!actionFocusPlayerIndices.Contains(senderIndex))
+    public void SetActionFocusPlayerIndices(ulong[] playerIds) {
+        if (!IsServer)
             return;
 
-        inactiveActionText = message;
-        InvokeOnInactiveActionTextChangedClientRpc(senderIndex, inactiveActionText);
+        actionFocusPlayerIds.Clear();
+        for(int i = 0; i < playerIds.Length; i++)
+            actionFocusPlayerIds.Add(playerIds[i]);
+        SetInactiveActionText();
+    }
+
+    public void RemoveActionFocusId(ulong playerId) {
+        if (!IsServer)
+            return;
+        if (!actionFocusPlayerIds.Contains(playerId))
+            throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
+
+        actionFocusPlayerIds.Remove(playerId);
+    }
+
+    private void SetInactiveActionText() {
+        if (!IsServer)
+            return;
+
+        inactiveActionText = actionFocusPlayerIds.Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().InactiveActionMessage : "";
+        InvokeOnInactiveActionTextChangedClientRpc(inactiveActionText);
     }
 
     [Rpc(SendTo.ClientsAndHost)] 
-    private void InvokeOnInactiveActionTextChangedClientRpc(int senderIndex, FixedString128Bytes inactiveActionMessage) {
+    private void InvokeOnInactiveActionTextChangedClientRpc(FixedString128Bytes inactiveActionMessage) {
         OnInactiveActionTextChanged?.Invoke(this, inactiveActionMessage.ToString());
     }
 
-    public Stack<DuelistAction> Actions { get { return actions; } }
+    public List<ulong> ActionFocusPlayerIds { get { return actionFocusPlayerIds; } }
 
-    public List<int> ActionFocusPlayerIndices { get { return actionFocusPlayerIndices; } }
-
-    public bool CanPerformAction { get { return canPerformAction; } }
+    public Dictionary<ulong,Stack<DuelistAction>> ActionsByPlayerId { get { return actionsByPlayerId; } }
 
     public FixedString128Bytes InactiveActionText { get { return inactiveActionText; } }
 }
