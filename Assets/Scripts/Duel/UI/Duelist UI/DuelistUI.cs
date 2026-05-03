@@ -17,10 +17,10 @@ public abstract class DuelistUI : MonoBehaviour {
 
     protected ulong playerId;
 
-    public void Init(MatchPlayer player) {
-        playerId = player.PlayerId;
-        SetLifePoints(player.LifePoints);
-        SetManaCount(player.CurrentMana);
+    public void Init(ulong playerId, int lifePoints, int manaCount) {
+        this.playerId = playerId;
+        SetLifePoints(lifePoints);
+        SetManaCount(manaCount);
     }
 
     public void SetLifePoints(int lifePointsCount) {

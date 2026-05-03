@@ -4,8 +4,6 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class InitializationPhase : NetworkBehaviour, DuelState {
-    public static readonly int INITIAL_HAND_SIZE = 5;
-
     public event EventHandler OnInitializationPhase;
 
     private DuelStateManager stateManager;
@@ -21,27 +19,26 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
     }
 
     public void EnterState() {
-        Debug.Log("Entered Initialization Phase");
-        OnInitializationPhase?.Invoke(this, EventArgs.Empty);
-        MatchPlayer player = stateManager.DuelManager.LocalClientPlayer;
-        player.ShuffleDeck();
+        if (!IsServer)
+            return;
+
+        InvokeOnInitializationPhaseClientRpc();
         List<MatchPlayer> players = stateManager.DuelManager.Players;
         for(int i = 0; i < players.Count; i++) {
-            for (int j = 0; j < INITIAL_HAND_SIZE; j++)
+            players[i].ShuffleDeck();
+            for (int j = 0; j < DuelManager.INITIAL_HAND_SIZE; j++)
                 players[i].DrawCard();
         }
-
-        if(IsServer) {
-            actionManager.SetActionFocusPlayerIndicesServerRpc(0);
-            SwitchToUntapPhaseClientRpc();
-        }
+        actionManager.SetActionFocusPlayerIndicesServerRpc(0);
+        stateManager.SwitchState(stateManager.UntapPhase);
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToUntapPhaseClientRpc() {
-        stateManager.SwitchState(stateManager.UntapPhase);
+    private void InvokeOnInitializationPhaseClientRpc() {
+        Debug.Log("Entered Initialization Phase");
+        OnInitializationPhase?.Invoke(this, EventArgs.Empty);
     }
 
     public bool CanPlaySetupCards() {

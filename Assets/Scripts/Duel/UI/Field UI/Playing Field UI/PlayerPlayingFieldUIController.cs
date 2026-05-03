@@ -14,13 +14,13 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         EventBus.OnSelectAttackerToDefend += DeclareDefender;
     }
 
-    public override void Init(MatchPlayer player) {
-        this.player = player;
-        playingFieldUI.Init(player.PlayerId);
+    public override void Init(ulong playerId) {
+        this.playerId = playerId;
+        playingFieldUI.Init(playerId);
     }
 
     public override void PlayCreatureCard(CreatureCard card) {
-        playingFieldUI.PlayCreatureCard(player, card);
+        playingFieldUI.PlayCreatureCard(playerId, card);
     }
 
     public override void PlayDomainCard(DomainCard card) {
@@ -49,7 +49,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private bool CanSelectAttacker(FieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (player != duelManager.LocalClientPlayer)
+        if (playerId != duelManager.LocalClientPlayer)
             return false;
         if (!duelManager.IsLocalClientPlayerTurn())
             return false;
@@ -57,9 +57,9 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return false;
         if (args.CardUI == null)
             return false;
-        if (!player.ContainsCreatureUuid(args.CardUI.CardUuid))
+        if (!playerId.ContainsCreatureUuid(args.CardUI.CardUuid))
             return false;
-        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
+        CreatureCard creatureCard = playerId.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
             return false;
         if (!creatureCard.CanAttack())
@@ -69,7 +69,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private bool CanSelectDefender(FieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (player != duelManager.LocalClientPlayer)
+        if (playerId != duelManager.LocalClientPlayer)
             return false;
         if (duelManager.IsLocalClientPlayerTurn())
             return false;
@@ -77,9 +77,9 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return false;
         if (args.CardUI == null)
             return false;
-        if (!player.ContainsCreatureUuid(args.CardUI.CardUuid))
+        if (!playerId.ContainsCreatureUuid(args.CardUI.CardUuid))
             return false;
-        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
+        CreatureCard creatureCard = playerId.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
             return false;
 
@@ -87,11 +87,11 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private void DeclareAttacker(object sender, CreatureFieldCardEnteringCombatFieldEventArgs args) {
-        if (player != duelManager.LocalClientPlayer)
+        if (playerId != duelManager.LocalClientPlayer)
             return;
         if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
-        CreatureCard creatureCard = player.GetCreatureByUuid(args.CardUI.CardUuid);
+        CreatureCard creatureCard = playerId.GetCreatureByUuid(args.CardUI.CardUuid);
         if (creatureCard == null)
             return;
         if (!creatureCard.CanAttack())
@@ -115,15 +115,15 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
-        if (player != duelManager.LocalClientPlayer)
+        if (playerId != duelManager.LocalClientPlayer)
             return;
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
-        if (args.CombatFieldUI.TargetPlayerId != player.PlayerId)
+        if (args.CombatFieldUI.TargetPlayerId != playerId.PlayerId)
             return;
-        if (!player.ContainsCreatureUuid(args.Defender.CardUuid))
+        if (!playerId.ContainsCreatureUuid(args.Defender.CardUuid))
             return;
-        CreatureCard defender = player.GetCreatureByUuid(args.Defender.CardUuid);
+        CreatureCard defender = playerId.GetCreatureByUuid(args.Defender.CardUuid);
         if (defender == null)
             return;
         if (!defender.CanDefend())
@@ -150,7 +150,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(player, creatures[i]);
+            playingFieldUI.AddCreatureFieldCard(playerId, creatures[i]);
     }
 
     public override bool ContainsCreature(Guid uuid) {

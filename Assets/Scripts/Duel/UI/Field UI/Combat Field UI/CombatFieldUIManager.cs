@@ -6,15 +6,13 @@ using UnityEngine;
 public class CombatFieldUIManager : NetworkBehaviour {
     [SerializeField] private List<CombatFieldUIController> controllers;
 
-    private DuelManager duelManager;
-    private CombatManager combatManager;
     private Dictionary<ulong, CombatFieldUIController> controllerByPlayerId;
 
     private void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
+        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
-        combatManager = FindFirstObjectByType<CombatManager>();
+        CombatManager combatManager = FindFirstObjectByType<CombatManager>();
         if (combatManager == null)
             throw new Exception("Could not find CombatManager object");
 
@@ -30,16 +28,15 @@ public class CombatFieldUIManager : NetworkBehaviour {
     }
 
     private void Init(object sender, PlayersInitializedEventArgs args) {
-        List<MatchPlayer> players = duelManager.Players;
-        if (players.Count != controllers.Count)
+        if (args.PlayerOrder.Count != controllers.Count)
             throw new Exception("Number of Match Players and CombatFieldUIControllers does not match. " +
-                players.Count + " Match Players and " + controllers.Count + " CombatFieldUIControllers");
+                args.PlayerOrder.Count + " Match Players and " + controllers.Count + " CombatFieldUIControllers");
 
         controllerByPlayerId = new Dictionary<ulong, CombatFieldUIController>();
-        for (int i = 0; i < players.Count; i++) {
-            MatchPlayer localClientOffsetPlayer = players[(args.LocalClientPlayerIndex + i) % args.PlayerCount];
-            controllers[i].Init(localClientOffsetPlayer);
-            controllerByPlayerId.Add(localClientOffsetPlayer.PlayerId, controllers[i]);
+        for (int i = 0; i < args.PlayerOrder.Count; i++) {
+            ulong localClientOffsetPlayerId = args.PlayerOrder[(args.LocalClientPlayerIndex + i) % args.PlayerOrder.Count];
+            controllers[i].Init(localClientOffsetPlayerId);
+            controllerByPlayerId.Add(localClientOffsetPlayerId, controllers[i]);
         }
     }
 

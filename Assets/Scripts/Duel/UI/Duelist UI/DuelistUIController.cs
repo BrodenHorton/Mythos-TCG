@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
 public abstract class DuelistUIController : MonoBehaviour {    
-    protected MatchPlayer player;
+    protected ulong playerId;
 
-    public abstract void Init(MatchPlayer player);
+    public abstract void Init(ulong playerId, int lifePoints, int manaCount);
 
     public abstract void SetLifePoints(int lifePoints);
 

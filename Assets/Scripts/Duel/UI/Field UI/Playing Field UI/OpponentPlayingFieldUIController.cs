@@ -5,13 +5,13 @@ using UnityEngine;
 public class OpponentPlayingFieldUIController : PlayingFieldUIController {
     [SerializeField] private PlayingFieldUI playingFieldUI;
 
-    public override void Init(MatchPlayer player) {
-        this.player = player;
-        playingFieldUI.Init(player.PlayerId);
+    public override void Init(ulong playerId) {
+        this.playerId = playerId;
+        playingFieldUI.Init(playerId);
     }
 
     public override void PlayCreatureCard(CreatureCard card) {
-        playingFieldUI.PlayCreatureCard(player, card);
+        playingFieldUI.PlayCreatureCard(playerId, card);
     }
 
     public override void PlayDomainCard(DomainCard card) {
@@ -39,7 +39,7 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(player, creatures[i]);
+            playingFieldUI.AddCreatureFieldCard(playerId, creatures[i]);
     }
 
     public override bool ContainsCreature(Guid uuid) {

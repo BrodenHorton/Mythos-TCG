@@ -6,7 +6,7 @@ using UnityEngine;
 public class CombatFieldUIController : NetworkBehaviour {
     [SerializeField] private CombatFieldUI combatFieldUI;
 
-    protected MatchPlayer target;
+    protected ulong targetPlayerId;
     protected DuelManager duelManager;
     protected DuelStateManager stateManager;
     protected CombatStateManager combatStateManager;
@@ -31,9 +31,9 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.OnSelectFieldCard -= SelectUndeclareDefender;
     }
 
-    public void Init(MatchPlayer player) {
-        target = player;
-        combatFieldUI.Init(player.PlayerId);
+    public void Init(ulong playerId) {
+        targetPlayerId = playerId;
+        combatFieldUI.Init(playerId);
     }
 
     public void AddAttacker(CreatureCard attacker) {
@@ -83,7 +83,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (creatureCard == null)
             return;
 
-        UndeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
+        UndeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(targetPlayerId), creatureCard.Uuid.ToString());
     }
 
     [Rpc(SendTo.Server)]
@@ -101,7 +101,7 @@ public class CombatFieldUIController : NetworkBehaviour {
     private void SelectUndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
         if (duelManager.IsLocalClientPlayerTurn())
             return;
-        if (target != duelManager.LocalClientPlayer)
+        if (targetPlayerId != duelManager.LocalClientPlayer)
             return;
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
@@ -115,7 +115,7 @@ public class CombatFieldUIController : NetworkBehaviour {
             return;
 
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        UndeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), creatureCard.Uuid.ToString());
+        UndeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(targetPlayerId), creatureCard.Uuid.ToString());
     }
 
     [Rpc(SendTo.Server)]
@@ -137,6 +137,4 @@ public class CombatFieldUIController : NetworkBehaviour {
     public bool ContainsDefender(Guid uuid) {
         return combatFieldUI.ContainsDefender(uuid);
     }
-
-    public MatchPlayer Target { get { return target; } }
 }

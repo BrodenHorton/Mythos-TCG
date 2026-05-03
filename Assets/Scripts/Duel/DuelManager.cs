@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 public class DuelManager : NetworkBehaviour {
+    private static readonly int STARTING_LIFE_POINTS = 20;
+    private static readonly int STARTING_MANA_COUNT = 0;
+    public static readonly int INITIAL_HAND_SIZE = 5;
+
     public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitialization;
     public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitializationFinished;
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
@@ -19,30 +23,37 @@ public class DuelManager : NetworkBehaviour {
     }
 
     private void Start() {
-        GameManager.Instance.OnGameStart += InitializePlayers;
+        if(IsServer)
+            GameManager.Instance.OnGameStart += InitializePlayers;
+
         EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
         EventBus.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
         EventBus.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
         EventBus.OnSpellCardPlayedFromHand += PlaySpellCard;
     }
 
-    public void InitializePlayers(object sender, StartGameEventArgs args) {
+    private void InitializePlayers(object sender, StartGameEventArgs args) {
+        InitializePlayersServerRpc(args.PlayerOrder.ToArray());
+    }
+
+    [Rpc(SendTo.Server)]
+    private void InitializePlayersServerRpc(ulong[] playerOrder) {
         players = new List<MatchPlayer>();
-        for(int i = 0; i < args.PlayerOrder.Count; i++) {
-            MatchPlayer player;
-            if (args.PlayerOrder[i] == NetworkManager.Singleton.LocalClientId) {
-                player = new MatchPlayer(args.PlayerOrder[i], Temp_PopulateDeck());
-                localClientPlayer = player;
-            }
-            else 
-                player = new MatchPlayer(args.PlayerOrder[i], Temp_PopulateDeckNull());
+        for (int i = 0; i < playerOrder.Length; i++) {
+            MatchPlayer player = new MatchPlayer(playerOrder[i], Temp_PopulateDeck());
             players.Add(player);
         }
-        if (localClientPlayer == null)
-            throw new Exception("Local Client Id not found in start game player list");
 
-        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetLocalClientPlayerIndex()));
+        for(int i = 0; i < playerOrder.Length; i++) {
+            BaseRpcTarget target = RpcTarget.Group(new List<ulong>() { playerOrder[i] }, RpcTargetUse.Temp);
+            InvokePlayerInitializationClientRpc(new List<ulong>(playerOrder), i, target);
+        }
         OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetLocalClientPlayerIndex()));
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void InvokePlayerInitializationClientRpc(List<ulong> playerOrder, int localClientPlayerIndex, RpcParams rpcParams) {
+        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(playerOrder, localClientPlayerIndex, STARTING_LIFE_POINTS, STARTING_MANA_COUNT));
     }
 
     private List<Card> Temp_PopulateDeck() {

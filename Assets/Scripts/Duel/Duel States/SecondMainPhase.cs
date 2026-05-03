@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class SecondMainPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<PlayerEventArgs> OnSecondMainPhase;
+    public event EventHandler<ulong> OnSecondMainPhase;
 
     private DuelStateManager stateManager;
     private ActionManager actionManager;
@@ -18,21 +18,23 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
     }
 
     public void EnterState() {
-        Debug.Log("Entered Second Main Phase");
-        OnSecondMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
-            actionManager.AddAction(SwitchToEndPhaseServerRpc, "End", "Waiting for Opponent");
+        if (!IsServer)
+            return;
+
+        InvokeOnSecondMainPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
+        actionManager.AddAction(SwitchToEndPhaseServerRpc, "End", "Waiting for Opponent");
     }
 
     public void UpdateState() { }
 
-    [Rpc(SendTo.Server)]
-    private void SwitchToEndPhaseServerRpc() {
-        SwitchToEndPhaseClientRpc();
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnSecondMainPhaseClientRpc(ulong playerId) {
+        Debug.Log("Entered Second Main Phase");
+        OnSecondMainPhase?.Invoke(this, playerId);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToEndPhaseClientRpc() {
+    [Rpc(SendTo.Server)]
+    private void SwitchToEndPhaseServerRpc() {
         stateManager.SwitchState(stateManager.EndPhase);
     }
 

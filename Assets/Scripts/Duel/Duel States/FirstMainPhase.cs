@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class FirstMainPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<PlayerEventArgs> OnFirstMainPhase;
+    public event EventHandler<ulong> OnFirstMainPhase;
 
     private DuelStateManager stateManager;
     private ActionManager actionManager;
@@ -18,21 +18,23 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
     }
 
     public void EnterState() {
-        Debug.Log("Entered First Main Phase");
-        OnFirstMainPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if (stateManager.DuelManager.IsLocalClientPlayerTurn())
-            actionManager.AddAction(SwitchToCombatPhaseServerRpc, "Combat", "Waiting for Opponent");
+        if (!IsServer)
+            return;
+
+        InvokeOnFirstMainPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
+        actionManager.AddAction(SwitchToCombatPhaseServerRpc, "Combat", "Waiting for Opponent");
     }
 
     public void UpdateState() { }
 
-    [Rpc(SendTo.Server)]
-    private void SwitchToCombatPhaseServerRpc() {
-        SwitchToCombatPhaseClientRpc();
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnFirstMainPhaseClientRpc(ulong playerId) {
+        Debug.Log("Entered First Main Phase");
+        OnFirstMainPhase?.Invoke(this, playerId);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToCombatPhaseClientRpc() {
+    [Rpc(SendTo.Server)]
+    private void SwitchToCombatPhaseServerRpc() {
         stateManager.SwitchState(stateManager.CombatPhase);
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 public abstract class PlayingFieldUIController : NetworkBehaviour {
-    protected MatchPlayer player;
+    protected ulong playerId;
     protected DuelManager duelManager;
     protected DuelStateManager stateManager;
     protected CombatStateManager combatStateManager;
@@ -20,7 +20,7 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
             throw new Exception("Could not find DuelStateManager object");
     }
 
-    public abstract void Init(MatchPlayer player);
+    public abstract void Init(ulong playerId);
 
     public abstract void PlayCreatureCard(CreatureCard card);
 

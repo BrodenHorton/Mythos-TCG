@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class CombatPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<PlayerEventArgs> OnCombatPhase;
+    public event EventHandler<ulong> OnCombatPhase;
     public event EventHandler<PlayerEventArgs> OnCombatPhaseFinished;
 
     private DuelStateManager stateManager;
@@ -19,28 +19,24 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     }
 
     public void EnterState() {
-        Debug.Log("Entered Combat Phase");
-        OnCombatPhase?.Invoke(this, new PlayerEventArgs(stateManager.DuelManager.GetCurrentPlayerTurn()));
-        if(IsServer) {
-            combatStateManager.OutOfCombatState.OnOutOfCombatEntered += SwitchToSecondMainPhase;
-            combatStateManager.StartCombatServerRpc();
-        }
+        if (!IsServer)
+            return;
+
+        InvokeOnCombatPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
+        combatStateManager.OutOfCombatState.OnOutOfCombatEntered += SwitchToSecondMainPhase;
+        combatStateManager.StartCombatServerRpc();
     }
 
     public void UpdateState() { }
 
-    private void SwitchToSecondMainPhase(object sender, EventArgs args) {
-        SwitchToSecondMainPhaseServerRpc();
-    }
-
-    [Rpc(SendTo.Server)]
-    private void SwitchToSecondMainPhaseServerRpc() {
-        combatStateManager.OutOfCombatState.OnOutOfCombatEntered -= SwitchToSecondMainPhase;
-        SwitchToSecondMainPhaseClientRpc();
-    }
-
     [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToSecondMainPhaseClientRpc() {
+    private void InvokeOnCombatPhaseClientRpc(ulong playerId) {
+        Debug.Log("Entered Combat Phase");
+        OnCombatPhase?.Invoke(this, playerId);
+    }
+
+    private void SwitchToSecondMainPhase(object sender, EventArgs args) {
+        combatStateManager.OutOfCombatState.OnOutOfCombatEntered -= SwitchToSecondMainPhase;
         stateManager.SwitchState(stateManager.SecondMainPhase);
     }
 

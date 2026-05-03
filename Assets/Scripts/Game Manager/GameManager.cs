@@ -33,24 +33,32 @@ public class GameManager : NetworkBehaviour {
             return;
 
         if (NetworkManager.Singleton.ConnectedClients.Count >= playerCount)
-            StartGameRpc();
+            UpdateGameStateServerRpc();
         isFirstUpdate = false;
     }
 
     [Rpc(SendTo.Server)]
     private void UpdateGameStateOnClientConnectedServerRpc(ulong clientId) {
-        if (gameState == GameState.WaitingForPlayers && NetworkManager.Singleton.ConnectedClients.Count >= playerCount) {
-            StartGameRpc();
-        }
+        UpdateGameStateServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void UpdateGameStateServerRpc() {
+        if (gameState != GameState.WaitingForPlayers)
+            return;
+        if (NetworkManager.Singleton.ConnectedClients.Count < playerCount)
+            return;
+
+        gameState = GameState.Duel;
+        List<ulong> playerOrder = new List<ulong>();
+        foreach (ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys)
+            playerOrder.Add(playerId);
+        StartGameRpc(playerOrder.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void StartGameRpc() {
-        gameState = GameState.Duel;
-        List<ulong>  playerOrder = new List<ulong>();
-        foreach(ulong playerId in NetworkManager.Singleton.ConnectedClients.Keys)
-            playerOrder.Add(playerId);
-        OnGameStart?.Invoke(this, new StartGameEventArgs(playerOrder));
+    private void StartGameRpc(ulong[] playerOrder) {
+        OnGameStart?.Invoke(this, new StartGameEventArgs(new List<ulong>(playerOrder)));
     }
 
     public GameState GameState { get { return gameState; } }

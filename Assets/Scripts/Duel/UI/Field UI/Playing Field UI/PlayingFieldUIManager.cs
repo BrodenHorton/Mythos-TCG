@@ -6,11 +6,10 @@ using UnityEngine;
 public class PlayingFieldUIManager : NetworkBehaviour {
     [SerializeField] private List<PlayingFieldUIController> controllers;
 
-    private DuelManager duelManager;
     private Dictionary<ulong, PlayingFieldUIController> controllerByPlayerId;
 
     private void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
+        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
@@ -31,16 +30,15 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     private void Init(object sender, PlayersInitializedEventArgs args) {
-        List<MatchPlayer> players = duelManager.Players;
-        if (players.Count != controllers.Count)
+        if (args.PlayerOrder.Count != controllers.Count)
             throw new Exception("Number of Match Players and PlayingFieldUIControllers does not match. " +
-                players.Count + " Match Players and " + controllers.Count + " PlayingFieldUIControllers");
+                args.PlayerOrder.Count + " Match Players and " + controllers.Count + " PlayingFieldUIControllers");
 
         controllerByPlayerId = new Dictionary<ulong, PlayingFieldUIController>();
-        for (int i = 0; i < players.Count; i++) {
-            MatchPlayer localClientOffsetPlayer = players[(args.LocalClientPlayerIndex + i) % args.PlayerCount];
-            controllers[i].Init(localClientOffsetPlayer);
-            controllerByPlayerId.Add(localClientOffsetPlayer.PlayerId, controllers[i]);
+        for (int i = 0; i < args.PlayerOrder.Count; i++) {
+            ulong localClientOffsetPlayerId = args.PlayerOrder[(args.LocalClientPlayerIndex + i) % args.PlayerOrder.Count];
+            controllers[i].Init(localClientOffsetPlayerId);
+            controllerByPlayerId.Add(localClientOffsetPlayerId, controllers[i]);
         }
     }
 

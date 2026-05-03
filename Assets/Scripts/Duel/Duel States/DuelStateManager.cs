@@ -23,15 +23,14 @@ public class DuelStateManager : NetworkBehaviour {
         duelManager = GetComponent<DuelManager>();
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
-        CombatManager combatManager = FindFirstObjectByType<CombatManager>();
-        if (combatManager == null)
-            throw new Exception("Unable to find GameObject with CombatManager component");
 
         if (IsServer)
             DuelManager.OnPlayersInitializationFinished += StartStateMachine;
     }
 
     private void Update() {
+        if (!IsServer)
+            return;
         if (GameManager.Instance.GameState != GameState.Duel)
             return;
 
@@ -44,11 +43,6 @@ public class DuelStateManager : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     public void StartStateMachineServerRpc() {
-        StartStateMachineClientRpc();
-    }
-
-    [ClientRpc]
-    public void StartStateMachineClientRpc() {
         currentState.EnterState();
     }
 
@@ -61,7 +55,7 @@ public class DuelStateManager : NetworkBehaviour {
 
     public DuelState CurrentState { get { return currentState; } }
 
-    public InitializationPhase Initialization {  get { return initializationPhase; } }
+    public InitializationPhase Initialization { get { return initializationPhase; } }
 
     public UntapPhase UntapPhase { get { return untapPhase; } }
 
