@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 public class ActionButtonUIController : MonoBehaviour {
@@ -17,9 +19,7 @@ public class ActionButtonUIController : MonoBehaviour {
             throw new Exception("Could not find ActionManager object");
 
         actionButtonUI.OnActionButtonPressed += ExecuteAction;
-        actionManager.OnCanPerformActionChanged += (sender, args) => {
-            UpdateActionButtonForActionFocusPlayer();
-        };
+        actionManager.OnActionFocusChanged += UpdateActionButtonActive;
         actionManager.OnActionAdded += (sender, args) => {
             UpdateActionButtonForActionFocusPlayer();
         };
@@ -27,6 +27,13 @@ public class ActionButtonUIController : MonoBehaviour {
             UpdateActionButtonForActionFocusPlayer();
         };
         actionManager.OnInactiveActionTextChanged += UpdateInactiveText;
+    }
+
+    private void UpdateActionButtonActive(object sender, List<ulong> actionFocusPlayerIds) {
+        if (actionFocusPlayerIds.Contains(NetworkManager.Singleton.LocalClientId))
+            actionButtonUI.SetActive("");
+        else
+            actionButtonUI.SetInactive("");
     }
 
     private void UpdateActionButtonForActionFocusPlayer() {
@@ -42,8 +49,6 @@ public class ActionButtonUIController : MonoBehaviour {
 
     private void UpdateInactiveText(object sender, string inactiveActionText) {
         if (actionButtonUI.IsActive)
-            return;
-        if (actionManager.CanPerformAction)
             return;
 
         actionButtonUI.SetInactive(inactiveActionText.ToString());

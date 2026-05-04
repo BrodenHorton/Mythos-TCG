@@ -5,9 +5,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class ActionManager : NetworkBehaviour {
-    public event EventHandler OnActionAdded;
-    public event EventHandler OnActionRemoved;
-    public event EventHandler OnCanPerformActionChanged;
+    public event EventHandler<List<ulong>> OnActionFocusChanged;
+    public event EventHandler<DuelistActionMessagesEventArgs> OnActiveActionChanged;
     public event EventHandler<string> OnInactiveActionTextChanged;
 
     private DuelManager duelManager;
@@ -62,6 +61,11 @@ public class ActionManager : NetworkBehaviour {
         UpdateNewActionAvailable(playerId);
     }
 
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void InvokeOnActionAddedClientRpc(string actionMessage, string inactiveActionMessage, RpcParams rpcParams) {
+        OnActionAdded?.Invoke(this, new DuelistActionMessagesEventArgs(actionMessage, inactiveActionMessage));
+    }
+
     [Rpc(SendTo.Server)]
     public void ExecuteActionServerRpc(ServerRpcParams rpcParams = default) {
         if (!IsServer)
@@ -94,10 +98,12 @@ public class ActionManager : NetworkBehaviour {
     private void UpdateNewActionAvailable(ulong playerId) {
         if (!IsServer)
             return;
-        if (actionsByPlayerId[playerId].Count != 0)
+
+        if (actionsByPlayerId[playerId].Count != 0) {
             actionsByPlayerId[playerId].Peek().OnRemoveAction += (sender, playerId) => {
                 PopAction(playerId);
             };
+        }
 
         if (actionFocusPlayerIds.Contains(playerId))
             SetInactiveActionText();
@@ -109,6 +115,16 @@ public class ActionManager : NetworkBehaviour {
 
         actionFocusPlayerIds.Clear();
         actionFocusPlayerIds.Add(playerId);
+        List<ulong> inactivePlayerIds = new List<ulong>();
+        for(int i = 0; i < duelManager.Players.Count; i++) {
+            if (duelManager.Players[i].PlayerId != playerId)
+                inactivePlayerIds.Add(duelManager.Players[i].PlayerId);
+        }
+        string actionButtonMessage = actionsByPlayerId[playerId].Count > 0 ? actionsByPlayerId[playerId].Peek().ActiveActionMessage : "";
+        BaseRpcTarget activeTarget = RpcTarget.Group(actionFocusPlayerIds, RpcTargetUse.Temp);
+        InvokeOnActionFocusChanged(true, actionButtonMessage, activeTarget);
+        BaseRpcTarget inactiveTarget = RpcTarget.Group(inactivePlayerIds, RpcTargetUse.Temp);
+        InvokeOnActionFocusChanged(false, "", activeTarget);
         SetInactiveActionText();
     }
 
@@ -119,6 +135,7 @@ public class ActionManager : NetworkBehaviour {
         actionFocusPlayerIds.Clear();
         for(int i = 0; i < playerIds.Length; i++)
             actionFocusPlayerIds.Add(playerIds[i]);
+        InvokeOnActionFocusChanged(actionFocusPlayerIds.ToArray());
         SetInactiveActionText();
     }
 
@@ -129,8 +146,16 @@ public class ActionManager : NetworkBehaviour {
             throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
 
         actionFocusPlayerIds.Remove(playerId);
+        InvokeOnActionFocusChanged(actionFocusPlayerIds.ToArray());
     }
 
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void InvokeOnActionFocusChanged(bool isActive, string actionButtonMessage, RpcParams rpcParams) {
+        
+        OnActionFocusChanged?.Invoke(this, new List<ulong>(actionFocusPlayerIdsArr));
+    }
+
+    // TODO: Make it so you can set teh inactive action text without invoking the client rpc
     private void SetInactiveActionText() {
         if (!IsServer)
             return;
@@ -149,4 +174,18 @@ public class ActionManager : NetworkBehaviour {
     public Dictionary<ulong,Stack<DuelistAction>> ActionsByPlayerId { get { return actionsByPlayerId; } }
 
     public FixedString128Bytes InactiveActionText { get { return inactiveActionText; } }
+}
+
+public class DuelistActionMessagesEventArgs : EventArgs {
+    private string actionMessage;
+    private string inactiveActionMessage;
+
+    public DuelistActionMessagesEventArgs(string actionMessage, string inactiveActionMessage) {
+        this.actionMessage = actionMessage;
+        this.inactiveActionMessage = inactiveActionMessage;
+    }
+
+    public string ActionMessage { get { return actionMessage; } }
+
+    public string InactiveActionMessage { get { return inactiveActionMessage; } }
 }
