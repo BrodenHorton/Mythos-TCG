@@ -5,19 +5,15 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class ActionManager : NetworkBehaviour {
-    public event EventHandler<List<ulong>> OnActionFocusChanged;
-    public event EventHandler<DuelistActionMessagesEventArgs> OnActiveActionChanged;
-    public event EventHandler<string> OnInactiveActionTextChanged;
+    public event EventHandler<ActionStateEventArgs> OnActionStateChanged;
 
     private DuelManager duelManager;
     private List<ulong> actionFocusPlayerIds;
     private Dictionary<ulong, Stack<DuelistAction>> actionsByPlayerId;
-    private FixedString128Bytes inactiveActionText;
 
     private void Awake() {
         actionFocusPlayerIds = new List<ulong>();
         actionsByPlayerId = new Dictionary<ulong, Stack<DuelistAction>>();
-        inactiveActionText = "";
     }
 
     private void Start() {
@@ -56,14 +52,13 @@ public class ActionManager : NetworkBehaviour {
 
         if (actionsByPlayerId.Count > 0)
             actionsByPlayerId[playerId].Peek().ResetOnRemoveAction();
+        duelistAction.OnRemoveAction += (sender, playerId) => {
+            PopAction(playerId);
+        };
         actionsByPlayerId[playerId].Push(duelistAction);
-        OnActionAdded?.Invoke(this, EventArgs.Empty);
-        UpdateNewActionAvailable(playerId);
-    }
 
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void InvokeOnActionAddedClientRpc(string actionMessage, string inactiveActionMessage, RpcParams rpcParams) {
-        OnActionAdded?.Invoke(this, new DuelistActionMessagesEventArgs(actionMessage, inactiveActionMessage));
+        if(actionFocusPlayerIds.Contains(playerId))
+            UpdateAllClientsActionState();
     }
 
     [Rpc(SendTo.Server)]
@@ -79,8 +74,8 @@ public class ActionManager : NetworkBehaviour {
         DuelistAction action = actionsByPlayerId[playerId].Pop();
         action.ResetOnRemoveAction();
         action.Execute();
-        OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateNewActionAvailable(playerId);
+        if(actionFocusPlayerIds.Contains(playerId))
+            UpdateAllClientsActionState();
     }
 
     public void PopAction(ulong playerId) {
@@ -91,22 +86,8 @@ public class ActionManager : NetworkBehaviour {
 
         DuelistAction action = actionsByPlayerId[playerId].Pop();
         action.ResetOnRemoveAction();
-        OnActionRemoved?.Invoke(this, EventArgs.Empty);
-        UpdateNewActionAvailable(playerId);
-    }
-
-    private void UpdateNewActionAvailable(ulong playerId) {
-        if (!IsServer)
-            return;
-
-        if (actionsByPlayerId[playerId].Count != 0) {
-            actionsByPlayerId[playerId].Peek().OnRemoveAction += (sender, playerId) => {
-                PopAction(playerId);
-            };
-        }
-
         if (actionFocusPlayerIds.Contains(playerId))
-            SetInactiveActionText();
+            UpdateAllClientsActionState();
     }
 
     public void SetActionFocusPlayerIndices(ulong playerId) {
@@ -115,17 +96,7 @@ public class ActionManager : NetworkBehaviour {
 
         actionFocusPlayerIds.Clear();
         actionFocusPlayerIds.Add(playerId);
-        List<ulong> inactivePlayerIds = new List<ulong>();
-        for(int i = 0; i < duelManager.Players.Count; i++) {
-            if (duelManager.Players[i].PlayerId != playerId)
-                inactivePlayerIds.Add(duelManager.Players[i].PlayerId);
-        }
-        string actionButtonMessage = actionsByPlayerId[playerId].Count > 0 ? actionsByPlayerId[playerId].Peek().ActiveActionMessage : "";
-        BaseRpcTarget activeTarget = RpcTarget.Group(actionFocusPlayerIds, RpcTargetUse.Temp);
-        InvokeOnActionFocusChanged(true, actionButtonMessage, activeTarget);
-        BaseRpcTarget inactiveTarget = RpcTarget.Group(inactivePlayerIds, RpcTargetUse.Temp);
-        InvokeOnActionFocusChanged(false, "", activeTarget);
-        SetInactiveActionText();
+        UpdateAllClientsActionState();
     }
 
     public void SetActionFocusPlayerIndices(ulong[] playerIds) {
@@ -135,8 +106,7 @@ public class ActionManager : NetworkBehaviour {
         actionFocusPlayerIds.Clear();
         for(int i = 0; i < playerIds.Length; i++)
             actionFocusPlayerIds.Add(playerIds[i]);
-        InvokeOnActionFocusChanged(actionFocusPlayerIds.ToArray());
-        SetInactiveActionText();
+        UpdateAllClientsActionState();
     }
 
     public void RemoveActionFocusId(ulong playerId) {
@@ -146,46 +116,31 @@ public class ActionManager : NetworkBehaviour {
             throw new Exception("Attempting to remove player index that does not exist in actionFocusPlayerIndices");
 
         actionFocusPlayerIds.Remove(playerId);
-        InvokeOnActionFocusChanged(actionFocusPlayerIds.ToArray());
+        UpdateAllClientsActionState();
+    }
+
+    private void UpdateAllClientsActionState() {
+        List<ulong> inactivePlayerIds = new List<ulong>();
+        for (int i = 0; i < duelManager.Players.Count; i++) {
+            if (!actionFocusPlayerIds.Contains(duelManager.Players[i].PlayerId))
+                inactivePlayerIds.Add(duelManager.Players[i].PlayerId);
+        }
+
+        string activeActionMessage = actionsByPlayerId[actionFocusPlayerIds[0]].Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().ActiveActionMessage : "";
+        BaseRpcTarget activeTarget = RpcTarget.Group(actionFocusPlayerIds, RpcTargetUse.Temp);
+        InvokeOnActiveActionChangedClientRpc(true, activeActionMessage, activeTarget);
+
+        string inactiveActionMessage = actionsByPlayerId[actionFocusPlayerIds[0]].Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().InactiveActionMessage : "";
+        BaseRpcTarget inactiveTarget = RpcTarget.Group(inactivePlayerIds, RpcTargetUse.Temp);
+        InvokeOnActiveActionChangedClientRpc(false, inactiveActionMessage, activeTarget);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void InvokeOnActionFocusChanged(bool isActive, string actionButtonMessage, RpcParams rpcParams) {
-        
-        OnActionFocusChanged?.Invoke(this, new List<ulong>(actionFocusPlayerIdsArr));
-    }
-
-    // TODO: Make it so you can set teh inactive action text without invoking the client rpc
-    private void SetInactiveActionText() {
-        if (!IsServer)
-            return;
-
-        inactiveActionText = actionFocusPlayerIds.Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().InactiveActionMessage : "";
-        InvokeOnInactiveActionTextChangedClientRpc(inactiveActionText);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)] 
-    private void InvokeOnInactiveActionTextChangedClientRpc(FixedString128Bytes inactiveActionMessage) {
-        OnInactiveActionTextChanged?.Invoke(this, inactiveActionMessage.ToString());
+    private void InvokeOnActiveActionChangedClientRpc(bool hasActionFocus, FixedString128Bytes actionMessage, RpcParams rpcParams) {
+        OnActionStateChanged?.Invoke(this, new ActionStateEventArgs(hasActionFocus, actionMessage.ToString()));
     }
 
     public List<ulong> ActionFocusPlayerIds { get { return actionFocusPlayerIds; } }
 
     public Dictionary<ulong,Stack<DuelistAction>> ActionsByPlayerId { get { return actionsByPlayerId; } }
-
-    public FixedString128Bytes InactiveActionText { get { return inactiveActionText; } }
-}
-
-public class DuelistActionMessagesEventArgs : EventArgs {
-    private string actionMessage;
-    private string inactiveActionMessage;
-
-    public DuelistActionMessagesEventArgs(string actionMessage, string inactiveActionMessage) {
-        this.actionMessage = actionMessage;
-        this.inactiveActionMessage = inactiveActionMessage;
-    }
-
-    public string ActionMessage { get { return actionMessage; } }
-
-    public string InactiveActionMessage { get { return inactiveActionMessage; } }
 }
