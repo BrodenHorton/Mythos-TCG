@@ -16,31 +16,17 @@ public class ProcessCombatState : NetworkBehaviour, CombatState {
     }
 
     public void EnterState() {
-        if (IsServer) {
-            ProcessCombatClientRpc();
-            if(combatManager.DuelistCombats.Count > 0)
-                SwitchToDeclareSpellsStateClientRpc();
-            else
-                SwitchToOutOfCombatClientRpc();
-        }
+        if (!IsServer)
+            return;
+
+        combatManager.ProcessNextDuelistCombat();
+        if (combatManager.DuelistCombats.Count > 0)
+            combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
+        else
+            combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
     }
 
     public void UpdateState() { }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void ProcessCombatClientRpc() {
-        combatManager.ProcessNextDuelistCombat();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToDeclareSpellsStateClientRpc() {
-        combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToOutOfCombatClientRpc() {
-        combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
-    }
 
     public bool CanPlaySetupCards() {
         return false;

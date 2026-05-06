@@ -21,8 +21,9 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        InvokeOnSecondMainPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
-        actionManager.AddAction(SwitchToEndPhaseServerRpc, "End", "Waiting for Opponent");
+        ulong currentTurnPlayerId = stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
+        InvokeOnSecondMainPhaseClientRpc(currentTurnPlayerId);
+        actionManager.AddAction(currentTurnPlayerId, SwitchToEndPhaseServerRpc, "End", "Waiting for Opponent");
     }
 
     public void UpdateState() { }

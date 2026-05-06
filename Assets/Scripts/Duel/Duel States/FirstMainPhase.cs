@@ -21,8 +21,9 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        InvokeOnFirstMainPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
-        actionManager.AddAction(SwitchToCombatPhaseServerRpc, "Combat", "Waiting for Opponent");
+        ulong currentTurnPlayerId = stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
+        InvokeOnFirstMainPhaseClientRpc(currentTurnPlayerId);
+        actionManager.AddAction(currentTurnPlayerId, SwitchToCombatPhaseServerRpc, "Combat", "Waiting for Opponent");
     }
 
     public void UpdateState() { }

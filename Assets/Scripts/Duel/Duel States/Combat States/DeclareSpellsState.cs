@@ -21,6 +21,9 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         combatStateManager = FindFirstObjectByType<CombatStateManager>();
         if (combatStateManager == null)
             throw new Exception("Could not find CombatStateManager object");
@@ -41,34 +44,27 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
     }
 
     public void EnterState() {
-        if(IsServer) {
-            if (combatManager.DuelistCombats.Count == 0)
-                throw new Exception("DeclareSpellsState entered when there are no duelist combats to process");
+        if (!IsServer)
+            return;
+        if (combatManager.DuelistCombats.Count == 0)
+            throw new Exception("DeclareSpellsState entered when there are no duelist combats to process");
 
-            InitializeStateClientRpc();
-            AddNextSpellActionClientRpc();
-        }
+        duelistCombat = combatManager.DuelistCombats[0];
+        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Initiator));
+        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Target));
+        AddNextSpellAction();
     }
 
     public void UpdateState() { }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void InitializeStateClientRpc() {
-        duelistCombat = combatManager.DuelistCombats[0];
-        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Initiator));
-        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Target));
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void AddNextSpellActionClientRpc() {
+    private void AddNextSpellAction() {
         if (declareSpellsPlayerIndices.Count == 0)
             throw new Exception("Attempting to add next spell action when declareSpellsPlayerIndices is empty");
 
         int playerIndex = declareSpellsPlayerIndices[0];
-        if (playerIndex == duelManager.GetLocalClientPlayerIndex()) {
-            actionManager.AddAction(new SkipDeclareSpellDuelistAction(duelManager, spellChainManager, this));
-            actionManager.SetActionFocusPlayerIndices(playerIndex);
-        }
+        ulong playerId = duelManager.Players[playerIndex].PlayerId;
+        actionManager.AddAction(playerId, new SkipDeclareSpellDuelistAction(playerId, duelManager, spellChainManager, this));
+        actionManager.SetActionFocusPlayerIndices(playerId);
     }
 
     private void SkipActionOnSpellChainFinished(object sender, EventArgs args) {
@@ -77,40 +73,34 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         if (duelistCombat == null)
             return;
 
-        SkipActionServerRpc();
+        SkipAction();
     }
 
-    [Rpc(SendTo.Server)]
-    public void SkipActionServerRpc() {
-        TcgLogger.Log("Entered SkipActinServerRpc");
-        RemoveTopPlayerIndexClientRpc();
+    public void SkipAction() {
+        if (!IsServer)
+            return;
+
+        TcgLogger.Log("Entered SkipActin");
+        RemoveTopPlayerIndex();
         if (declareSpellsPlayerIndices.Count > 0)
-            AddNextSpellActionClientRpc();
+            AddNextSpellAction();
         else {
-            ResetStateClientRpc();
-            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
-            SwitchToProcessCombatClientRpc();
+            ResetState();
+            actionManager.SetActionFocusPlayerIndices(duelManager.GetCurrentPlayerTurn().PlayerId);
+            combatStateManager.SwitchState(combatStateManager.ProcessCombatState);
         }
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void RemoveTopPlayerIndexClientRpc() {
+    private void RemoveTopPlayerIndex() {
         if (declareSpellsPlayerIndices.Count == 0)
             throw new Exception("Attempting to remove element when declareSpellsPlayerIndices is empty");
 
         declareSpellsPlayerIndices.RemoveAt(0);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void ResetStateClientRpc() {
+    private void ResetState() {
         duelistCombat = null;
         declareSpellsPlayerIndices.Clear();
-    }
-
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToProcessCombatClientRpc() {
-        combatStateManager.SwitchState(combatStateManager.ProcessCombatState);
     }
 
     public bool CanPlaySetupCards() {

@@ -18,6 +18,9 @@ public class CombatStateManager : NetworkBehaviour {
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Unable to find GameObject with DuelManager component");
@@ -27,21 +30,24 @@ public class CombatStateManager : NetworkBehaviour {
     }
 
     private void Update() {
+        if (!IsServer)
+            return;
+
         currentState.UpdateState();
     }
 
     public void SwitchState(CombatState state) {
+        if (!IsServer)
+            return;
+
         currentState = state;
         currentState.EnterState();
     }
 
-    [Rpc(SendTo.Server)]
-    public void StartCombatServerRpc() {
-        StartCombatClientRpc();
-    }
+    public void StartCombat() {
+        if (!IsServer)
+            return;
 
-    [Rpc(SendTo.ClientsAndHost)]
-    public void StartCombatClientRpc() {
         SwitchState(declareAttackersState);
     }
 

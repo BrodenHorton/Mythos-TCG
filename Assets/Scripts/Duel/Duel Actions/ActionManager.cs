@@ -126,13 +126,22 @@ public class ActionManager : NetworkBehaviour {
                 inactivePlayerIds.Add(duelManager.Players[i].PlayerId);
         }
 
-        string activeActionMessage = actionsByPlayerId[actionFocusPlayerIds[0]].Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().ActiveActionMessage : "";
+        string activeActionMessage;
+        string inactiveActionMessage;
+        if (actionFocusPlayerIds.Count == 0) {
+            activeActionMessage = "";
+            inactiveActionMessage = "";
+        }
+        else {
+            activeActionMessage = actionsByPlayerId[actionFocusPlayerIds[0]].Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().ActiveActionMessage : "";
+            inactiveActionMessage = actionsByPlayerId[actionFocusPlayerIds[0]].Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().InactiveActionMessage : "";
+        }
+
         BaseRpcTarget activeTarget = RpcTarget.Group(actionFocusPlayerIds, RpcTargetUse.Temp);
         InvokeOnActiveActionChangedClientRpc(true, activeActionMessage, activeTarget);
 
-        string inactiveActionMessage = actionsByPlayerId[actionFocusPlayerIds[0]].Count > 0 ? actionsByPlayerId[actionFocusPlayerIds[0]].Peek().InactiveActionMessage : "";
         BaseRpcTarget inactiveTarget = RpcTarget.Group(inactivePlayerIds, RpcTargetUse.Temp);
-        InvokeOnActiveActionChangedClientRpc(false, inactiveActionMessage, activeTarget);
+        InvokeOnActiveActionChangedClientRpc(false, inactiveActionMessage, inactiveTarget);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]

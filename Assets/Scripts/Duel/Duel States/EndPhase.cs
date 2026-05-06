@@ -18,7 +18,6 @@ public class EndPhase : NetworkBehaviour, DuelState {
             return;
 
         InvokeOnEndPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
-        stateManager.DuelManager.EndOfTurnRegenerateCreaturesHealth();
         stateManager.DuelManager.NextTurn();
         stateManager.SwitchState(stateManager.UntapPhase);
     }

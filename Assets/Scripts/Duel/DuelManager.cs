@@ -33,11 +33,16 @@ public class DuelManager : NetworkBehaviour {
     }
 
     private void InitializePlayers(object sender, StartGameEventArgs args) {
-        InitializePlayersServerRpc(args.PlayerOrder.ToArray());
+        if (!IsServer)
+            return;
+
+        InitializePlayers(args.PlayerOrder.ToArray());
     }
 
-    [Rpc(SendTo.Server)]
-    private void InitializePlayersServerRpc(ulong[] playerOrder) {
+    private void InitializePlayers(ulong[] playerOrder) {
+        if (!IsServer)
+            return;
+
         players = new List<MatchPlayer>();
         for (int i = 0; i < playerOrder.Length; i++) {
             MatchPlayer player = new MatchPlayer(playerOrder[i], Temp_PopulateDeck());
@@ -64,15 +69,6 @@ public class DuelManager : NetworkBehaviour {
             Card card = CardDatabase.Instance.GetCardByIndex(UnityEngine.Random.Range(0, databaseCardCount)).GenerateCardFromBase();
             result.Add(card);
         }
-        return result;
-    }
-
-    private List<Card> Temp_PopulateDeckNull() {
-        List<Card> result = new List<Card>();
-        int tempDeckSize = 40;
-        int databaseCardCount = CardDatabase.Instance.Cards.Count;
-        for (int i = 0; i < tempDeckSize; i++)
-            result.Add(new NullCard());
         return result;
     }
 
@@ -160,21 +156,22 @@ public class DuelManager : NetworkBehaviour {
         }
     }
 
-    public void EndOfTurnRegenerateCreaturesHealth() {
-        foreach(MatchPlayer player in Players) {
-            for(int i = 0; i < player.Creatures.Count; i++) {
-                if (player.Creatures[i].CurrentDamage > 0)
-                    player.Creatures[i].CurrentDamage = 0;
-            }
-        }
-    }
-
     public void NextTurn() {
+        RegenerateCreaturesHealth();
         currentPlayerTurnIndex = ++currentPlayerTurnIndex % players.Count;
         OnNextPlayerTurn?.Invoke(this, new NextPlayerTurnEventArgs(GetCurrentPlayerTurn(), currentPlayerTurnIndex));
         if (currentPlayerTurnIndex == 0) {
             fullTurnCount++;
             OnNextFullTurn?.Invoke(this, new NextFullTurnEventArgs(fullTurnCount));
+        }
+    }
+
+    private void RegenerateCreaturesHealth() {
+        foreach (MatchPlayer player in Players) {
+            for (int i = 0; i < player.Creatures.Count; i++) {
+                if (player.Creatures[i].CurrentDamage > 0)
+                    player.Creatures[i].CurrentDamage = 0;
+            }
         }
     }
 

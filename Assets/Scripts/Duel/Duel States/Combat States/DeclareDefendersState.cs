@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 public class DeclareDefendersState : NetworkBehaviour, CombatState {
-    public event EventHandler<PlayerEventArgs> OnStartDeclareDefenders;
-    public event EventHandler<PlayerEventArgs> OnSetDeclareDefeners;
+    public event EventHandler<ulong> OnStartDeclareDefenders;
+    public event EventHandler OnSetDeclareDefeners;
 
     private CombatStateManager combatStateManager;
     private DuelManager duelManager;
@@ -18,6 +18,9 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         combatStateManager = FindFirstObjectByType<CombatStateManager>();
         if (combatStateManager == null)
             throw new Exception("Could not find CombatStateManager object");
@@ -33,58 +36,48 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     }
 
     public void EnterState() {
-        if(IsServer) {
-            if (combatManager.GetTargets().Count == 0)
-                UpdatePlayerReadyStateServerRpc();
-            else
-                StartDefenderDeclarationServerRpc();
-        }
+        if (!IsServer)
+            return;
+
+        if (combatManager.GetTargets().Count == 0)
+            UpdatePlayerReadyStateServerRpc();
+        else
+            StartDefenderDeclarationServerRpc();
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.Server)]
     private void StartDefenderDeclarationServerRpc() {
-        StartDeclareDefenderCombatStateClientRpc();
+        StartDeclareDefenderCombatStateClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId);
         List<MatchPlayer> targets = combatManager.GetTargets();
         List<ulong> targetIds = new List<ulong>();
         List<int> targetIndices = new List<int>();
         foreach (MatchPlayer target in targets) {
             targetIds.Add(target.PlayerId);
             targetIndices.Add(duelManager.GetPlayerIndex(target));
+            actionManager.AddAction(target.PlayerId, PlayerReadyUp, "Commit", "Waiting for Opponents");
         }
         BaseRpcTarget rpcTarget = RpcTarget.Group(targetIds, RpcTargetUse.Temp);
-        SetDeclareDefenderActionClientRpc(rpcTarget);
-        actionManager.SetActionFocusPlayerIndices(targetIndices.ToArray());
+        actionManager.SetActionFocusPlayerIndices(targetIds.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void StartDeclareDefenderCombatStateClientRpc() {
-        OnStartDeclareDefenders?.Invoke(this, new PlayerEventArgs(duelManager.GetCurrentPlayerTurn()));
-    }
-
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void SetDeclareDefenderActionClientRpc(RpcParams rpcParams) {
-        actionManager.AddAction(PlayerReadyUp, "Commit", "Waiting for Opponents");
-        OnSetDeclareDefeners?.Invoke(this, new PlayerEventArgs(duelManager.GetCurrentPlayerTurn()));
+    private void StartDeclareDefenderCombatStateClientRpc(ulong playerId) {
+        OnStartDeclareDefenders?.Invoke(this, playerId);
     }
 
     private void PlayerReadyUp() {
-        actionManager.RemoveActionFocusId(duelManager.GetLocalClientPlayerIndex());
-        EventBus.InvokeOnLocalClientPlayerReadyUp(this, EventArgs.Empty);
-        PlayerReadyUpServerRpc(duelManager.LocalClientPlayer.PlayerId);
+        PlayerReadyUpServerRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void PlayerReadyUpServerRpc(ulong playerId) {
-        PlayerReadyUpClientRpc(playerId);
-        UpdatePlayerReadyStateServerRpc();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PlayerReadyUpClientRpc(ulong playerId) {
-        TcgLogger.Log("Player " + playerId + " has readied up");
+    private void PlayerReadyUpServerRpc(ServerRpcParams rpcParams = default) {
+        ulong playerId = rpcParams.Receive.SenderClientId;
+        actionManager.RemoveActionFocusId(playerId);
         readyPlayers.Add(playerId);
+        TcgLogger.Log("Player " + playerId + " has readied up");
+        UpdatePlayerReadyStateServerRpc();
     }
 
     [Rpc(SendTo.Server)]
@@ -92,27 +85,12 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         if (readyPlayers.Count < combatManager.DuelistCombats.Count)
             return;
 
-        actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
-        ClearReadyPlayersClientRpc();
-        if (combatManager.DuelistCombats.Count > 0)
-            SwitchToDeclareSpellsClientRpc();
-        else
-            SwitchToOutOfCombatClientRpc();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void ClearReadyPlayersClientRpc() {
+        actionManager.SetActionFocusPlayerIndices(duelManager.GetCurrentPlayerTurn().PlayerId);
         readyPlayers.Clear();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToDeclareSpellsClientRpc() {
-        combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToOutOfCombatClientRpc() {
-        combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
+        if (combatManager.DuelistCombats.Count > 0)
+            combatStateManager.SwitchState(combatStateManager.DeclareSpellsState);
+        else
+            combatStateManager.SwitchState(combatStateManager.OutOfCombatState);
     }
 
     public bool CanPlaySetupCards() {

@@ -3,12 +3,15 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class DeclareAttackersState : NetworkBehaviour, CombatState {
-    public event EventHandler<PlayerEventArgs> OnStartDeclareAttackers;
+    public event EventHandler<ulong> OnStartDeclareAttackers;
 
     private CombatStateManager combatStateManager;
     private ActionManager actionManager;
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         combatStateManager = FindFirstObjectByType<CombatStateManager>();
         if (combatStateManager == null)
             throw new Exception("Could not find CombatStateManager object");
@@ -18,12 +21,20 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
     }
 
     public void EnterState() {
-        if (combatStateManager.DuelManager.IsLocalClientPlayerTurn())
-            actionManager.AddAction(SwitchToDeclareDefendersServerRpc, "Commit", "Waiting for Opponent");
-        OnStartDeclareAttackers?.Invoke(this, new PlayerEventArgs(combatStateManager.DuelManager.GetCurrentPlayerTurn()));
+        if (!IsServer)
+            return;
+
+        ulong currentPlayerTurnId = combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
+        actionManager.AddAction(currentPlayerTurnId, SwitchToDeclareDefendersServerRpc, "Commit", "Waiting for Opponent");
+        InvokeOnStartDeclareAttackersClientRpc(currentPlayerTurnId);
     }
 
     public void UpdateState() { }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnStartDeclareAttackersClientRpc(ulong playerId) {
+        OnStartDeclareAttackers?.Invoke(this, playerId);
+    }
 
     [Rpc(SendTo.Server)]
     private void SwitchToDeclareDefendersServerRpc() {

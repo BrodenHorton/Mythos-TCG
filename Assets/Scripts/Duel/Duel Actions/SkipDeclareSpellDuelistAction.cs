@@ -14,7 +14,7 @@ public class SkipDeclareSpellDuelistAction : DuelistAction {
     }
 
     public override void Execute() {
-        declareSpellsState.SkipActionServerRpc();
+        declareSpellsState.SkipAction();
     }
 
     private void ReomveAction(object sender, PlayerEventArgs args) {

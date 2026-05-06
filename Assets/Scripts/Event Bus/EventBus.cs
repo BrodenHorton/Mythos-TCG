@@ -40,8 +40,6 @@ public static class EventBus {
     // Creature Actions
     public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
     public static event EventHandler<CreatureCardEventArgs> OnCreatureUntapped;
-    // Player Actions
-    public static event EventHandler OnLocalClientPlayerReadyUp;
 
     #region Duelist UI Actions
     public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs<Card> args) {
@@ -179,12 +177,6 @@ public static class EventBus {
 
     public static void InvokeOnCreatureUntapped(object sender, CreatureCardEventArgs args) {
         OnCreatureUntapped?.Invoke(sender, args);
-    }
-    #endregion
-
-    #region Player Actions
-    public static void InvokeOnLocalClientPlayerReadyUp(object sender, EventArgs args) {
-        OnLocalClientPlayerReadyUp?.Invoke(sender, args);
     }
     #endregion
 }

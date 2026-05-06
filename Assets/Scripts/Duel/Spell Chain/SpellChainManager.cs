@@ -22,6 +22,9 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         duelManager = FindFirstObjectByType<DuelManager>();
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");

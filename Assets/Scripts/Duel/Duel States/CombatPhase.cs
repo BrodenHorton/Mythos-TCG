@@ -10,6 +10,9 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     private CombatStateManager combatStateManager;
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         combatStateManager = FindFirstObjectByType<CombatStateManager>();
         if (combatStateManager == null)
             throw new Exception("Could not find CombatStateManager object");
@@ -24,7 +27,7 @@ public class CombatPhase : NetworkBehaviour, DuelState {
 
         InvokeOnCombatPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
         combatStateManager.OutOfCombatState.OnOutOfCombatEntered += SwitchToSecondMainPhase;
-        combatStateManager.StartCombatServerRpc();
+        combatStateManager.StartCombat();
     }
 
     public void UpdateState() { }
@@ -36,6 +39,9 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     }
 
     private void SwitchToSecondMainPhase(object sender, EventArgs args) {
+        if (!IsServer)
+            return;
+
         combatStateManager.OutOfCombatState.OnOutOfCombatEntered -= SwitchToSecondMainPhase;
         stateManager.SwitchState(stateManager.SecondMainPhase);
     }
