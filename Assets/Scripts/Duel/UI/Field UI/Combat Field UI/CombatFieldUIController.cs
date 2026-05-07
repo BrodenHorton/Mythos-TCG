@@ -99,23 +99,36 @@ public class CombatFieldUIController : NetworkBehaviour {
     }
 
     private void SelectUndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
-        if (duelManager.IsLocalClientPlayerTurn())
+        if (args.CardUI == null)
             return;
-        if (targetPlayerId != duelManager.LocalClientPlayer)
+
+        SelectUndeclareDefenderServerRpc(args.CardUI.CardUuid);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SelectUndeclareDefenderServerRpc(Guid cardUuid, ServerRpcParams rpcParams = default) {
+        ulong playerId = rpcParams.Receive.SenderClientId;
+        if (playerId == duelManager.GetCurrentPlayerTurn().PlayerId)
+            return;
+        if (targetPlayerId != playerId)
             return;
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
-        if (args.CardUI == null)
+        MatchPlayer player = duelManager.GetPlayerById(playerId);
+        if (!player.ContainsCreatureUuid(cardUuid))
             return;
-        MatchPlayer localClientPlayer = duelManager.LocalClientPlayer;
-        if (!localClientPlayer.ContainsCreatureUuid(args.CardUI.CardUuid))
-            return;
-        CreatureCard creatureCard = localClientPlayer.GetCreatureByUuid(args.CardUI.CardUuid);
+        CreatureCard creatureCard = player.GetCreatureByUuid(cardUuid);
         if (creatureCard == null)
             return;
 
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
         UndeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(targetPlayerId), creatureCard.Uuid.ToString());
+        SelectUndeclareDefenderClientRpc(cardUuid);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SelectUndeclareDefenderClientRpc(Guid cardUuid) {
+        // TODO: Implement client side undeclaring defender
     }
 
     [Rpc(SendTo.Server)]

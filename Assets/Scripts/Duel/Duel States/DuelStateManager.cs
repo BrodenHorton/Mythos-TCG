@@ -20,12 +20,14 @@ public class DuelStateManager : NetworkBehaviour {
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+        
         duelManager = GetComponent<DuelManager>();
         if (duelManager == null)
             throw new Exception("DuelManager not found on GameObject");
 
-        if (IsServer)
-            DuelManager.OnPlayersInitializationFinished += StartStateMachine;
+        DuelManager.OnPlayersInitializationFinished += StartStateMachine;
     }
 
     private void Update() {
@@ -38,11 +40,9 @@ public class DuelStateManager : NetworkBehaviour {
     }
 
     public void StartStateMachine(object sender, EventArgs args) {
-        StartStateMachineServerRpc();
-    }
+        if (!IsServer)
+            return;
 
-    [Rpc(SendTo.Server)]
-    public void StartStateMachineServerRpc() {
         currentState.EnterState();
     }
 

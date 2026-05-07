@@ -8,12 +8,11 @@ public class DuelManager : NetworkBehaviour {
     public static readonly int INITIAL_HAND_SIZE = 5;
 
     public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitialization;
-    public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitializationFinished;
+    public event EventHandler OnPlayersInitializationFinished;
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
     public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
 
     private List<MatchPlayer> players;
-    private MatchPlayer localClientPlayer;
     private int currentPlayerTurnIndex;
     private int fullTurnCount;
 
@@ -23,9 +22,10 @@ public class DuelManager : NetworkBehaviour {
     }
 
     private void Start() {
-        if(IsServer)
-            GameManager.Instance.OnGameStart += InitializePlayers;
+        if (!IsServer)
+            return;
 
+        GameManager.Instance.OnGameStart += InitializePlayers;
         EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
         EventBus.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
         EventBus.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
@@ -53,7 +53,7 @@ public class DuelManager : NetworkBehaviour {
             BaseRpcTarget target = RpcTarget.Group(new List<ulong>() { playerOrder[i] }, RpcTargetUse.Temp);
             InvokePlayerInitializationClientRpc(new List<ulong>(playerOrder), i, target);
         }
-        OnPlayersInitializationFinished?.Invoke(this, new PlayersInitializedEventArgs(players.Count, GetLocalClientPlayerIndex()));
+        OnPlayersInitializationFinished?.Invoke(this, EventArgs.Empty);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
@@ -72,7 +72,9 @@ public class DuelManager : NetworkBehaviour {
         return result;
     }
 
-    public void PlayCardFromHand(MatchPlayer player, int handIndex) {
+    [Rpc(SendTo.Server)]
+    public void PlayCardFromHandServerRpc(int handIndex, ServerRpcParams rpcParams = default) {
+        MatchPlayer player = GetPlayerById(rpcParams.Receive.SenderClientId);
         if (player.Hand.Count <= handIndex)
             throw new Exception("Attmepting to play card with invalid hadnIndex: " + handIndex);
 
@@ -80,69 +82,59 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
-        List<ulong> playerIds = new List<ulong>();
-        for(int i = 0; i < players.Count; i++) {
-            if(players[i].PlayerId != localClientPlayer.PlayerId)
-                playerIds.Add(players[i].PlayerId);
-        }
-        BaseRpcTarget rpcTarget = RpcTarget.Group(playerIds, RpcTargetUse.Temp);
+        if (!IsServer)
+            return;
+
+        args.Card.CreatureHealthChangedCallback = args.Player.OnCreatureHealthChangedCallback;
+        args.Card.CreatureDamagedCallback = args.Player.OnCreatureDamagedCallback;
+        args.Card.CreatureDestroyedCallback = args.Player.OnCreatureDestroyCallback;
+        args.Player.PlayCreatureCardFromHand(args.Card, args.HandIndex);
+
         PlayCreatureCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId),
                                           args.Card.GetNetworkSerializableObject(),
-                                          args.HandIndex,
-                                          rpcTarget);
-
-        TcgLogger.Log("Creature Card Uuid before rpc: " + args.Card.Uuid);
-        args.Card.CreatureHealthChangedCallback = localClientPlayer.OnCreatureHealthChangedCallback;
-        args.Card.CreatureDamagedCallback = localClientPlayer.OnCreatureDamagedCallback;
-        args.Card.CreatureDestroyedCallback = localClientPlayer.OnCreatureDestroyCallback;
-        localClientPlayer.PlayCreatureCardFromHand(args.Card, args.HandIndex);
+                                          args.HandIndex);
     }
 
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable creatureCardNetworkObject, int handIndex, RpcParams rpcParams) {
-        MatchPlayer player = Players[playerIndex];
-        CreatureCard card = new CreatureCard(creatureCardNetworkObject);
-        TcgLogger.Log("Creature Card Uuid after rpc: " + card.Uuid);
-        card.CreatureHealthChangedCallback = player.OnCreatureHealthChangedCallback;
-        card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
-        card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
-
-        player.PlayCreatureCardFromHand(card, handIndex);
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable creatureCardNetworkObject, int handIndex) {
+        // TODO: Implement sending card to client to be played
     }
 
+    
     public void PlayDomainCardFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
-        PlayDomainCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
-    }
+        if (!IsServer)
+            return;
+        MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
+        DomainCard card = new DomainCard(args.Card.GetNetworkSerializableObject());
+        player.PlayDomainCardFromHand(card, args.HandIndex);
 
-    [Rpc(SendTo.Server)]
-    private void PlayDomainCardFromHandServerRpc(int playerIndex, DomainCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        PlayDomainCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
+        PlayDomainCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void PlayDomainCardFromHandClientRpc(int playerIndex, DomainCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        MatchPlayer player = Players[playerIndex];
-        DomainCard card = new DomainCard(cardNetworkSerializableObject);
-        player.PlayDomainCardFromHand(card, handIndex);
+        // TODO: Implement sending card to client to be played
     }
 
     public void PlaySpellCardFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
-        PlaySpellCardFromHandServerRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
-    }
+        if (!IsServer)
+            return;
 
-    [Rpc(SendTo.Server)]
-    private void PlaySpellCardFromHandServerRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        PlaySpellCardFromHandClientRpc(playerIndex, cardNetworkSerializableObject, handIndex);
+        MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
+        SpellCard card = new SpellCard(args.Card.GetNetworkSerializableObject());
+        player.PlaySpellCardFromHand(card, args.HandIndex);
+        PlaySpellCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void PlaySpellCardFromHandClientRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
-        MatchPlayer player = Players[playerIndex];
-        SpellCard card = new SpellCard(cardNetworkSerializableObject);
-        player.PlaySpellCardFromHand(card, handIndex);
+        // TODO: Implement sending card to client to be played
     }
 
     public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+        if (!IsServer)
+            return;
+
         if (args.Card.SpellType == SpellType.Instant)
             ExecuteSpell(args.Player, args.Card);
         else
@@ -150,6 +142,9 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void ExecuteSpell(MatchPlayer player, SpellCard spellCard) {
+        if (!IsServer)
+            return;
+
         for (int i = 0; i < spellCard.BaseEffects.Count; i++) {
             spellCard.BaseEffects[i].Execute();
             // TODO: Execute the additional effects on the SpellCard class
@@ -157,6 +152,9 @@ public class DuelManager : NetworkBehaviour {
     }
 
     public void NextTurn() {
+        if (!IsServer)
+            return;
+
         RegenerateCreaturesHealth();
         currentPlayerTurnIndex = ++currentPlayerTurnIndex % players.Count;
         OnNextPlayerTurn?.Invoke(this, new NextPlayerTurnEventArgs(GetCurrentPlayerTurn(), currentPlayerTurnIndex));
@@ -167,6 +165,9 @@ public class DuelManager : NetworkBehaviour {
     }
 
     private void RegenerateCreaturesHealth() {
+        if (!IsServer)
+            return;
+
         foreach (MatchPlayer player in Players) {
             for (int i = 0; i < player.Creatures.Count; i++) {
                 if (player.Creatures[i].CurrentDamage > 0)
@@ -183,26 +184,21 @@ public class DuelManager : NetworkBehaviour {
         return players[currentPlayerTurnIndex];
     }
 
-    public bool IsLocalClientPlayerTurn() {
-        return localClientPlayer == GetCurrentPlayerTurn();
-    }
-
     public int GetStartOfTurnManaCount() {
         return fullTurnCount;
     }
 
-    public MatchPlayer GetPlayerById(ulong playerId) {
-        MatchPlayer result = null;
-        foreach(MatchPlayer p in players) {
-            if (p.PlayerId == playerId)
-                result = p;
-        }
-
-        return result;
-    }
-
     public void IncrementFullTurnCount() {
         fullTurnCount++;
+    }
+
+    public MatchPlayer GetPlayerById(ulong playerId) {
+        foreach (MatchPlayer p in players) {
+            if (p.PlayerId == playerId)
+                return p;
+        }
+
+        throw new Exception("Unable to find player with playerId: " + playerId);
     }
 
     public int GetPlayerIndex(MatchPlayer player) {
@@ -218,13 +214,7 @@ public class DuelManager : NetworkBehaviour {
         throw new Exception("Player index could not be found for playerId: " + playerId);
     }
 
-    public int GetLocalClientPlayerIndex() {
-        return GetPlayerIndex(localClientPlayer.PlayerId);
-    }
-
     public List<MatchPlayer> Players { get { return players; } }
-
-    public MatchPlayer LocalClientPlayer { get { return localClientPlayer; } }
 
     public int CurrentPlayerTurnIndex {  get { return currentPlayerTurnIndex; } }
 

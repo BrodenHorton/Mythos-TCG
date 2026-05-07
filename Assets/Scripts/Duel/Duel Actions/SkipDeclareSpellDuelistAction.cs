@@ -1,13 +1,11 @@
 ﻿
 public class SkipDeclareSpellDuelistAction : DuelistAction {
-    private DuelManager duelManager;
     private DeclareSpellsState declareSpellsState;
 
-    public SkipDeclareSpellDuelistAction(ulong playerId, DuelManager duelManager, SpellChainManager spellChainManager, DeclareSpellsState declareSpellsState) {
+    public SkipDeclareSpellDuelistAction(ulong playerId, SpellChainManager spellChainManager, DeclareSpellsState declareSpellsState) {
         this.playerId = playerId;
         activeActionMessage = "Skip";
         inactiveActionMessage = "Waiting for Opponent";
-        this.duelManager = duelManager;
         this.declareSpellsState = declareSpellsState;
 
         spellChainManager.OnSpellChainStart += ReomveAction;
@@ -18,7 +16,7 @@ public class SkipDeclareSpellDuelistAction : DuelistAction {
     }
 
     private void ReomveAction(object sender, PlayerEventArgs args) {
-        if (args.Player.PlayerId != duelManager.LocalClientPlayer.PlayerId)
+        if (args.Player.PlayerId != args.Player.PlayerId)
             return;
 
         TcgLogger.Log("Remove Action executed for SkipDeclareSpellDuelistAction");

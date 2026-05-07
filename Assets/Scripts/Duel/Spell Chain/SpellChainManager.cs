@@ -36,6 +36,8 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     private void AddSpellToChain(object sender, PlayerCardEventArgs<SpellCard> args) {
+        if (!IsServer)
+            return;
         if (args.Card.SpellType == SpellType.Instant)
             throw new Exception("Instant spells should not be added to an action chain");
         if (args.Card.SpellType == SpellType.Slow && spellChain.Count != 0)
@@ -48,6 +50,9 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     private void StartSpellChain(MatchPlayer player, SpellCard spellCard) {
+        if (!IsServer)
+            return;
+
         int playerIndex = duelManager.GetPlayerIndex(player);
         startingIndex = playerIndex;
         currentIndex = playerIndex;
@@ -55,53 +60,50 @@ public class SpellChainManager : NetworkBehaviour {
         SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[playerIndex]);
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
-
-        if(IsServer)
-            PassActionServerRpc();
+        PassActionServerRpc();
     }
 
     private void AddSpellToChain(MatchPlayer player, SpellCard spellCard) {
+        if (!IsServer)
+            return;
+
         SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[currentIndex]);
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
         startingIndex = currentIndex;
-
-        if(IsServer)
-            PassActionServerRpc();
+        PassActionServerRpc();
     }
 
-    [Rpc(SendTo.Server)]
     public void PassActionServerRpc() {
+        if (!IsServer)
+            return;
+
         InvokeOnSpellChainTurnEndClientRpc();
-        IncrementCurrentIndexClientRpc();
+        IncrementCurrentIndex();
         if (currentIndex == startingIndex) {
-            ExecuteActionChainClientRpc();
-            actionManager.SetActionFocusPlayerIndices(duelManager.CurrentPlayerTurnIndex);
+            ExecuteActionChain();
+            actionManager.SetActionFocusPlayerIndices(duelManager.GetCurrentPlayerTurn().PlayerId);
             InvokeOnSpellChainFinishedClientRpc();
         }
         else {
-            List<ulong> currentIndexPlayerId = new List<ulong> {
-                duelManager.Players[currentIndex].PlayerId
-            };
-            BaseRpcTarget rpcTarget = RpcTarget.Group(currentIndexPlayerId, RpcTargetUse.Temp);
-            AddPassActionToPlayerClientRpc(rpcTarget);
-            actionManager.SetActionFocusPlayerIndices(currentIndex);
+            ulong currentIndexPlayerId = duelManager.Players[currentIndex].PlayerId;
+            PassSpellChainDuelistAction duelistAction = new PassSpellChainDuelistAction(currentIndexPlayerId, this);
+            actionManager.AddAction(currentIndexPlayerId, duelistAction);
+            actionManager.SetActionFocusPlayerIndices(currentIndexPlayerId);
         }
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void IncrementCurrentIndexClientRpc() {
+    private void IncrementCurrentIndex() {
+        if (!IsServer)
+            return;
+
         currentIndex = (currentIndex + 1) % duelManager.Players.Count;
     }
 
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void AddPassActionToPlayerClientRpc(RpcParams rpcParams) {
-        PassSpellChainDuelistAction duelistAction = new PassSpellChainDuelistAction(duelManager, this);
-        actionManager.AddAction(duelistAction);
-    }
+    private void ExecuteActionChain() {
+        if (!IsServer)
+            return;
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void ExecuteActionChainClientRpc() {
         while(spellChain.Count > 0) {
             SpellCardAction action = spellChain.Pop();
             duelManager.ExecuteSpell(action.Initiator, action.Card);
