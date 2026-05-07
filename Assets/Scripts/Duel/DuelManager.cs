@@ -10,7 +10,8 @@ public class DuelManager : NetworkBehaviour {
     public event EventHandler<PlayersInitializedEventArgs> OnPlayersInitialization;
     public event EventHandler OnPlayersInitializationFinished;
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
-    public event EventHandler<NextFullTurnEventArgs> OnNextFullTurn;
+    public event EventHandler<int> OnNextPlayerTurnClient;
+    public event EventHandler<int> OnNextFullTurn;
 
     private List<MatchPlayer> players;
     private int currentPlayerTurnIndex;
@@ -157,10 +158,11 @@ public class DuelManager : NetworkBehaviour {
 
         RegenerateCreaturesHealth();
         currentPlayerTurnIndex = ++currentPlayerTurnIndex % players.Count;
+        InvokeOnNextPlayerTurnClientClientRpc(currentPlayerTurnIndex);
         OnNextPlayerTurn?.Invoke(this, new NextPlayerTurnEventArgs(GetCurrentPlayerTurn(), currentPlayerTurnIndex));
         if (currentPlayerTurnIndex == 0) {
             fullTurnCount++;
-            OnNextFullTurn?.Invoke(this, new NextFullTurnEventArgs(fullTurnCount));
+            InvokeOnNextFullTurnClientRpc(fullTurnCount);
         }
     }
 
@@ -174,6 +176,16 @@ public class DuelManager : NetworkBehaviour {
                     player.Creatures[i].CurrentDamage = 0;
             }
         }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnNextPlayerTurnClientClientRpc(int playerIndex) {
+        OnNextPlayerTurnClient?.Invoke(this, playerIndex);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnNextFullTurnClientRpc(int fullTurnCount) {
+        OnNextFullTurn?.Invoke(this, fullTurnCount);
     }
 
     public int GetPlayerCount() {

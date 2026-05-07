@@ -10,14 +10,17 @@ public class CombatManager : NetworkBehaviour {
     private List<DuelistCombat> duelistCombats;
 
     private void Awake() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-
         duelistCombats = new List<DuelistCombat>();
     }
 
     private void Start() {
+        if (!IsServer)
+            return;
+
+        duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
+
         EventBus.OnDeclareAttacker += DeclareAttacker;
         EventBus.OnUndeclareAttacker += UndeclareAttacker;
         EventBus.OnDeclareDefender += DeclareDefender;
@@ -33,6 +36,9 @@ public class CombatManager : NetworkBehaviour {
     }
 
     public void AddAttacker(MatchPlayer initiator, MatchPlayer target, CreatureCard card) {
+        if (!IsServer)
+            return;
+
         if(HasExistingDuelistCombat(initiator, target)) {
             DuelistCombat combat = GetDuelistCombat(initiator, target);
             combat.AddAttacker(card);
@@ -53,6 +59,8 @@ public class CombatManager : NetworkBehaviour {
     }
 
     public void AddDefender(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker, CreatureCard defender) {
+        if (!IsServer)
+            return;
         if (!HasExistingDuelistCombat(initiator, target))
             throw new Exception("Attempted to add a defender when there is no existing DuelistCombat between initiator and target");
 
@@ -60,6 +68,8 @@ public class CombatManager : NetworkBehaviour {
     }
 
     public void RemoveAttacker(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker) {
+        if (!IsServer)
+            return;
         if (!HasExistingDuelistCombat(initiator, target))
             throw new Exception("Attempted to remove an attacker when there is not a DuellistCombat between the initiator and target");
 
@@ -70,6 +80,8 @@ public class CombatManager : NetworkBehaviour {
     }
 
     public void RemoveDefender(MatchPlayer initiator, MatchPlayer target, CreatureCard defender) {
+        if (!IsServer)
+            return;
         if (!HasExistingDuelistCombat(initiator, target))
             throw new Exception("Attempted to remove a defender when there is not a DuellistCombat between the initiator and target");
 
@@ -77,6 +89,8 @@ public class CombatManager : NetworkBehaviour {
     }
 
     public void ProcessNextDuelistCombat() {
+        if (!IsServer)
+            return;
         if (duelistCombats.Count == 0)
             throw new Exception("Attempting to process the next DuelistCombat when the duelistCombats list is empty");
 
@@ -87,13 +101,11 @@ public class CombatManager : NetworkBehaviour {
             if (creatureCombat.Defender == null)
                 duelistCombat.Target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
             else {
-                TcgLogger.Log("[CombatManager] Creature attacked");
                 CreatureDamagedByCreatureEventArgs args = new CreatureDamagedByCreatureEventArgs(duelistCombat.Initiator,
                                                                                                  duelistCombat.Target,
                                                                                                  creatureCombat,
                                                                                                  creatureCombat.Attacker.GetAtk());
                 EventBus.InvokeOnCreatureDamagedByCreature(this, args);
-                TcgLogger.Log("[CombatManager] args.IsCanceled: " + args.IsCanceled);
                 if (!args.IsCanceled)
                     creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
 

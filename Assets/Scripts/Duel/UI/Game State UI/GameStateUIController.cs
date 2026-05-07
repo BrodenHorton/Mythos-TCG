@@ -17,36 +17,35 @@ public class GameStateUIController : MonoBehaviour {
         stateManager.CombatPhase.OnCombatPhase += OnCombatPhase;
         stateManager.SecondMainPhase.OnSecondMainPhase += OnSecondMainPhase;
         stateManager.EndPhase.OnEndPhase += OnEndPhase;
-
-        duelManager.OnNextPlayerTurn += SetPlayerTurnIndex;
+        duelManager.OnNextPlayerTurnClient += SetPlayerTurnIndex;
         duelManager.OnNextFullTurn += SetFullTurn;
     }
 
-    public void OnUntapPhase(object sender, PlayerEventArgs args) {
+    public void OnUntapPhase(object sender, ulong playerId) {
         gameStateUI.SetDuelPhase("Untap Phase");
     }
 
-    public void OnFirstMainPhase(object sender, PlayerEventArgs args) {
+    public void OnFirstMainPhase(object sender, ulong playerId) {
         gameStateUI.SetDuelPhase("First Main Phase");
     }
 
-    public void OnCombatPhase(object sender, PlayerEventArgs args) {
+    public void OnCombatPhase(object sender, ulong playerId) {
         gameStateUI.SetDuelPhase("Combat Phase");
     }
 
-    public void OnSecondMainPhase(object sender, PlayerEventArgs args) {
+    public void OnSecondMainPhase(object sender, ulong playerId) {
         gameStateUI.SetDuelPhase("Second Main Phase");
     }
 
-    public void OnEndPhase(object sender, PlayerEventArgs args) {
+    public void OnEndPhase(object sender, ulong playerId) {
         gameStateUI.SetDuelPhase("End Phase");
     }
 
-    public void SetPlayerTurnIndex(object sender, NextPlayerTurnEventArgs args) {
-        gameStateUI.SetPlayerTurnIndex(args.PlayerIndex);
+    public void SetPlayerTurnIndex(object sender, int playerIndex) {
+        gameStateUI.SetPlayerTurnIndex(playerIndex);
     }
 
-    public void SetFullTurn(object sender, NextFullTurnEventArgs args) {
-        gameStateUI.SetFullTurn(args.FullTurnCount);
+    public void SetFullTurn(object sender, int fullTurnCount) {
+        gameStateUI.SetFullTurn(fullTurnCount);
     }
 }
