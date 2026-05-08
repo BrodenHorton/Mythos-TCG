@@ -1,4 +1,10 @@
-﻿public class NullCard : Card {
+﻿using Unity.Netcode;
+
+public class NullCard : Card {
+
+    public NullCard() {
+        cardType = CardType.Null;
+    }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
         return false;
@@ -11,4 +17,6 @@
     public override int GetManaCost() {
         return 999;
     }
+
+    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

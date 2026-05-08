@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
-public abstract class DuelistUIController : MonoBehaviour {    
+public abstract class DuelistUIController : NetworkBehaviour {    
     protected ulong playerId;
 
     public abstract void Init(ulong playerId, int lifePoints, int manaCount);

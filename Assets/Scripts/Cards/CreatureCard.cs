@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
@@ -14,27 +16,16 @@ public partial class CreatureCard : Card {
     private Action<CreatureCard> creatureDamagedCallback;
     private Action<CreatureCard> creatureDestroyedCallback;
 
-    public CreatureCard() { }
+    public CreatureCard() {
+        cardType = CardType.Creature;
+    }
 
     public CreatureCard(CreatureCardBase cardBase) {
+        cardType = CardType.Creature;
         this.cardBase = cardBase;
         effects = new List<CreatureCardEffect>();
         for(int i = 0; i < cardBase.BaseEffects.Count; i++) {
             CreatureCardEffect effect = cardBase.BaseEffects[i].DeepCopy();
-            effect.Init(uuid);
-            effects.Add(effect);
-        }
-    }
-
-    public CreatureCard(CreatureCardNetworkSerializable creatureCardNetworkObject) {
-        uuid = Guid.Parse(creatureCardNetworkObject.uuidStr.ToString());
-        cardBase = CardDatabase.Instance.GetCreatureCardByIndex(creatureCardNetworkObject.cardBaseIndex);
-        hasSummoningSickness = creatureCardNetworkObject.hasSummoningSickness;
-        isTapped = creatureCardNetworkObject.isTapped;
-        damage = creatureCardNetworkObject.damage;
-        effects = new List<CreatureCardEffect>();
-        for (int i = 0; i < creatureCardNetworkObject.effectContainer.effects.Length; i++) {
-            CreatureCardEffect effect = creatureCardNetworkObject.effectContainer.effects[i];
             effect.Init(uuid);
             effects.Add(effect);
         }
@@ -59,7 +50,7 @@ public partial class CreatureCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        EventBus.InvokeOnCreatureCardSelectedForPlay(this, new PlayCardFromHandEventArgs<CreatureCard>(player, this, handIndex));
+        EventBus.Instance.InvokeOnCreatureCardSelectedForPlay(new PlayCardFromHandEventArgs<CreatureCard>(player, this, handIndex));
     }
 
     public override int GetManaCost() {
@@ -76,12 +67,12 @@ public partial class CreatureCard : Card {
 
     public void Tap() {
         isTapped = true;
-        EventBus.InvokeOnCreatureTapped(this, new CreatureCardEventArgs(this)); 
+        EventBus.Instance.InvokeOnCreatureTapped(new CreatureCardEventArgs(this)); 
     }
 
     public void Untap() {
         isTapped = false;
-        EventBus.InvokeOnCreatureUntapped(this, new CreatureCardEventArgs(this));
+        EventBus.Instance.InvokeOnCreatureUntapped(new CreatureCardEventArgs(this));
     }
 
     public bool CanAttack() {
@@ -99,15 +90,31 @@ public partial class CreatureCard : Card {
             creatureDestroyedCallback?.Invoke(this);
     }
 
-    public CreatureCardNetworkSerializable GetNetworkSerializableObject() {
-        CreatureCardEffectContainer effectContainer = new CreatureCardEffectContainer();
-        effectContainer.effects = effects.ToArray();
-        return new CreatureCardNetworkSerializable(uuid.ToString(),
-                                                   CardDatabase.Instance.GetIndexOf(cardBase),
-                                                   hasSummoningSickness,
-                                                   isTapped,
-                                                   damage,
-                                                   effectContainer);
+    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+        FixedString128Bytes uuidStr = serializer.IsWriter ? new FixedString128Bytes(uuid.ToString()) : new FixedString128Bytes();
+        serializer.SerializeValue(ref uuidStr);
+        if (serializer.IsReader)
+            uuid = Guid.Parse(uuidStr.ToString());
+
+        int cardBaseIndex = serializer.IsWriter ? CardDatabase.Instance.GetIndexOf(cardBase) : -1;
+        serializer.SerializeValue(ref cardBaseIndex);
+        if (serializer.IsReader)
+            cardBase = CardDatabase.Instance.GetCreatureCardByIndex(cardBaseIndex);
+
+        serializer.SerializeValue(ref hasSummoningSickness);
+        serializer.SerializeValue(ref isTapped);
+        serializer.SerializeValue(ref damage);
+
+        CreatureCardEffectNetworkContainer effectContainer = serializer.IsWriter ? new CreatureCardEffectNetworkContainer(effects.ToArray()) : new CreatureCardEffectNetworkContainer();
+        serializer.SerializeNetworkSerializable(ref effectContainer);
+        if(serializer.IsReader) {
+            effects = new List<CreatureCardEffect>();
+            for (int i = 0; i < effectContainer.effects.Length; i++) {
+                CreatureCardEffect effect = effectContainer.effects[i];
+                effect.Init(uuid);
+                effects.Add(effect);
+            }
+        }
     }
 
     public string CardName { get { return cardBase.CardName; } }

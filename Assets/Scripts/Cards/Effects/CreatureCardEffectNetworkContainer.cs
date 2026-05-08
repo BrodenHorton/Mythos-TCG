@@ -1,7 +1,11 @@
 ﻿using Unity.Netcode;
 
-public struct CreatureCardEffectContainer : INetworkSerializable {
+public struct CreatureCardEffectNetworkContainer : INetworkSerializable {
     public CreatureCardEffect[] effects;
+
+    public CreatureCardEffectNetworkContainer(CreatureCardEffect[] effects) {
+        this.effects = effects;
+    }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
         int length = effects?.Length ?? 0;

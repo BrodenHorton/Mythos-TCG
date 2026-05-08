@@ -1,182 +1,203 @@
 using System;
+using Unity.Netcode;
+using UnityEngine;
+using static UnityEngine.Rendering.GPUSort;
 
-public static class EventBus {
+public class EventBus : NetworkBehaviour {
     // Duelist UI Actions
-    public static event EventHandler<PlayerCardEventArgs<Card>> OnCardDrawn;
-    public static event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
+    public event EventHandler<PlayerCardEventArgs<Card>> OnCardDrawn;
+    public event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
     // PlayerUI Card Drag
-    public static event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
-    public static event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
-    public static event EventHandler<HandCardEnteringPlayingFieldEventArgs> OnHandCardEnteringPlayingField;
+    public event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
+    public event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
+    public event EventHandler<HandCardEnteringPlayingFieldEventArgs> OnHandCardEnteringPlayingField;
     // PlayingField Card Drag
-    public static event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
-    public static event EventHandler<ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
-    public static event EventHandler<CreatureFieldCardEnteringCombatFieldEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
+    public event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
+    public event EventHandler<ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
+    public event EventHandler<CreatureFieldCardEnteringCombatFieldEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
     // Playing Cards
-    public static event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
-    public static event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
-    public static event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
-    public static event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
-    public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
-    public static event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardPlayedFromHand;
-    public static event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed; // This event should only ever be invoked by the server
+    public event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
+    public event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
+    public event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
+    public event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
+    public event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
+    public event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardPlayedFromHand;
+    public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed; // This event should only ever be invoked by the server
     // Player Status Changes
-    public static event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
-    public static event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
+    public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
+    public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Creature Status Changes
-    public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealthChanged;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealthChanged;
     // Declaring and Undeclaring creatures
-    public static event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
-    public static event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
-    public static event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
-    public static event EventHandler<UndeclareDefenderEventArgs> OnUndeclareDefender;
-    public static event EventHandler<SelectAttackerToDefendEventArgs> OnSelectAttackerToDefend;
+    public event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
+    public event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
+    public event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
+    public event EventHandler<UndeclareDefenderEventArgs> OnUndeclareDefender;
+    public event EventHandler<SelectAttackerToDefendEventArgs> OnSelectAttackerToDefend;
     // Combat
-    public static event EventHandler<CreatureAttackEventArgs> OnCreatureAttack;
-    public static event EventHandler<CreatureDamagedByCreatureEventArgs> OnCreatureDamagedByCreature;
-    public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDamaged;
-    public static event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
-    public static event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
+    public event EventHandler<CreatureAttackEventArgs> OnCreatureAttack;
+    public event EventHandler<CreatureDamagedByCreatureEventArgs> OnCreatureDamagedByCreature;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDamaged;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
+    public event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
-    public static event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
-    public static event EventHandler<CreatureCardEventArgs> OnCreatureUntapped;
+    public event EventHandler<CreatureCardEventArgs> OnCreatureTapped;
+    public event EventHandler<CreatureCardEventArgs> OnCreatureUntapped;
 
-    #region Duelist UI Actions
-    public static void InvokeOnCardDrawn(object sender, PlayerCardEventArgs<Card> args) {
-        OnCardDrawn?.Invoke(sender, args);
+    public static EventBus Instance { get; private set; }
+
+    private void Awake() {
+        if (Instance != null) {
+            Debug.LogWarning("EventBus already exists in scene. Destroying redundant object.");
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    public static void InvokeOnCardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {
-        OnCardRemovedFromHand?.Invoke(sender, args);
+    #region Duelist UI Actions
+    public void InvokeOnCardDrawn(ulong playerId, Card card) {
+        
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void InvokeOnCardDrawnForActivePlayerClientRpc(ulong playerId, Card card, RpcParams rpcParams) {
+        Instance.OnCardDrawn?.Invoke(this, new PlayerCardEventArgs<Card>(playerId, card));
+    }
+
+    public void InvokeOnCardRemovedFromHand(CardRemovedFromHandEventArgs args) {
+        OnCardRemovedFromHand?.Invoke(this, args);
     }
     #endregion
 
     #region PlayerUI Card Drag
-    public static void InvokeOnStartHandCardDrag(object sender, HandCardDragEventArgs args) {
-        OnStartHandCardDrag?.Invoke(sender, args);
+    public void InvokeOnStartHandCardDrag(HandCardDragEventArgs args) {
+        OnStartHandCardDrag?.Invoke(this, args);
     }
 
-    public static void InvokeOnReleaseHandCardDrag(object sender, HandCardDragEventArgs args) {
-        OnReleaseHandCardDrag?.Invoke(sender, args);
+    public void InvokeOnReleaseHandCardDrag(HandCardDragEventArgs args) {
+        OnReleaseHandCardDrag?.Invoke(this, args);
     }
 
-    public static void InvokeOnHandCardEnteringPlayingField(object sender, HandCardEnteringPlayingFieldEventArgs args) {
-        OnHandCardEnteringPlayingField?.Invoke(sender, args);
+    public void InvokeOnHandCardEnteringPlayingField(HandCardEnteringPlayingFieldEventArgs args) {
+        OnHandCardEnteringPlayingField?.Invoke(this, args);
     }
     #endregion
 
     #region PlayingField Card Drag
-    public static void InvokeOnStartCardDragPlayingField(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        OnStartCardDragPlayingField?.Invoke(sender, args);
+    public void InvokeOnStartCardDragPlayingField(FieldCardDragEventArgs<CreatureFieldCardUI> args) {
+        OnStartCardDragPlayingField?.Invoke(this, args);
     }
 
-    public static void InvokeOnReleaseCardDragPlayingField(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        OnReleaseCardDragPlayingField?.Invoke(sender, args);
+    public void InvokeOnReleaseCardDragPlayingField(ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
+        OnReleaseCardDragPlayingField?.Invoke(this, args);
     }
 
-    public static void InvokeOnReleaseCreatureFieldCardOverCombatArea(object sender, CreatureFieldCardEnteringCombatFieldEventArgs args) {
-        OnReleaseCreatureFieldCardOverCombatArea?.Invoke(sender, args);
+    public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CreatureFieldCardEnteringCombatFieldEventArgs args) {
+        OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
     }
     #endregion
 
     #region Playing Cards
-    public static void InvokeOnCreatureCardSelectedForPlay(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
-        OnCreatureCardSelectedForPlay?.Invoke(sender, args);
+    public void InvokeOnCreatureCardSelectedForPlay(PlayCardFromHandEventArgs<CreatureCard> args) {
+        OnCreatureCardSelectedForPlay?.Invoke(this, args);
     }
 
-    public static void InvokeOnCreatureCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
-        OnCreatureCardPlayedFromHand?.Invoke(sender, args);
+    public void InvokeOnCreatureCardPlayedFromHand(PlayCardFromHandEventArgs<CreatureCard> args) {
+        OnCreatureCardPlayedFromHand?.Invoke(this, args);
     }
 
-    public static void InvokeOnSpellCardSelectedForPlay(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
-        OnSpellCardSelectedForPlay?.Invoke(sender, args);
+    public void InvokeOnSpellCardSelectedForPlay(PlayCardFromHandEventArgs<SpellCard> args) {
+        OnSpellCardSelectedForPlay?.Invoke(this, args);
     }
 
-    public static void InvokeOnSpellCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
-        OnSpellCardPlayedFromHand?.Invoke(sender, args);
+    public void InvokeOnSpellCardPlayedFromHand(PlayCardFromHandEventArgs<SpellCard> args) {
+        OnSpellCardPlayedFromHand?.Invoke(this, args);
     }
 
-    public static void InvokeOnDomainCardSelectedForPlay(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
-        OnDomainCardSelectedForPlay?.Invoke(sender, args);
+    public void InvokeOnDomainCardSelectedForPlay(PlayCardFromHandEventArgs<DomainCard> args) {
+        OnDomainCardSelectedForPlay?.Invoke(this, args);
     }
 
-    public static void InvokeOnDomainCardPlayedFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
-        OnDomainCardPlayedFromHand?.Invoke(sender, args);
+    public void InvokeOnDomainCardPlayedFromHand(PlayCardFromHandEventArgs<DomainCard> args) {
+        OnDomainCardPlayedFromHand?.Invoke(this, args);
     }
 
     // This event should only ever be invoked by the server
-    public static void InvokeOnSpellChainCardPlayed(object sender, PlayerCardEventArgs<SpellCard> args) {
-        OnSpellChainCardPlayed?.Invoke(sender, args);
+    public void InvokeOnSpellChainCardPlayed(PlayerCardEventArgs<SpellCard> args) {
+        OnSpellChainCardPlayed?.Invoke(this, args);
     }
     #endregion
 
     #region Player Status Changes
-    public static void InvokeOnLifePointsChanged(object sender, LifePointsChangedEventArgs args) {
-        OnLifePointsChanged?.Invoke(sender, args);
+    public void InvokeOnLifePointsChanged(LifePointsChangedEventArgs args) {
+        OnLifePointsChanged?.Invoke(this, args);
     }
 
-    public static void InvokeOnManaCountChanged(object sender, ManaChangedEventArgs args) {
-        OnManaCountChanged?.Invoke(sender, args);
+    public void InvokeOnManaCountChanged(ManaChangedEventArgs args) {
+        OnManaCountChanged?.Invoke(this, args);
     }
     #endregion
 
     #region Creature Status Changes
-    public static void InvokeOnCreatureHealthChanged(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        OnCreatureHealthChanged?.Invoke(sender, args);
+    public void InvokeOnCreatureHealthChanged(PlayerCardEventArgs<CreatureCard> args) {
+        OnCreatureHealthChanged?.Invoke(this, args);
     }
     #endregion
 
     #region Declaring and Undeclaring Creatures
-    public static void InvokeOnDeclareAttacker(object sender, DeclareAttackerEventArgs args) {
-        OnDeclareAttacker?.Invoke(sender, args);
+    public void InvokeOnDeclareAttacker(DeclareAttackerEventArgs args) {
+        OnDeclareAttacker?.Invoke(this, args);
     }
 
-    public static void InvokeOnDeclareDefender(object sender, DeclareDefenderEventArgs args) {
-        OnDeclareDefender?.Invoke(sender, args);
+    public void InvokeOnDeclareDefender(DeclareDefenderEventArgs args) {
+        OnDeclareDefender?.Invoke(this, args);
     }
 
-    public static void InvokeOnUndelcareAttacker(object sender, UndeclareAttackerEventArgs args) {
-        OnUndeclareAttacker?.Invoke(sender, args);
+    public void InvokeOnUndelcareAttacker(UndeclareAttackerEventArgs args) {
+        OnUndeclareAttacker?.Invoke(this, args);
     }
 
-    public static void InvokeOnUndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
-        OnUndeclareDefender?.Invoke(sender, args);
+    public void InvokeOnUndeclareDefender(UndeclareDefenderEventArgs args) {
+        OnUndeclareDefender?.Invoke(this, args);
     }
 
-    public static void InvokeOnSelectAttackerToDefend(object sender, SelectAttackerToDefendEventArgs args) {
-        OnSelectAttackerToDefend?.Invoke(sender, args);
+    public void InvokeOnSelectAttackerToDefend(SelectAttackerToDefendEventArgs args) {
+        OnSelectAttackerToDefend?.Invoke(this, args);
     }
     #endregion
 
     #region Combat
-    public static void InvokeOnCreatureAttack(object sender, CreatureAttackEventArgs args) {
-        OnCreatureAttack?.Invoke(sender, args);
+    public void InvokeOnCreatureAttack(CreatureAttackEventArgs args) {
+        OnCreatureAttack?.Invoke(this, args);
     }
 
-    public static void InvokeOnCreatureDamagedByCreature(object sender, CreatureDamagedByCreatureEventArgs args) {
-        OnCreatureDamagedByCreature?.Invoke(sender, args);
+    public void InvokeOnCreatureDamagedByCreature(CreatureDamagedByCreatureEventArgs args) {
+        OnCreatureDamagedByCreature?.Invoke(this, args);
     }
 
-    public static void InvokeOnCreatureDamaged(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        OnCreatureDamaged?.Invoke(sender, args);
+    public void InvokeOnCreatureDamaged(PlayerCardEventArgs<CreatureCard> args) {
+        OnCreatureDamaged?.Invoke(this, args);
     }
 
-    public static void InvokeOnCreatureDestroyed(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        OnCreatureDestroyed?.Invoke(sender, args);
+    public void InvokeOnCreatureDestroyed(PlayerCardEventArgs<CreatureCard> args) {
+        OnCreatureDestroyed?.Invoke(this, args);
     }
 
-    public static void InvokeOnReleaseCombatCreatures(object sender, ReleaseCombatCreaturesEventArgs args) {
-        OnReleaseCombatCreatures?.Invoke(sender, args);
+    public void InvokeOnReleaseCombatCreatures(ReleaseCombatCreaturesEventArgs args) {
+        OnReleaseCombatCreatures?.Invoke(this, args);
     }
     #endregion
 
     #region Creature Actions
-    public static void InvokeOnCreatureTapped(object sender, CreatureCardEventArgs args) {
-        OnCreatureTapped?.Invoke(sender, args);
+    public void InvokeOnCreatureTapped(CreatureCardEventArgs args) {
+        OnCreatureTapped?.Invoke(this, args);
     }
 
-    public static void InvokeOnCreatureUntapped(object sender, CreatureCardEventArgs args) {
-        OnCreatureUntapped?.Invoke(sender, args);
+    public void InvokeOnCreatureUntapped(CreatureCardEventArgs args) {
+        OnCreatureUntapped?.Invoke(this, args);
     }
     #endregion
 }

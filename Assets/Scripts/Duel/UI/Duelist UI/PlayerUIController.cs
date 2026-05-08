@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -31,13 +32,13 @@ public class PlayerUIController : DuelistUIController {
 
         playerUI.OnSelectingCardDrag += SelectCardDrag;
         EventBus.OnHandCardEnteringPlayingField += PlayHandCard;
-        stateManager.FirstMainPhase.OnFirstMainPhase += EnableSelectableCardsOnPlayerEvent;
-        stateManager.CombatPhase.OnCombatPhase += DisableSelectableCardsOnPlayerEvent;
-        stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCardsOnPlayerEvent;
-        stateManager.EndPhase.OnEndPhase += DisableAllClientSelectableCards;
-        EventBus.OnManaCountChanged += EnableSelectableCardsAfterManaCountChanged;
-        actionManager.OnCanPerformActionChanged += SetSelectableCardsOnActionFocusChanged;
-        spellChainManager.OnSpellChainFinished += SetSelectableCardsOnSpellChainFinished;
+        stateManager.FirstMainPhase.OnFirstMainPhase += EnableSelectableCards;
+        stateManager.CombatPhase.OnCombatPhase += EnableSelectableCards;
+        stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCards;
+        stateManager.EndPhase.OnEndPhase += DisableSelectableCards;
+        EventBus.OnManaCountChanged += EnableSelectableCards;
+        actionManager.OnActionStateChanged += EnableSelectableCards;
+        spellChainManager.OnSpellChainFinished += EnableSelectableCards;
     }
 
     public override void Init(ulong playerId, int lifePoints, int manaCount) {
@@ -61,81 +62,46 @@ public class PlayerUIController : DuelistUIController {
         playerUI.RemoveCardFromHand(handIndex);
     }
 
-    private void EnableSelectableCardsAfterManaCountChanged(object sender, ManaChangedEventArgs args) {
-        if (playerId != args.Player.PlayerId)
+    private void EnableSelectableCards(object sender, ulong playerId) {
+        if (this.playerId != playerId)
             return;
 
-        SetCanSelectCards(true);
-    }
-
-    private void SetSelectableCardsOnPlayerSpellChainTurn(object sender, PlayerEventArgs args) {
-        if (playerId == args.Player.PlayerId)
-            SetCanSelectCards(true);
-        else
-            SetCanSelectCards(false);
-    }
-
-    private void SetSelectableCardsOnSpellChainFinished(object sender, EventArgs args) {
-        if (playerId == duelManager.GetCurrentPlayerTurn().PlayerId)
-            SetCanSelectCards(true);
-        else
-            SetCanSelectCards(false);
-    }
-
-    private void SetSelectableCardsOnActionFocusChanged(object sender, EventArgs args) {
-        if (actionManager.CanPerformAction)
-            SetCanSelectCards(true);
-        else
-            SetCanSelectCards(false);
-    }
-
-    private void EnableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
-        if (playerId != args.Player.PlayerId)
-            return;
-
-        SetCanSelectCards(true);
-    }
-
-    private void DisableSelectableCardsOnPlayerEvent(object sender, PlayerEventArgs args) {
-        if (playerId != args.Player.PlayerId)
-            return;
-
-        SetCanSelectCards(false);
-    }
-
-    private void DisableAllClientSelectableCards(object sender, PlayerEventArgs args) {
-        DisableAllClientsSelectionCardsServerRpc();
+        EnableSelectableCardsServerRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void DisableAllClientsSelectionCardsServerRpc() {
-        DisableAllClientsSelectionCardsClientRpc();
+    private void EnableSelectableCardsServerRpc(ServerRpcParams rpcParams = default) {
+        List<Guid> selectableCardGuids = GetSelectableCardGuids(rpcParams.Receive.SenderClientId);
+        BaseRpcTarget target = RpcTarget.Group(new List<ulong>() { rpcParams.Receive.SenderClientId }, RpcTargetUse.Temp);
+        EnableSelectableCardsClientRpc(selectableCardGuids.ToArray(), target);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void DisableAllClientsSelectionCardsClientRpc() {
-        SetCanSelectCards(false);
-    }
-
-    public void SetCanSelectCards(bool canSelectCards) {
-        this.canSelectCards = canSelectCards;
-
-        if (this.canSelectCards)
-            ShowSelectionBorders();
-        else
-            HideSelectionBorders();
-    }
-
-    private void ShowSelectionBorders() {
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void EnableSelectableCardsClientRpc(Guid[] selectableCardGuids, RpcParams rpcParams) {
         playerUI.SetBorderVisibilityAll(false);
-        for (int i = 0; i < playerId.Hand.Count; i++) {
-            if (playerId.Hand[i].IsPlayable(duelManager, stateManager, spellChainManager, playerId))
-                playerUI.SetCardSelectable(playerId.Hand[i].Uuid);
+        for (int i = 0; i < selectableCardGuids.Length; i++)
+            playerUI.SetCardSelectable(selectableCardGuids[i]);
+    }
+
+    private void DisableSelectableCards(object sender, ulong playerId) {
+        if (this.playerId != playerId)
+            return;
+
+        playerUI.SetBorderVisibilityAll(false);
+    }
+
+    public List<Guid> GetSelectableCardGuids(ulong clientPlayerId) {
+        if (!IsServer)
+            throw new Exception("Attempting the call GetSelectableCardGuids from a client");
+
+        List<Guid> selectableCardGuids = new List<Guid>();
+        MatchPlayer player = duelManager.GetPlayerById(clientPlayerId);
+        for (int i = 0; i < player.Hand.Count; i++) {
+            if (player.Hand[i].IsPlayable(duelManager, stateManager, spellChainManager, player))
+                playerUI.SetCardSelectable(player.Hand[i].Uuid);
         }
-    }
 
-    private void HideSelectionBorders() {
-        playerUI.SetBorderVisibilityAll(false);
+        return selectableCardGuids;
     }
 
     private void SelectCardDrag(object sender, HandCardDragEventArgs args) {

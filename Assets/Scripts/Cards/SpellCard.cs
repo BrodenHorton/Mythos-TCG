@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
@@ -7,16 +9,14 @@ public class SpellCard : Card {
     [SerializeField] private SpellCardBase cardBase;
     //[SerializeField] private List<SpellCardEffect> effects;
 
-    public SpellCard() { }
-
-    public SpellCard(SpellCardBase cardBase) {
-        this.cardBase = cardBase;
-        //effects = new List<SpellCardEffect>();
+    public SpellCard() {
+        cardType = CardType.Spell;
     }
 
-    public SpellCard(SpellCardNetworkSerializable networkSerializationObject) {
-        uuid = Guid.Parse(networkSerializationObject.uuidStr.ToString());
-        cardBase = CardDatabase.Instance.GetSpellCardByIndex(networkSerializationObject.cardBaseIndex);
+    public SpellCard(SpellCardBase cardBase) {
+        cardType = CardType.Spell;
+        this.cardBase = cardBase;
+        //effects = new List<SpellCardEffect>();
     }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
@@ -39,15 +39,23 @@ public class SpellCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        EventBus.InvokeOnSpellCardSelectedForPlay(this, new PlayCardFromHandEventArgs<SpellCard>(player, this, handIndex));
+        EventBus.Instance.InvokeOnSpellCardSelectedForPlay(new PlayCardFromHandEventArgs<SpellCard>(player, this, handIndex));
     }
 
     public override int GetManaCost() {
         return cardBase.ManaCost;
     }
 
-    public SpellCardNetworkSerializable GetNetworkSerializableObject() {
-        return new SpellCardNetworkSerializable(uuid.ToString(), CardDatabase.Instance.GetIndexOf(cardBase));
+    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+        FixedString128Bytes uuidStr = serializer.IsWriter ? new FixedString128Bytes(uuid.ToString()) : new FixedString128Bytes();
+        serializer.SerializeValue(ref uuidStr);
+        if (serializer.IsReader)
+            uuid = Guid.Parse(uuidStr.ToString());
+
+        int cardBaseIndex = serializer.IsWriter ? CardDatabase.Instance.GetIndexOf(cardBase) : -1;
+        serializer.SerializeValue(ref cardBaseIndex);
+        if (serializer.IsReader)
+            cardBase = CardDatabase.Instance.GetSpellCardByIndex(cardBaseIndex);
     }
 
     public string CardName { get { return cardBase.CardName; } }
