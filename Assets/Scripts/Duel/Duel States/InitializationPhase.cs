@@ -10,6 +10,9 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
     private ActionManager actionManager;
 
     private void Start() {
+        if (!IsServer)
+            return;
+
         stateManager = FindFirstObjectByType<DuelStateManager>();
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");

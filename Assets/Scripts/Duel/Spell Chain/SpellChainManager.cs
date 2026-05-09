@@ -44,9 +44,9 @@ public class SpellChainManager : NetworkBehaviour {
             throw new Exception("Slow spells can only start an action chain");
 
         if (spellChain.Count == 0)
-            StartSpellChain(args.Player, args.Card);
+            StartSpellChain(args.PlayerId, args.Card);
         else
-            AddSpellToChain(args.Player, args.Card);
+            AddSpellToChain(args.PlayerId, args.Card);
     }
 
     private void StartSpellChain(MatchPlayer player, SpellCard spellCard) {

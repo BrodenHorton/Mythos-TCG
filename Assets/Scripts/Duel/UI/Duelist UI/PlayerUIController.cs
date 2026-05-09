@@ -31,14 +31,23 @@ public class PlayerUIController : DuelistUIController {
             throw new Exception("Could not find SpellChainManager object");
 
         playerUI.OnSelectingCardDrag += SelectCardDrag;
-        EventBus.OnHandCardEnteringPlayingField += PlayHandCard;
+        EventBus.Instance.OnHandCardEnteringPlayingField += PlayHandCard;
         stateManager.FirstMainPhase.OnFirstMainPhase += EnableSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += EnableSelectableCards;
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCards;
         stateManager.EndPhase.OnEndPhase += DisableSelectableCards;
-        EventBus.OnManaCountChanged += EnableSelectableCards;
-        actionManager.OnActionStateChanged += EnableSelectableCards;
-        spellChainManager.OnSpellChainFinished += EnableSelectableCards;
+        EventBus.Instance.OnManaCountChanged += (sender, args) => {
+            if (playerId == args.PlayerId)
+                EnableSelectableCardsServerRpc();
+        };
+        actionManager.OnActionStateChanged += (sender, args) => {
+            if (args.HasActionFocus)
+                EnableSelectableCardsServerRpc();
+        };
+        spellChainManager.OnSpellChainFinished += (sender, args) => {
+            if(playerId == duelManager.GetCurrentPlayerTurn().PlayerId)
+                EnableSelectableCardsServerRpc();
+        };
     }
 
     public override void Init(ulong playerId, int lifePoints, int manaCount) {

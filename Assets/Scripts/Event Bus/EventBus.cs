@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.Rendering.GPUSort;
 
 public class EventBus : NetworkBehaviour {
     // Duelist UI Actions
@@ -46,6 +46,8 @@ public class EventBus : NetworkBehaviour {
 
     public static EventBus Instance { get; private set; }
 
+    private DuelManager duelManager;
+
     private void Awake() {
         if (Instance != null) {
             Debug.LogWarning("EventBus already exists in scene. Destroying redundant object.");
@@ -57,13 +59,32 @@ public class EventBus : NetworkBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
+    private void Start() {
+        duelManager = FindFirstObjectByType<DuelManager>();
+        if (duelManager == null)
+            throw new Exception("Could not find DuelManager object");
+    }
+
     #region Duelist UI Actions
     public void InvokeOnCardDrawn(ulong playerId, Card card) {
-        
+        if (!IsServer)
+            return;
+
+        List<ulong> otherPlayerIds = duelManager.GetPlayerIds();
+        otherPlayerIds.Remove(playerId);
+        BaseRpcTarget playerTarget = RpcTarget.Group(new List<ulong>() { playerId }, RpcTargetUse.Temp);
+        CardNetworkContainer cardNetworkContainer = new CardNetworkContainer();
+        cardNetworkContainer.card = card;
+        InvokeOnCardDrawnClientRpc(playerId, cardNetworkContainer, playerTarget);
+        BaseRpcTarget otherTarget = RpcTarget.Group(otherPlayerIds, RpcTargetUse.Temp);
+        CardNetworkContainer nullCardNetworkContainer = new CardNetworkContainer();
+        cardNetworkContainer.card = new NullCard();
+        InvokeOnCardDrawnClientRpc(playerId, nullCardNetworkContainer, otherTarget);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void InvokeOnCardDrawnForActivePlayerClientRpc(ulong playerId, Card card, RpcParams rpcParams) {
+    private void InvokeOnCardDrawnClientRpc(ulong playerId, CardNetworkContainer cardNetworkContainer, RpcParams rpcParams) {
+        Card card = cardNetworkContainer.card;
         Instance.OnCardDrawn?.Invoke(this, new PlayerCardEventArgs<Card>(playerId, card));
     }
 
@@ -132,11 +153,29 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Player Status Changes
-    public void InvokeOnLifePointsChanged(LifePointsChangedEventArgs args) {
+    public void InvokeOnLifePointsChanged(ulong playerId, int lifePoints) {
+        if (!IsServer)
+            return;
+
+        InvokeOnLifePointsChangedClientRpc(playerId, lifePoints);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnLifePointsChangedClientRpc(ulong playerId, int lifePoints) {
+        LifePointsChangedEventArgs args = new LifePointsChangedEventArgs(playerId, lifePoints);
         OnLifePointsChanged?.Invoke(this, args);
     }
 
-    public void InvokeOnManaCountChanged(ManaChangedEventArgs args) {
+    public void InvokeOnManaCountChanged(ulong playerId, int manaCount) {
+        if (!IsServer)
+            return;
+
+        InvokeOnManaCountChangedClientRpc(playerId, manaCount);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnManaCountChangedClientRpc(ulong playerId, int manaCount) {
+        ManaChangedEventArgs args = new ManaChangedEventArgs(playerId, manaCount);
         OnManaCountChanged?.Invoke(this, args);
     }
     #endregion

@@ -14,10 +14,10 @@ public class DuelistUIManager : NetworkBehaviour {
             throw new Exception("Could not find DuelManager object");
 
         duelManager.OnPlayersInitialization += Init;
-        EventBus.OnLifePointsChanged += LifePointsChanged;
-        EventBus.OnManaCountChanged += ManaCountChanged;
-        EventBus.OnCardDrawn += CardDrawn;
-        EventBus.OnCardRemovedFromHand += CardRemovedFromHand;
+        EventBus.Instance.OnLifePointsChanged += LifePointsChanged;
+        EventBus.Instance.OnManaCountChanged += ManaCountChanged;
+        EventBus.Instance.OnCardDrawn += CardDrawn;
+        EventBus.Instance.OnCardRemovedFromHand += CardRemovedFromHand;
     }
 
     private void Init(object sender, PlayersInitializedEventArgs args) {
@@ -34,24 +34,24 @@ public class DuelistUIManager : NetworkBehaviour {
     }
 
     private void LifePointsChanged(object sender, LifePointsChangedEventArgs args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
+            throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].SetLifePoints(args.LifePoints);
+        controllerByPlayerId[args.PlayerId.PlayerId].SetLifePoints(args.LifePoints);
     }
 
     private void ManaCountChanged(object sender, ManaChangedEventArgs args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].SetManaCount(args.CurrentMana);
+        controllerByPlayerId[args.PlayerId].SetManaCount(args.CurrentMana);
     }
 
     private void CardDrawn(object sender, PlayerCardEventArgs<Card> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].DrawCard(args.Card);
+        controllerByPlayerId[args.PlayerId].DrawCard(args.Card);
     }
 
     private void CardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {

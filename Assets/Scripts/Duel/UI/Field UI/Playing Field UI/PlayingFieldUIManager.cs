@@ -116,19 +116,19 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId.PlayerId);
 
-        if (controllerByPlayerId[args.Player.PlayerId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
+        if (controllerByPlayerId[args.PlayerId.PlayerId].ContainsCreature(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
     public void DestroyCreature(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId.PlayerId);
 
-        if(controllerByPlayerId[args.Player.PlayerId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.Player.PlayerId].RemoveCreature(args.Card);
+        if(controllerByPlayerId[args.PlayerId.PlayerId].ContainsCreature(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId.PlayerId].RemoveCreature(args.Card);
     }
 
     private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {

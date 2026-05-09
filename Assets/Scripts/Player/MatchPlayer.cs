@@ -38,7 +38,7 @@ public class MatchPlayer {
         Card card = deck[deck.Count - 1];
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
-        EventBus.InvokeOnCardDrawn(this, new PlayerCardEventArgs<Card>(this, card));
+        EventBus.Instance.InvokeOnCardDrawn(playerId, card);
         return card;
     }
 
@@ -46,20 +46,20 @@ public class MatchPlayer {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         creatures.Add(card);
-        EventBus.InvokeOnCreatureCardPlayedFromHand(this, new PlayCardFromHandEventArgs<CreatureCard>(this, card, handIndex));
+        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(new PlayCardFromHandEventArgs<CreatureCard>(this, card, handIndex));
     }
 
     public void PlayDomainCardFromHand(DomainCard card, int handIndex) {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
         domain = card;
-        EventBus.InvokeOnDomainCardPlayedFromHand(this, new PlayCardFromHandEventArgs<DomainCard>(this, card, handIndex));
+        EventBus.Instance.InvokeOnDomainCardPlayedFromHand(new PlayCardFromHandEventArgs<DomainCard>(this, card, handIndex));
     }
 
     public void PlaySpellCardFromHand(SpellCard card, int handIndex) {
         RemoveCardFromHandAt(handIndex);
         CurrentMana -= card.GetManaCost();
-        EventBus.InvokeOnSpellCardPlayedFromHand(this, new PlayCardFromHandEventArgs<SpellCard>(this, card, handIndex));
+        EventBus.Instance.InvokeOnSpellCardPlayedFromHand(new PlayCardFromHandEventArgs<SpellCard>(this, card, handIndex));
     }
 
     public void RemoveCardFromHandAt(int handIndex) {
@@ -68,7 +68,7 @@ public class MatchPlayer {
 
         Card card = hand[handIndex];
         hand.RemoveAt(handIndex);
-        EventBus.InvokeOnCardRemovedFromHand(this, new CardRemovedFromHandEventArgs(this, card, handIndex));
+        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card, handIndex));
     }
 
     public bool ContainsCreatureUuid(Guid uuid) {
@@ -92,19 +92,19 @@ public class MatchPlayer {
     public void DamageLifePoints(int amt) {
         int temp = lifePoints;
         lifePoints -= amt;
-        EventBus.InvokeOnLifePointsChanged(this, new LifePointsChangedEventArgs(this, lifePoints));
+        EventBus.Instance.InvokeOnLifePointsChanged(playerId, lifePoints);
     }
 
     public void OnCreatureHealthChangedCallback(CreatureCard card) {
-        EventBus.InvokeOnCreatureHealthChanged(this, new PlayerCardEventArgs<CreatureCard>(this, card));
+        EventBus.Instance.InvokeOnCreatureHealthChanged(new PlayerCardEventArgs<CreatureCard>(playerId, card));
     }
 
     public void OnCreatureDamagedCallback(CreatureCard card) {
-        EventBus.InvokeOnCreatureDamaged(this, new PlayerCardEventArgs<CreatureCard>(this, card));
+        EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, card));
     }
 
     public void OnCreatureDestroyCallback(CreatureCard card) {
-        EventBus.InvokeOnCreatureDestroyed(this, new PlayerCardEventArgs<CreatureCard>(this, card));
+        EventBus.Instance.InvokeOnCreatureDestroyed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
         creatures.Remove(card);
     }
 
@@ -128,7 +128,7 @@ public class MatchPlayer {
         }
         set {
             currentMana = value;
-            EventBus.InvokeOnManaCountChanged(this, new ManaChangedEventArgs(this, currentMana));
+            EventBus.Instance.InvokeOnManaCountChanged(playerId, currentMana);
         }
     }
 }

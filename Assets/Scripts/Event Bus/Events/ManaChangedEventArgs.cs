@@ -1,15 +1,15 @@
 ﻿using System;
 
 public class ManaChangedEventArgs : EventArgs {
-    private MatchPlayer player;
+    private ulong playerId;
     private int currentMana;
 
-    public ManaChangedEventArgs(MatchPlayer player, int currentMana) {
-        this.player = player;
+    public ManaChangedEventArgs(ulong playerId, int currentMana) {
+        this.playerId = playerId;
         this.currentMana = currentMana;
     }
 
-    public MatchPlayer Player { get { return player; } }
+    public ulong PlayerId { get { return playerId; } }
 
     public int CurrentMana { get { return currentMana; } }
 }

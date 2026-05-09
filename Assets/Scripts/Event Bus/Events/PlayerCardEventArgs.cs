@@ -1,15 +1,15 @@
 ﻿using System;
 
 public class PlayerCardEventArgs<T> : EventArgs where T : Card {
-    private MatchPlayer player;
+    private ulong playerId;
     private T card;
 
-    public PlayerCardEventArgs(MatchPlayer player, T card) {
-        this.player = player;
+    public PlayerCardEventArgs(ulong playerId, T card) {
+        this.playerId = playerId;
         this.card = card;
     }
 
-    public MatchPlayer Player { get { return player; } }
+    public ulong PlayerId { get { return playerId; } }
 
     public T Card { get { return card; } }
 }

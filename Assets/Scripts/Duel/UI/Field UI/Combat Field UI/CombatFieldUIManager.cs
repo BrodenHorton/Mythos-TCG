@@ -76,22 +76,22 @@ public class CombatFieldUIManager : NetworkBehaviour {
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
         TcgLogger.Log("[CombatFieldUIManager] UpdatingCreatureFieldCard after creature damaged");
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.PlayerId.PlayerId);
 
-        TcgLogger.Log("[CombatFieldUIManager] PlayerId: " + args.Player.PlayerId);
-        if (controllerByPlayerId[args.Player.PlayerId].ContainsAttacker(args.Card.Uuid) || controllerByPlayerId[args.Player.PlayerId].ContainsDefender(args.Card.Uuid))
-            controllerByPlayerId[args.Player.PlayerId].UpdateCreatureFieldCard(args.Card);
+        TcgLogger.Log("[CombatFieldUIManager] PlayerId: " + args.PlayerId.PlayerId);
+        if (controllerByPlayerId[args.PlayerId.PlayerId].ContainsAttacker(args.Card.Uuid) || controllerByPlayerId[args.PlayerId.PlayerId].ContainsDefender(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
     public void DestroyCreature(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId.PlayerId);
 
-        if (controllerByPlayerId[args.Player.PlayerId].ContainsAttacker(args.Card.Uuid))
-            controllerByPlayerId[args.Player.PlayerId].RemoveAttacker(args.Card);
-        else if (controllerByPlayerId[args.Player.PlayerId].ContainsDefender(args.Card.Uuid))
-            controllerByPlayerId[args.Player.PlayerId].RemoveDefender(args.Card);
+        if (controllerByPlayerId[args.PlayerId.PlayerId].ContainsAttacker(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId.PlayerId].RemoveAttacker(args.Card);
+        else if (controllerByPlayerId[args.PlayerId.PlayerId].ContainsDefender(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId.PlayerId].RemoveDefender(args.Card);
     }
 
     private void ReleaseCreatureCards(object sender, DuelistCombatEventArgs args) {

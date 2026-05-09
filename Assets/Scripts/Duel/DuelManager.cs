@@ -226,6 +226,15 @@ public class DuelManager : NetworkBehaviour {
         throw new Exception("Player index could not be found for playerId: " + playerId);
     }
 
+    public List<ulong> GetPlayerIds() {
+        List<ulong> playerIds = new List<ulong>();
+        foreach(MatchPlayer player in players) {
+            playerIds.Add(player.PlayerId);
+        }
+
+        return playerIds;
+    }
+
     public List<MatchPlayer> Players { get { return players; } }
 
     public int CurrentPlayerTurnIndex {  get { return currentPlayerTurnIndex; } }
