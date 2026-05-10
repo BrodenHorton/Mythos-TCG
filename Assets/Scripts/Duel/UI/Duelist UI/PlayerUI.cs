@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerUI : DuelistUI {
-    public event EventHandler<HandCardDragEventArgs> OnSelectingCardDrag;
-
     [SerializeField] private Vector3 handHoverOffset;
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
@@ -123,12 +121,12 @@ public class PlayerUI : DuelistUI {
         if (!ContainsCard(cardUuid))
             throw new Exception("Attempting to set selectable card border visibility to card that is not in the PlayUI hand");
 
-        GetCardByUuid(cardUuid).SetBorderVisibility(true);
+        GetCardByUuid(cardUuid).SetSelectable(true);
     }
 
-    public void SetBorderVisibilityAll(bool isVisiable) {
+    public void SetCardSelectableAll(bool isSelectable) {
         foreach(HandCardUI cardUI in cardsInHand)
-            cardUI.SetBorderVisibility(isVisiable);
+            cardUI.SetSelectable(isSelectable);
     }
 
     public void HoverHand() {
@@ -158,11 +156,6 @@ public class PlayerUI : DuelistUI {
             throw new Exception("Unable to find handCardUI for SelectCardDrag");
 
         int handCardIndex = IndexOf(cardUI);
-        HandCardDragEventArgs args = new HandCardDragEventArgs(this, cardUI, handCardIndex);
-        OnSelectingCardDrag?.Invoke(this, args);
-        if (args.IsCancelled)
-            return;
-
         EventBus.Instance.InvokeOnStartHandCardDrag(new HandCardDragEventArgs(this, cardUI, handCardIndex));
         isDragging = true;
         draggingCard = cardUI;

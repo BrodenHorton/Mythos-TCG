@@ -10,7 +10,7 @@ public class EventBus : NetworkBehaviour {
     // PlayerUI Card Drag
     public event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
     public event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
-    public event EventHandler<HandCardEnteringPlayingFieldEventArgs> OnHandCardEnteringPlayingField;
+    public event EventHandler<PlayHandCardEventArgs> OnPlayHandCard;
     // PlayingField Card Drag
     public event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
     public event EventHandler<ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
@@ -102,8 +102,8 @@ public class EventBus : NetworkBehaviour {
         OnReleaseHandCardDrag?.Invoke(this, args);
     }
 
-    public void InvokeOnHandCardEnteringPlayingField(HandCardEnteringPlayingFieldEventArgs args) {
-        OnHandCardEnteringPlayingField?.Invoke(this, args);
+    public void InvokeOnPlayHandCard(PlayHandCardEventArgs args) {
+        OnPlayHandCard?.Invoke(this, args);
     }
     #endregion
 

@@ -12,8 +12,8 @@ public class PlayingFieldPlayableArea : MonoBehaviour {
         cam = Camera.main;
         playableAreaVisual.SetActive(false);
 
-        EventBus.OnStartHandCardDrag += ShowPlayableAreaVisual;
-        EventBus.OnReleaseHandCardDrag += PlayCardOnReleaseDrag;
+        EventBus.Instance.OnStartHandCardDrag += ShowPlayableAreaVisual;
+        EventBus.Instance.OnReleaseHandCardDrag += PlayCardOnReleaseDrag;
     }
 
     private void ShowPlayableAreaVisual(object sender, HandCardDragEventArgs args) {
@@ -29,7 +29,7 @@ public class PlayingFieldPlayableArea : MonoBehaviour {
 
         playableAreaVisual.SetActive(false);
         if (IsHoveringPlayableArea())
-            EventBus.InvokeOnHandCardEnteringPlayingField(this, new HandCardEnteringPlayingFieldEventArgs(playingFieldUI, args.CardUI, args.CardIndex));
+            EventBus.Instance.InvokeOnPlayHandCard(new PlayHandCardEventArgs(args.PlayerUI.PlayerId, args.CardUI.CardUuid));
     }
 
     private bool IsHoveringPlayableArea() {

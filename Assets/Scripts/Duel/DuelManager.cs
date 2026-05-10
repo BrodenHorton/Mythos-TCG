@@ -27,10 +27,10 @@ public class DuelManager : NetworkBehaviour {
             return;
 
         GameManager.Instance.OnGameStart += InitializePlayers;
-        EventBus.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
-        EventBus.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
-        EventBus.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
-        EventBus.OnSpellCardPlayedFromHand += PlaySpellCard;
+        EventBus.Instance.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
+        EventBus.Instance.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
+        EventBus.Instance.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
+        EventBus.Instance.OnSpellCardPlayedFromHand += PlaySpellCard;
     }
 
     private void InitializePlayers(object sender, StartGameEventArgs args) {
@@ -73,13 +73,15 @@ public class DuelManager : NetworkBehaviour {
         return result;
     }
 
-    [Rpc(SendTo.Server)]
-    public void PlayCardFromHandServerRpc(int handIndex, ServerRpcParams rpcParams = default) {
-        MatchPlayer player = GetPlayerById(rpcParams.Receive.SenderClientId);
-        if (player.Hand.Count <= handIndex)
-            throw new Exception("Attmepting to play card with invalid hadnIndex: " + handIndex);
+    public void PlayCardFromHand(ulong playerId, Guid handCardUuid) {
+        if (!IsServer)
+            return;
+        MatchPlayer player = GetPlayerById(playerId);
+        if (!player.ContainsHandCardeUuid(handCardUuid))
+            throw new Exception("Attmepting to play card with uuid that is not in the player's hand: " + handCardUuid);
 
-        player.Hand[handIndex].PlayCardFromHand(player, handIndex);
+        // TODO: Start here
+        player.GetHandCardByUuid(handCardUuid).PlayCardFromHand(player, handIndex);
     }
 
     public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
@@ -92,12 +94,12 @@ public class DuelManager : NetworkBehaviour {
         args.Player.PlayCreatureCardFromHand(args.Card, args.HandIndex);
 
         PlayCreatureCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId),
-                                          args.Card.GetNetworkSerializableObject(),
+                                          args.Card,
                                           args.HandIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCardNetworkSerializable creatureCardNetworkObject, int handIndex) {
+    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCard card, int handIndex) {
         // TODO: Implement sending card to client to be played
     }
 
@@ -105,15 +107,15 @@ public class DuelManager : NetworkBehaviour {
     public void PlayDomainCardFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         if (!IsServer)
             return;
-        MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
-        DomainCard card = new DomainCard(args.Card.GetNetworkSerializableObject());
-        player.PlayDomainCardFromHand(card, args.HandIndex);
 
-        PlayDomainCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
+        MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
+        player.PlayDomainCardFromHand(args.Card, args.HandIndex);
+
+        PlayDomainCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card, args.HandIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void PlayDomainCardFromHandClientRpc(int playerIndex, DomainCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+    private void PlayDomainCardFromHandClientRpc(int playerIndex, DomainCard card, int handIndex) {
         // TODO: Implement sending card to client to be played
     }
 
@@ -122,13 +124,12 @@ public class DuelManager : NetworkBehaviour {
             return;
 
         MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
-        SpellCard card = new SpellCard(args.Card.GetNetworkSerializableObject());
-        player.PlaySpellCardFromHand(card, args.HandIndex);
-        PlaySpellCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card.GetNetworkSerializableObject(), args.HandIndex);
+        player.PlaySpellCardFromHand(args.Card, args.HandIndex);
+        PlaySpellCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card, args.HandIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void PlaySpellCardFromHandClientRpc(int playerIndex, SpellCardNetworkSerializable cardNetworkSerializableObject, int handIndex) {
+    private void PlaySpellCardFromHandClientRpc(int playerIndex, SpellCard card, int handIndex) {
         // TODO: Implement sending card to client to be played
     }
 

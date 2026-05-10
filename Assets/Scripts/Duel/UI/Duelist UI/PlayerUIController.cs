@@ -10,11 +10,6 @@ public class PlayerUIController : DuelistUIController {
     private DuelStateManager stateManager;
     private ActionManager actionManager;
     private SpellChainManager spellChainManager;
-    private bool canSelectCards;
-
-    private void Awake() {
-        canSelectCards = false;
-    }
 
     private void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
@@ -30,8 +25,7 @@ public class PlayerUIController : DuelistUIController {
         if (spellChainManager == null)
             throw new Exception("Could not find SpellChainManager object");
 
-        playerUI.OnSelectingCardDrag += SelectCardDrag;
-        EventBus.Instance.OnHandCardEnteringPlayingField += PlayHandCard;
+        EventBus.Instance.OnPlayHandCard += PlayHandCard;
         stateManager.FirstMainPhase.OnFirstMainPhase += EnableSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += EnableSelectableCards;
         stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCards;
@@ -81,13 +75,13 @@ public class PlayerUIController : DuelistUIController {
     [Rpc(SendTo.Server)]
     private void EnableSelectableCardsServerRpc(ServerRpcParams rpcParams = default) {
         List<Guid> selectableCardGuids = GetSelectableCardGuids(rpcParams.Receive.SenderClientId);
-        BaseRpcTarget target = RpcTarget.Group(new List<ulong>() { rpcParams.Receive.SenderClientId }, RpcTargetUse.Temp);
+        BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
         EnableSelectableCardsClientRpc(selectableCardGuids.ToArray(), target);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
     private void EnableSelectableCardsClientRpc(Guid[] selectableCardGuids, RpcParams rpcParams) {
-        playerUI.SetBorderVisibilityAll(false);
+        playerUI.SetCardSelectableAll(false);
         for (int i = 0; i < selectableCardGuids.Length; i++)
             playerUI.SetCardSelectable(selectableCardGuids[i]);
     }
@@ -96,7 +90,7 @@ public class PlayerUIController : DuelistUIController {
         if (this.playerId != playerId)
             return;
 
-        playerUI.SetBorderVisibilityAll(false);
+        playerUI.SetCardSelectableAll(false);
     }
 
     public List<Guid> GetSelectableCardGuids(ulong clientPlayerId) {
@@ -113,34 +107,21 @@ public class PlayerUIController : DuelistUIController {
         return selectableCardGuids;
     }
 
-    private void SelectCardDrag(object sender, HandCardDragEventArgs args) {
-        if(!canSelectCards) {
-            args.IsCancelled = true;
-            return;
-        }
-        if (!actionManager.CanPerformAction) {
-            args.IsCancelled = true;
-            return;
-        }
-        if (args.CardIndex < 0 || args.CardIndex >= playerId.Hand.Count) {
-            args.IsCancelled = true;
-            throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);
-        }
-        if (!playerId.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, spellChainManager, playerId)) {
-            args.IsCancelled = true;
-            return;
-        }
+    private void PlayHandCard(object sender, PlayHandCardEventArgs args) {
+        PlayHandCardServerRpc(args.PlayerId, args.HandCardUuid);
     }
 
-    private void PlayHandCard(object sender, HandCardEnteringPlayingFieldEventArgs args) {
-        if (!actionManager.CanPerformAction)
+    [Rpc(SendTo.Server)]
+    private void PlayHandCardServerRpc(ulong playerId, Guid handCardUuid) {
+        MatchPlayer player = duelManager.GetPlayerById(playerId);
+        if (!actionManager.ActionFocusPlayerIds.Contains(playerId))
             return;
-        if (args.CardIndex < 0 || args.CardIndex >= playerId.Hand.Count)
-            throw new Exception("Dragging card index out of bounds for player hand: " + args.CardIndex);
-        if (!playerId.Hand[args.CardIndex].IsPlayable(duelManager, stateManager, spellChainManager, playerId))
+        if (!player.ContainsHandCardeUuid(handCardUuid))
+            return;
+        if (!player.GetHandCardByUuid(handCardUuid).IsPlayable(duelManager, stateManager, spellChainManager, player))
             return;
 
-        duelManager.PlayCardFromHand(playerId, args.CardIndex);
+        duelManager.PlayCardFromHand(playerId, handCardUuid);
     }
 
     public override DuelistUI GetDuelistUI() {

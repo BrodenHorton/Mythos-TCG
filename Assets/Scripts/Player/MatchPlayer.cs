@@ -71,6 +71,15 @@ public class MatchPlayer {
         EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card, handIndex));
     }
 
+    public bool ContainsHandCardeUuid(Guid uuid) {
+        foreach (Card card in hand) {
+            if (card.Uuid == uuid)
+                return true;
+        }
+
+        return false;
+    }
+
     public bool ContainsCreatureUuid(Guid uuid) {
         foreach(CreatureCard card in creatures) {
             if (card.Uuid == uuid)
@@ -80,13 +89,22 @@ public class MatchPlayer {
         return false;
     }
 
+    public Card GetHandCardByUuid(Guid uuid) {
+        for (int i = 0; i < hand.Count; i++) {
+            if (hand[i].Uuid == uuid)
+                return hand[i];
+        }
+
+        throw new Exception("Unable to find player hand card with a Uuid of: " + uuid);
+    }
+
     public CreatureCard GetCreatureByUuid(Guid uuid) {
         for(int i = 0; i < creatures.Count; i++) {
             if (creatures[i].Uuid == uuid)
                 return creatures[i];
         }
 
-        return null;
+        throw new Exception("Unable to find player creature card with a Uuid of: " + uuid);
     }
 
     public void DamageLifePoints(int amt) {
