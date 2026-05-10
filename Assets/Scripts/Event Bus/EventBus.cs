@@ -10,19 +10,19 @@ public class EventBus : NetworkBehaviour {
     // PlayerUI Card Drag
     public event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
     public event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
-    public event EventHandler<PlayHandCardEventArgs> OnPlayHandCard;
+    public event EventHandler<CardUuidEventArgs> OnPlayHandCard;
     // PlayingField Card Drag
     public event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
     public event EventHandler<ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
     public event EventHandler<CreatureFieldCardEnteringCombatFieldEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
     // Playing Cards
     public event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
-    public event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
-    public event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
-    public event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
     public event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
+    public event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
+    public event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
     public event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardPlayedFromHand;
-    public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed; // This event should only ever be invoked by the server
+    public event EventHandler<PlayCardFromHandEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
+    public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed;
     // Player Status Changes
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
@@ -102,7 +102,7 @@ public class EventBus : NetworkBehaviour {
         OnReleaseHandCardDrag?.Invoke(this, args);
     }
 
-    public void InvokeOnPlayHandCard(PlayHandCardEventArgs args) {
+    public void InvokeOnPlayHandCard(CardUuidEventArgs args) {
         OnPlayHandCard?.Invoke(this, args);
     }
     #endregion
@@ -123,31 +123,69 @@ public class EventBus : NetworkBehaviour {
 
     #region Playing Cards
     public void InvokeOnCreatureCardSelectedForPlay(PlayCardFromHandEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            return;
+
         OnCreatureCardSelectedForPlay?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureCardPlayedFromHand(PlayCardFromHandEventArgs<CreatureCard> args) {
-        OnCreatureCardPlayedFromHand?.Invoke(this, args);
-    }
-
-    public void InvokeOnSpellCardSelectedForPlay(PlayCardFromHandEventArgs<SpellCard> args) {
-        OnSpellCardSelectedForPlay?.Invoke(this, args);
-    }
-
-    public void InvokeOnSpellCardPlayedFromHand(PlayCardFromHandEventArgs<SpellCard> args) {
-        OnSpellCardPlayedFromHand?.Invoke(this, args);
-    }
-
     public void InvokeOnDomainCardSelectedForPlay(PlayCardFromHandEventArgs<DomainCard> args) {
+        if (!IsServer)
+            return;
+
         OnDomainCardSelectedForPlay?.Invoke(this, args);
     }
 
-    public void InvokeOnDomainCardPlayedFromHand(PlayCardFromHandEventArgs<DomainCard> args) {
+    public void InvokeOnSpellCardSelectedForPlay(PlayCardFromHandEventArgs<SpellCard> args) {
+        if (!IsServer)
+            return;
+
+        OnSpellCardSelectedForPlay?.Invoke(this, args);
+    }
+
+    public void InvokeOnCreatureCardPlayedFromHand(ulong playerId, CreatureCard card) {
+        if (!IsServer)
+            return;
+
+        InvokeOnCreatureCardPlayedFromHandClientRpc(playerId, card);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnCreatureCardPlayedFromHandClientRpc(ulong playerId, CreatureCard card) {
+        PlayCardFromHandEventArgs<CreatureCard> args = new PlayCardFromHandEventArgs<CreatureCard>(playerId, card);
+        OnCreatureCardPlayedFromHand?.Invoke(this, args);
+    }
+
+    public void InvokeOnDomainCardPlayedFromHand(ulong playerId, DomainCard card) {
+        if (!IsServer)
+            return;
+
+        InvokeOnDomainCardPlayedFromHandClientRpc(playerId, card);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnDomainCardPlayedFromHandClientRpc(ulong playerId, DomainCard card) {
+        PlayCardFromHandEventArgs<DomainCard> args = new PlayCardFromHandEventArgs<DomainCard>(playerId, card);
         OnDomainCardPlayedFromHand?.Invoke(this, args);
     }
 
-    // This event should only ever be invoked by the server
+    public void InvokeOnSpellCardPlayedFromHand(ulong playerId, SpellCard card) {
+        if (!IsServer)
+            return;
+
+        InvokeOnSpellCardPlayedFromHandClientRpc(playerId, card);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnSpellCardPlayedFromHandClientRpc(ulong playerId, SpellCard card) {
+        PlayCardFromHandEventArgs<SpellCard> args = new PlayCardFromHandEventArgs<SpellCard>(playerId, card);
+        OnSpellCardPlayedFromHand?.Invoke(this, args);
+    }
+
     public void InvokeOnSpellChainCardPlayed(PlayerCardEventArgs<SpellCard> args) {
+        if (!IsServer)
+            return;
+
         OnSpellChainCardPlayed?.Invoke(this, args);
     }
     #endregion

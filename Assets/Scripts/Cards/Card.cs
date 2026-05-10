@@ -14,7 +14,7 @@ public abstract class Card : INetworkSerializable {
 
     public abstract void PlayCard(MatchPlayer player);
 
-    public abstract void PlayCardFromHand(MatchPlayer player, int handIndex);
+    public abstract void PlayCardFromHand(MatchPlayer player);
 
     public abstract int GetManaCost();
 

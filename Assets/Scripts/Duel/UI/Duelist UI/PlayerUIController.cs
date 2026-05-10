@@ -107,8 +107,8 @@ public class PlayerUIController : DuelistUIController {
         return selectableCardGuids;
     }
 
-    private void PlayHandCard(object sender, PlayHandCardEventArgs args) {
-        PlayHandCardServerRpc(args.PlayerId, args.HandCardUuid);
+    private void PlayHandCard(object sender, CardUuidEventArgs args) {
+        PlayHandCardServerRpc(args.PlayerId, args.CardUuid);
     }
 
     [Rpc(SendTo.Server)]

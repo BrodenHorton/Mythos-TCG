@@ -32,7 +32,7 @@ public class SpellChainManager : NetworkBehaviour {
         if (actionManager == null)
             throw new Exception("Could not find ActionManager object");
 
-        EventBus.OnSpellChainCardPlayed += AddSpellToChain;
+        EventBus.Instance.OnSpellChainCardPlayed += AddSpellToChain;
     }
 
     private void AddSpellToChain(object sender, PlayerCardEventArgs<SpellCard> args) {
@@ -43,10 +43,11 @@ public class SpellChainManager : NetworkBehaviour {
         if (args.Card.SpellType == SpellType.Slow && spellChain.Count != 0)
             throw new Exception("Slow spells can only start an action chain");
 
+        MatchPlayer player = duelManager.GetPlayerById(args.PlayerId);
         if (spellChain.Count == 0)
-            StartSpellChain(args.PlayerId, args.Card);
+            StartSpellChain(player, args.Card);
         else
-            AddSpellToChain(args.PlayerId, args.Card);
+            AddSpellToChain(player, args.Card);
     }
 
     private void StartSpellChain(MatchPlayer player, SpellCard spellCard) {

@@ -80,67 +80,45 @@ public class DuelManager : NetworkBehaviour {
         if (!player.ContainsHandCardeUuid(handCardUuid))
             throw new Exception("Attmepting to play card with uuid that is not in the player's hand: " + handCardUuid);
 
-        // TODO: Start here
-        player.GetHandCardByUuid(handCardUuid).PlayCardFromHand(player, handIndex);
+        player.GetHandCardByUuid(handCardUuid).PlayCardFromHand(player);
     }
 
     public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
         if (!IsServer)
             return;
 
-        args.Card.CreatureHealthChangedCallback = args.Player.OnCreatureHealthChangedCallback;
-        args.Card.CreatureDamagedCallback = args.Player.OnCreatureDamagedCallback;
-        args.Card.CreatureDestroyedCallback = args.Player.OnCreatureDestroyCallback;
-        args.Player.PlayCreatureCardFromHand(args.Card, args.HandIndex);
-
-        PlayCreatureCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId),
-                                          args.Card,
-                                          args.HandIndex);
+        MatchPlayer player = GetPlayerById(args.PlayerId);
+        args.Card.CreatureHealthChangedCallback = player.OnCreatureHealthChangedCallback;
+        args.Card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
+        args.Card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
+        player.PlayCreatureCardFromHand(args.Card);
     }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PlayCreatureCardFromHandClientRpc(int playerIndex, CreatureCard card, int handIndex) {
-        // TODO: Implement sending card to client to be played
-    }
-
     
     public void PlayDomainCardFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
         if (!IsServer)
             return;
 
-        MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
-        player.PlayDomainCardFromHand(args.Card, args.HandIndex);
-
-        PlayDomainCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card, args.HandIndex);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PlayDomainCardFromHandClientRpc(int playerIndex, DomainCard card, int handIndex) {
-        // TODO: Implement sending card to client to be played
+        MatchPlayer player = Players[GetPlayerIndex(args.PlayerId)];
+        player.PlayDomainCardFromHand(args.Card);
     }
 
     public void PlaySpellCardFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
         if (!IsServer)
             return;
 
-        MatchPlayer player = Players[GetPlayerIndex(args.Player.PlayerId)];
-        player.PlaySpellCardFromHand(args.Card, args.HandIndex);
-        PlaySpellCardFromHandClientRpc(GetPlayerIndex(args.Player.PlayerId), args.Card, args.HandIndex);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PlaySpellCardFromHandClientRpc(int playerIndex, SpellCard card, int handIndex) {
-        // TODO: Implement sending card to client to be played
+        MatchPlayer player = Players[GetPlayerIndex(args.PlayerId)];
+        player.PlaySpellCardFromHand(args.Card);
     }
 
     public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
         if (!IsServer)
             return;
 
+        MatchPlayer player = Players[GetPlayerIndex(args.PlayerId)];
         if (args.Card.SpellType == SpellType.Instant)
-            ExecuteSpell(args.Player, args.Card);
+            ExecuteSpell(player, args.Card);
         else
-            EventBus.InvokeOnSpellChainCardPlayed(this, new PlayerCardEventArgs<SpellCard>(args.Player, args.Card));
+            EventBus.Instance.InvokeOnSpellChainCardPlayed(new PlayerCardEventArgs<SpellCard>(args.PlayerId, args.Card));
     }
 
     public void ExecuteSpell(MatchPlayer player, SpellCard spellCard) {

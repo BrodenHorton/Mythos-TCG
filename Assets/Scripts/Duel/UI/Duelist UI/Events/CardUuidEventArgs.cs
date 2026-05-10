@@ -1,19 +1,19 @@
 ﻿using System;
 
-public class PlayHandCardEventArgs : EventArgs {
+public class CardUuidEventArgs : EventArgs {
     private ulong playerId;
-    private Guid handCardUuid;
+    private Guid cardUuid;
     private bool isCanceled;
 
-    public PlayHandCardEventArgs(ulong playerId, Guid handCardUuid) {
+    public CardUuidEventArgs(ulong playerId, Guid cardUuid) {
         this.playerId = playerId;
-        this.handCardUuid = handCardUuid;
+        this.cardUuid = cardUuid;
         isCanceled = false;
     }
 
     public ulong PlayerId { get { return playerId; } }
 
-    public Guid HandCardUuid { get { return handCardUuid; } }
+    public Guid CardUuid { get { return cardUuid; } }
 
     public bool IsCanceled { get { return isCanceled; } set { isCanceled = value; } }
 }

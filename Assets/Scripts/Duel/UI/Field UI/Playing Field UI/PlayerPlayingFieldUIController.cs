@@ -10,8 +10,8 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     protected override void Start() {
         base.Start();
         playingFieldUI.OnSelectingCardDrag += SelectCardDrag;
-        EventBus.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
-        EventBus.OnSelectAttackerToDefend += DeclareDefender;
+        EventBus.Instance.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
+        EventBus.Instance.OnSelectAttackerToDefend += DeclareDefender;
     }
 
     public override void Init(ulong playerId) {
@@ -111,7 +111,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     private void DeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
         Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
         CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
-        EventBus.InvokeOnDeclareAttacker(this, new DeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+        EventBus.Instance.InvokeOnDeclareAttacker(new DeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
     }
 
     private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
@@ -119,7 +119,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return;
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
-        if (args.CombatFieldUI.TargetPlayerId != playerId.PlayerId)
+        if (args.CombatFieldUI.TargetPlayerId != playerId)
             return;
         if (!playerId.ContainsCreatureUuid(args.Defender.CardUuid))
             return;
@@ -145,7 +145,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         Guid defenderUuid = Guid.Parse(defenderCardUuidStr.ToString());
         CreatureCard attacker = duelManager.Players[initiatorIndex].GetCreatureByUuid(attackerUuid);
         CreatureCard defender = duelManager.Players[targetIndex].GetCreatureByUuid(defenderUuid);
-        EventBus.InvokeOnDeclareDefender(this, new DeclareDefenderEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], attacker, defender));
+        EventBus.Instance.InvokeOnDeclareDefender(new DeclareDefenderEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], attacker, defender));
     }
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {

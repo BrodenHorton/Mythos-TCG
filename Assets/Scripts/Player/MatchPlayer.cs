@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 
 [Serializable]
 public class MatchPlayer {
@@ -42,24 +43,38 @@ public class MatchPlayer {
         return card;
     }
 
-    public void PlayCreatureCardFromHand(CreatureCard card, int handIndex) {
-        RemoveCardFromHandAt(handIndex);
+    public void PlayCreatureCardFromHand(CreatureCard card) {
+        RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
         creatures.Add(card);
-        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(new PlayCardFromHandEventArgs<CreatureCard>(this, card, handIndex));
+        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(playerId, card);
     }
 
-    public void PlayDomainCardFromHand(DomainCard card, int handIndex) {
-        RemoveCardFromHandAt(handIndex);
+    public void PlayDomainCardFromHand(DomainCard card) {
+        RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
         domain = card;
-        EventBus.Instance.InvokeOnDomainCardPlayedFromHand(new PlayCardFromHandEventArgs<DomainCard>(this, card, handIndex));
+        EventBus.Instance.InvokeOnDomainCardPlayedFromHand(playerId, card);
     }
 
-    public void PlaySpellCardFromHand(SpellCard card, int handIndex) {
-        RemoveCardFromHandAt(handIndex);
+    public void PlaySpellCardFromHand(SpellCard card) {
+        RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
-        EventBus.Instance.InvokeOnSpellCardPlayedFromHand(new PlayCardFromHandEventArgs<SpellCard>(this, card, handIndex));
+        EventBus.Instance.InvokeOnSpellCardPlayedFromHand(playerId, card);
+    }
+
+    public void RemoveCardFromHand(Guid cardUuid) {
+        if (!ContainsHandCardeUuid(cardUuid))
+            throw new Exception("Unable to find card in players hand uuid: " + cardUuid);
+
+        Card card = GetHandCardByUuid(cardUuid);
+        for(int i = 0; i < hand.Count; i++) {
+            if (hand[i].Uuid == cardUuid) {
+                hand.RemoveAt(i);
+                break;
+            }
+        }
+        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card));
     }
 
     public void RemoveCardFromHandAt(int handIndex) {
@@ -68,7 +83,7 @@ public class MatchPlayer {
 
         Card card = hand[handIndex];
         hand.RemoveAt(handIndex);
-        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card, handIndex));
+        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card));
     }
 
     public bool ContainsHandCardeUuid(Guid uuid) {

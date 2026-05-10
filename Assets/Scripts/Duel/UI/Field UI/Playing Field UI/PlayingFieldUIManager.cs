@@ -14,19 +14,19 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Could not find DuelManager object");
 
         duelManager.OnPlayersInitialization += Init;
-        EventBus.OnCreatureCardPlayedFromHand += PlayCreatureCard;
-        EventBus.OnDomainCardPlayedFromHand += PlayDomainCard;
-        //EventBus.OnSpellCardPlayedFromHand += PlaySpellCard;
-        EventBus.OnCreatureTapped += TapCreature;
-        EventBus.OnCreatureUntapped += UntapCreature;
-        EventBus.OnDeclareAttacker += RemoveAttacker;
-        EventBus.OnDeclareDefender += RemoveDefender;
-        EventBus.OnUndeclareAttacker += UndeclareAttacker;
-        EventBus.OnUndeclareDefender += UndeclareDefender;
-        EventBus.OnCreatureDamaged += UpdateCreatureFieldCard;
-        EventBus.OnCreatureHealthChanged += UpdateCreatureFieldCard;
-        EventBus.OnCreatureDestroyed += DestroyCreature;
-        EventBus.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
+        EventBus.Instance.OnCreatureCardPlayedFromHand += PlayCreatureCard;
+        EventBus.Instance.OnDomainCardPlayedFromHand += PlayDomainCard;
+        //EventBus.Instance.OnSpellCardPlayedFromHand += PlaySpellCard;
+        EventBus.Instance.OnCreatureTapped += TapCreature;
+        EventBus.Instance.OnCreatureUntapped += UntapCreature;
+        EventBus.Instance.OnDeclareAttacker += RemoveAttacker;
+        EventBus.Instance.OnDeclareDefender += RemoveDefender;
+        EventBus.Instance.OnUndeclareAttacker += UndeclareAttacker;
+        EventBus.Instance.OnUndeclareDefender += UndeclareDefender;
+        EventBus.Instance.OnCreatureDamaged += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureHealthChanged += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureDestroyed += DestroyCreature;
+        EventBus.Instance.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
 
     private void Init(object sender, PlayersInitializedEventArgs args) {
@@ -43,22 +43,22 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     private void PlayCreatureCard(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].PlayCreatureCard(args.Card);
+        controllerByPlayerId[args.PlayerId].PlayCreatureCard(args.Card);
     }
 
     public void PlayDomainCard(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].PlayDomainCard(args.Card);
+        controllerByPlayerId[args.PlayerId].PlayDomainCard(args.Card);
     }
 
     public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
-        if (controllerByPlayerId[args.Player.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Player.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
         //controllerByPlayerId[args.Player.PlayerId].PlaySpellCard(args.Card);
     }
@@ -116,19 +116,19 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        if (controllerByPlayerId[args.PlayerId.PlayerId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.PlayerId.PlayerId].UpdateCreatureFieldCard(args.Card);
+        if (controllerByPlayerId[args.PlayerId].ContainsCreature(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId].UpdateCreatureFieldCard(args.Card);
     }
 
     public void DestroyCreature(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        if(controllerByPlayerId[args.PlayerId.PlayerId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.PlayerId.PlayerId].RemoveCreature(args.Card);
+        if(controllerByPlayerId[args.PlayerId].ContainsCreature(args.Card.Uuid))
+            controllerByPlayerId[args.PlayerId].RemoveCreature(args.Card);
     }
 
     private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {
