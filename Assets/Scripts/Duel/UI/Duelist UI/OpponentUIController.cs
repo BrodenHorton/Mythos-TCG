@@ -3,9 +3,9 @@
 public class OpponentUIController : DuelistUIController {
     [SerializeField] private OpponentUI opponentUI;
 
-    public override void Init(MatchPlayer player) {
-        this.playerId = player;
-        opponentUI.Init(player);
+    public override void Init(ulong playerId, int lifePoints, int manaCount) {
+        this.playerId = playerId;
+        opponentUI.Init(playerId, lifePoints, manaCount);
     }
 
     public override void SetLifePoints(int lifePoints) {

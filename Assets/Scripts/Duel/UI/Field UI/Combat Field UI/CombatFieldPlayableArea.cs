@@ -21,8 +21,8 @@ public class CombatFieldPlayableArea : MonoBehaviour {
         cam = Camera.main;
         playableAreaVisual.SetActive(false);
 
-        EventBus.OnStartCardDragPlayingField += ShowPlayableAreaVisual;
-        EventBus.OnReleaseCardDragPlayingField += PlayCardOnReleaseDrag;
+        EventBus.Instance.OnStartCardDragPlayingField += ShowPlayableAreaVisual;
+        EventBus.Instance.OnReleaseCardDragPlayingField += PlayCardOnReleaseDrag;
     }
 
     private void ShowPlayableAreaVisual(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
@@ -42,7 +42,7 @@ public class CombatFieldPlayableArea : MonoBehaviour {
 
         playableAreaVisual.SetActive(false);
         if (IsHoveringCombatArea())
-            EventBus.InvokeOnReleaseCreatureFieldCardOverCombatArea(this, new CreatureFieldCardEnteringCombatFieldEventArgs(combatFieldUI, args.CardUI));
+            EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CreatureFieldCardEnteringCombatFieldEventArgs(combatFieldUI, args.CardUI));
     }
 
     private bool IsHoveringCombatArea() {

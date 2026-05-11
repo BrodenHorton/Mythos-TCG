@@ -20,16 +20,15 @@ public class PlayingFieldUI : MonoBehaviour {
         this.playerId = playerId;
     }
 
-    public void PlayCreatureCard(MatchPlayer player, CreatureCard card) {
+    public void PlayCreatureCard(CreatureCard card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
         creatureCardUI.transform.parent = creatureSlotOrigin;
         creatureCardUI.Init(card);
-        AddCreatureFieldCard(player, creatureCardUI);
+        AddCreatureFieldCard(creatureCardUI);
     }
 
-    public void AddCreatureFieldCard(MatchPlayer player, CreatureFieldCardUI cardUI) {
+    public void AddCreatureFieldCard(CreatureFieldCardUI cardUI) {
         creatures.Add(cardUI);
-        SortCreatures(player);
         SetDefaultCardPositions();
     }
 
@@ -103,15 +102,6 @@ public class PlayingFieldUI : MonoBehaviour {
         }
     }
 
-    public bool ContainsCreature(CreatureFieldCardUI other) {
-        foreach (CreatureFieldCardUI cardUI in creatures) {
-            if (cardUI == other)
-                return true;
-        }
-
-        return false;
-    }
-
     public bool ContainsCreature(Guid cardUuid) {
         foreach (CreatureFieldCardUI cardUI in creatures) {
             if (cardUI.CardUuid == cardUuid)
@@ -121,16 +111,13 @@ public class PlayingFieldUI : MonoBehaviour {
         return false;
     }
 
-    protected void SortCreatures(MatchPlayer player) {
-        List<CreatureFieldCardUI> sortedList = new List<CreatureFieldCardUI>();
-        for (int i = 0; i < player.Creatures.Count; i++) {
-            CreatureFieldCardUI cardUI = GetCreatureFieldCardUIBy(player.Creatures[i].Uuid);
-            if (cardUI == null)
-                continue;
-
-            sortedList.Add(cardUI);
+    public bool ContainsCreature(CreatureFieldCardUI other) {
+        foreach (CreatureFieldCardUI cardUI in creatures) {
+            if (cardUI == other)
+                return true;
         }
-        creatures = sortedList;
+
+        return false;
     }
 
     public CreatureFieldCardUI GetCreatureFieldCardUIBy(Guid uuid) {
@@ -139,7 +126,7 @@ public class PlayingFieldUI : MonoBehaviour {
                 return cardUI;
         }
 
-        return null;
+        throw new Exception("Unable to find creature field card with uuid: " + uuid);
     }
 
     public ulong PlayerId { get { return playerId; } }

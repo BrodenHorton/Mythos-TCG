@@ -3,9 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerPlayingFieldUI : PlayingFieldUI {
-    public event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnSelectingCardDrag;
-
-    [Header("Card Drag")]
     [SerializeField] private float dragOffset;
 
     private Camera cam;
@@ -54,6 +51,18 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
         return ray.direction * t + origin;
     }
 
+    public void SetCardSelectable(Guid cardUuid) {
+        if (!ContainsCreature(cardUuid))
+            throw new Exception("Attempting to set selectable card border visibility to card that is not in the PlayUI hand");
+
+        GetCreatureFieldCardUIBy(cardUuid).SetSelectable(true);
+    }
+
+    public void SetCardSelectableAll(bool isSelectable) {
+        foreach (FieldCardUI cardUI in creatures)
+            cardUI.SetSelectable(isSelectable);
+    }
+
     private void SelectCardDrag(InputAction.CallbackContext context) {
         if (!context.started)
             return;
@@ -64,11 +73,7 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
             return;
 
         FieldCardDragEventArgs<CreatureFieldCardUI> args = new FieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI);
-        OnSelectingCardDrag?.Invoke(this, args);
-        if (args.IsCancelled)
-            return;
-
-        EventBus.InvokeOnStartCardDragPlayingField(this, args);
+        EventBus.Instance.InvokeOnStartCardDragPlayingField(args);
         isDragging = true;
         draggingCard = cardUI;
         draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, draggingCard.transform.position.y + dragOffset, draggingCard.transform.position.z);
@@ -84,7 +89,7 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
 
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        EventBus.InvokeOnReleaseCardDragPlayingField(this, new ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI));
+        EventBus.Instance.InvokeOnReleaseCardDragPlayingField(new ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
@@ -106,14 +111,5 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
         isDragging = false;
         draggingCard = null;
         SetDefaultCardPositions();
-    }
-
-    public void SetSelectableCards(MatchPlayer player) {
-        for (int i = 0; i < creatures.Count; i++) {
-            if (player.Creatures.Count <= i)
-                throw new Exception("Creature cards in model and view do not match");
-
-            creatures[i].SetBorderVisibility(player.Creatures[i].CanAttack());
-        }
     }
 }

@@ -86,11 +86,11 @@ public class PlayingFieldUIManager : NetworkBehaviour {
     }
 
     private void RemoveAttacker(object sender, DeclareAttackerEventArgs args) {
-        if (controllerByPlayerId[args.Initiator.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.Initiator.PlayerId);
+        if (controllerByPlayerId[args.InitiatorId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
 
-        if (controllerByPlayerId[args.Initiator.PlayerId].ContainsCreature(args.Attacker.Uuid))
-            controllerByPlayerId[args.Initiator.PlayerId].RemoveCreature(args.Attacker);
+        if (controllerByPlayerId[args.InitiatorId].ContainsCreature(args.Attacker.Uuid))
+            controllerByPlayerId[args.InitiatorId].RemoveCreature(args.Attacker);
     }
 
     private void RemoveDefender(object sender, DeclareDefenderEventArgs args) {

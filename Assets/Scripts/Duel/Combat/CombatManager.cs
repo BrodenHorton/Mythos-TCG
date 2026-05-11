@@ -21,14 +21,14 @@ public class CombatManager : NetworkBehaviour {
         if (duelManager == null)
             throw new Exception("Could not find DuelManager object");
 
-        EventBus.OnDeclareAttacker += DeclareAttacker;
-        EventBus.OnUndeclareAttacker += UndeclareAttacker;
-        EventBus.OnDeclareDefender += DeclareDefender;
-        EventBus.OnUndeclareDefender += UndeclareDefender;
+        EventBus.Instance.OnDeclareAttacker += DeclareAttacker;
+        EventBus.Instance.OnUndeclareAttacker += UndeclareAttacker;
+        EventBus.Instance.OnDeclareDefender += DeclareDefender;
+        EventBus.Instance.OnUndeclareDefender += UndeclareDefender;
     }
 
     private void DeclareAttacker(object sender, DeclareAttackerEventArgs args) {
-        AddAttacker(args.Initiator, args.Target, args.Attacker);
+        AddAttacker(duelManager.GetPlayerById(args.InitiatorId), duelManager.GetPlayerById(args.TargetId), args.Attacker);
     }
 
     private void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
@@ -97,7 +97,7 @@ public class CombatManager : NetworkBehaviour {
         DuelistCombat duelistCombat = duelistCombats[0];
         for (int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
             CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
-            EventBus.InvokeOnCreatureAttack(this, new CreatureAttackEventArgs(duelistCombat.Initiator, duelistCombat.Target, creatureCombat));
+            EventBus.Instance.InvokeOnCreatureAttack(new CreatureAttackEventArgs(duelistCombat.Initiator, duelistCombat.Target, creatureCombat));
             if (creatureCombat.Defender == null)
                 duelistCombat.Target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
             else {
@@ -105,7 +105,7 @@ public class CombatManager : NetworkBehaviour {
                                                                                                  duelistCombat.Target,
                                                                                                  creatureCombat,
                                                                                                  creatureCombat.Attacker.GetAtk());
-                EventBus.InvokeOnCreatureDamagedByCreature(this, args);
+                EventBus.Instance.InvokeOnCreatureDamagedByCreature(args);
                 if (!args.IsCanceled)
                     creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
 
