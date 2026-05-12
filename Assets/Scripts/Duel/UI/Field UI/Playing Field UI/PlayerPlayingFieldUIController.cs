@@ -138,37 +138,36 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
-        if (playerId != duelManager.LocalClientPlayer)
-            return;
+        DeclareDefenderServerRpc(duelManager.GetCurrentPlayerTurn().PlayerId, args.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DeclareDefenderServerRpc(ulong initiatorId, ulong targetId, FixedString128Bytes attackerUuidStr, FixedString128Bytes defenderUuidStr) {
+        MatchPlayer target = duelManager.GetPlayerById(targetId);
+        Guid defenderUuid = Guid.Parse(defenderUuidStr.ToString());
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
-        if (args.CombatFieldUI.TargetPlayerId != playerId)
+        if (!target.ContainsCreatureUuid(defenderUuid))
             return;
-        if (!playerId.ContainsCreatureUuid(args.Defender.CardUuid))
-            return;
-        CreatureCard defender = playerId.GetCreatureByUuid(args.Defender.CardUuid);
+        CreatureCard defender = target.GetCreatureByUuid(defenderUuid);
         if (defender == null)
             return;
         if (!defender.CanDefend())
             return;
+        MatchPlayer initiator = duelManager.GetPlayerById(initiatorId);
+        Guid attackerUuid = Guid.Parse(attackerUuidStr.ToString());
+        if (!initiator.ContainsCreatureUuid(attackerUuid))
+            return;
+        CreatureCard attacker = initiator.GetCreatureByUuid(attackerUuid);
+        if (attacker == null)
+            return;
 
-        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        MatchPlayer target = duelManager.GetPlayerById(args.TargetPlayerId);
-        DeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(target), args.Attacker.CardUuid.ToString(), defender.Uuid.ToString());
-    }
-
-    [Rpc(SendTo.Server)]
-    private void DeclareDefenderServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes attackerCardUuidStr, FixedString128Bytes defenderCardUuidStr) {
-        DeclareDefenderClientRpc(initiatorIndex, targetIndex, attackerCardUuidStr, defenderCardUuidStr);
+        InvokeOnDeclareDefender(initiatorId, targetId, attacker, defender);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void DeclareDefenderClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes attackerCardUuidStr, FixedString128Bytes defenderCardUuidStr) {
-        Guid attackerUuid = Guid.Parse(attackerCardUuidStr.ToString());
-        Guid defenderUuid = Guid.Parse(defenderCardUuidStr.ToString());
-        CreatureCard attacker = duelManager.Players[initiatorIndex].GetCreatureByUuid(attackerUuid);
-        CreatureCard defender = duelManager.Players[targetIndex].GetCreatureByUuid(defenderUuid);
-        EventBus.Instance.InvokeOnDeclareDefender(new DeclareDefenderEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], attacker, defender));
+    private void InvokeOnDeclareDefender(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
+        EventBus.Instance.InvokeOnDeclareDefender(new DeclareDefenderEventArgs(initiatorId, targetId, attacker, defender));
     }
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {

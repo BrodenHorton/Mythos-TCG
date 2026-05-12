@@ -1,21 +1,21 @@
 ﻿using System;
 
 public class DeclareDefenderEventArgs : EventArgs {
-    private MatchPlayer initiator;
-    private MatchPlayer target;
+    private ulong initiatorId;
+    private ulong targetId;
     private CreatureCard attacker;
     private CreatureCard defender;
 
-    public DeclareDefenderEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker, CreatureCard defender) {
-        this.initiator = initiator;
-        this.target = target;
+    public DeclareDefenderEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
+        this.initiatorId = initiatorId;
+        this.targetId = targetId;
         this.attacker = attacker;
         this.defender = defender;
     }
 
-    public MatchPlayer Initiator { get { return initiator; } }
+    public ulong InitiatorId { get { return initiatorId; } }
 
-    public MatchPlayer Target { get { return target; } }
+    public ulong TargetId { get { return targetId; } }
     
     public CreatureCard Attacker { get { return attacker; } }
 
