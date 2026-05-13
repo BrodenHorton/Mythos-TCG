@@ -162,11 +162,11 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (attacker == null)
             return;
 
-        InvokeOnDeclareDefender(initiatorId, targetId, attacker, defender);
+        InvokeOnDeclareDefenderClientRpc(initiatorId, targetId, attacker, defender);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnDeclareDefender(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
+    private void InvokeOnDeclareDefenderClientRpc(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
         EventBus.Instance.InvokeOnDeclareDefender(new DeclareDefenderEventArgs(initiatorId, targetId, attacker, defender));
     }
 

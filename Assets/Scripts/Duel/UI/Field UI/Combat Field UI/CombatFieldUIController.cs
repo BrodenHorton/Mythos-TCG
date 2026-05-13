@@ -22,13 +22,13 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (combatStateManager == null)
             throw new Exception("Could not find CombatStateManager object");
 
-        combatFieldUI.OnSelectFieldCard += SelectUndeclareAttacker;
-        combatFieldUI.OnSelectFieldCard += SelectUndeclareDefender;
+        combatFieldUI.OnSelectFieldCard += UndeclareAttacker;
+        combatFieldUI.OnSelectFieldCard += UndeclareDefender;
     }
 
     public override void OnNetworkDespawn() {
-        combatFieldUI.OnSelectFieldCard -= SelectUndeclareAttacker;
-        combatFieldUI.OnSelectFieldCard -= SelectUndeclareDefender;
+        combatFieldUI.OnSelectFieldCard -= UndeclareAttacker;
+        combatFieldUI.OnSelectFieldCard -= UndeclareDefender;
     }
 
     public void Init(ulong playerId) {
@@ -59,88 +59,70 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.UpdateCreatureFieldCard(card);
     }
 
-    public void ReleaseCreatureCards(DuelistCombat combat) {
-        EventBus.InvokeOnReleaseCombatCreatures(this, new ReleaseCombatCreaturesEventArgs(
-            combat.Initiator,
-            combatFieldUI.Attackers));
-        EventBus.InvokeOnReleaseCombatCreatures(this, new ReleaseCombatCreaturesEventArgs(
-            combat.Target,
-            combatFieldUI.Defenders));
-        combatFieldUI.ClearCreatures();
-    }
-
-    private void SelectUndeclareAttacker(object sender, CombatFieldCardSelectEventArgs args) {
-        if (!duelManager.IsLocalClientPlayerTurn())
-            return;
-        if (!combatStateManager.CurrentState.CanDeclareAttackers())
+    private void UndeclareAttacker(object sender, CombatFieldCardSelectEventArgs args) {
+        if (args.CombatFieldUI != this)
             return;
         if (args.CardUI == null)
             return;
-        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        if (!initiator.ContainsCreatureUuid(args.CardUI.CardUuid))
+
+        UndeclareAttackerServerRpc(targetPlayerId, args.CardUI.CardUuid.ToString());
+    }
+
+    [Rpc(SendTo.Server)]
+    private void UndeclareAttackerServerRpc(ulong targetId, FixedString128Bytes creatureCardUuidStr) {
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
-        CreatureCard creatureCard = initiator.GetCreatureByUuid(args.CardUI.CardUuid);
+        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
+        Guid creatureCardUuid = Guid.Parse(creatureCardUuidStr.ToString());
+        if (!initiator.ContainsCreatureUuid(creatureCardUuid))
+            return;
+        CreatureCard creatureCard = initiator.GetCreatureByUuid(creatureCardUuid);
         if (creatureCard == null)
             return;
 
-        UndeclareAttackerServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(targetPlayerId), creatureCard.Uuid.ToString());
-    }
-
-    [Rpc(SendTo.Server)]
-    private void UndeclareAttackerServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
-        UndeclareAttackerClientRpc(initiatorIndex, targetIndex, cardUuidStr);
+        InvokeOnUndeclareAttackerClientRpc(initiator.PlayerId, targetId, creatureCard);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void UndeclareAttackerClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
-        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
-        CreatureCard creatureCard = duelManager.Players[initiatorIndex].GetCreatureByUuid(cardUuid);
-        EventBus.InvokeOnUndelcareAttacker(this, new UndeclareAttackerEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    private void InvokeOnUndeclareAttackerClientRpc(ulong initiatorId, ulong targetId, CreatureCard card) {
+        EventBus.Instance.InvokeOnUndelcareAttacker(new UndeclareAttackerEventArgs(initiatorId, targetId, card));
     }
 
-    private void SelectUndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
+    private void UndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
+        if (args.CombatFieldUI != this)
+            return;
         if (args.CardUI == null)
             return;
 
-        SelectUndeclareDefenderServerRpc(args.CardUI.CardUuid);
+        UndeclareDefenderServerRpc(targetPlayerId, args.CardUI.CardUuid.ToString());
     }
 
     [Rpc(SendTo.Server)]
-    private void SelectUndeclareDefenderServerRpc(Guid cardUuid, ServerRpcParams rpcParams = default) {
-        ulong playerId = rpcParams.Receive.SenderClientId;
-        if (playerId == duelManager.GetCurrentPlayerTurn().PlayerId)
-            return;
-        if (targetPlayerId != playerId)
+    private void UndeclareDefenderServerRpc(ulong targetId, FixedString128Bytes creatureCardUuidStr) {
+        if (targetId == duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
-        MatchPlayer player = duelManager.GetPlayerById(playerId);
-        if (!player.ContainsCreatureUuid(cardUuid))
+        MatchPlayer target = duelManager.GetPlayerById(targetId);
+        Guid creatureCardUuid = Guid.Parse(creatureCardUuidStr.ToString());
+        if (!target.ContainsCreatureUuid(creatureCardUuid))
             return;
-        CreatureCard creatureCard = player.GetCreatureByUuid(cardUuid);
-        if (creatureCard == null)
+        CreatureCard defender = target.GetCreatureByUuid(creatureCardUuid);
+        if (defender == null)
             return;
 
-        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        UndeclareDefenderServerRpc(duelManager.GetPlayerIndex(initiator), duelManager.GetPlayerIndex(targetPlayerId), creatureCard.Uuid.ToString());
-        SelectUndeclareDefenderClientRpc(cardUuid);
+        InvokeOnUndeclareDefenderClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId, targetId, defender);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SelectUndeclareDefenderClientRpc(Guid cardUuid) {
-        // TODO: Implement client side undeclaring defender
+    private void InvokeOnUndeclareDefenderClientRpc(ulong initiatorId, ulong targetId, CreatureCard defender) {
+        EventBus.Instance.InvokeOnUndeclareDefender(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
     }
 
-    [Rpc(SendTo.Server)]
-    private void UndeclareDefenderServerRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
-        UndeclareDefenderClientRpc(initiatorIndex, targetIndex, cardUuidStr);
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void UndeclareDefenderClientRpc(int initiatorIndex, int targetIndex, FixedString128Bytes cardUuidStr) {
-        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
-        CreatureCard creatureCard = duelManager.Players[targetIndex].GetCreatureByUuid(cardUuid);
-        EventBus.InvokeOnUndeclareDefender(this, new UndeclareDefenderEventArgs(duelManager.Players[initiatorIndex], duelManager.Players[targetIndex], creatureCard));
+    public void ReleaseCreatureCards(DuelistCombat combat) {
+        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(combat.Initiator.PlayerId, combatFieldUI.Attackers));
+        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(combat.Target.PlayerId, combatFieldUI.Defenders));
+        combatFieldUI.ClearCreatures();
     }
 
     public bool ContainsAttacker(Guid uuid) {

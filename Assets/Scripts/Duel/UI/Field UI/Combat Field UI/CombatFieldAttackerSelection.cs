@@ -19,7 +19,7 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
 
         cam = Camera.main;
 
-        EventBus.OnReleaseCardDragPlayingField += SelectAttackerToDefend;
+        EventBus.Instance.OnReleaseCardDragPlayingField += SelectAttackerToDefend;
     }
 
     private void SelectAttackerToDefend(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
@@ -29,7 +29,7 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
             return;
 
         if (IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attacker))
-            EventBus.InvokeOnSelectAttackerToDefend(this, new SelectAttackerToDefendEventArgs(combatFieldUI, attacker, args.CardUI));
+            EventBus.Instance.InvokeOnSelectAttackerToDefend(new SelectAttackerToDefendEventArgs(combatFieldUI, attacker, args.CardUI));
     }
 
     private bool IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attacker) {

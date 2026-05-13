@@ -28,11 +28,15 @@ public class CombatManager : NetworkBehaviour {
     }
 
     private void DeclareAttacker(object sender, DeclareAttackerEventArgs args) {
-        AddAttacker(duelManager.GetPlayerById(args.InitiatorId), duelManager.GetPlayerById(args.TargetId), args.Attacker);
+        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
+        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
+        AddAttacker(initiator, target, args.Attacker);
     }
 
     private void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
-        RemoveAttacker(args.Initiator, args.Target, args.Attacker);
+        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
+        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
+        RemoveAttacker(initiator, target, args.Attacker);
     }
 
     public void AddAttacker(MatchPlayer initiator, MatchPlayer target, CreatureCard card) {
@@ -51,11 +55,15 @@ public class CombatManager : NetworkBehaviour {
     }
 
     private void DeclareDefender(object sender, DeclareDefenderEventArgs args) {
-        AddDefender(args.Initiator, args.Target, args.Attacker, args.Defender);
+        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
+        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
+        AddDefender(initiator, target, args.Attacker, args.Defender);
     }
 
     private void UndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
-        RemoveDefender(args.Initiator, args.Target, args.Defender);
+        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
+        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
+        RemoveDefender(initiator, target, args.Defender);
     }
 
     public void AddDefender(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker, CreatureCard defender) {

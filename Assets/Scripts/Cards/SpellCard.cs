@@ -38,8 +38,8 @@ public class SpellCard : Card {
         
     }
 
-    public override void PlayCardFromHand(MatchPlayer player, int handIndex) {
-        EventBus.Instance.InvokeOnSpellCardSelectedForPlay(new PlayCardFromHandEventArgs<SpellCard>(player, this, handIndex));
+    public override void PlayCardFromHand(MatchPlayer player) {
+        EventBus.Instance.InvokeOnSpellCardSelectedForPlay(new PlayCardFromHandEventArgs<SpellCard>(player.PlayerId, this));
     }
 
     public override int GetManaCost() {

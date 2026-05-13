@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 
 public class ReleaseCombatCreaturesEventArgs : EventArgs {
-    private MatchPlayer player;
+    private ulong playerId;
     private List<CreatureFieldCardUI> creatures;
 
-    public ReleaseCombatCreaturesEventArgs(MatchPlayer player, List<CreatureFieldCardUI> creatures) {
-        this.player = player;
+    public ReleaseCombatCreaturesEventArgs(ulong playerId, List<CreatureFieldCardUI> creatures) {
+        this.playerId = playerId;
         this.creatures = creatures;
     }
 
-    public MatchPlayer Player { get { return player; } }
+    public ulong PlayerId { get { return playerId; } }
 
     public List<CreatureFieldCardUI> Creatures { get { return creatures; } }
 }

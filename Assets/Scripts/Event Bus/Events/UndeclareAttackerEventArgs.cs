@@ -1,19 +1,19 @@
 ﻿using System;
 
 public class UndeclareAttackerEventArgs : EventArgs {
-    private MatchPlayer initiator;
-    private MatchPlayer target;
+    private ulong initiatorId;
+    private ulong targetId;
     private CreatureCard attacker;
 
-    public UndeclareAttackerEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker) {
-        this.initiator = initiator;
-        this.target = target;
+    public UndeclareAttackerEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker) {
+        this.initiatorId = initiatorId;
+        this.targetId = targetId;
         this.attacker = attacker;
     }
 
-    public MatchPlayer Initiator { get { return initiator; } }
+    public ulong InitiatorId { get { return initiatorId; } }
 
-    public MatchPlayer Target { get { return target; } }
+    public ulong TargetId { get { return targetId; } }
 
     public CreatureCard Attacker { get { return attacker; } }
 }

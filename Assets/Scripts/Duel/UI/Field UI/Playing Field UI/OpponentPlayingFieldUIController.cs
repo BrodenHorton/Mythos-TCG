@@ -11,7 +11,7 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
     }
 
     public override void PlayCreatureCard(CreatureCard card) {
-        playingFieldUI.PlayCreatureCard(playerId, card);
+        playingFieldUI.PlayCreatureCard(card);
     }
 
     public override void PlayDomainCard(DomainCard card) {
@@ -39,7 +39,7 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(playerId, creatures[i]);
+            playingFieldUI.AddCreatureFieldCard(creatures[i]);
     }
 
     public override bool ContainsCreature(Guid uuid) {

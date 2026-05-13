@@ -34,10 +34,10 @@ public class DuelistUIManager : NetworkBehaviour {
     }
 
     private void LifePointsChanged(object sender, LifePointsChangedEventArgs args) {
-        if (controllerByPlayerId[args.PlayerId.PlayerId] == null)
-            throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId.PlayerId);
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.PlayerId.PlayerId].SetLifePoints(args.LifePoints);
+        controllerByPlayerId[args.PlayerId].SetLifePoints(args.LifePoints);
     }
 
     private void ManaCountChanged(object sender, ManaChangedEventArgs args) {
@@ -58,6 +58,6 @@ public class DuelistUIManager : NetworkBehaviour {
         if (controllerByPlayerId[args.Player.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.Player.PlayerId);
 
-        controllerByPlayerId[args.Player.PlayerId].RemoveCardFromHand(args.HandIndex);
+        controllerByPlayerId[args.Player.PlayerId].RemoveCardFromHand(args.Card.Uuid);
     }
 }

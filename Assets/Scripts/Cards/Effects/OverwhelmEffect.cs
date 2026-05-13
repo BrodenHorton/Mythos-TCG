@@ -12,11 +12,11 @@ public class OverwhelmEffect : CreatureCardEffect {
 
     public override void Init(Guid creatureCardUuid) {
         this.creatureCardUuid = creatureCardUuid;
-        EventBus.OnCreatureDamagedByCreature += DealOverwhelmDamage;
+        EventBus.Instance.OnCreatureDamagedByCreature += DealOverwhelmDamage;
     }
 
     public override void RemoveListeners() {
-        EventBus.OnCreatureDamagedByCreature -= DealOverwhelmDamage;
+        EventBus.Instance.OnCreatureDamagedByCreature -= DealOverwhelmDamage;
     }
 
     private void DealOverwhelmDamage(object sender, CreatureDamagedByCreatureEventArgs args) {

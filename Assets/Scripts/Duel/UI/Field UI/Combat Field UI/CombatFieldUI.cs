@@ -108,6 +108,22 @@ public class CombatFieldUI : MonoBehaviour {
             throw new Exception("Attempting to update creature field card that is not in combat field");
     }
 
+    public void SetCardSelectable(Guid cardUuid) {
+        if (!ContainsAttacker(cardUuid))
+            GetAttacker(cardUuid).SetSelectable(true);
+        else if(ContainsDefender(cardUuid))
+            GetDefender(cardUuid).SetSelectable(true);
+        else
+            throw new Exception("Unable to find card uuid in combat field UI cards");
+    }
+
+    public void SetCardSelectableAll(bool isSelectable) {
+        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in attackerByPositionIndex.ToList())
+            entry.Value.SetSelectable(isSelectable);
+        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in defenderByPositionIndex.ToList())
+            entry.Value.SetSelectable(isSelectable);
+    }
+
     private void SelectFieldCard(InputAction.CallbackContext context) {
         if (!context.started)
             return;

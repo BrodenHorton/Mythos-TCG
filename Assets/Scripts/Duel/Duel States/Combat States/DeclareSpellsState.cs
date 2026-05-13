@@ -63,7 +63,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
 
         int playerIndex = declareSpellsPlayerIndices[0];
         ulong playerId = duelManager.Players[playerIndex].PlayerId;
-        actionManager.AddAction(playerId, new SkipDeclareSpellDuelistAction(playerId, duelManager, spellChainManager, this));
+        actionManager.AddAction(playerId, new SkipDeclareSpellDuelistAction(playerId, spellChainManager, this));
         actionManager.SetActionFocusPlayerIndices(playerId);
     }
 

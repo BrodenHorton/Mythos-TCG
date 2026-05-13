@@ -12,7 +12,7 @@ public class NullCard : Card {
 
     public override void PlayCard(MatchPlayer player) { }
 
-    public override void PlayCardFromHand(MatchPlayer player, int handIndex) { }
+    public override void PlayCardFromHand(MatchPlayer player) { }
 
     public override int GetManaCost() {
         return 999;
