@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public abstract class DuelistUIController : NetworkBehaviour {    
@@ -12,7 +13,7 @@ public abstract class DuelistUIController : NetworkBehaviour {
 
     public abstract void DrawCard(Card card);
 
-    public abstract void RemoveCardFromHand(int handIndex);
+    public abstract void RemoveCardFromHand(Guid cardUuid);
 
     public abstract DuelistUI GetDuelistUI();
 }

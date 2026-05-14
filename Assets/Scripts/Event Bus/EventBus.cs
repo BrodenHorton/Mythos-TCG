@@ -72,9 +72,10 @@ public class EventBus : NetworkBehaviour {
 
         List<ulong> otherPlayerIds = duelManager.GetPlayerIds();
         otherPlayerIds.Remove(playerId);
-        BaseRpcTarget playerTarget = RpcTarget.Group(new List<ulong>() { playerId }, RpcTargetUse.Temp);
+        BaseRpcTarget playerTarget = RpcTarget.Single(playerId, RpcTargetUse.Temp);
         CardNetworkContainer cardNetworkContainer = new CardNetworkContainer();
         cardNetworkContainer.card = card;
+        TcgLogger.Log("InvokeOnCardDrawn: Is card null: " + (card == null));
         InvokeOnCardDrawnClientRpc(playerId, cardNetworkContainer, playerTarget);
         BaseRpcTarget otherTarget = RpcTarget.Group(otherPlayerIds, RpcTargetUse.Temp);
         CardNetworkContainer nullCardNetworkContainer = new CardNetworkContainer();

@@ -12,7 +12,7 @@ public class PassSpellChainDuelistAction : DuelistAction {
     }
 
     public override void Execute() {
-        spellChainManager.PassActionServerRpc();
+        spellChainManager.PassAction();
     }
 
     private void ReomveAction(object sender, PlayerEventArgs args) {

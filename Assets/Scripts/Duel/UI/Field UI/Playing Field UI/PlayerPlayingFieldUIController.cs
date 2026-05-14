@@ -51,17 +51,23 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     [Rpc(SendTo.Server)]
-    private void EnableSelectableCardsServerRpc(ServerRpcParams rpcParams = default) {
+    private void EnableSelectableCardsServerRpc(RpcParams rpcParams = default) {
         List<Guid> selectableCardGuids = GetSelectableCardGuids(rpcParams.Receive.SenderClientId);
+        FixedString128Bytes[] selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
+        for (int i = 0; i < selectableCardGuids.Count; i++)
+            selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
+
         BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
-        EnableSelectableCardsClientRpc(selectableCardGuids.ToArray(), target);
+        EnableSelectableCardsClientRpc(selectableCardUuidStrs, target);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void EnableSelectableCardsClientRpc(Guid[] selectableCardGuids, RpcParams rpcParams) {
+    private void EnableSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
         playingFieldUI.SetCardSelectableAll(false);
-        for (int i = 0; i < selectableCardGuids.Length; i++)
-            playingFieldUI.SetCardSelectable(selectableCardGuids[i]);
+        for (int i = 0; i < selectableCardUuidStrs.Length; i++) {
+            Guid selectableCardUuid = Guid.Parse(selectableCardUuidStrs[i].ToString());
+            playingFieldUI.SetCardSelectable(selectableCardUuid);
+        }
     }
 
     private void DisableSelectableCards(object sender, ulong playerId) {
@@ -116,7 +122,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     [Rpc(SendTo.Server)]
-    private void DeclareAttackerServerRpc(ulong targetId, FixedString128Bytes cardUuidStr, ServerRpcParams rpcParams = default) {
+    private void DeclareAttackerServerRpc(ulong targetId, FixedString128Bytes cardUuidStr, RpcParams rpcParams = default) {
         MatchPlayer initiator = duelManager.GetPlayerById(rpcParams.Receive.SenderClientId);
         Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
         if (!combatStateManager.CurrentState.CanDeclareAttackers())
@@ -143,7 +149,9 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     [Rpc(SendTo.Server)]
     private void DeclareDefenderServerRpc(ulong initiatorId, ulong targetId, FixedString128Bytes attackerUuidStr, FixedString128Bytes defenderUuidStr) {
+        MatchPlayer initiator = duelManager.GetPlayerById(initiatorId);
         MatchPlayer target = duelManager.GetPlayerById(targetId);
+        Guid attackerUuid = Guid.Parse(attackerUuidStr.ToString());
         Guid defenderUuid = Guid.Parse(defenderUuidStr.ToString());
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
@@ -154,8 +162,6 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return;
         if (!defender.CanDefend())
             return;
-        MatchPlayer initiator = duelManager.GetPlayerById(initiatorId);
-        Guid attackerUuid = Guid.Parse(attackerUuidStr.ToString());
         if (!initiator.ContainsCreatureUuid(attackerUuid))
             return;
         CreatureCard attacker = initiator.GetCreatureByUuid(attackerUuid);

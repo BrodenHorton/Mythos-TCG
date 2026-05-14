@@ -72,7 +72,7 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     }
 
     [Rpc(SendTo.Server)]
-    private void PlayerReadyUpServerRpc(ServerRpcParams rpcParams = default) {
+    private void PlayerReadyUpServerRpc(RpcParams rpcParams = default) {
         ulong playerId = rpcParams.Receive.SenderClientId;
         actionManager.RemoveActionFocusId(playerId);
         readyPlayers.Add(playerId);

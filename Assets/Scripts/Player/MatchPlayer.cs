@@ -31,12 +31,11 @@ public class MatchPlayer {
     }
 
     public Card DrawCard() {
-        if(deck.Count == 0) {
-            TcgLogger.Log("Player has ran out of cards to draw");
-            return null;
-        }
+        if(deck.Count == 0)
+            throw new Exception("Attempting to draw a card when the player has no cards in their deck");
 
         Card card = deck[deck.Count - 1];
+        TcgLogger.Log("Player " + playerId + " has draw card with uuid: " + card.Uuid);
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
         EventBus.Instance.InvokeOnCardDrawn(playerId, card);
@@ -74,7 +73,7 @@ public class MatchPlayer {
                 break;
             }
         }
-        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card));
+        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(playerId, card));
     }
 
     public void RemoveCardFromHandAt(int handIndex) {
@@ -83,7 +82,7 @@ public class MatchPlayer {
 
         Card card = hand[handIndex];
         hand.RemoveAt(handIndex);
-        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(this, card));
+        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(playerId, card));
     }
 
     public bool ContainsHandCardeUuid(Guid uuid) {

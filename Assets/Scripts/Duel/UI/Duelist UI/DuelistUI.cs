@@ -33,7 +33,7 @@ public abstract class DuelistUI : MonoBehaviour {
 
     public abstract void DrawCard(Card card);
 
-    public abstract void RemoveCardFromHand(int handIndex);
+    public abstract void RemoveCardFromHand(Guid cardUuid);
 
     public abstract void SetDefaultCardPositions();
 

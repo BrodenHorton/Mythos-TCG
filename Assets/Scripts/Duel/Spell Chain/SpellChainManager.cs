@@ -61,7 +61,7 @@ public class SpellChainManager : NetworkBehaviour {
         SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[playerIndex]);
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
-        PassActionServerRpc();
+        PassAction();
     }
 
     private void AddSpellToChain(MatchPlayer player, SpellCard spellCard) {
@@ -72,10 +72,10 @@ public class SpellChainManager : NetworkBehaviour {
         spellChain.Push(action);
         OnSpellAddedToSpellChain?.Invoke(this, action);
         startingIndex = currentIndex;
-        PassActionServerRpc();
+        PassAction();
     }
 
-    public void PassActionServerRpc() {
+    public void PassAction() {
         if (!IsServer)
             return;
 

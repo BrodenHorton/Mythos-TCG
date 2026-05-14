@@ -52,14 +52,14 @@ public class DuelManager : NetworkBehaviour {
 
         for(int i = 0; i < playerOrder.Length; i++) {
             BaseRpcTarget target = RpcTarget.Group(new List<ulong>() { playerOrder[i] }, RpcTargetUse.Temp);
-            InvokePlayerInitializationClientRpc(new List<ulong>(playerOrder), i, target);
+            InvokePlayerInitializationClientRpc(playerOrder, i, target);
         }
         OnPlayersInitializationFinished?.Invoke(this, EventArgs.Empty);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void InvokePlayerInitializationClientRpc(List<ulong> playerOrder, int localClientPlayerIndex, RpcParams rpcParams) {
-        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(playerOrder, localClientPlayerIndex, STARTING_LIFE_POINTS, STARTING_MANA_COUNT));
+    private void InvokePlayerInitializationClientRpc(ulong[] playerOrder, int localClientPlayerIndex, RpcParams rpcParams) {
+        OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(new List<ulong>(playerOrder), localClientPlayerIndex, STARTING_LIFE_POINTS, STARTING_MANA_COUNT));
     }
 
     private List<Card> Temp_PopulateDeck() {

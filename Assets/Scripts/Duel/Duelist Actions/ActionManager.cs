@@ -62,7 +62,7 @@ public class ActionManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    public void ExecuteActionServerRpc(ServerRpcParams rpcParams = default) {
+    public void ExecuteActionServerRpc(RpcParams rpcParams = default) {
         if (!IsServer)
             return;
         ulong playerId = rpcParams.Receive.SenderClientId;

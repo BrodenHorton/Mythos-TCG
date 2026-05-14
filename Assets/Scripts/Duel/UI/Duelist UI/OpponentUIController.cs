@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class OpponentUIController : DuelistUIController {
     [SerializeField] private OpponentUI opponentUI;
@@ -20,8 +21,8 @@ public class OpponentUIController : DuelistUIController {
         opponentUI.DrawCard(card);
     }
 
-    public override void RemoveCardFromHand(int handIndex) {
-        opponentUI.RemoveCardFromHand(handIndex);
+    public override void RemoveCardFromHand(Guid cardUuid) {
+        opponentUI.RemoveCardFromHand(cardUuid);
     }
 
     public override DuelistUI GetDuelistUI() {

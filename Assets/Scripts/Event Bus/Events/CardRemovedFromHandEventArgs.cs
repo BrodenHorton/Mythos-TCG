@@ -1,15 +1,15 @@
 ﻿using System;
 
 public class CardRemovedFromHandEventArgs : EventArgs {
-    private MatchPlayer player;
+    private ulong playerId;
     private Card card;
 
-    public CardRemovedFromHandEventArgs(MatchPlayer player, Card card) {
-        this.player = player;
+    public CardRemovedFromHandEventArgs(ulong playerId, Card card) {
+        this.playerId = playerId;
         this.card = card;
     }
 
-    public MatchPlayer Player { get { return player; } }
+    public ulong PlayerId { get { return playerId; } }
 
     public Card Card { get { return card; } }
 }

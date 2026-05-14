@@ -2,6 +2,7 @@
 using UnityEngine;
 
 public class OpponentUI : DuelistUI {
+
     public override void DrawCard(Card card) {
         NullHandCardUI cardUI = Instantiate(nullCardPrefab, handOrigin);
         cardUI.transform.Rotate(-90f, 0, 0);
@@ -9,12 +10,12 @@ public class OpponentUI : DuelistUI {
         SetDefaultCardPositions();
     }
 
-    public override void RemoveCardFromHand(int handIndex) {
-        if (handIndex < 0 || handIndex >= cardsInHand.Count)
-            throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
+    public override void RemoveCardFromHand(Guid cardUuid) {
+        if (cardsInHand.Count == 0)
+            throw new Exception("Attempting to remove cardUI from opponents hand when hand is empty");
 
-        HandCardUI cardUI = cardsInHand[handIndex];
-        cardsInHand.RemoveAt(handIndex);
+        HandCardUI cardUI = cardsInHand[0];
+        cardsInHand.RemoveAt(0);
         Destroy(cardUI.gameObject);
         SetDefaultCardPositions();
     }

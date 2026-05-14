@@ -29,9 +29,10 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         List<MatchPlayer> players = stateManager.DuelManager.Players;
         for(int i = 0; i < players.Count; i++) {
             players[i].ShuffleDeck();
-            for (int j = 0; j < DuelManager.INITIAL_HAND_SIZE; j++)
-                players[i].DrawCard();
+            /*for (int j = 0; j < DuelManager.INITIAL_HAND_SIZE; j++)
+                players[i].DrawCard();*/
         }
+        players[0].DrawCard();
         actionManager.SetActionFocusPlayerIndices(0);
         stateManager.SwitchState(stateManager.UntapPhase);
     }

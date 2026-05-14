@@ -107,12 +107,12 @@ public class PlayerUI : DuelistUI {
         SetDefaultCardPositions();
     }
 
-    public override void RemoveCardFromHand(int handIndex) {
-        if (handIndex < 0 || handIndex >= cardsInHand.Count)
-            throw new Exception("Attempting to remove cardUI from hand with invalid handIndex: " + handIndex);
+    public override void RemoveCardFromHand(Guid cardUuid) {
+        if (!ContainsCard(cardUuid))
+            throw new Exception("Attempting to remove card that is not in player's hand. Card uuid: " + cardUuid);
 
-        HandCardUI cardUI = cardsInHand[handIndex];
-        cardsInHand.RemoveAt(handIndex);
+        HandCardUI cardUI = GetCardByUuid(cardUuid);
+        cardsInHand.Remove(cardUI);
         Destroy(cardUI.gameObject);
         SetDefaultCardPositions();
     }
