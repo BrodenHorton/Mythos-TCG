@@ -154,6 +154,8 @@ public class PlayerUI : DuelistUI {
             return;
         if (!ContainsCard(cardUI))
             throw new Exception("Unable to find handCardUI for SelectCardDrag");
+        if (!cardUI.IsSelectable)
+            return;
 
         int handCardIndex = IndexOf(cardUI);
         EventBus.Instance.InvokeOnStartHandCardDrag(new HandCardDragEventArgs(this, cardUI, handCardIndex));

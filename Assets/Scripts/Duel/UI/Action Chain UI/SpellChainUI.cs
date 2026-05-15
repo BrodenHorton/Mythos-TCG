@@ -37,7 +37,7 @@ public class SpellChainUI : MonoBehaviour {
     }
 
     public void ClearSpellChain() {
-        for (int i = 0; i < spellChain.Count; i++) {
+        for (int i = spellChain.Count - 1; i >= 0; i--) {
             SpellActionUI spellActionUI = spellChain[i];
             spellChain.RemoveAt(i);
             Destroy(spellActionUI.gameObject);

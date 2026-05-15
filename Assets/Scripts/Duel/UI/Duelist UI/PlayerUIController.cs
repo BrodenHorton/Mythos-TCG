@@ -91,7 +91,6 @@ public class PlayerUIController : DuelistUIController {
 
     [Rpc(SendTo.SpecifiedInParams)]
     private void SetSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
-        TcgLogger.Log("SetSelectableCardsClientRpc Entered");
         playerUI.SetCardSelectableAll(false);
         for (int i = 0; i < selectableCardUuidStrs.Length; i++)
             playerUI.SetCardSelectable(Guid.Parse(selectableCardUuidStrs[i].ToString()));

@@ -54,7 +54,7 @@ public class DuelistUIManager : NetworkBehaviour {
         controllerByPlayerId[args.PlayerId].DrawCard(args.Card);
     }
 
-    private void CardRemovedFromHand(object sender, CardRemovedFromHandEventArgs args) {
+    private void CardRemovedFromHand(object sender, PlayerCardEventArgs<Card> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 

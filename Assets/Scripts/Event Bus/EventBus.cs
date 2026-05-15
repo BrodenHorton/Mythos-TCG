@@ -6,7 +6,7 @@ using UnityEngine;
 public class EventBus : NetworkBehaviour {
     // Duelist UI Actions
     public event EventHandler<PlayerCardEventArgs<Card>> OnCardDrawn;
-    public event EventHandler<CardRemovedFromHandEventArgs> OnCardRemovedFromHand;
+    public event EventHandler<PlayerCardEventArgs<Card>> OnCardRemovedFromHand;
     // PlayerUI Card Drag
     public event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
     public event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
@@ -75,7 +75,6 @@ public class EventBus : NetworkBehaviour {
         BaseRpcTarget playerTarget = RpcTarget.Single(playerId, RpcTargetUse.Temp);
         CardNetworkContainer cardNetworkContainer = new CardNetworkContainer();
         cardNetworkContainer.card = card;
-        TcgLogger.Log("InvokeOnCardDrawn: Is card null: " + (card == null));
         InvokeOnCardDrawnClientRpc(playerId, cardNetworkContainer, playerTarget);
         BaseRpcTarget otherTarget = RpcTarget.Group(otherPlayerIds, RpcTargetUse.Temp);
         CardNetworkContainer nullCardNetworkContainer = new CardNetworkContainer();
@@ -89,8 +88,18 @@ public class EventBus : NetworkBehaviour {
         Instance.OnCardDrawn?.Invoke(this, new PlayerCardEventArgs<Card>(playerId, card));
     }
 
-    public void InvokeOnCardRemovedFromHand(CardRemovedFromHandEventArgs args) {
-        OnCardRemovedFromHand?.Invoke(this, args);
+    public void InvokeOnCardRemovedFromHand(ulong playerId, Card card) {
+        if (!IsServer)
+            return;
+
+        CardNetworkContainer cardNetworkContainer = new CardNetworkContainer();
+        cardNetworkContainer.card = card;
+        InvokeOnCardRemovedFromHandClientRpc(playerId, cardNetworkContainer);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnCardRemovedFromHandClientRpc(ulong playerId, CardNetworkContainer cardNetworkContainer) {
+        OnCardRemovedFromHand?.Invoke(this, new PlayerCardEventArgs<Card>(playerId, cardNetworkContainer.card));
     }
     #endregion
 

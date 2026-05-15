@@ -73,7 +73,7 @@ public class MatchPlayer {
                 break;
             }
         }
-        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(playerId, card));
+        EventBus.Instance.InvokeOnCardRemovedFromHand(playerId, card);
     }
 
     public void RemoveCardFromHandAt(int handIndex) {
@@ -82,7 +82,7 @@ public class MatchPlayer {
 
         Card card = hand[handIndex];
         hand.RemoveAt(handIndex);
-        EventBus.Instance.InvokeOnCardRemovedFromHand(new CardRemovedFromHandEventArgs(playerId, card));
+        EventBus.Instance.InvokeOnCardRemovedFromHand(playerId, card);
     }
 
     public bool ContainsHandCardeUuid(Guid uuid) {
