@@ -1,13 +1,13 @@
 ﻿public class SpellCardAction {
     private SpellCard card;
-    private MatchPlayer initiator;
+    private ulong initiatorId;
 
-    public SpellCardAction(SpellCard card, MatchPlayer initiator) {
+    public SpellCardAction(SpellCard card, ulong initiatorId) {
         this.card = card;
-        this.initiator = initiator;
+        this.initiatorId = initiatorId;
     }
 
     public SpellCard Card { get { return card; } }
 
-    public MatchPlayer Initiator { get { return initiator; } }
+    public ulong InitiatorId { get { return initiatorId; } }
 }

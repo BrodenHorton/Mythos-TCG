@@ -5,13 +5,7 @@ public struct CardNetworkContainer : INetworkSerializable {
     public Card card;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
-        string readerWriter = serializer.IsWriter ? "Writer" : "Reader";
-        if(serializer.IsWriter) {
-            TcgLogger.Log(readerWriter + ": is card null: " + (card == null));
-            if (card != null)
-                TcgLogger.Log(readerWriter + ": card uuid: " + card.Uuid);
-        }
-        CardType cardType = serializer.IsWriter ? card.CardType : CardType.Null;
+        CardType cardType = serializer.IsWriter && card != null ? card.CardType : default;
         serializer.SerializeValue(ref cardType);
         if(serializer.IsReader) {
             card = cardType switch {
@@ -22,11 +16,6 @@ public struct CardNetworkContainer : INetworkSerializable {
                 _ => throw new NotImplementedException("Attempting to read card type that is not defined: " + cardType.ToString())
             };
         }
-        if (serializer.IsReader) {
-            TcgLogger.Log(readerWriter + ": is card null: " + (card == null));
-            if (card != null)
-                TcgLogger.Log(readerWriter + ": card uuid: " + card.Uuid);
-        }
-        card.NetworkSerialize(serializer);
+        card?.NetworkSerialize(serializer);
     }
 }

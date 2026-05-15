@@ -38,11 +38,6 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
 
     [Rpc(SendTo.Server)]
     private void SwitchToDeclareDefendersServerRpc() {
-        SwitchToDeclareDefendersClientRpc();
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SwitchToDeclareDefendersClientRpc() {
         combatStateManager.SwitchState(combatStateManager.DeclareDefendersState);
     }
 

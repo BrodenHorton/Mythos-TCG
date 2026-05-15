@@ -1,9 +1,9 @@
 ﻿public class PlayerEventArgs {
-    private MatchPlayer player;
+    private ulong playerId;
 
-    public PlayerEventArgs(MatchPlayer player) {
-        this.player = player;
+    public PlayerEventArgs(ulong playerId) {
+        this.playerId = playerId;
     }
 
-    public MatchPlayer Player { get { return player; } }
+    public ulong PlayerId { get { return playerId; } }
 }

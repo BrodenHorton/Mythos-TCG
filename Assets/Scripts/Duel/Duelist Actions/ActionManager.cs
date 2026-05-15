@@ -50,7 +50,7 @@ public class ActionManager : NetworkBehaviour {
         if (!IsServer)
             return;
 
-        if (actionsByPlayerId.Count > 0)
+        if (actionsByPlayerId[playerId].Count > 0)
             actionsByPlayerId[playerId].Peek().ResetOnRemoveAction();
         duelistAction.OnRemoveAction += (sender, playerId) => {
             PopAction(playerId);

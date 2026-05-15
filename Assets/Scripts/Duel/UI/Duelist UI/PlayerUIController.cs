@@ -27,21 +27,20 @@ public class PlayerUIController : DuelistUIController {
             throw new Exception("Could not find SpellChainManager object");
 
         EventBus.Instance.OnPlayHandCard += PlayHandCard;
-        stateManager.FirstMainPhase.OnFirstMainPhase += EnableSelectableCards;
-        stateManager.CombatPhase.OnCombatPhase += EnableSelectableCards;
-        stateManager.SecondMainPhase.OnSecondMainPhase += EnableSelectableCards;
+        stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
+        stateManager.CombatPhase.OnCombatPhase += SetSelectableCards;
+        stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
         stateManager.EndPhase.OnEndPhase += DisableSelectableCards;
         EventBus.Instance.OnManaCountChanged += (sender, args) => {
             if (playerId == args.PlayerId)
-                EnableSelectableCardsServerRpc();
+                SetSelectableCardsServerRpc();
         };
         actionManager.OnActionStateChanged += (sender, args) => {
             if (args.HasActionFocus)
-                EnableSelectableCardsServerRpc();
+                SetSelectableCardsServerRpc();
         };
         spellChainManager.OnSpellChainFinished += (sender, args) => {
-            if(playerId == duelManager.GetCurrentPlayerTurn().PlayerId)
-                EnableSelectableCardsServerRpc();
+            SetSelectableCardsServerRpc();
         };
     }
 
@@ -66,26 +65,33 @@ public class PlayerUIController : DuelistUIController {
         playerUI.RemoveCardFromHand(cardUuid);
     }
 
-    private void EnableSelectableCards(object sender, ulong playerId) {
+    private void SetSelectableCards(object sender, ulong playerId) {
         if (this.playerId != playerId)
             return;
 
-        EnableSelectableCardsServerRpc();
+        SetSelectableCardsServerRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void EnableSelectableCardsServerRpc(RpcParams rpcParams = default) {
-        List<Guid> selectableCardGuids = GetSelectableCardGuids(rpcParams.Receive.SenderClientId);
-        FixedString128Bytes[] selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
-        for (int i = 0; i < selectableCardGuids.Count; i++)
-            selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
+    private void SetSelectableCardsServerRpc(RpcParams rpcParams = default) {
+        ulong clientPlayerId = rpcParams.Receive.SenderClientId;
+        FixedString128Bytes[] selectableCardUuidStrs;
+        if (duelManager.GetCurrentPlayerTurn().PlayerId == clientPlayerId) {
+            List<Guid> selectableCardGuids = GetSelectableCardGuids(clientPlayerId);
+            selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
+            for (int i = 0; i < selectableCardGuids.Count; i++)
+                selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
+        }
+        else
+            selectableCardUuidStrs = new FixedString128Bytes[0];
 
-        BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
-        EnableSelectableCardsClientRpc(selectableCardUuidStrs, target);
+        BaseRpcTarget target = RpcTarget.Single(clientPlayerId, RpcTargetUse.Temp);
+        SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void EnableSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
+    private void SetSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
+        TcgLogger.Log("SetSelectableCardsClientRpc Entered");
         playerUI.SetCardSelectableAll(false);
         for (int i = 0; i < selectableCardUuidStrs.Length; i++)
             playerUI.SetCardSelectable(Guid.Parse(selectableCardUuidStrs[i].ToString()));
@@ -106,7 +112,7 @@ public class PlayerUIController : DuelistUIController {
         MatchPlayer player = duelManager.GetPlayerById(clientPlayerId);
         for (int i = 0; i < player.Hand.Count; i++) {
             if (player.Hand[i].IsPlayable(duelManager, stateManager, spellChainManager, player))
-                playerUI.SetCardSelectable(player.Hand[i].Uuid);
+                selectableCardGuids.Add(player.Hand[i].Uuid);
         }
 
         return selectableCardGuids;

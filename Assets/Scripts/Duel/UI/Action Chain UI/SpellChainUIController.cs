@@ -19,7 +19,8 @@ public class SpellChainUIController : MonoBehaviour {
         spellChainUI.RemoveSpellFromChain(action.Card.Uuid);
     }
 
-    public void ClearSpellChain(object sender, EventArgs args) {
+    private void ClearSpellChain(object sender, EventArgs args) {
+        TcgLogger.Log("ClearSpellChain Entered");
         spellChainUI.ClearSpellChain();
     }
 }

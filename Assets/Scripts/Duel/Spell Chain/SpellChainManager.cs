@@ -57,10 +57,10 @@ public class SpellChainManager : NetworkBehaviour {
         int playerIndex = duelManager.GetPlayerIndex(player);
         startingIndex = playerIndex;
         currentIndex = playerIndex;
-        OnSpellChainStart?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
-        SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[playerIndex]);
+        InvokeOnSpellChainStartClientRpc(player.PlayerId);
+        SpellCardAction action = new SpellCardAction(spellCard, player.PlayerId);
         spellChain.Push(action);
-        OnSpellAddedToSpellChain?.Invoke(this, action);
+        InvokeOnSpellAddedToSpellChainClientRpc(action.Card, player.PlayerId);
         PassAction();
     }
 
@@ -68,9 +68,9 @@ public class SpellChainManager : NetworkBehaviour {
         if (!IsServer)
             return;
 
-        SpellCardAction action = new SpellCardAction(spellCard, duelManager.Players[currentIndex]);
+        SpellCardAction action = new SpellCardAction(spellCard, player.PlayerId);
         spellChain.Push(action);
-        OnSpellAddedToSpellChain?.Invoke(this, action);
+        InvokeOnSpellAddedToSpellChainClientRpc(action.Card, player.PlayerId);
         startingIndex = currentIndex;
         PassAction();
     }
@@ -79,7 +79,7 @@ public class SpellChainManager : NetworkBehaviour {
         if (!IsServer)
             return;
 
-        InvokeOnSpellChainTurnEndClientRpc();
+        InvokeOnSpellChainTurnEndClientRpc(duelManager.Players[currentIndex].PlayerId);
         IncrementCurrentIndex();
         if (currentIndex == startingIndex) {
             ExecuteActionChain();
@@ -107,18 +107,29 @@ public class SpellChainManager : NetworkBehaviour {
 
         while(spellChain.Count > 0) {
             SpellCardAction action = spellChain.Pop();
-            duelManager.ExecuteSpell(action.Initiator, action.Card);
+            duelManager.ExecuteSpell(duelManager.GetPlayerById(action.InitiatorId), action.Card);
             OnSpellRemovedFromSpellChain?.Invoke(this, action);
         }
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnSpellChainTurnEndClientRpc() {
-        OnSpellChainTurnEnd?.Invoke(this, new PlayerEventArgs(duelManager.Players[currentIndex]));
+    private void InvokeOnSpellChainStartClientRpc(ulong playerId) {
+        OnSpellChainStart?.Invoke(this, new PlayerEventArgs(playerId));
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnSpellAddedToSpellChainClientRpc(SpellCard spellCard, ulong playerId) {
+        OnSpellAddedToSpellChain?.Invoke(this, new SpellCardAction(spellCard, playerId));
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnSpellChainTurnEndClientRpc(ulong playerId) {
+        OnSpellChainTurnEnd?.Invoke(this, new PlayerEventArgs(playerId));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnSpellChainFinishedClientRpc() {
+        TcgLogger.Log("InvokeOnSpellChainFinishedClientRpc Entered");
         OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
     }
 
