@@ -74,7 +74,7 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
         if (!cardUI.IsSelectable)
             return;
 
-        FieldCardDragEventArgs<CreatureFieldCardUI> args = new FieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI);
+        PlayingFieldCardEventArgs<CreatureFieldCardUI> args = new PlayingFieldCardEventArgs<CreatureFieldCardUI>(this, cardUI);
         EventBus.Instance.InvokeOnStartCardDragPlayingField(args);
         isDragging = true;
         draggingCard = cardUI;
@@ -91,9 +91,10 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
         if (!ContainsCreature(draggingCard))
             throw new Exception("Unable to find draggingCard for ReleaseCardDrag");
 
+        TcgLogger.Log("Released field card");
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        EventBus.Instance.InvokeOnReleaseCardDragPlayingField(new ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI));
+        EventBus.Instance.InvokeOnReleaseCardDragPlayingField(new PlayingFieldCardEventArgs<CreatureFieldCardUI>(this, cardUI));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {

@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class CombatFieldUI : MonoBehaviour {
     private static readonly int MAX_FIELD_CREATURES = 6;
 
-    public event EventHandler<CombatFieldCardSelectEventArgs> OnSelectFieldCard;
+    public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnSelectFieldCard;
 
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
@@ -133,7 +133,7 @@ public class CombatFieldUI : MonoBehaviour {
         if (!ContainsAttacker(cardUI) && !ContainsDefender(cardUI))
             return;
 
-        OnSelectFieldCard?.Invoke(this, new CombatFieldCardSelectEventArgs(this, cardUI));
+        OnSelectFieldCard?.Invoke(this, new CombatFieldCardEventArgs<CreatureFieldCardUI>(this, cardUI));
     }
 
     private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {

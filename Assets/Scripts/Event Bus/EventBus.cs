@@ -10,11 +10,11 @@ public class EventBus : NetworkBehaviour {
     // PlayerUI Card Drag
     public event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
     public event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
-    public event EventHandler<CardUuidEventArgs> OnPlayHandCard;
+    public event EventHandler<PlayerCardUuidEventArgs> OnPlayHandCard;
     // PlayingField Card Drag
-    public event EventHandler<FieldCardDragEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
-    public event EventHandler<ReleaseFieldCardDragEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
-    public event EventHandler<CreatureFieldCardEnteringCombatFieldEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
+    public event EventHandler<PlayingFieldCardEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
+    public event EventHandler<PlayingFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
+    public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardOverCombatArea;
     // Playing Cards
     public event EventHandler<PlayCardFromHandEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
     public event EventHandler<PlayCardFromHandEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
@@ -110,22 +110,26 @@ public class EventBus : NetworkBehaviour {
         OnReleaseHandCardDrag?.Invoke(this, args);
     }
 
-    public void InvokeOnPlayHandCard(CardUuidEventArgs args) {
+    public void InvokeOnPlayHandCard(PlayerCardUuidEventArgs args) {
         OnPlayHandCard?.Invoke(this, args);
     }
     #endregion
 
     #region PlayingField Card Drag
-    public void InvokeOnStartCardDragPlayingField(FieldCardDragEventArgs<CreatureFieldCardUI> args) {
+    public void InvokeOnStartCardDragPlayingField(PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
         OnStartCardDragPlayingField?.Invoke(this, args);
     }
 
-    public void InvokeOnReleaseCardDragPlayingField(ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
+    public void InvokeOnReleaseCardDragPlayingField(PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCardDragPlayingField?.Invoke(this, args);
     }
 
-    public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CreatureFieldCardEnteringCombatFieldEventArgs args) {
+    public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
+    }
+
+    public void InvokeOnSelectAttackerToDefend(SelectAttackerToDefendEventArgs args) {
+        OnSelectAttackerToDefend?.Invoke(this, args);
     }
     #endregion
 
@@ -247,10 +251,6 @@ public class EventBus : NetworkBehaviour {
 
     public void InvokeOnUndeclareDefender(UndeclareDefenderEventArgs args) {
         OnUndeclareDefender?.Invoke(this, args);
-    }
-
-    public void InvokeOnSelectAttackerToDefend(SelectAttackerToDefendEventArgs args) {
-        OnSelectAttackerToDefend?.Invoke(this, args);
     }
     #endregion
 

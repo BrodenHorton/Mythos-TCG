@@ -10,18 +10,10 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
     protected ActionManager actionManager;
 
     protected virtual void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (actionManager == null)
-            throw new Exception("Could not find ActionManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
+        stateManager = ServiceLocator.Get<DuelStateManager>();
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
     }
 
     public abstract void Init(ulong playerId);

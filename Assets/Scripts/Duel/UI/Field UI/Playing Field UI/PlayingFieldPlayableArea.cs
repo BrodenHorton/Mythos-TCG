@@ -29,7 +29,7 @@ public class PlayingFieldPlayableArea : MonoBehaviour {
 
         playableAreaVisual.SetActive(false);
         if (IsHoveringPlayableArea())
-            EventBus.Instance.InvokeOnPlayHandCard(new CardUuidEventArgs(args.PlayerUI.PlayerId, args.CardUI.CardUuid));
+            EventBus.Instance.InvokeOnPlayHandCard(new PlayerCardUuidEventArgs(args.PlayerUI.PlayerId, args.CardUI.CardUuid));
     }
 
     private bool IsHoveringPlayableArea() {

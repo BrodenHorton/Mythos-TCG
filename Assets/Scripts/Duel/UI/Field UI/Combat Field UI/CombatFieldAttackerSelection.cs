@@ -4,28 +4,21 @@ using UnityEngine;
 [RequireComponent(typeof(CombatFieldUI))]
 public class CombatFieldAttackerSelection : MonoBehaviour {
     private CombatFieldUI combatFieldUI;
-    private DuelStateManager stateManager;
-    private CombatStateManager combatStateManager;
     private Camera cam;
 
     private void Start() {
         combatFieldUI = GetComponent<CombatFieldUI>();
-        stateManager = ServiceLocator.Get<DuelStateManager>();
-        combatStateManager = ServiceLocator.Get<CombatStateManager>();
-
         cam = Camera.main;
 
         EventBus.Instance.OnReleaseCardDragPlayingField += SelectAttackerToDefend;
     }
 
-    private void SelectAttackerToDefend(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (!combatStateManager.CurrentState.CanDeclareDefenders())
-            return;
+    private void SelectAttackerToDefend(object sender, PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
         if (combatFieldUI.TargetPlayerId != args.PlayingFieldUI.PlayerId)
             return;
 
-        if (IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attacker))
-            EventBus.Instance.InvokeOnSelectAttackerToDefend(new SelectAttackerToDefendEventArgs(combatFieldUI, attacker, args.CardUI));
+        if (IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attackerUI))
+            EventBus.Instance.InvokeOnSelectAttackerToDefend(new SelectAttackerToDefendEventArgs(combatFieldUI, attackerUI, args.CardUI));
     }
 
     private bool IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attacker) {

@@ -127,8 +127,8 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         return true;
     }
 
-    private void DeclareAttacker(object sender, CreatureFieldCardEnteringCombatFieldEventArgs args) {
-        DeclareAttackerServerRpc(args.TargetPlayerId, args.CardUI.CardUuid.ToString());
+    private void DeclareAttacker(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
+        DeclareAttackerServerRpc(args.CombatFieldUI.TargetPlayerId, args.CardUI.CardUuid.ToString());
     }
 
     [Rpc(SendTo.Server)]
@@ -154,7 +154,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
-        DeclareDefenderServerRpc(duelManager.GetCurrentPlayerTurn().PlayerId, args.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
+        DeclareDefenderServerRpc(duelManager.GetCurrentPlayerTurn().PlayerId, args.CombatFieldUI.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
     }
 
     [Rpc(SendTo.Server)]

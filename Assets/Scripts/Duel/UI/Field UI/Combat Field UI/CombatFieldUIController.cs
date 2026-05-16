@@ -13,15 +13,9 @@ public class CombatFieldUIController : NetworkBehaviour {
     protected CombatStateManager combatStateManager;
 
     protected virtual void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find CombatStateManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
+        stateManager = ServiceLocator.Get<DuelStateManager>();
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
 
         combatFieldUI.OnSelectFieldCard += UndeclareAttacker;
         combatFieldUI.OnSelectFieldCard += UndeclareDefender;
@@ -60,7 +54,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.UpdateCreatureFieldCard(card);
     }
 
-    private void UndeclareAttacker(object sender, CombatFieldCardSelectEventArgs args) {
+    private void UndeclareAttacker(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         if (args.CombatFieldUI != combatFieldUI)
             return;
         if (args.CardUI == null)
@@ -89,7 +83,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.Instance.InvokeOnUndelcareAttacker(new UndeclareAttackerEventArgs(initiatorId, targetId, card));
     }
 
-    private void UndeclareDefender(object sender, CombatFieldCardSelectEventArgs args) {
+    private void UndeclareDefender(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         if (args.CombatFieldUI != this)
             return;
         if (args.CardUI == null)

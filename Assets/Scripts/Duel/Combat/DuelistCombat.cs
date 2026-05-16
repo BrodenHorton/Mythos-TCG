@@ -56,7 +56,7 @@ public class DuelistCombat {
 
     public CreatureCombat GetCreatureCombatByDefender(Guid defenderUuid) {
         foreach (CreatureCombat combat in creatureCombats) {
-            if (combat.Defender.Uuid == defenderUuid)
+            if (combat.Defender != null && combat.Defender.Uuid == defenderUuid)
                 return combat;
         }
 
@@ -74,7 +74,7 @@ public class DuelistCombat {
 
     public bool HasDefender(Guid defenderUuid) {
         foreach (CreatureCombat combat in creatureCombats) {
-            if (combat.Defender.Uuid == defenderUuid)
+            if (combat.Defender != null && combat.Defender.Uuid == defenderUuid)
                 return true;
         }
 

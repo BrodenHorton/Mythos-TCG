@@ -6,14 +6,9 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     [SerializeField] private Collider playableAreaCollider;
     [SerializeField] private GameObject playableAreaVisual;
 
-    private DuelStateManager stateManager;
-    private CombatStateManager combatStateManager;
     private Camera cam;
 
     private void Start() {
-        stateManager = ServiceLocator.Get<DuelStateManager>();
-        combatStateManager = ServiceLocator.Get<CombatStateManager>();
-
         cam = Camera.main;
         playableAreaVisual.SetActive(false);
 
@@ -21,20 +16,20 @@ public class CombatFieldPlayableArea : MonoBehaviour {
         EventBus.Instance.OnReleaseCardDragPlayingField += PlayCardOnReleaseDrag;
     }
 
-    private void ShowPlayableAreaVisual(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
+    private void ShowPlayableAreaVisual(object sender, PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(true);
     }
 
-    private void PlayCardOnReleaseDrag(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
+    private void PlayCardOnReleaseDrag(object sender, PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(false);
         if (IsHoveringCombatArea()) {
-            EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CreatureFieldCardEnteringCombatFieldEventArgs(combatFieldUI, args.CardUI));
+            EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CombatFieldCardEventArgs<CreatureFieldCardUI>(combatFieldUI, args.CardUI));
         }
     }
 
