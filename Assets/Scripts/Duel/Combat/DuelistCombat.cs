@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 
 public class DuelistCombat {
-    private MatchPlayer initiator;
-    private MatchPlayer target;
+    private ulong initiatorId;
+    private ulong targetId;
     private List<CreatureCombat> creatureCombats;
 
-    public DuelistCombat(MatchPlayer initiator, MatchPlayer target) {
-        this.initiator = initiator;
-        this.target = target;
+    public DuelistCombat(ulong initiatorId, ulong targetId) {
+        this.initiatorId = initiatorId;
+        this.targetId = targetId;
         creatureCombats = new List<CreatureCombat>();
     }
 
@@ -99,9 +99,9 @@ public class DuelistCombat {
         return result;
     }
 
-    public MatchPlayer Initiator { get { return initiator; } }
+    public ulong InitiatorId { get { return initiatorId; } }
 
-    public MatchPlayer Target { get { return target; } }
+    public ulong TargetId { get { return targetId; } }
 
     public List<CreatureCombat> CreatureCombats { get { return creatureCombats; } }
 }

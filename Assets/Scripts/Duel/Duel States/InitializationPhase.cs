@@ -13,12 +13,8 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find ActionManager object");
+        stateManager = ServiceLocator.Get<DuelStateManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
     }
 
     public void EnterState() {

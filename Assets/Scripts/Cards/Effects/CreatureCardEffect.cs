@@ -3,8 +3,8 @@ using Unity.Netcode;
 
 [Serializable]
 public abstract class CreatureCardEffect : INetworkSerializable {
-    protected CreatureCardEffectType effectType;
     protected Guid creatureCardUuid;
+    protected CreatureCardEffectType effectType;
 
     public CreatureCardEffect() { }
 

@@ -13,12 +13,8 @@ public class CombatPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find CombatStateManager object");
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        stateManager = ServiceLocator.Get<DuelStateManager>();
     }
 
     public void EnterState() {

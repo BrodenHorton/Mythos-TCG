@@ -2,10 +2,13 @@
 using UnityEngine;
 
 public class SpellChainUIController : MonoBehaviour {
-    [SerializeField] private SpellChainManager spellChainManager;
     [SerializeField] private SpellChainUI spellChainUI;
+    
+    private SpellChainManager spellChainManager;
 
     private void Start() {
+        spellChainManager = ServiceLocator.Get<SpellChainManager>();
+
         spellChainManager.OnSpellAddedToSpellChain += AddSpellToChain;
         spellChainManager.OnSpellRemovedFromSpellChain += RemoveSpellFromChain;
         spellChainManager.OnSpellChainFinished += ClearSpellChain;

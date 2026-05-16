@@ -12,12 +12,8 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
         if (!IsServer)
             return;
 
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find CombatStateManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (actionManager == null)
-            throw new Exception("Could not find ActionManager object");
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
     }
 
     public void EnterState() {

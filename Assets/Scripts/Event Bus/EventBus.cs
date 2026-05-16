@@ -60,9 +60,7 @@ public class EventBus : NetworkBehaviour {
     }
 
     private void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
     }
 
     #region Duelist UI Actions

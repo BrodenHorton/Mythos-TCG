@@ -11,12 +11,8 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     private Camera cam;
 
     private void Start() {
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find CombatStateManager object");
+        stateManager = ServiceLocator.Get<DuelStateManager>();
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
 
         cam = Camera.main;
         playableAreaVisual.SetActive(false);

@@ -14,15 +14,15 @@ public class ActionManager : NetworkBehaviour {
     private void Awake() {
         actionFocusPlayerIds = new List<ulong>();
         actionsByPlayerId = new Dictionary<ulong, Stack<DuelistAction>>();
+
+        ServiceLocator.Register(this);
     }
 
     private void Start() {
         if (!IsServer)
             return;
 
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
 
         duelManager.OnPlayersInitialization += InitializeActionManager;
         duelManager.OnNextPlayerTurn += (sender, args) => {

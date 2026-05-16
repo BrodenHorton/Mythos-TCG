@@ -2,11 +2,11 @@
     private int damage;
     private bool isCanceled;
 
-    public CreatureDamagedByCreatureEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCombat creatureCombat, int damage)
-        : this(initiator, target, creatureCombat.Attacker, creatureCombat.Defender, damage) { }
+    public CreatureDamagedByCreatureEventArgs(ulong initiatorId, ulong targetId, CreatureCombat creatureCombat, int damage)
+        : this(initiatorId, targetId, creatureCombat.Attacker, creatureCombat.Defender, damage) { }
 
-    public CreatureDamagedByCreatureEventArgs(MatchPlayer initiator,
-                                              MatchPlayer target,
+    public CreatureDamagedByCreatureEventArgs(ulong initiator,
+                                              ulong target,
                                               CreatureCard attacker,
                                               CreatureCard defender,
                                               int damage) : base(initiator, target, attacker, defender) {
@@ -17,5 +17,4 @@
     public int Damage { get { return damage; } set { damage = value; } }
 
     public bool IsCanceled { get { return isCanceled; } set { isCanceled = value; } }
-
 }

@@ -15,18 +15,16 @@ public class CombatStateManager : NetworkBehaviour {
 
     private void Awake() {
         currentState = outOfCombatState;
+
+        ServiceLocator.Register(this);
     }
 
     private void Start() {
         if (!IsServer)
             return;
 
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Unable to find GameObject with DuelManager component");
-        combatManager = FindFirstObjectByType<CombatManager>();
-        if (combatManager == null)
-            throw new Exception("Unable to find GameObject with CombatManager component");
+        duelManager = ServiceLocator.Get<DuelManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
     }
 
     private void Update() {

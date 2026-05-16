@@ -1,30 +1,29 @@
 ﻿using System;
 
 public class CreatureAttackEventArgs : EventArgs {
-    private MatchPlayer initiator;
-    private MatchPlayer target;
+    private ulong initiatorId;
+    private ulong targetId;
     private CreatureCard attacker;
     private CreatureCard defender;
 
-    public CreatureAttackEventArgs(MatchPlayer initiator, MatchPlayer target, CreatureCombat creatureCombat)
-        : this(initiator, target, creatureCombat.Attacker, creatureCombat.Defender) {}
+    public CreatureAttackEventArgs(ulong initiatorid, ulong targetId, CreatureCombat creatureCombat)
+        : this(initiatorid, targetId, creatureCombat.Attacker, creatureCombat.Defender) {}
 
-    public CreatureAttackEventArgs(MatchPlayer initiator,
-                                   MatchPlayer target,
+    public CreatureAttackEventArgs(ulong initiatorId,
+                                   ulong targetId,
                                    CreatureCard attacker,
                                    CreatureCard defender) {
-        this.initiator = initiator;
-        this.target = target;
+        this.initiatorId = initiatorId;
+        this.targetId = targetId;
         this.attacker = attacker;
         this.defender = defender;
     }
 
-    public MatchPlayer Initiator { get { return initiator; } }
+    public ulong InitiatorId { get { return initiatorId; } }
 
-    public MatchPlayer Target { get { return target; } }
+    public ulong TargetId { get { return targetId; } }
 
     public CreatureCard Attacker { get { return attacker; } }
 
     public CreatureCard Defender { get { return defender; } }
-
 }

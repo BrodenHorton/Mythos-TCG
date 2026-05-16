@@ -19,18 +19,16 @@ public class SpellChainManager : NetworkBehaviour {
         startingIndex = 0;
         currentIndex = 0;
         spellChain = new Stack<SpellCardAction>();
+
+        ServiceLocator.Register(this);
     }
 
     private void Start() {
         if (!IsServer)
             return;
 
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (actionManager == null)
-            throw new Exception("Could not find ActionManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
 
         EventBus.Instance.OnSpellChainCardPlayed += AddSpellToChain;
     }

@@ -11,15 +11,15 @@ public class CombatManager : NetworkBehaviour {
 
     private void Awake() {
         duelistCombats = new List<DuelistCombat>();
+
+        ServiceLocator.Register(this);
     }
 
     private void Start() {
         if (!IsServer)
             return;
 
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
 
         EventBus.Instance.OnDeclareAttacker += DeclareAttacker;
         EventBus.Instance.OnUndeclareAttacker += UndeclareAttacker;
@@ -31,30 +31,26 @@ public class CombatManager : NetworkBehaviour {
         if (!IsServer)
             return;
 
-        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
-        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
-        AddAttacker(initiator, target, args.Attacker);
+        AddAttacker(args.InitiatorId, args.TargetId, args.Attacker);
     }
 
     private void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
         if (!IsServer)
             return;
 
-        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
-        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
-        RemoveAttacker(initiator, target, args.Attacker.Uuid);
+        RemoveAttacker(args.InitiatorId, args.TargetId, args.Attacker.Uuid);
     }
 
-    public void AddAttacker(MatchPlayer initiator, MatchPlayer target, CreatureCard card) {
+    public void AddAttacker(ulong initiatorId, ulong targetId, CreatureCard card) {
         if (!IsServer)
             return;
 
-        if(HasExistingDuelistCombat(initiator, target)) {
-            DuelistCombat combat = GetDuelistCombat(initiator, target);
+        if(HasExistingDuelistCombat(initiatorId, targetId)) {
+            DuelistCombat combat = GetDuelistCombat(initiatorId, targetId);
             combat.AddAttacker(card);
         }
         else {
-            DuelistCombat combat = new DuelistCombat(initiator, target);
+            DuelistCombat combat = new DuelistCombat(initiatorId, targetId);
             combat.AddAttacker(card);
             InsertCombat(combat);
         }
@@ -64,48 +60,44 @@ public class CombatManager : NetworkBehaviour {
         if (!IsServer)
             return;
 
-        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
-        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
-        AddDefender(initiator, target, args.Attacker, args.Defender);
+        AddDefender(args.InitiatorId, args.TargetId, args.Attacker, args.Defender);
     }
 
     private void UndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
         if (!IsServer)
             return;
 
-        MatchPlayer initiator = duelManager.GetPlayerById(args.InitiatorId);
-        MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
-        RemoveDefender(initiator, target, args.Defender.Uuid);
+        RemoveDefender(args.InitiatorId, args.TargetId, args.Defender.Uuid);
     }
 
-    public void AddDefender(MatchPlayer initiator, MatchPlayer target, CreatureCard attacker, CreatureCard defender) {
+    public void AddDefender(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
         if (!IsServer)
             return;
-        if (!HasExistingDuelistCombat(initiator, target))
+        if (!HasExistingDuelistCombat(initiatorId, targetId))
             throw new Exception("Attempted to add a defender when there is no existing DuelistCombat between initiator and target");
 
-        GetDuelistCombat(initiator, target).AddDefender(attacker.Uuid, defender);
+        GetDuelistCombat(initiatorId, targetId).AddDefender(attacker.Uuid, defender);
     }
 
-    public void RemoveAttacker(MatchPlayer initiator, MatchPlayer target, Guid attackerUuid) {
+    public void RemoveAttacker(ulong initiatorId, ulong targetId, Guid attackerUuid) {
         if (!IsServer)
             return;
-        if (!HasExistingDuelistCombat(initiator, target))
+        if (!HasExistingDuelistCombat(initiatorId, targetId))
             throw new Exception("Attempted to remove an attacker when there is not a DuellistCombat between the initiator and target");
 
-        DuelistCombat combat = GetDuelistCombat(initiator, target);
+        DuelistCombat combat = GetDuelistCombat(initiatorId, targetId);
         combat.RemoveAttacker(attackerUuid);
         if(combat.CreatureCombats.Count == 0)
             duelistCombats.Remove(combat);
     }
 
-    public void RemoveDefender(MatchPlayer initiator, MatchPlayer target, Guid defenderUuid) {
+    public void RemoveDefender(ulong initiatorId, ulong targetId, Guid defenderUuid) {
         if (!IsServer)
             return;
-        if (!HasExistingDuelistCombat(initiator, target))
+        if (!HasExistingDuelistCombat(initiatorId, targetId))
             throw new Exception("Attempted to remove a defender when there is not a DuellistCombat between the initiator and target");
 
-        GetDuelistCombat(initiator, target).RemoveDefender(defenderUuid);
+        GetDuelistCombat(initiatorId, targetId).RemoveDefender(defenderUuid);
     }
 
     public void ProcessNextDuelistCombat() {
@@ -117,12 +109,14 @@ public class CombatManager : NetworkBehaviour {
         DuelistCombat duelistCombat = duelistCombats[0];
         for (int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
             CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
-            EventBus.Instance.InvokeOnCreatureAttack(new CreatureAttackEventArgs(duelistCombat.Initiator, duelistCombat.Target, creatureCombat));
-            if (creatureCombat.Defender == null)
-                duelistCombat.Target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
+            EventBus.Instance.InvokeOnCreatureAttack(new CreatureAttackEventArgs(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombat));
+            if (creatureCombat.Defender == null) {
+                MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
+                target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
+            }
             else {
-                CreatureDamagedByCreatureEventArgs args = new CreatureDamagedByCreatureEventArgs(duelistCombat.Initiator,
-                                                                                                 duelistCombat.Target,
+                CreatureDamagedByCreatureEventArgs args = new CreatureDamagedByCreatureEventArgs(duelistCombat.InitiatorId,
+                                                                                                 duelistCombat.TargetId,
                                                                                                  creatureCombat,
                                                                                                  creatureCombat.Attacker.GetAtk());
                 EventBus.Instance.InvokeOnCreatureDamagedByCreature(args);
@@ -131,8 +125,8 @@ public class CombatManager : NetworkBehaviour {
 
             }
         }
-        InvokeOnDuelistCombatFinsihedClientRpc(duelistCombat.Initiator.PlayerId,
-                                               duelistCombat.Target.PlayerId,
+        InvokeOnDuelistCombatFinsihedClientRpc(duelistCombat.InitiatorId,
+                                               duelistCombat.TargetId,
                                                duelistCombat.CreatureCombats.ToArray());
         duelistCombats.Remove(duelistCombat);
     }
@@ -142,18 +136,18 @@ public class CombatManager : NetworkBehaviour {
         OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(initiatorId, targetId, new List<CreatureCombat>(creatureCombats)));
     }
 
-    private bool HasExistingDuelistCombat(MatchPlayer initiator, MatchPlayer target) {
+    private bool HasExistingDuelistCombat(ulong initiatorId, ulong targetId) {
         foreach(DuelistCombat combat in duelistCombats) {
-            if (initiator == combat.Initiator && target == combat.Target)
+            if (combat.InitiatorId == initiatorId && combat.TargetId == targetId)
                 return true;
         }
 
         return false;
     }
 
-    private DuelistCombat GetDuelistCombat(MatchPlayer initiator, MatchPlayer target) {
+    private DuelistCombat GetDuelistCombat(ulong initiatorId, ulong targetId) {
         foreach (DuelistCombat combat in duelistCombats) {
-            if (initiator == combat.Initiator && target == combat.Target)
+            if (combat.InitiatorId == initiatorId && combat.TargetId == targetId)
                 return combat;
         }
 
@@ -161,9 +155,9 @@ public class CombatManager : NetworkBehaviour {
     }
 
     private void InsertCombat(DuelistCombat combat) {
-        int playerIndex = duelManager.GetPlayerIndex(combat.Initiator.PlayerId);
+        int playerIndex = duelManager.GetPlayerIndex(combat.InitiatorId);
         for(int i = 0; i < duelistCombats.Count; i++) {
-            if (playerIndex < duelManager.GetPlayerIndex(duelistCombats[i].Initiator.PlayerId)) {
+            if (playerIndex < duelManager.GetPlayerIndex(duelistCombats[i].InitiatorId)) {
                 duelistCombats[i] = combat;
                 return;
             }
@@ -179,8 +173,9 @@ public class CombatManager : NetworkBehaviour {
     public List<MatchPlayer> GetTargets() {
         List<MatchPlayer> targets = new List<MatchPlayer>();
         foreach(DuelistCombat combat in duelistCombats) {
-            if(!targets.Contains(combat.Target))
-                targets.Add(combat.Target);
+            MatchPlayer target = duelManager.GetPlayerById(combat.TargetId);
+            if (!targets.Contains(target))
+                targets.Add(target);
         }
 
         return targets;

@@ -13,18 +13,10 @@ public class PlayerUIController : DuelistUIController {
     private SpellChainManager spellChainManager;
 
     private void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (actionManager == null)
-            throw new Exception("Could not find ActionManager object");
-        spellChainManager = FindFirstObjectByType<SpellChainManager>();
-        if (spellChainManager == null)
-            throw new Exception("Could not find SpellChainManager object");
+        duelManager = ServiceLocator.Get<DuelManager>();
+        stateManager = ServiceLocator.Get<DuelStateManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
+        spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
         EventBus.Instance.OnPlayHandCard += PlayHandCard;
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;

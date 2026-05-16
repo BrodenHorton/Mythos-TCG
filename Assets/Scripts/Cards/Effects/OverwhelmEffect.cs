@@ -3,11 +3,13 @@ using Unity.Netcode;
 
 [Serializable]
 public class OverwhelmEffect : CreatureCardEffect {
+    private DuelManager duelManager;
 
     public OverwhelmEffect() : base() { }
 
     public OverwhelmEffect(OverwhelmEffect effect) : base() {
         effectType = CreatureCardEffectType.Overwhelm;
+        duelManager = ServiceLocator.Get<DuelManager>();
     }
 
     public override void Init(Guid creatureCardUuid) {
@@ -32,8 +34,10 @@ public class OverwhelmEffect : CreatureCardEffect {
         else if (args.Defender.GetHealth() < args.Damage)
             overwhelmDamage = args.Damage - args.Defender.GetHealth();
 
-        if (overwhelmDamage > 0)
-            args.Target.DamageLifePoints(overwhelmDamage);
+        if (overwhelmDamage > 0) {
+            MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
+            target.DamageLifePoints(overwhelmDamage);
+        }
     }
 
     public override CreatureCardEffect DeepCopy() {

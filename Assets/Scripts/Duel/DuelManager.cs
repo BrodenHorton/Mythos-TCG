@@ -20,6 +20,8 @@ public class DuelManager : NetworkBehaviour {
     private void Awake() {
         currentPlayerTurnIndex = 0;
         fullTurnCount = 1;
+
+        ServiceLocator.Register(this);
     }
 
     private void Start() {

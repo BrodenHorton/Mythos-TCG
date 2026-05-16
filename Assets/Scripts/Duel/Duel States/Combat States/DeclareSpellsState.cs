@@ -24,21 +24,11 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         if (!IsServer)
             return;
 
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find CombatStateManager object");
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        combatManager = FindFirstObjectByType<CombatManager>();
-        if (combatManager == null)
-            throw new Exception("Could not find CombatManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (actionManager == null)
-            throw new Exception("Could not find ActionManager object");
-        spellChainManager = FindFirstObjectByType<SpellChainManager>();
-        if (spellChainManager == null)
-            throw new Exception("Could not find SpellChainManager object");
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        duelManager = ServiceLocator.Get<DuelManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
+        spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
         spellChainManager.OnSpellChainFinished += SkipActionOnSpellChainFinished;
     }
@@ -50,8 +40,8 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
             throw new Exception("DeclareSpellsState entered when there are no duelist combats to process");
 
         duelistCombat = combatManager.DuelistCombats[0];
-        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Initiator));
-        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.Target));
+        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.InitiatorId));
+        declareSpellsPlayerIndices.Add(duelManager.GetPlayerIndex(duelistCombat.TargetId));
         AddNextSpellAction();
     }
 

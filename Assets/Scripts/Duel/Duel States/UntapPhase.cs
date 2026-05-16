@@ -8,9 +8,7 @@ public class UntapPhase : NetworkBehaviour, DuelState {
     private DuelStateManager stateManager;
 
     private void Start() {
-        stateManager = FindFirstObjectByType<DuelStateManager>();
-        if (stateManager == null)
-            throw new Exception("Could not find DuelStateManager object");
+        stateManager = ServiceLocator.Get<DuelStateManager>();
     }
 
     public void EnterState() {

@@ -4,16 +4,10 @@ using UnityEngine;
 public class ActionButtonUIController : MonoBehaviour {
     [SerializeField] private ActionButtonUI actionButtonUI;
 
-    private DuelManager duelManager;
     private ActionManager actionManager;
 
     private void Start() {
-        duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        actionManager = FindFirstObjectByType<ActionManager>();
-        if (actionManager == null)
-            throw new Exception("Could not find ActionManager object");
+        actionManager = ServiceLocator.Get<ActionManager>();
 
         actionButtonUI.OnActionButtonPressed += ExecuteAction;
         actionManager.OnActionStateChanged += UpdateActionButton;

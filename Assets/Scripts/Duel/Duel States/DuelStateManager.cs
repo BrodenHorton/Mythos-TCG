@@ -17,15 +17,15 @@ public class DuelStateManager : NetworkBehaviour {
 
     private void Awake() {
         currentState = initializationPhase;
+
+        ServiceLocator.Register(this);
     }
 
     private void Start() {
         if (!IsServer)
             return;
-        
-        duelManager = GetComponent<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("DuelManager not found on GameObject");
+
+        duelManager = ServiceLocator.Get<DuelManager>();
 
         DuelManager.OnPlayersInitializationFinished += StartStateMachine;
     }

@@ -7,12 +7,8 @@ public class ProcessCombatState : NetworkBehaviour, CombatState {
     private CombatManager combatManager;
 
     private void Start() {
-        combatStateManager = FindFirstObjectByType<CombatStateManager>();
-        if (combatStateManager == null)
-            throw new Exception("Could not find CombatStateManager object");
-        combatManager = FindFirstObjectByType<CombatManager>();
-        if (combatManager == null)
-            throw new Exception("Could not find CombatManager object");
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
     }
 
     public void EnterState() {
