@@ -36,8 +36,7 @@ public class PlayerUIController : DuelistUIController {
                 SetSelectableCardsServerRpc();
         };
         actionManager.OnActionStateChanged += (sender, args) => {
-            if (args.HasActionFocus)
-                SetSelectableCardsServerRpc();
+            SetSelectableCardsServerRpc();
         };
         spellChainManager.OnSpellChainFinished += (sender, args) => {
             SetSelectableCardsServerRpc();
@@ -76,7 +75,7 @@ public class PlayerUIController : DuelistUIController {
     private void SetSelectableCardsServerRpc(RpcParams rpcParams = default) {
         ulong clientPlayerId = rpcParams.Receive.SenderClientId;
         FixedString128Bytes[] selectableCardUuidStrs;
-        if (duelManager.GetCurrentPlayerTurn().PlayerId == clientPlayerId) {
+        if (actionManager.ActionFocusPlayerIds.Contains(clientPlayerId)) {
             List<Guid> selectableCardGuids = GetSelectableCardGuids(clientPlayerId);
             selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
             for (int i = 0; i < selectableCardGuids.Count; i++)

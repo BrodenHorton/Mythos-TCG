@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Netcode;
 
 [Serializable]
 public class MatchPlayer {
@@ -35,7 +34,6 @@ public class MatchPlayer {
             throw new Exception("Attempting to draw a card when the player has no cards in their deck");
 
         Card card = deck[deck.Count - 1];
-        TcgLogger.Log("Player " + playerId + " has draw card with uuid: " + card.Uuid);
         hand.Add(card);
         deck.RemoveAt(deck.Count - 1);
         EventBus.Instance.InvokeOnCardDrawn(playerId, card);

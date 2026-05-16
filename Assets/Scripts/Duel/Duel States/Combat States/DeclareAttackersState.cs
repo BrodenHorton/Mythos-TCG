@@ -37,7 +37,7 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
     }
 
     [Rpc(SendTo.Server)]
-    private void SwitchToDeclareDefendersServerRpc() {
+    private void SwitchToDeclareDefendersServerRpc(ulong _) {
         combatStateManager.SwitchState(combatStateManager.DeclareDefendersState);
     }
 

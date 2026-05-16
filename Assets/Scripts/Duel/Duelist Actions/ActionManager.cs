@@ -39,7 +39,7 @@ public class ActionManager : NetworkBehaviour {
             actionsByPlayerId.Add(args.PlayerOrder[i], new Stack<DuelistAction>());
     }
 
-    public void AddAction(ulong playerId, Action callback, string activeActionMessage, string inactiveActionMessage) {
+    public void AddAction(ulong playerId, Action<ulong> callback, string activeActionMessage, string inactiveActionMessage) {
         if (!IsServer)
             return;
 

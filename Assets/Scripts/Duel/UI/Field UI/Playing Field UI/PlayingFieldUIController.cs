@@ -7,6 +7,7 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
     protected DuelManager duelManager;
     protected DuelStateManager stateManager;
     protected CombatStateManager combatStateManager;
+    protected ActionManager actionManager;
 
     protected virtual void Start() {
         duelManager = FindFirstObjectByType<DuelManager>();
@@ -18,6 +19,9 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
         combatStateManager = FindFirstObjectByType<CombatStateManager>();
         if (combatStateManager == null)
             throw new Exception("Could not find DuelStateManager object");
+        actionManager = FindFirstObjectByType<ActionManager>();
+        if (actionManager == null)
+            throw new Exception("Could not find ActionManager object");
     }
 
     public abstract void Init(ulong playerId);

@@ -35,7 +35,7 @@ public class FirstMainPhase : NetworkBehaviour, DuelState {
     }
 
     [Rpc(SendTo.Server)]
-    private void SwitchToCombatPhaseServerRpc() {
+    private void SwitchToCombatPhaseServerRpc(ulong _) {
         stateManager.SwitchState(stateManager.CombatPhase);
     }
 

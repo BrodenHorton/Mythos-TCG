@@ -71,12 +71,16 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
             return;
         if (!ContainsCreature(cardUI))
             return;
+        if (!cardUI.IsSelectable)
+            return;
 
         FieldCardDragEventArgs<CreatureFieldCardUI> args = new FieldCardDragEventArgs<CreatureFieldCardUI>(this, cardUI);
         EventBus.Instance.InvokeOnStartCardDragPlayingField(args);
         isDragging = true;
         draggingCard = cardUI;
-        draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, draggingCard.transform.position.y + dragOffset, draggingCard.transform.position.z);
+        draggingCard.transform.position = new Vector3(draggingCard.transform.position.x,
+                                                      draggingCard.transform.position.y + dragOffset,
+                                                      draggingCard.transform.position.z);
     }
 
     private void ReleaseCardDrag(InputAction.CallbackContext context) {

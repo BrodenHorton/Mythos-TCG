@@ -67,13 +67,10 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
         OnStartDeclareDefenders?.Invoke(this, playerId);
     }
 
-    private void PlayerReadyUp() {
-        PlayerReadyUpServerRpc();
-    }
+    private void PlayerReadyUp(ulong playerId) {
+        if (!IsServer)
+            return;
 
-    [Rpc(SendTo.Server)]
-    private void PlayerReadyUpServerRpc(RpcParams rpcParams = default) {
-        ulong playerId = rpcParams.Receive.SenderClientId;
         actionManager.RemoveActionFocusId(playerId);
         readyPlayers.Add(playerId);
         TcgLogger.Log("Player " + playerId + " has readied up");

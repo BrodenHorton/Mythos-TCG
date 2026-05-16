@@ -16,7 +16,7 @@ public class PassSpellChainDuelistAction : DuelistAction {
     }
 
     private void ReomveAction(object sender, PlayerEventArgs args) {
-        if (args.PlayerId != args.PlayerId)
+        if (args.PlayerId != playerId)
             return;
 
         InvokeOnRemoveAction();

@@ -1,9 +1,9 @@
 ﻿using System;
 
 public class SimpleDuelistAction : DuelistAction {
-    private Action callback;
+    private Action<ulong> callback;
 
-    public SimpleDuelistAction(ulong playerId, Action callback, string activeActionMessage, string inactiveActionMessage) {
+    public SimpleDuelistAction(ulong playerId, Action<ulong> callback, string activeActionMessage, string inactiveActionMessage) {
         this.playerId = playerId;
         this.callback = callback;
         this.activeActionMessage = activeActionMessage;
@@ -11,6 +11,6 @@ public class SimpleDuelistAction : DuelistAction {
     }
 
     public override void Execute() {
-        callback?.Invoke();
+        callback?.Invoke(playerId);
     }
 }

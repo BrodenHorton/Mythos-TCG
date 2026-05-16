@@ -9,9 +9,13 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     protected override void Start() {
         base.Start();
-        stateManager.CombatPhase.OnCombatPhase += EnableSelectableCards;
+        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += SetSelectableCards;
+        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += SetSelectableCards;
         EventBus.Instance.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
         EventBus.Instance.OnSelectAttackerToDefend += DeclareDefender;
+        actionManager.OnActionStateChanged += (sender, args) => {
+            SetSelectableCardsServerRpc();
+        };
     }
 
     public override void Init(ulong playerId) {
@@ -43,26 +47,32 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.UntapCreature(card);
     }
 
-    private void EnableSelectableCards(object sender, ulong playerId) {
+    private void SetSelectableCards(object sender, ulong playerId) {
         if (this.playerId != playerId)
             return;
 
-        EnableSelectableCardsServerRpc();
+        SetSelectableCardsServerRpc();
     }
 
     [Rpc(SendTo.Server)]
-    private void EnableSelectableCardsServerRpc(RpcParams rpcParams = default) {
-        List<Guid> selectableCardGuids = GetSelectableCardGuids(rpcParams.Receive.SenderClientId);
-        FixedString128Bytes[] selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
-        for (int i = 0; i < selectableCardGuids.Count; i++)
-            selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
+    private void SetSelectableCardsServerRpc(RpcParams rpcParams = default) {
+        ulong clientPlayerId = rpcParams.Receive.SenderClientId;
+        FixedString128Bytes[] selectableCardUuidStrs;
+        if (actionManager.ActionFocusPlayerIds.Contains(clientPlayerId)) {
+            List<Guid> selectableCardGuids = GetSelectableCardGuids(clientPlayerId);
+            selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
+            for (int i = 0; i < selectableCardGuids.Count; i++)
+                selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
+        }
+        else
+            selectableCardUuidStrs = new FixedString128Bytes[0];
 
-        BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
-        EnableSelectableCardsClientRpc(selectableCardUuidStrs, target);
+        BaseRpcTarget target = RpcTarget.Single(clientPlayerId, RpcTargetUse.Temp);
+        SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void EnableSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
+    private void SetSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
         playingFieldUI.SetCardSelectableAll(false);
         for (int i = 0; i < selectableCardUuidStrs.Length; i++) {
             Guid selectableCardUuid = Guid.Parse(selectableCardUuidStrs[i].ToString());
@@ -127,7 +137,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
         if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return;
-        if (initiator.ContainsCreatureUuid(cardUuid))
+        if (!initiator.ContainsCreatureUuid(cardUuid))
             return;
         CreatureCard creatureCard = initiator.GetCreatureByUuid(cardUuid);
         if (creatureCard == null)

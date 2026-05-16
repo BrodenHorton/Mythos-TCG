@@ -26,8 +26,6 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     }
 
     private void ShowPlayableAreaVisual(object sender, FieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (!combatStateManager.CurrentState.CanDeclareAttackers())
-            return;
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
 
@@ -35,14 +33,13 @@ public class CombatFieldPlayableArea : MonoBehaviour {
     }
 
     private void PlayCardOnReleaseDrag(object sender, ReleaseFieldCardDragEventArgs<CreatureFieldCardUI> args) {
-        if (!combatStateManager.CurrentState.CanDeclareAttackers())
-            return;
         if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(false);
-        if (IsHoveringCombatArea())
+        if (IsHoveringCombatArea()) {
             EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CreatureFieldCardEnteringCombatFieldEventArgs(combatFieldUI, args.CardUI));
+        }
     }
 
     private bool IsHoveringCombatArea() {
