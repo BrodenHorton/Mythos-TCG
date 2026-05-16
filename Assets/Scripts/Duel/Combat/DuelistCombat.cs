@@ -13,68 +13,68 @@ public class DuelistCombat {
     }
 
     public void AddAttacker(CreatureCard attacker) {
-        if (HasAttacker(attacker))
+        if (HasAttacker(attacker.Uuid))
             throw new Exception("Attempted to add an attacker that is already in combat");
 
         creatureCombats.Add(new CreatureCombat(attacker));
     }
 
-    public void AddDefender(CreatureCard attacker, CreatureCard defender) {
-        if (!HasAttacker(attacker))
+    public void AddDefender(Guid attackerUuid, CreatureCard defender) {
+        if (!HasAttacker(attackerUuid))
             throw new Exception("Attempted to add a defender to an attacker that is not in combat");
-        if (HasDefender(defender))
+        if (HasDefender(defender.Uuid))
             throw new Exception("Attempted to add a defender that is already in combat");
-        CreatureCombat combat = GetCreatureCombatByAttacker(attacker);
+        CreatureCombat combat = GetCreatureCombatByAttacker(attackerUuid);
         if(combat.Defender != null)
             throw new Exception("Attempted to add a defender to a combat that already has a defender");
 
         combat.Defender = defender;
     }
 
-    public void RemoveAttacker(CreatureCard attacker) {
-        if(!HasAttacker(attacker))
+    public void RemoveAttacker(Guid attackerUuid) {
+        if(!HasAttacker(attackerUuid))
             throw new Exception("No attacker found to remove in CreatureCombat");
 
-        creatureCombats.Remove(GetCreatureCombatByAttacker(attacker));
+        creatureCombats.Remove(GetCreatureCombatByAttacker(attackerUuid));
     }
 
-    public void RemoveDefender(CreatureCard defender) {
-        if(!HasDefender(defender))
+    public void RemoveDefender(Guid defenderUuid) {
+        if(!HasDefender(defenderUuid))
             throw new Exception("No defender found to remove in CreatureCombat");
 
-        GetCreatureCombatByDefender(defender).Defender = null;
+        GetCreatureCombatByDefender(defenderUuid).Defender = null;
     }
 
-    public CreatureCombat GetCreatureCombatByAttacker(CreatureCard attacker) {
+    public CreatureCombat GetCreatureCombatByAttacker(Guid attackerUuid) {
         foreach (CreatureCombat combat in creatureCombats) {
-            if (attacker == combat.Attacker)
+            if (combat.Attacker.Uuid == attackerUuid)
                 return combat;
         }
 
         return null;
     }
 
-    public CreatureCombat GetCreatureCombatByDefender(CreatureCard defender) {
+    public CreatureCombat GetCreatureCombatByDefender(Guid defenderUuid) {
         foreach (CreatureCombat combat in creatureCombats) {
-            if (defender == combat.Defender)
+            if (combat.Defender.Uuid == defenderUuid)
                 return combat;
         }
 
         return null;
     }
 
-    public bool HasAttacker(CreatureCard attacker) {
+    public bool HasAttacker(Guid attackerUuid) {
         foreach(CreatureCombat combat in creatureCombats) {
-            if (attacker == combat.Attacker)
+            if (combat.Attacker.Uuid == attackerUuid)
                 return true;
         }
 
         return false;
     }
 
-    public bool HasDefender(CreatureCard defender) {
+    public bool HasDefender(Guid defenderUuid) {
         foreach (CreatureCombat combat in creatureCombats) {
-            if (defender == combat.Defender)
+            if (combat.Defender.Uuid == defenderUuid)
                 return true;
         }
 

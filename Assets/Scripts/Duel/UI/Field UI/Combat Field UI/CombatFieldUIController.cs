@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -60,7 +61,7 @@ public class CombatFieldUIController : NetworkBehaviour {
     }
 
     private void UndeclareAttacker(object sender, CombatFieldCardSelectEventArgs args) {
-        if (args.CombatFieldUI != this)
+        if (args.CombatFieldUI != combatFieldUI)
             return;
         if (args.CardUI == null)
             return;
@@ -119,9 +120,9 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.Instance.InvokeOnUndeclareDefender(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
     }
 
-    public void ReleaseCreatureCards(DuelistCombat combat) {
-        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(combat.Initiator.PlayerId, combatFieldUI.Attackers));
-        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(combat.Target.PlayerId, combatFieldUI.Defenders));
+    public void ReleaseCreatureCards(ulong initiatorId, ulong targetId) {
+        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(initiatorId, combatFieldUI.Attackers));
+        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(targetId, combatFieldUI.Defenders));
         combatFieldUI.ClearCreatures();
     }
 

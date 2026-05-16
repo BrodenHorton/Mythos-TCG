@@ -95,9 +95,9 @@ public class CombatFieldUIManager : NetworkBehaviour {
     }
 
     private void ReleaseCreatureCards(object sender, DuelistCombatEventArgs args) {
-        if (controllerByPlayerId[args.Combat.Target.PlayerId] == null)
-            throw new Exception("Unable to find combat field UI controller with player Id: " + args.Combat.Target.PlayerId);
+        if (controllerByPlayerId[args.TargetId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.TargetId);
 
-        controllerByPlayerId[args.Combat.Target.PlayerId].ReleaseCreatureCards(args.Combat);
+        controllerByPlayerId[args.TargetId].ReleaseCreatureCards(args.InitiatorId, args.TargetId);
     }
 }
