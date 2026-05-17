@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using static UnityEngine.GraphicsBuffer;
 
 public class CombatManager : NetworkBehaviour {
     public event EventHandler<DuelistCombatEventArgs> OnDuelistCombatFinsihed;
@@ -136,6 +137,18 @@ public class CombatManager : NetworkBehaviour {
         OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(initiatorId, targetId, new List<CreatureCombat>(creatureCombats)));
     }
 
+    private void InsertCombat(DuelistCombat combat) {
+        int playerIndex = duelManager.GetPlayerIndex(combat.InitiatorId);
+        for (int i = 0; i < duelistCombats.Count; i++) {
+            if (playerIndex < duelManager.GetPlayerIndex(duelistCombats[i].InitiatorId)) {
+                duelistCombats[i] = combat;
+                return;
+            }
+        }
+
+        duelistCombats.Add(combat);
+    }
+
     private bool HasExistingDuelistCombat(ulong initiatorId, ulong targetId) {
         foreach(DuelistCombat combat in duelistCombats) {
             if (combat.InitiatorId == initiatorId && combat.TargetId == targetId)
@@ -154,18 +167,6 @@ public class CombatManager : NetworkBehaviour {
         return null;
     }
 
-    private void InsertCombat(DuelistCombat combat) {
-        int playerIndex = duelManager.GetPlayerIndex(combat.InitiatorId);
-        for(int i = 0; i < duelistCombats.Count; i++) {
-            if (playerIndex < duelManager.GetPlayerIndex(duelistCombats[i].InitiatorId)) {
-                duelistCombats[i] = combat;
-                return;
-            }
-        }
-
-        duelistCombats.Add(combat);
-    }
-
     public void ClearCombats() {
         duelistCombats.Clear();
     }
@@ -179,6 +180,17 @@ public class CombatManager : NetworkBehaviour {
         }
 
         return targets;
+    }
+
+    public bool IsCreatureInCombat(Guid creatureUuid) {
+        foreach (DuelistCombat duelistCombat in duelistCombats) {
+            foreach (CreatureCombat creatureCombat in duelistCombat.CreatureCombats) {
+                if (creatureCombat.Attacker.Uuid == creatureUuid || (creatureCombat.Defender != null && creatureCombat.Defender.Uuid == creatureUuid))
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     public List<DuelistCombat> DuelistCombats { get { return duelistCombats; } }

@@ -7,12 +7,14 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
     protected DuelManager duelManager;
     protected DuelStateManager stateManager;
     protected CombatStateManager combatStateManager;
+    protected CombatManager combatManager;
     protected ActionManager actionManager;
 
     protected virtual void Start() {
         duelManager = ServiceLocator.Get<DuelManager>();
         stateManager = ServiceLocator.Get<DuelStateManager>();
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
         actionManager = ServiceLocator.Get<ActionManager>();
     }
 

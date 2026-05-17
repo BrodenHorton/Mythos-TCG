@@ -75,16 +75,17 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (creatureCard == null)
             return;
 
-        InvokeOnUndeclareAttackerClientRpc(initiator.PlayerId, targetId, creatureCard);
+        EventBus.Instance.InvokeOnUndelcareAttacker(new UndeclareAttackerEventArgs(initiator.PlayerId, targetId, creatureCard));
+        InvokeOnUndeclareAttackerFinishedClientRpc(initiator.PlayerId, targetId, creatureCard);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnUndeclareAttackerClientRpc(ulong initiatorId, ulong targetId, CreatureCard card) {
-        EventBus.Instance.InvokeOnUndelcareAttacker(new UndeclareAttackerEventArgs(initiatorId, targetId, card));
+    private void InvokeOnUndeclareAttackerFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCard card) {
+        EventBus.Instance.InvokeOnUndelcareAttackerFinished(new UndeclareAttackerEventArgs(initiatorId, targetId, card));
     }
 
     private void UndeclareDefender(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
-        if (args.CombatFieldUI != this)
+        if (args.CombatFieldUI != combatFieldUI)
             return;
         if (args.CardUI == null)
             return;
@@ -106,12 +107,14 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (defender == null)
             return;
 
-        InvokeOnUndeclareDefenderClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId, targetId, defender);
+        ulong initiatorId = duelManager.GetCurrentPlayerTurn().PlayerId;
+        EventBus.Instance.InvokeOnUndeclareDefender(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
+        InvokeOnUndeclareDefenderFinishedClientRpc(initiatorId, targetId, defender);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnUndeclareDefenderClientRpc(ulong initiatorId, ulong targetId, CreatureCard defender) {
-        EventBus.Instance.InvokeOnUndeclareDefender(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
+    private void InvokeOnUndeclareDefenderFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCard defender) {
+        EventBus.Instance.InvokeOnUndeclareDefenderFinished(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
     }
 
     public void ReleaseCreatureCards(ulong initiatorId, ulong targetId) {

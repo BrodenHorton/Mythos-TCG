@@ -32,7 +32,9 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
     public event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
     public event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
+    public event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttackerFinished;
     public event EventHandler<UndeclareDefenderEventArgs> OnUndeclareDefender;
+    public event EventHandler<UndeclareDefenderEventArgs> OnUndeclareDefenderFinished;
     public event EventHandler<SelectAttackerToDefendEventArgs> OnSelectAttackerToDefend;
     // Combat
     public event EventHandler<CreatureAttackEventArgs> OnCreatureAttack;
@@ -246,11 +248,25 @@ public class EventBus : NetworkBehaviour {
     }
 
     public void InvokeOnUndelcareAttacker(UndeclareAttackerEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnUnDeclareAttacker can only be called by the server");
+
         OnUndeclareAttacker?.Invoke(this, args);
     }
 
+    public void InvokeOnUndelcareAttackerFinished(UndeclareAttackerEventArgs args) {
+        OnUndeclareAttackerFinished?.Invoke(this, args);
+    }
+
     public void InvokeOnUndeclareDefender(UndeclareDefenderEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnUnDeclareDefender can only be called by the server");
+
         OnUndeclareDefender?.Invoke(this, args);
+    }
+
+    public void InvokeOnUndeclareDefenderFinished(UndeclareDefenderEventArgs args) {
+        OnUndeclareDefenderFinished?.Invoke(this, args);
     }
     #endregion
 

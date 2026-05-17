@@ -19,8 +19,8 @@ public class CombatFieldUIManager : NetworkBehaviour {
         duelManager.OnPlayersInitialization += Init;
         EventBus.Instance.OnDeclareAttacker += AddAttacker;
         EventBus.Instance.OnDeclareDefender += AddDefender;
-        EventBus.Instance.OnUndeclareAttacker += RemoveAttacker;
-        EventBus.Instance.OnUndeclareDefender += RemoveDefender;
+        EventBus.Instance.OnUndeclareAttackerFinished += RemoveAttacker;
+        EventBus.Instance.OnUndeclareDefenderFinished += RemoveDefender;
         EventBus.Instance.OnCreatureDamaged += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureHealthChanged += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDestroyed += DestroyCreature;

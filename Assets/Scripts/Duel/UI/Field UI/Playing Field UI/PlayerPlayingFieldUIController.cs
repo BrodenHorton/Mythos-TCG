@@ -25,10 +25,12 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     public override void PlayCreatureCard(CreatureCard card) {
         playingFieldUI.PlayCreatureCard(card);
+        SetSelectableCardsServerRpc();
     }
 
     public override void PlayDomainCard(DomainCard card) {
         playingFieldUI.PlayDomainCard(card);
+        SetSelectableCardsServerRpc();
     }
 
     public override void RemoveCreature(CreatureCard card) {
@@ -108,6 +110,8 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return false;
         if (!player.ContainsCreatureUuid(card.Uuid))
             return false;
+        if(combatManager.IsCreatureInCombat(card.Uuid))
+            return false;
         if (!card.CanAttack())
             return false;
 
@@ -120,6 +124,8 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return false;
         if (!player.ContainsCreatureUuid(card.Uuid))
+            return false;
+        if (combatManager.IsCreatureInCombat(card.Uuid))
             return false;
         if (!card.CanDefend())
             return false;
@@ -154,12 +160,13 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
-        DeclareDefenderServerRpc(duelManager.GetCurrentPlayerTurn().PlayerId, args.CombatFieldUI.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
+        TcgLogger.Log("DeclareDefender Entered");
+        DeclareDefenderServerRpc(args.CombatFieldUI.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
     }
 
     [Rpc(SendTo.Server)]
-    private void DeclareDefenderServerRpc(ulong initiatorId, ulong targetId, FixedString128Bytes attackerUuidStr, FixedString128Bytes defenderUuidStr) {
-        MatchPlayer initiator = duelManager.GetPlayerById(initiatorId);
+    private void DeclareDefenderServerRpc(ulong targetId, FixedString128Bytes attackerUuidStr, FixedString128Bytes defenderUuidStr) {
+        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
         MatchPlayer target = duelManager.GetPlayerById(targetId);
         Guid attackerUuid = Guid.Parse(attackerUuidStr.ToString());
         Guid defenderUuid = Guid.Parse(defenderUuidStr.ToString());
@@ -178,7 +185,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (attacker == null)
             return;
 
-        InvokeOnDeclareDefenderClientRpc(initiatorId, targetId, attacker, defender);
+        InvokeOnDeclareDefenderClientRpc(initiator.PlayerId, targetId, attacker, defender);
     }
 
     [Rpc(SendTo.ClientsAndHost)]

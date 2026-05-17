@@ -20,8 +20,8 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnCreatureUntapped += UntapCreature;
         EventBus.Instance.OnDeclareAttacker += RemoveAttacker;
         EventBus.Instance.OnDeclareDefender += RemoveDefender;
-        EventBus.Instance.OnUndeclareAttacker += UndeclareAttacker;
-        EventBus.Instance.OnUndeclareDefender += UndeclareDefender;
+        EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
+        EventBus.Instance.OnUndeclareDefenderFinished += UndeclareDefender;
         EventBus.Instance.OnCreatureDamaged += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureHealthChanged += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDestroyed += DestroyCreature;
