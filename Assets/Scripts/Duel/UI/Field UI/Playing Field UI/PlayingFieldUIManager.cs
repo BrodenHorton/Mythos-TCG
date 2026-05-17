@@ -23,7 +23,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += UndeclareDefender;
         EventBus.Instance.OnCreatureDamaged += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureHealthChanged += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureHealed += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDestroyed += DestroyCreature;
         EventBus.Instance.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }

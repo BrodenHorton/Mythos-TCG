@@ -27,7 +27,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Creature Status Changes
-    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealthChanged;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealed;
     // Declaring and Undeclaring creatures
     public event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
     public event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
@@ -161,11 +161,15 @@ public class EventBus : NetworkBehaviour {
         if (!IsServer)
             return;
 
+        TcgLogger.Log("Before event is creature card callback null: " + (card.CreatureDamagedCallback == null));
         InvokeOnCreatureCardPlayedFromHandClientRpc(playerId, card);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
+    [Rpc(SendTo.ClientsAndHost, DeferLocal = false)]
     private void InvokeOnCreatureCardPlayedFromHandClientRpc(ulong playerId, CreatureCard card) {
+        if(IsServer)
+            TcgLogger.Log("After event is creature card callback null: " + (card.CreatureDamagedCallback == null));
+
         PlayCardFromHandEventArgs<CreatureCard> args = new PlayCardFromHandEventArgs<CreatureCard>(playerId, card);
         OnCreatureCardPlayedFromHand?.Invoke(this, args);
     }
@@ -232,12 +236,6 @@ public class EventBus : NetworkBehaviour {
     }
     #endregion
 
-    #region Creature Status Changes
-    public void InvokeOnCreatureHealthChanged(PlayerCardEventArgs<CreatureCard> args) {
-        OnCreatureHealthChanged?.Invoke(this, args);
-    }
-    #endregion
-
     #region Declaring and Undeclaring Creatures
     public void InvokeOnDeclareAttacker(DeclareAttackerEventArgs args) {
         OnDeclareAttacker?.Invoke(this, args);
@@ -275,15 +273,46 @@ public class EventBus : NetworkBehaviour {
         OnCreatureAttack?.Invoke(this, args);
     }
 
+    public void InvokeOnCreatureHealed(ulong playerId, CreatureCard card) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureHealed can only be invoked by the server");
+
+        InvokeOnCreatureHealedClientRpc(playerId, card);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnCreatureHealedClientRpc(ulong playerId, CreatureCard card) {
+        PlayerCardEventArgs<CreatureCard> args = new PlayerCardEventArgs<CreatureCard>(playerId, card);
+        OnCreatureHealed?.Invoke(this, args);
+    }
+
     public void InvokeOnCreatureDamagedByCreature(CreatureDamagedByCreatureEventArgs args) {
         OnCreatureDamagedByCreature?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureDamaged(PlayerCardEventArgs<CreatureCard> args) {
+    public void InvokeOnCreatureDamaged(ulong playerId, CreatureCard card) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureDamaged can only be invoked by the server");
+
+        InvokeOnCreatureDamagedClientRpc(playerId, card);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnCreatureDamagedClientRpc(ulong playerId, CreatureCard card) {
+        PlayerCardEventArgs<CreatureCard> args = new PlayerCardEventArgs<CreatureCard>(playerId, card);
         OnCreatureDamaged?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureDestroyed(PlayerCardEventArgs<CreatureCard> args) {
+    public void InvokeOnCreatureDestroyed(ulong playerId, CreatureCard card) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureDestroyed can only be invoked by the server");
+
+        InvokeOnCreatureDestroyedClientRpc(playerId, card);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnCreatureDestroyedClientRpc(ulong playerId, CreatureCard card) {
+        PlayerCardEventArgs<CreatureCard> args = new PlayerCardEventArgs<CreatureCard>(playerId, card);
         OnCreatureDestroyed?.Invoke(this, args);
     }
 

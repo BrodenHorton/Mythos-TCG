@@ -90,9 +90,6 @@ public class DuelManager : NetworkBehaviour {
             return;
 
         MatchPlayer player = GetPlayerById(args.PlayerId);
-        args.Card.CreatureHealthChangedCallback = player.OnCreatureHealthChangedCallback;
-        args.Card.CreatureDamagedCallback = player.OnCreatureDamagedCallback;
-        args.Card.CreatureDestroyedCallback = player.OnCreatureDestroyCallback;
         player.PlayCreatureCardFromHand(args.Card);
     }
     

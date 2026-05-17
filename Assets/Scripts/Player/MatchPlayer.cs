@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static UnityEngine.Rendering.GPUSort;
 
 [Serializable]
 public class MatchPlayer {
@@ -44,6 +45,10 @@ public class MatchPlayer {
         RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
         creatures.Add(card);
+        TcgLogger.Log("Creature Callbacks set");
+        card.CreatureHealthChangedCallback = OnCreatureHealthChangedCallback;
+        card.CreatureDamagedCallback = OnCreatureDamagedCallback;
+        card.CreatureDestroyedCallback = OnCreatureDestroyCallback;
         EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(playerId, card);
     }
 
@@ -126,15 +131,16 @@ public class MatchPlayer {
     }
 
     public void OnCreatureHealthChangedCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureHealthChanged(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        EventBus.Instance.InvokeOnCreatureHealed(playerId, card);
     }
 
     public void OnCreatureDamagedCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        TcgLogger.Log("MatchPlayer OnCreatureDamagedCallback called");
+        EventBus.Instance.InvokeOnCreatureDamaged(playerId, card);
     }
 
     public void OnCreatureDestroyCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureDestroyed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        EventBus.Instance.InvokeOnCreatureDestroyed(playerId, card);
         creatures.Remove(card);
     }
 

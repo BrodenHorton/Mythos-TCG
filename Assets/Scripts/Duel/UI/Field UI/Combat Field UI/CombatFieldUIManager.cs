@@ -22,7 +22,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnUndeclareAttackerFinished += RemoveAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += RemoveDefender;
         EventBus.Instance.OnCreatureDamaged += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureHealthChanged += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureHealed += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDestroyed += DestroyCreature;
         combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
     }

@@ -2,6 +2,7 @@
 using Unity.Netcode;
 
 public struct CardNetworkContainer : INetworkSerializable {
+    // Should be a deep copy so the original object doesn't get changed during serialization
     public Card card;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
