@@ -44,5 +44,9 @@ public class OverwhelmEffect : CreatureCardEffect {
         return new OverwhelmEffect(this);
     }
 
+    public override CreatureCardEffectPayload GetEffectPayload() {
+        return new OverwhelmEffectPayload(this);
+    }
+
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

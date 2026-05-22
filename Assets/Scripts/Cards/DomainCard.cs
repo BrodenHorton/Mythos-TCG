@@ -43,7 +43,11 @@ public class DomainCard : Card {
         return cardBase.ManaCost;
     }
 
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+    public override CardPayload GetCardPayload() {
+        return new DomainCardPayload(this);
+    }
+
+    /*public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         FixedString128Bytes uuidStr = serializer.IsWriter ? new FixedString128Bytes(uuid.ToString()) : new FixedString128Bytes();
         serializer.SerializeValue(ref uuidStr);
         if(serializer.IsReader)
@@ -53,7 +57,9 @@ public class DomainCard : Card {
         serializer.SerializeValue(ref cardBaseIndex);
         if(serializer.IsReader)
             cardBase = CardDatabase.Instance.GetDomainCardByIndex(cardBaseIndex);
-    }
+    }*/
+
+    public DomainCardBase CardBase { get { return cardBase; } }
 
     public string CardName { get { return cardBase.CardName; } }
 }

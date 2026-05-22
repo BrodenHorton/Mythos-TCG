@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
@@ -46,7 +45,11 @@ public class SpellCard : Card {
         return cardBase.ManaCost;
     }
 
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+    public override CardPayload GetCardPayload() {
+        return new SpellCardPayload(this);
+    }
+
+    /*public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         FixedString128Bytes uuidStr = serializer.IsWriter ? new FixedString128Bytes(uuid.ToString()) : new FixedString128Bytes();
         serializer.SerializeValue(ref uuidStr);
         if (serializer.IsReader)
@@ -56,7 +59,9 @@ public class SpellCard : Card {
         serializer.SerializeValue(ref cardBaseIndex);
         if (serializer.IsReader)
             cardBase = CardDatabase.Instance.GetSpellCardByIndex(cardBaseIndex);
-    }
+    }*/
+
+    public SpellCardBase CardBase { get { return cardBase; } }
 
     public string CardName { get { return cardBase.CardName; } }
 

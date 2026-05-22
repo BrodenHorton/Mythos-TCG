@@ -47,14 +47,14 @@ public class DuelistUIManager : NetworkBehaviour {
         controllerByPlayerId[args.PlayerId].SetManaCount(args.CurrentMana);
     }
 
-    private void CardDrawn(object sender, PlayerCardEventArgs<Card> args) {
+    private void CardDrawn(object sender, PlayerCardPayloadEventArgs<CardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
         controllerByPlayerId[args.PlayerId].DrawCard(args.Card);
     }
 
-    private void CardRemovedFromHand(object sender, PlayerCardEventArgs<Card> args) {
+    private void CardRemovedFromHand(object sender, PlayerCardPayloadEventArgs<CardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 

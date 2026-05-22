@@ -18,5 +18,9 @@ public class NullCard : Card {
         return 999;
     }
 
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
+    public override CardPayload GetCardPayload() {
+        return new NullCardPayload();
+    }
+
+    //public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

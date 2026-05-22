@@ -14,7 +14,11 @@ public abstract class CreatureCardEffect : INetworkSerializable {
 
     public abstract CreatureCardEffect DeepCopy();
 
+    public abstract CreatureCardEffectPayload GetEffectPayload();
+
     public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
+
+    public Guid CreatureCardUuid { get { return creatureCardUuid; } }
 
     public CreatureCardEffectType EffectType { get { return effectType; } }
 }

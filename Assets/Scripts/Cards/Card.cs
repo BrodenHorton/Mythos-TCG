@@ -1,8 +1,7 @@
 using System;
-using Unity.Netcode;
 
 [Serializable]
-public abstract class Card : INetworkSerializable {
+public abstract class Card {
     protected Guid uuid;
     protected CardType cardType;
 
@@ -18,7 +17,7 @@ public abstract class Card : INetworkSerializable {
 
     public abstract int GetManaCost();
 
-    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
+    public abstract CardPayload GetCardPayload();
 
     public Guid Uuid { get { return uuid; } }
 

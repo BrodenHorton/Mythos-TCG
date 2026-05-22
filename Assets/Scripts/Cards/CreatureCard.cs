@@ -90,7 +90,11 @@ public partial class CreatureCard : Card {
             creatureDestroyedCallback?.Invoke(this);
     }
 
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+    public override CardPayload GetCardPayload() {
+        return new CreatureCardPayload(this);
+    }
+
+    /*public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         FixedString128Bytes uuidStr = serializer.IsWriter ? new FixedString128Bytes(uuid.ToString()) : new FixedString128Bytes();
         serializer.SerializeValue(ref uuidStr);
         if (serializer.IsReader)
@@ -115,7 +119,7 @@ public partial class CreatureCard : Card {
                 effects.Add(effect);
             }
         }
-    }
+    }*/
 
     public CreatureCardBase CardBase { get {  return cardBase; } }
 
@@ -152,41 +156,4 @@ public partial class CreatureCard : Card {
     public Action<CreatureCard> CreatureDamagedCallback { get { return creatureDamagedCallback; } set { creatureDamagedCallback = value; } }
 
     public Action<CreatureCard> CreatureDestroyedCallback { get { return creatureDestroyedCallback; } set { creatureDestroyedCallback = value; } }
-}
-
-[Serializable]
-public abstract class CardPayload : INetworkSerializable {
-    public FixedString128Bytes uuidStr;
-    public CardType cardType;
-    public int cardBaseIndex;
-
-    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
-}
-
-public class CreatureCardPayload : CardPayload {
-    public bool hasSummoningSickness;
-    public bool isTapped;
-    public int damage;
-    public CreatureCardEffectNetworkContainer effectContainer;
-
-    public CreatureCardPayload() { }
-
-    public CreatureCardPayload(CreatureCard card) {
-        uuidStr = card.Uuid.ToString();
-        cardType = card.CardType;
-        cardBaseIndex = CardDatabase.Instance.GetIndexOf(card.CardBase);
-        hasSummoningSickness = card.HasSummoningSickness;
-        isTapped = card.IsTapped;
-        damage = card.CurrentDamage;
-        effectContainer = card.Effects;
-    }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
-        serializer.SerializeValue(ref uuidStr);
-        serializer.SerializeValue(ref cardBaseIndex);
-        serializer.SerializeValue(ref hasSummoningSickness);
-        serializer.SerializeValue(ref isTapped);
-        serializer.SerializeValue(ref damage);
-        serializer.SerializeNetworkSerializable(ref effectContainer);
-    }
 }
