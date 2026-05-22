@@ -20,17 +20,17 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
 
     public abstract void Init(ulong playerId);
 
-    public abstract void PlayCreatureCard(CreatureCard card);
+    public abstract void PlayCreatureCard(CreatureCardPayload card);
 
-    public abstract void PlayDomainCard(DomainCard card);
+    public abstract void PlayDomainCard(DomainCardPayload card);
 
-    public abstract void RemoveCreature(CreatureCard card);
+    public abstract void RemoveCreature(Guid cardUuid);
 
-    public abstract void UpdateCreatureFieldCard(CreatureCard card);
+    public abstract void UpdateCreatureFieldCard(CreatureCardPayload card);
 
-    public abstract void TapCreature(CreatureCard card);
+    public abstract void TapCreature(Guid cardUuid);
 
-    public abstract void UntapCreature(CreatureCard card);
+    public abstract void UntapCreature(Guid cardUuid);
 
     public abstract void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures);
 

@@ -79,20 +79,20 @@ public class PlayerUI : DuelistUI {
         return ray.direction * t + origin;
     }
 
-    public override void DrawCard(Card card) {
-        if(card is CreatureCard creatureCard) {
+    public override void DrawCard(CardPayload card) {
+        if(card is CreatureCardPayload creatureCard) {
             CreatureHandCardUI cardUI = Instantiate(creatureCardPrefab, handOrigin);
             cardUI.Init(creatureCard);
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
-        else if (card is SpellCard spellCard) {
+        else if (card is SpellCardPayload spellCard) {
             SpellHandCardUI cardUI = Instantiate(spellCardPrefab, handOrigin);
             cardUI.Init(spellCard);
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
-        else if (card is DomainCard domainCard) {
+        else if (card is DomainCardPayload domainCard) {
             DomainHandCardUI cardUI = Instantiate(domainCardPrefab, handOrigin);
             cardUI.Init(domainCard);
             cardUI.transform.Rotate(90f, 0, 0);

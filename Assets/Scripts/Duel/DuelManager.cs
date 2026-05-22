@@ -69,7 +69,7 @@ public class DuelManager : NetworkBehaviour {
         int tempDeckSize = 40;
         int databaseCardCount = CardDatabase.Instance.Cards.Count;
         for (int i = 0; i < tempDeckSize; i++) {
-            Card card = CardDatabase.Instance.GetCardByIndex(UnityEngine.Random.Range(0, databaseCardCount)).GenerateCardFromBase();
+            Card card = CardDatabase.Instance.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase();
             result.Add(card);
         }
         return result;
@@ -85,7 +85,7 @@ public class DuelManager : NetworkBehaviour {
         player.GetHandCardByUuid(handCardUuid).PlayCardFromHand(player);
     }
 
-    public void PlayCreatureCardFromHand(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
+    public void PlayCreatureCardFromHand(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (!IsServer)
             return;
 
@@ -93,7 +93,7 @@ public class DuelManager : NetworkBehaviour {
         player.PlayCreatureCardFromHand(args.Card);
     }
     
-    public void PlayDomainCardFromHand(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
+    public void PlayDomainCardFromHand(object sender, PlayerCardEventArgs<DomainCard> args) {
         if (!IsServer)
             return;
 
@@ -101,7 +101,7 @@ public class DuelManager : NetworkBehaviour {
         player.PlayDomainCardFromHand(args.Card);
     }
 
-    public void PlaySpellCardFromHand(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+    public void PlaySpellCardFromHand(object sender, PlayerCardEventArgs<SpellCard> args) {
         if (!IsServer)
             return;
 
@@ -109,7 +109,7 @@ public class DuelManager : NetworkBehaviour {
         player.PlaySpellCardFromHand(args.Card);
     }
 
-    public void PlaySpellCard(object sender, PlayCardFromHandEventArgs<SpellCard> args) {
+    public void PlaySpellCard(object sender, PlayerCardEventArgs<SpellCard> args) {
         if (!IsServer)
             return;
 

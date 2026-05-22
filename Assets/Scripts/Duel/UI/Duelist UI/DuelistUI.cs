@@ -31,7 +31,7 @@ public abstract class DuelistUI : MonoBehaviour {
         this.manaCount.text = manaCount.ToString();
     }
 
-    public abstract void DrawCard(Card card);
+    public abstract void DrawCard(CardPayload card);
 
     public abstract void RemoveCardFromHand(Guid cardUuid);
 

@@ -1,19 +1,19 @@
 ﻿using System;
-using Unity.Collections;
 using Unity.Netcode;
-using UnityEngine;
 
 [Serializable]
 public abstract class CardPayload : INetworkSerializable {
-    protected FixedString128Bytes uuidStr;
+    protected Guid uuid;
     protected CardType cardType;
-    protected int cardBaseIndex;
+    protected int manaCost;
+
+    public abstract CardBase GetCardBase();
 
     public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
 
-    public FixedString128Bytes UuidStr { get { return uuidStr; } }
+    public Guid Uuid { get { return uuid; } }
 
     public CardType CardType { get { return cardType; } }
 
-    public int CardBaseIndex { get { return cardBaseIndex; } }
+    public int ManaCost { get { return manaCost; } }
 }

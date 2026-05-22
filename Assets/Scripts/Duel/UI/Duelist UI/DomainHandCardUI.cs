@@ -1,8 +1,8 @@
 ﻿public class DomainHandCardUI : HandCardUI {
 
-    public void Init(DomainCard card) {
+    public void Init(DomainCardPayload card) {
         cardUuid = card.Uuid;
-        cardName.text = card.CardName;
-        manaCost.text = card.GetManaCost().ToString();
+        cardName.text = card.CardBase.CardName;
+        manaCost.text = card.ManaCost.ToString();
     }
 }

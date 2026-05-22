@@ -1,6 +1,11 @@
-﻿using Unity.Netcode;
+﻿using System;
+using Unity.Collections;
+using Unity.Netcode;
 
 public class CreatureCardPayload : CardPayload {
+    private CreatureCardBase cardBase;
+    private int atk;
+    private int health;
     private bool hasSummoningSickness;
     private bool isTapped;
     private int damage;
@@ -11,9 +16,12 @@ public class CreatureCardPayload : CardPayload {
     }
 
     public CreatureCardPayload(CreatureCard card) {
-        uuidStr = card.Uuid.ToString();
+        uuid = card.Uuid;
         cardType = CardType.Creature;
-        cardBaseIndex = CardDatabase.Instance.GetIndexOf(card.CardBase);
+        cardBase = card.CardBase;
+        manaCost = card.GetManaCost();
+        atk = card.GetAtk();
+        health = card.GetHealth();
         hasSummoningSickness = card.HasSummoningSickness;
         isTapped = card.IsTapped;
         damage = card.CurrentDamage;
@@ -25,9 +33,22 @@ public class CreatureCardPayload : CardPayload {
         }
     }
 
+    public override CardBase GetCardBase() {
+        return cardBase;
+    }
+
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+        FixedString128Bytes uuidStr = serializer.IsWriter ? uuid.ToString() : "";
         serializer.SerializeValue(ref uuidStr);
-        serializer.SerializeValue(ref cardBaseIndex);
+        if (serializer.IsReader)
+            uuid = Guid.Parse(uuidStr.ToString());
+        FixedString128Bytes cardBaseId = serializer.IsWriter ? cardBase.Id : "";
+        serializer.SerializeValue(ref cardBaseId);
+        if (serializer.IsReader)
+            cardBase = CardDatabase.Instance.GetCreatureCardById(cardBaseId.ToString());
+        serializer.SerializeValue(ref manaCost);
+        serializer.SerializeValue(ref atk);
+        serializer.SerializeValue(ref health);
         serializer.SerializeValue(ref hasSummoningSickness);
         serializer.SerializeValue(ref isTapped);
         serializer.SerializeValue(ref damage);
@@ -38,6 +59,12 @@ public class CreatureCardPayload : CardPayload {
         for(int i = 0; i < effectCount; i++)
             serializer.SerializeNetworkSerializable(ref effectNetworkContainers[i]);
     }
+
+    public CreatureCardBase CardBase { get { return cardBase; } }
+
+    public int Atk { get { return atk; } }
+
+    public int Health { get { return health; } }
 
     public bool HasSummoningSickness { get { return hasSummoningSickness; } }
 

@@ -51,13 +51,14 @@ public class DuelistUIManager : NetworkBehaviour {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.PlayerId].DrawCard(args.Card);
+        controllerByPlayerId[args.PlayerId].DrawCard(args.CardPayload);
     }
 
     private void CardRemovedFromHand(object sender, PlayerCardPayloadEventArgs<CardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.PlayerId].RemoveCardFromHand(args.Card.Uuid);
+        Guid cardUuid = Guid.Parse(args.CardPayload.Uuid.ToString());
+        controllerByPlayerId[args.PlayerId].RemoveCardFromHand(cardUuid);
     }
 }

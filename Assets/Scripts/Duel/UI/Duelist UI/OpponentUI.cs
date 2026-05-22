@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class OpponentUI : DuelistUI {
 
-    public override void DrawCard(Card card) {
+    public override void DrawCard(CardPayload card) {
         NullHandCardUI cardUI = Instantiate(nullCardPrefab, handOrigin);
         cardUI.transform.Rotate(-90f, 0, 0);
         cardsInHand.Add(cardUI);

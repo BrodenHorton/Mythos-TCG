@@ -41,18 +41,18 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         }
     }
 
-    private void PlayCreatureCard(object sender, PlayCardFromHandEventArgs<CreatureCard> args) {
+    private void PlayCreatureCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.PlayerId].PlayCreatureCard(args.Card);
+        controllerByPlayerId[args.PlayerId].PlayCreatureCard(args.CardPayload);
     }
 
-    public void PlayDomainCard(object sender, PlayCardFromHandEventArgs<DomainCard> args) {
+    public void PlayDomainCard(object sender, PlayerCardPayloadEventArgs<DomainCardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.PlayerId].PlayDomainCard(args.Card);
+        controllerByPlayerId[args.PlayerId].PlayDomainCard(args.CardPayload);
     }
 
     public void TapCreature(object sender, CreatureCardEventArgs args) {

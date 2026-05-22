@@ -125,15 +125,16 @@ public class CombatManager : NetworkBehaviour {
 
             }
         }
-        InvokeOnDuelistCombatFinsihedClientRpc(duelistCombat.InitiatorId,
-                                               duelistCombat.TargetId,
-                                               duelistCombat.CreatureCombats.ToArray());
+        CreatureCombatPayload[] creatureCombatPayloads = new CreatureCombatPayload[duelistCombat.CreatureCombats.Count];
+        for(int i = 0; i < duelistCombat.CreatureCombats.Count; i++)
+            creatureCombatPayloads[i] = new CreatureCombatPayload(duelistCombat.CreatureCombats[i]);
+        InvokeOnDuelistCombatFinsihedClientRpc(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombatPayloads);
         duelistCombats.Remove(duelistCombat);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnDuelistCombatFinsihedClientRpc(ulong initiatorId, ulong targetId, CreatureCombat[] creatureCombats) {        
-        OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(initiatorId, targetId, new List<CreatureCombat>(creatureCombats)));
+    private void InvokeOnDuelistCombatFinsihedClientRpc(ulong initiatorId, ulong targetId, CreatureCombatPayload[] creatureCombatPayloads) {        
+        OnDuelistCombatFinsihed?.Invoke(this, new DuelistCombatEventArgs(initiatorId, targetId, new List<CreatureCombatPayload>(creatureCombatPayloads)));
     }
 
     private void InsertCombat(DuelistCombat combat) {

@@ -27,107 +27,52 @@ public class CardDatabase : MonoBehaviour {
         cards.AddRange(domainBases.Cards);
     }
 
-    public CardBase GetCardByIndex(int index) {
-        if (index > cards.Count)
-            throw new Exception("Card index Out of Bounds for index: " + index);
-
-        return cards[index];
-    }
-
-    public CardBase GetCardByName(string name) {
-        if (name == null)
-            throw new Exception("Search by card name cannot be null");
+    public CardBase GetCardById(string id) {
+        if (id == null)
+            throw new Exception("Cannot search for card base with null Id");
 
         for(int i = 0; i < cards.Count; i++) {
-            if(name.ToLower() == cards[i].CardName.ToLower())
+            if (cards[i].Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return cards[i];
         }
 
-        throw new Exception("Unable to find card with name: " + name);
+        throw new Exception("Unable to find card base with Id: " + id);
     }
 
-    public CreatureCardBase GetCreatureCardByIndex(int index) {
-        if (index > cards.Count)
-            throw new Exception("Card index Out of Bounds for index: " + index);
-
-        return creatureBases.Cards[index];
-    }
-
-    public CreatureCardBase GetCreatureCardByName(string name) {
-        if (name == null)
-            throw new Exception("Search by card name cannot be null");
+    public CreatureCardBase GetCreatureCardById(string id) {
+        if (id == null)
+            throw new Exception("Cannot search for card base with null id");
 
         for (int i = 0; i < creatureBases.Cards.Count; i++) {
-            if (name.ToLower() == creatureBases.Cards[i].CardName.ToLower())
+            if (creatureBases.Cards[i].Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return creatureBases.Cards[i];
         }
 
-        throw new Exception("Unable to find card with name: " + name);
+        throw new Exception("Unable to find card with Id: " + id);
     }
 
-    public int GetIndexOf(CreatureCardBase creatureCard) {
-        for(int i = 0; i < creatureBases.Cards.Count; i++) {
-            if (creatureBases.Cards[i] == creatureCard)
-                return i;
-        }
-
-        throw new Exception("Index of card not found");
-    }
-
-    public SpellCardBase GetSpellCardByIndex(int index) {
-        if (index > spellBases.Cards.Count)
-            throw new Exception("Card index Out of Bounds for index: " + index);
-
-        return spellBases.Cards[index];
-    }
-
-    public SpellCardBase GetSpellCardByName(string name) {
-        if (name == null)
-            throw new Exception("Search by card name cannot be null");
+    public SpellCardBase GetSpellCardById(string id) {
+        if (id == null)
+            throw new Exception("Cannot search for card base with null id");
 
         for (int i = 0; i < spellBases.Cards.Count; i++) {
-            if (name.ToLower() == spellBases.Cards[i].CardName.ToLower())
+            if (spellBases.Cards[i].Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return spellBases.Cards[i];
         }
 
-        throw new Exception("Unable to find card with name: " + name);
+        throw new Exception("Unable to find card with Id: " + id);
     }
 
-    public int GetIndexOf(SpellCardBase spellCard) {
-        for (int i = 0; i < spellBases.Cards.Count; i++) {
-            if (spellBases.Cards[i] == spellCard)
-                return i;
-        }
-
-        throw new Exception("Index of card not found");
-    }
-
-    public DomainCardBase GetDomainCardByIndex(int index) {
-        if (index > domainBases.Cards.Count)
-            throw new Exception("Card index Out of Bounds for index: " + index);
-
-        return domainBases.Cards[index];
-    }
-
-    public DomainCardBase GetDomainCardByName(string name) {
-        if (name == null)
-            throw new Exception("Search by card name cannot be null");
+    public DomainCardBase GetDomainCardById(string id) {
+        if (id == null)
+            throw new Exception("Cannot search for card base with null id");
 
         for (int i = 0; i < domainBases.Cards.Count; i++) {
-            if (name.ToLower() == domainBases.Cards[i].CardName.ToLower())
+            if (domainBases.Cards[i].Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return domainBases.Cards[i];
         }
 
-        throw new Exception("Unable to find card with name: " + name);
-    }
-
-    public int GetIndexOf(DomainCardBase spellCard) {
-        for (int i = 0; i < domainBases.Cards.Count; i++) {
-            if (domainBases.Cards[i] == spellCard)
-                return i;
-        }
-
-        throw new Exception("Index of card not found");
+        throw new Exception("Unable to find card with Id: " + id);
     }
 
     public List<CardBase> Cards { get { return cards; } }

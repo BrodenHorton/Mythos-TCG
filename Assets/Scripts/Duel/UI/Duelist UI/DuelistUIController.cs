@@ -11,7 +11,7 @@ public abstract class DuelistUIController : NetworkBehaviour {
 
     public abstract void SetManaCount(int manaCount);
 
-    public abstract void DrawCard(Card card);
+    public abstract void DrawCard(CardPayload card);
 
     public abstract void RemoveCardFromHand(Guid cardUuid);
 

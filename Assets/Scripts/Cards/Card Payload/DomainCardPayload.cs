@@ -1,19 +1,34 @@
-﻿using Unity.Netcode;
+﻿using System;
+using Unity.Collections;
+using Unity.Netcode;
 
 public class DomainCardPayload : CardPayload {
+    private DomainCardBase cardBase;
 
     public DomainCardPayload() {
         cardType = CardType.Domain;
     }
 
     public DomainCardPayload(DomainCard card) {
-        uuidStr = card.Uuid.ToString();
+        uuid = card.Uuid;
         cardType = CardType.Domain;
-        cardBaseIndex = CardDatabase.Instance.GetIndexOf(card.CardBase);
+        cardBase = card.CardBase;
+    }
+
+    public override CardBase GetCardBase() {
+        return cardBase;
     }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+        FixedString128Bytes uuidStr = serializer.IsWriter ? uuid.ToString() : "";
         serializer.SerializeValue(ref uuidStr);
-        serializer.SerializeValue(ref cardBaseIndex);
+        if (serializer.IsReader)
+            uuid = Guid.Parse(uuidStr.ToString());
+        FixedString128Bytes cardBaseId = serializer.IsWriter ? cardBase.Id : "";
+        serializer.SerializeValue(ref cardBaseId);
+        if (serializer.IsReader)
+            cardBase = CardDatabase.Instance.GetDomainCardById(cardBaseId.ToString());
     }
+
+    public DomainCardBase CardBase { get { return cardBase; } }
 }

@@ -17,7 +17,7 @@ public class OpponentUIController : DuelistUIController {
         opponentUI.SetManaCount(manaCount);
     }
 
-    public override void DrawCard(Card card) {
+    public override void DrawCard(CardPayload card) {
         opponentUI.DrawCard(card);
     }
 

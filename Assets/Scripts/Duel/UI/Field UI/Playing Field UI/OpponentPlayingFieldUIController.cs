@@ -10,30 +10,30 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.Init(playerId);
     }
 
-    public override void PlayCreatureCard(CreatureCard card) {
+    public override void PlayCreatureCard(CreatureCardPayload card) {
         playingFieldUI.PlayCreatureCard(card);
     }
 
-    public override void PlayDomainCard(DomainCard card) {
+    public override void PlayDomainCard(DomainCardPayload card) {
         playingFieldUI.PlayDomainCard(card);
     }
 
-    public override void RemoveCreature(CreatureCard card) {
+    public override void RemoveCreature(Guid cardUuid) {
         playingFieldUI.RemoveCreature(card.Uuid);
     }
 
-    public override void UpdateCreatureFieldCard(CreatureCard card) {
+    public override void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (!ContainsCreature(card.Uuid))
             return;
 
         playingFieldUI.UpdateCreatureFieldCard(card);
     }
 
-    public override void TapCreature(CreatureCard card) {
+    public override void TapCreature(Guid cardUuid) {
         playingFieldUI.TapCreature(card);
     }
 
-    public override void UntapCreature(CreatureCard card) {
+    public override void UntapCreature(Guid cardUuid) {
         playingFieldUI.UntapCreature(card);
     }
 

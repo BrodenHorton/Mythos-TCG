@@ -3,8 +3,11 @@
 public class NullCardPayload : CardPayload {
 
     public NullCardPayload() {
-        cardBaseIndex = -1;
         cardType = CardType.Null;
+    }
+
+    public override CardBase GetCardBase() {
+        throw new System.NotImplementedException();
     }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
