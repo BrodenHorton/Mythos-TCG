@@ -18,13 +18,13 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnDomainCardPlayedFromHand += PlayDomainCard;
         EventBus.Instance.OnCreatureTapped += TapCreature;
         EventBus.Instance.OnCreatureUntapped += UntapCreature;
-        EventBus.Instance.OnDeclareAttacker += RemoveAttacker;
-        EventBus.Instance.OnDeclareDefender += RemoveDefender;
+        EventBus.Instance.OnDeclareAttackerFinished += RemoveAttacker;
+        EventBus.Instance.OnDeclareDefenderFinished += RemoveDefender;
         EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += UndeclareDefender;
-        EventBus.Instance.OnCreatureDamaged += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureHealed += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureDestroyed += DestroyCreature;
+        EventBus.Instance.OnCreatureDamagedFinished += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureHealedFinished += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
         EventBus.Instance.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
 
@@ -55,72 +55,72 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         controllerByPlayerId[args.PlayerId].PlayDomainCard(args.CardPayload);
     }
 
-    public void TapCreature(object sender, CreatureCardEventArgs args) {
+    public void TapCreature(object sender, CardPayloadEventArgs<CreatureCardPayload> args) {
         foreach(PlayerPlayingFieldUIController controller in controllerByPlayerId.Values) {
-            if(controller.ContainsCreature(args.Card.Uuid)) {
-                controller.TapCreature(args.Card);
+            if(controller.ContainsCreature(args.CardPayload.Uuid)) {
+                controller.TapCreature(args.CardPayload.Uuid);
                 return;
             }
         }
 
-        throw new Exception("Unable to find playing field UI controller with card uuid: " + args.Card.Uuid);
+        throw new Exception("Unable to find playing field UI controller with card uuid: " + args.CardPayload.Uuid);
     }
 
-    public void UntapCreature(object sender, CreatureCardEventArgs args) {
+    public void UntapCreature(object sender, CardPayloadEventArgs<CreatureCardPayload> args) {
         foreach (PlayerPlayingFieldUIController controller in controllerByPlayerId.Values) {
-            if (controller.ContainsCreature(args.Card.Uuid)) {
-                controller.UntapCreature(args.Card);
+            if (controller.ContainsCreature(args.CardPayload.Uuid)) {
+                controller.UntapCreature(args.CardPayload.Uuid);
                 return;
             }
         }
 
-        throw new Exception("Unable to find playing field UI controller with card uuid: " + args.Card.Uuid);
+        throw new Exception("Unable to find playing field UI controller with card uuid: " + args.CardPayload.Uuid);
     }
 
-    private void RemoveAttacker(object sender, DeclareAttackerEventArgs args) {
+    private void RemoveAttacker(object sender, DeclareAttackerPayloadEventArgs args) {
         if (controllerByPlayerId[args.InitiatorId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
 
         if (controllerByPlayerId[args.InitiatorId].ContainsCreature(args.Attacker.Uuid))
-            controllerByPlayerId[args.InitiatorId].RemoveCreature(args.Attacker);
+            controllerByPlayerId[args.InitiatorId].RemoveCreature(args.Attacker.Uuid);
     }
 
-    private void RemoveDefender(object sender, DeclareDefenderEventArgs args) {
+    private void RemoveDefender(object sender, DeclareDefenderPayloadEventArgs args) {
         if (controllerByPlayerId[args.TargetId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.TargetId);
 
         if (controllerByPlayerId[args.TargetId].ContainsCreature(args.Defender.Uuid))
-            controllerByPlayerId[args.TargetId].RemoveCreature(args.Defender);
+            controllerByPlayerId[args.TargetId].RemoveCreature(args.Defender.Uuid);
     }
 
-    public void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
+    public void UndeclareAttacker(object sender, UndeclareAttackerPayloadEventArgs args) {
         if (controllerByPlayerId[args.InitiatorId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
 
         controllerByPlayerId[args.InitiatorId].PlayCreatureCard(args.Attacker);
     }
 
-    public void UndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
+    public void UndeclareDefender(object sender, UndeclareDefenderPayloadEventArgs args) {
         if (controllerByPlayerId[args.TargetId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.TargetId);
 
         controllerByPlayerId[args.TargetId].PlayCreatureCard(args.Defender);
     }
 
-    public void UpdateCreatureFieldCard(object sender, PlayerCardEventArgs<CreatureCard> args) {
+    public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        if (controllerByPlayerId[args.PlayerId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.PlayerId].UpdateCreatureFieldCard(args.Card);
+        if (controllerByPlayerId[args.PlayerId].ContainsCreature(args.CardPayload.Uuid))
+            controllerByPlayerId[args.PlayerId].UpdateCreatureFieldCard(args.CardPayload);
     }
 
-    public void DestroyCreature(object sender, PlayerCardEventArgs<CreatureCard> args) {
+    public void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
-        if(controllerByPlayerId[args.PlayerId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.PlayerId].RemoveCreature(args.Card);
+        if(controllerByPlayerId[args.PlayerId].ContainsCreature(args.CardPayload.Uuid))
+            controllerByPlayerId[args.PlayerId].RemoveCreature(args.CardPayload.Uuid);
     }
 
     private void GetCreatureCardsFromCombat(object sender, ReleaseCombatCreaturesEventArgs args) {

@@ -38,7 +38,7 @@ public class SpellCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player) {
-        EventBus.Instance.InvokeOnSpellCardSelectedForPlay(new PlayCardFromHandEventArgs<SpellCard>(player.PlayerId, this));
+        EventBus.Instance.InvokeOnSpellCardSelectedForPlay(new PlayerCardEventArgs<SpellCard>(player.PlayerId, this));
     }
 
     public override int GetManaCost() {

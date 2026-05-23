@@ -36,7 +36,7 @@ public class DomainCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player) {
-        EventBus.Instance.InvokeOnDomainCardSelectedForPlay(new PlayCardFromHandEventArgs<DomainCard>(player.PlayerId, this));
+        EventBus.Instance.InvokeOnDomainCardSelectedForPlay(new PlayerCardEventArgs<DomainCard>(player.PlayerId, this));
     }
 
     public override int GetManaCost() {

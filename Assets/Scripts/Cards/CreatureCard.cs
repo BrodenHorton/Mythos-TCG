@@ -50,7 +50,7 @@ public partial class CreatureCard : Card {
     }
 
     public override void PlayCardFromHand(MatchPlayer player) {
-        EventBus.Instance.InvokeOnCreatureCardSelectedForPlay(new PlayCardFromHandEventArgs<CreatureCard>(player.PlayerId, this));
+        EventBus.Instance.InvokeOnCreatureCardSelectedForPlay(new PlayerCardEventArgs<CreatureCard>(player.PlayerId, this));
     }
 
     public override int GetManaCost() {
@@ -67,12 +67,12 @@ public partial class CreatureCard : Card {
 
     public void Tap() {
         isTapped = true;
-        EventBus.Instance.InvokeOnCreatureTapped(new CreatureCardEventArgs(this)); 
+        EventBus.Instance.InvokeOnCreatureTapped(new CardPayloadEventArgs<CreatureCardPayload>(new CreatureCardPayload(this))); 
     }
 
     public void Untap() {
         isTapped = false;
-        EventBus.Instance.InvokeOnCreatureUntapped(new CreatureCardEventArgs(this));
+        EventBus.Instance.InvokeOnCreatureUntapped(new CardPayloadEventArgs<CreatureCardPayload>(new CreatureCardPayload(this)));
     }
 
     public bool CanAttack() {

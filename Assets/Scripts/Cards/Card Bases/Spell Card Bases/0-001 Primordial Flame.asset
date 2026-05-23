@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82eb959bdf7d37944ba567dd02c4998c, type: 3}
   m_Name: 0-001 Primordial Flame
   m_EditorClassIdentifier: 
+  id: 0-001_primordial_flame
   cardName: 0-001 Primordial Flame
   splashArt: {fileID: 2100000, guid: 99660b6d9d7b6214b8f63abbe7d8bbbb, type: 2}
   manaCost: 5

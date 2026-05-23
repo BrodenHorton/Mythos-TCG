@@ -12,6 +12,7 @@ public class SpellCardPayload : CardPayload {
     public SpellCardPayload(SpellCard card) {
         uuid = card.Uuid;
         cardType = CardType.Spell;
+        cardBase = card.CardBase;
     }
 
     public override CardBase GetCardBase() {

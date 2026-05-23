@@ -20,7 +20,7 @@ public class PlayingFieldUI : MonoBehaviour {
         this.playerId = playerId;
     }
 
-    public void PlayCreatureCard(CreatureCard card) {
+    public void PlayCreatureCard(CreatureCardPayload card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
         creatureCardUI.transform.parent = creatureSlotOrigin;
         creatureCardUI.Init(card);
@@ -32,7 +32,7 @@ public class PlayingFieldUI : MonoBehaviour {
         SetDefaultCardPositions();
     }
 
-    public void PlayDomainCard(DomainCard card) {
+    public void PlayDomainCard(DomainCardPayload card) {
         DomainFieldCardUI domainCardUI = Instantiate(domainCardUIPrefab);
         domainCardUI.transform.parent = domainSlotOrigin;
         domainCardUI.transform.localPosition = Vector3.zero;
@@ -40,16 +40,16 @@ public class PlayingFieldUI : MonoBehaviour {
         domainCard = domainCardUI;
     }
 
-    public void UpdateCreatureFieldCard(CreatureCard card) {
+    public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (!ContainsCreature(card.Uuid))
             throw new Exception("Attempting to update creature field card that is not in the playing field");
 
         GetCreatureFieldCardUIBy(card.Uuid).UpdateCreatureFieldCard(card);
     }
 
-    public void TapCreature(CreatureCard card) {
+    public void TapCreature(Guid cardUuid) {
         foreach (CreatureFieldCardUI cardUI in creatures) {
-            if (cardUI.CardUuid == card.Uuid) {
+            if (cardUI.CardUuid == cardUuid) {
                 cardUI.Tap();
                 return;
             }
@@ -58,9 +58,9 @@ public class PlayingFieldUI : MonoBehaviour {
         throw new Exception("Attempting to tap creature that is not in the playing field");
     }
 
-    public void UntapCreature(CreatureCard card) {
+    public void UntapCreature(Guid cardUuid) {
         foreach (CreatureFieldCardUI cardUI in creatures) {
-            if (cardUI.CardUuid == card.Uuid) {
+            if (cardUI.CardUuid == cardUuid) {
                 cardUI.Untap();
                 return;
             }

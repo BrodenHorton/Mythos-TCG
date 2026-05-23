@@ -14,16 +14,15 @@ public class SpellChainUIController : MonoBehaviour {
         spellChainManager.OnSpellChainFinished += ClearSpellChain;
     }
 
-    private void AddSpellToChain(object sender, SpellCardAction action) {
-        spellChainUI.AddSpellToChain(action.Card);
+    private void AddSpellToChain(object sender, PlayerCardPayloadEventArgs<SpellCardPayload> args) {
+        spellChainUI.AddSpellToChain(args.CardPayload);
     }
 
-    private void RemoveSpellFromChain(object sender, SpellCardAction action) {
-        spellChainUI.RemoveSpellFromChain(action.Card.Uuid);
+    private void RemoveSpellFromChain(object sender, PlayerCardPayloadEventArgs<SpellCardPayload> args) {
+        spellChainUI.RemoveSpellFromChain(args.CardPayload.Uuid);
     }
 
     private void ClearSpellChain(object sender, EventArgs args) {
-        TcgLogger.Log("ClearSpellChain Entered");
         spellChainUI.ClearSpellChain();
     }
 }

@@ -5,8 +5,8 @@ using Unity.Netcode;
 public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<PlayerEventArgs> OnSpellChainStart;
     public event EventHandler<PlayerEventArgs> OnSpellChainTurnEnd;
-    public event EventHandler<SpellCardAction> OnSpellAddedToSpellChain;
-    public event EventHandler<SpellCardAction> OnSpellRemovedFromSpellChain;
+    public event EventHandler<PlayerCardPayloadEventArgs<SpellCardPayload>> OnSpellAddedToSpellChain;
+    public event EventHandler<PlayerCardPayloadEventArgs<SpellCardPayload>> OnSpellRemovedFromSpellChain;
     public event EventHandler OnSpellChainFinished;
 
     private DuelManager duelManager;
@@ -58,7 +58,7 @@ public class SpellChainManager : NetworkBehaviour {
         InvokeOnSpellChainStartClientRpc(player.PlayerId);
         SpellCardAction action = new SpellCardAction(spellCard, player.PlayerId);
         spellChain.Push(action);
-        InvokeOnSpellAddedToSpellChainClientRpc(action.Card, player.PlayerId);
+        InvokeOnSpellAddedToSpellChainClientRpc(player.PlayerId, new SpellCardPayload(action.Card));
         PassAction();
     }
 
@@ -68,7 +68,7 @@ public class SpellChainManager : NetworkBehaviour {
 
         SpellCardAction action = new SpellCardAction(spellCard, player.PlayerId);
         spellChain.Push(action);
-        InvokeOnSpellAddedToSpellChainClientRpc(action.Card, player.PlayerId);
+        InvokeOnSpellAddedToSpellChainClientRpc(player.PlayerId, new SpellCardPayload(action.Card));
         startingIndex = currentIndex;
         PassAction();
     }
@@ -106,7 +106,7 @@ public class SpellChainManager : NetworkBehaviour {
         while(spellChain.Count > 0) {
             SpellCardAction action = spellChain.Pop();
             duelManager.ExecuteSpell(duelManager.GetPlayerById(action.InitiatorId), action.Card);
-            OnSpellRemovedFromSpellChain?.Invoke(this, action);
+            InvokeOnSpellRemovedFromSpellChainClientRpc(action.InitiatorId, new SpellCardPayload(action.Card));
         }
     }
 
@@ -116,8 +116,15 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnSpellAddedToSpellChainClientRpc(SpellCard spellCard, ulong playerId) {
-        OnSpellAddedToSpellChain?.Invoke(this, new SpellCardAction(spellCard, playerId));
+    private void InvokeOnSpellAddedToSpellChainClientRpc(ulong playerId, SpellCardPayload spellCard) {
+        PlayerCardPayloadEventArgs<SpellCardPayload> args = new PlayerCardPayloadEventArgs<SpellCardPayload>(playerId, spellCard);
+        OnSpellAddedToSpellChain?.Invoke(this, args);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnSpellRemovedFromSpellChainClientRpc(ulong playerId, SpellCardPayload spellCard) {
+        PlayerCardPayloadEventArgs<SpellCardPayload> args = new PlayerCardPayloadEventArgs<SpellCardPayload>(playerId, spellCard);
+        OnSpellRemovedFromSpellChain?.Invoke(this, args);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -127,7 +134,6 @@ public class SpellChainManager : NetworkBehaviour {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnSpellChainFinishedClientRpc() {
-        TcgLogger.Log("InvokeOnSpellChainFinishedClientRpc Entered");
         OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
     }
 

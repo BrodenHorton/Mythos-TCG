@@ -37,7 +37,7 @@ public class CombatFieldUI : MonoBehaviour {
         this.targetPlayerId = targetPlayerId;
     }
 
-    public void AddAttacker(CreatureCard card) {
+    public void AddAttacker(CreatureCardPayload card) {
         if (attackerByPositionIndex.Count >= MAX_FIELD_CREATURES)
             throw new Exception("Attempting to add new attacker when there is already " + MAX_FIELD_CREATURES + " attackers");
 
@@ -52,7 +52,7 @@ public class CombatFieldUI : MonoBehaviour {
         SpaceAttackers();
     }
 
-    public void AddDefender(CreatureCard defender, Guid attackerCardUuid) {
+    public void AddDefender(CreatureCardPayload defender, Guid attackerCardUuid) {
         if (defenderByPositionIndex.Count >= MAX_FIELD_CREATURES)
             throw new Exception("Attempting to add new defender when there is already " + MAX_FIELD_CREATURES + " defenders");
 
@@ -99,7 +99,7 @@ public class CombatFieldUI : MonoBehaviour {
         throw new Exception("Attempting to remove defender that is not in combat field");
     }
 
-    public void UpdateCreatureFieldCard(CreatureCard card) {
+    public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (ContainsAttacker(card.Uuid))
             GetAttacker(card.Uuid).UpdateCreatureFieldCard(card);
         else if (ContainsDefender(card.Uuid))

@@ -14,7 +14,7 @@ public class SpellChainUI : MonoBehaviour {
         spellChain = new List<SpellActionUI>();
     }
 
-    public void AddSpellToChain(SpellCard card) {
+    public void AddSpellToChain(SpellCardPayload card) {
         SpellActionUI actionUI = Instantiate(spellActionUIPrefab);
         actionUI.transform.parent = spellChainOrigin;
         actionUI.Init(card);

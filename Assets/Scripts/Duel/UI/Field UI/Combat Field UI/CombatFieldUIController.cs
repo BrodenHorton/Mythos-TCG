@@ -31,23 +31,23 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.Init(playerId);
     }
 
-    public void AddAttacker(CreatureCard attacker) {
+    public void AddAttacker(CreatureCardPayload attacker) {
         combatFieldUI.AddAttacker(attacker);
     }
 
-    public void AddDefender(CreatureCard defender, Guid attackerCardUuid) {
+    public void AddDefender(CreatureCardPayload defender, Guid attackerCardUuid) {
         combatFieldUI.AddDefender(defender, attackerCardUuid);
     }
 
-    public void RemoveAttacker(CreatureCard attacker) {
-        combatFieldUI.RemoveAttacker(attacker.Uuid);
+    public void RemoveAttacker(Guid cardUuid) {
+        combatFieldUI.RemoveAttacker(cardUuid);
     }
 
-    public void RemoveDefender(CreatureCard defender) {
-        combatFieldUI.RemoveDefender(defender.Uuid);
+    public void RemoveDefender(Guid cardUuid) {
+        combatFieldUI.RemoveDefender(cardUuid);
     }
 
-    public void UpdateCreatureFieldCard(CreatureCard card) {
+    public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (!ContainsAttacker(card.Uuid) && !ContainsDefender(card.Uuid))
             return;
 
@@ -76,12 +76,12 @@ public class CombatFieldUIController : NetworkBehaviour {
             return;
 
         EventBus.Instance.InvokeOnUndelcareAttacker(new UndeclareAttackerEventArgs(initiator.PlayerId, targetId, creatureCard));
-        InvokeOnUndeclareAttackerFinishedClientRpc(initiator.PlayerId, targetId, creatureCard);
+        InvokeOnUndeclareAttackerFinishedClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(creatureCard));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnUndeclareAttackerFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCard card) {
-        EventBus.Instance.InvokeOnUndelcareAttackerFinished(new UndeclareAttackerEventArgs(initiatorId, targetId, card));
+    private void InvokeOnUndeclareAttackerFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload card) {
+        EventBus.Instance.InvokeOnUndelcareAttackerFinished(new UndeclareAttackerPayloadEventArgs(initiatorId, targetId, card));
     }
 
     private void UndeclareDefender(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
@@ -109,12 +109,12 @@ public class CombatFieldUIController : NetworkBehaviour {
 
         ulong initiatorId = duelManager.GetCurrentPlayerTurn().PlayerId;
         EventBus.Instance.InvokeOnUndeclareDefender(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
-        InvokeOnUndeclareDefenderFinishedClientRpc(initiatorId, targetId, defender);
+        InvokeOnUndeclareDefenderFinishedClientRpc(initiatorId, targetId, new CreatureCardPayload(defender));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnUndeclareDefenderFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCard defender) {
-        EventBus.Instance.InvokeOnUndeclareDefenderFinished(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
+    private void InvokeOnUndeclareDefenderFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload defender) {
+        EventBus.Instance.InvokeOnUndeclareDefenderFinished(new UndeclareDefenderPayloadEventArgs(initiatorId, targetId, defender));
     }
 
     public void ReleaseCreatureCards(ulong initiatorId, ulong targetId) {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using static UnityEngine.Rendering.GPUSort;
 
 [Serializable]
 public class MatchPlayer {
@@ -45,7 +44,6 @@ public class MatchPlayer {
         RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
         creatures.Add(card);
-        TcgLogger.Log("Creature Callbacks set");
         card.CreatureHealthChangedCallback = OnCreatureHealthChangedCallback;
         card.CreatureDamagedCallback = OnCreatureDamagedCallback;
         card.CreatureDestroyedCallback = OnCreatureDestroyCallback;
@@ -62,7 +60,7 @@ public class MatchPlayer {
     public void PlaySpellCardFromHand(SpellCard card) {
         RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
-        EventBus.Instance.InvokeOnSpellCardPlayedFromHand(playerId, card);
+        EventBus.Instance.InvokeOnSpellCardPlayedFromHand(new PlayerCardEventArgs<SpellCard>(playerId, card));
     }
 
     public void RemoveCardFromHand(Guid cardUuid) {
@@ -131,17 +129,19 @@ public class MatchPlayer {
     }
 
     public void OnCreatureHealthChangedCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureHealed(playerId, card);
+        EventBus.Instance.InvokeOnCreatureHealed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        EventBus.Instance.InvokeOnCreatureHealedFinishedClientRpc(playerId, new CreatureCardPayload(card));
     }
 
     public void OnCreatureDamagedCallback(CreatureCard card) {
-        TcgLogger.Log("MatchPlayer OnCreatureDamagedCallback called");
-        EventBus.Instance.InvokeOnCreatureDamaged(playerId, card);
+        EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        EventBus.Instance.InvokeOnCreatureDamagedFinishedClientRpc(playerId, new CreatureCardPayload(card));
     }
 
     public void OnCreatureDestroyCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureDestroyed(playerId, card);
+        EventBus.Instance.InvokeOnCreatureDestroyed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
         creatures.Remove(card);
+        EventBus.Instance.InvokeOnCreatureDestroyedFinishedClientRpc(playerId, new CreatureCardPayload(card));
     }
 
     public ulong PlayerId { get { return playerId; } }

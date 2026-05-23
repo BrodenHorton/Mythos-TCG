@@ -19,7 +19,7 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
     }
 
     public override void RemoveCreature(Guid cardUuid) {
-        playingFieldUI.RemoveCreature(card.Uuid);
+        playingFieldUI.RemoveCreature(cardUuid);
     }
 
     public override void UpdateCreatureFieldCard(CreatureCardPayload card) {
@@ -30,11 +30,11 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
     }
 
     public override void TapCreature(Guid cardUuid) {
-        playingFieldUI.TapCreature(card);
+        playingFieldUI.TapCreature(cardUuid);
     }
 
     public override void UntapCreature(Guid cardUuid) {
-        playingFieldUI.UntapCreature(card);
+        playingFieldUI.UntapCreature(cardUuid);
     }
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {

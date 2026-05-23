@@ -5,27 +5,27 @@ public class CreatureFieldCardUI : FieldCardUI {
     [SerializeField] private TextMeshPro atk;
     [SerializeField] private TextMeshPro health;
 
-    public void Init(CreatureCard card) {
+    public void Init(CreatureCardPayload card) {
         cardUuid = card.Uuid;
         UpdateCreatureFieldCard(card);
     }
 
-    public void UpdateCreatureFieldCard(CreatureCard card) {
+    public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         Color atkColor = Color.white;
-        if(card.GetAtk() < card.BaseAtk)
+        if(card.Atk < card.CardBase.Atk)
             atkColor = Color.red;
-        else if (card.GetAtk() > card.BaseAtk)
+        else if (card.Atk > card.CardBase.Atk)
             atkColor = Color.green;
         atk.color = atkColor;
-        atk.text = card.GetAtk().ToString();
+        atk.text = card.Atk.ToString();
 
         Color healthColor = Color.white;
-        if (card.GetHealth() < card.BaseHealth)
+        if (card.Health < card.CardBase.Health)
             healthColor = Color.red;
-        else if (card.GetHealth() > card.BaseHealth)
+        else if (card.Health > card.CardBase.Health)
             healthColor = Color.green;
         health.color = healthColor;
-        health.text = card.GetHealth().ToString();
+        health.text = card.Health.ToString();
     }
 
     public void Tap() {
