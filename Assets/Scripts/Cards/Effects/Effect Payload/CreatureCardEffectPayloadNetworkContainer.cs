@@ -11,6 +11,7 @@ public struct CreatureCardEffectPayloadNetworkContainer : INetworkSerializable {
             effectPayload = effectType switch {
                 CreatureCardEffectType.Overwhelm => new OverwhelmEffectPayload(),
                 CreatureCardEffectType.Elusive => new ElusiveEffectPayload(),
+                CreatureCardEffectType.Range => new RangeEffectPayload(),
                 _ => throw new NotImplementedException("Attempting to read card type that is not defined: " + effectType.ToString())
             };
         }

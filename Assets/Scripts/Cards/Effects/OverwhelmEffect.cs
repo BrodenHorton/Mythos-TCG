@@ -8,7 +8,6 @@ public class OverwhelmEffect : CreatureCardEffect {
     public OverwhelmEffect() : base() { }
 
     public OverwhelmEffect(OverwhelmEffect effect) : base() {
-        effectType = CreatureCardEffectType.Overwhelm;
         duelManager = ServiceLocator.Get<DuelManager>();
     }
 

@@ -6,9 +6,7 @@ public class ElusiveEffect : CreatureCardEffect {
 
     public ElusiveEffect() : base() { }
 
-    public ElusiveEffect(ElusiveEffect effect) : base() {
-        effectType = CreatureCardEffectType.Elusive;
-    }
+    public ElusiveEffect(ElusiveEffect effect) : base() { }
 
     public override void Init(Guid creatureCardUuid) {
         this.creatureCardUuid = creatureCardUuid;

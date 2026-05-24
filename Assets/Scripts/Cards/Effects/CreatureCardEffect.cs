@@ -4,7 +4,6 @@ using Unity.Netcode;
 [Serializable]
 public abstract class CreatureCardEffect : INetworkSerializable {
     protected Guid creatureCardUuid;
-    protected CreatureCardEffectType effectType;
 
     public CreatureCardEffect() { }
 
@@ -19,6 +18,4 @@ public abstract class CreatureCardEffect : INetworkSerializable {
     public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
 
     public Guid CreatureCardUuid { get { return creatureCardUuid; } }
-
-    public CreatureCardEffectType EffectType { get { return effectType; } }
 }
