@@ -18,7 +18,7 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
             return;
 
         if (IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attackerUI))
-            EventBus.Instance.InvokeOnSelectAttackerToDefend(new SelectAttackerToDefendEventArgs(combatFieldUI, attackerUI, args.CardUI));
+            EventBus.Instance.InvokeOnSelectAttackerToDefendUI(new SelectAttackerToDefendUIEventArgs(combatFieldUI, attackerUI, args.CardUI));
     }
 
     private bool IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attacker) {

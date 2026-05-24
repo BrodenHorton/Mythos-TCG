@@ -2,9 +2,7 @@
 
 public class NullCard : Card {
 
-    public NullCard() {
-        cardType = CardType.Null;
-    }
+    public NullCard() { }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
         return false;
@@ -21,6 +19,4 @@ public class NullCard : Card {
     public override CardPayload GetCardPayload() {
         return new NullCardPayload();
     }
-
-    //public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

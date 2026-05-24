@@ -77,15 +77,15 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         throw new Exception("Unable to find playing field UI controller with card uuid: " + args.CardPayload.Uuid);
     }
 
-    private void RemoveAttacker(object sender, DeclareAttackerPayloadEventArgs args) {
+    private void RemoveAttacker(object sender, CombatCreaturePayloadEventArgs args) {
         if (controllerByPlayerId[args.InitiatorId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
 
-        if (controllerByPlayerId[args.InitiatorId].ContainsCreature(args.Attacker.Uuid))
-            controllerByPlayerId[args.InitiatorId].RemoveCreature(args.Attacker.Uuid);
+        if (controllerByPlayerId[args.InitiatorId].ContainsCreature(args.Card.Uuid))
+            controllerByPlayerId[args.InitiatorId].RemoveCreature(args.Card.Uuid);
     }
 
-    private void RemoveDefender(object sender, DeclareDefenderPayloadEventArgs args) {
+    private void RemoveDefender(object sender, CreatureCombatPayloadEventArgs args) {
         if (controllerByPlayerId[args.TargetId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.TargetId);
 
@@ -93,18 +93,18 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             controllerByPlayerId[args.TargetId].RemoveCreature(args.Defender.Uuid);
     }
 
-    public void UndeclareAttacker(object sender, UndeclareAttackerPayloadEventArgs args) {
+    public void UndeclareAttacker(object sender, CombatCreaturePayloadEventArgs args) {
         if (controllerByPlayerId[args.InitiatorId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
 
-        controllerByPlayerId[args.InitiatorId].PlayCreatureCard(args.Attacker);
+        controllerByPlayerId[args.InitiatorId].PlayCreatureCard(args.Card);
     }
 
-    public void UndeclareDefender(object sender, UndeclareDefenderPayloadEventArgs args) {
+    public void UndeclareDefender(object sender, CombatCreaturePayloadEventArgs args) {
         if (controllerByPlayerId[args.TargetId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.TargetId);
 
-        controllerByPlayerId[args.TargetId].PlayCreatureCard(args.Defender);
+        controllerByPlayerId[args.TargetId].PlayCreatureCard(args.Card);
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {

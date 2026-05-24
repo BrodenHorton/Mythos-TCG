@@ -15,7 +15,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayingFieldCardEventArgs<CreatureFieldCardUI>> OnStartCardDragPlayingField;
     public event EventHandler<PlayingFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCardDragPlayingField;
     public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardOverCombatArea;
-    public event EventHandler<SelectAttackerToDefendEventArgs> OnSelectAttackerToDefend;
+    public event EventHandler<SelectAttackerToDefendUIEventArgs> OnSelectAttackerToDefendUI;
     // Playing Cards
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
     public event EventHandler<PlayerCardEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
@@ -28,16 +28,17 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Declaring and Undeclaring creatures
-    public event EventHandler<DeclareAttackerEventArgs> OnDeclareAttacker;
-    public event EventHandler<DeclareAttackerPayloadEventArgs> OnDeclareAttackerFinished;
-    public event EventHandler<DeclareDefenderEventArgs> OnDeclareDefender;
-    public event EventHandler<DeclareDefenderPayloadEventArgs> OnDeclareDefenderFinished;
-    public event EventHandler<UndeclareAttackerEventArgs> OnUndeclareAttacker;
-    public event EventHandler<UndeclareAttackerPayloadEventArgs> OnUndeclareAttackerFinished;
-    public event EventHandler<UndeclareDefenderEventArgs> OnUndeclareDefender;
-    public event EventHandler<UndeclareDefenderPayloadEventArgs> OnUndeclareDefenderFinished;
+    public event EventHandler<CanDefendEventArgs> OnSelectAttackerToDefend;
+    public event EventHandler<CombatCreatureEventArgs> OnDeclareAttacker;
+    public event EventHandler<CombatCreaturePayloadEventArgs> OnDeclareAttackerFinished;
+    public event EventHandler<CreatureCombatEventArgs> OnDeclareDefender;
+    public event EventHandler<CreatureCombatPayloadEventArgs> OnDeclareDefenderFinished;
+    public event EventHandler<CombatCreatureEventArgs> OnUndeclareAttacker;
+    public event EventHandler<CombatCreaturePayloadEventArgs> OnUndeclareAttackerFinished;
+    public event EventHandler<CombatCreatureEventArgs> OnUndeclareDefender;
+    public event EventHandler<CombatCreaturePayloadEventArgs> OnUndeclareDefenderFinished;
     // Combat
-    public event EventHandler<CreatureAttackEventArgs> OnCreatureAttack;
+    public event EventHandler<CreatureCombatEventArgs> OnCreatureAttack;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealed;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureHealedFinished;
     public event EventHandler<CreatureDamagedByCreatureEventArgs> OnCreatureDamagedByCreature;
@@ -49,6 +50,8 @@ public class EventBus : NetworkBehaviour {
     // Creature Actions
     public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureTapped;
     public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntapped;
+    // Creature Effects
+    public event EventHandler<CanDefendEventArgs> OnSelectElusiveAttackerToDefend;
 
     public static EventBus Instance { get; private set; }
 
@@ -140,8 +143,8 @@ public class EventBus : NetworkBehaviour {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
     }
 
-    public void InvokeOnSelectAttackerToDefend(SelectAttackerToDefendEventArgs args) {
-        OnSelectAttackerToDefend?.Invoke(this, args);
+    public void InvokeOnSelectAttackerToDefendUI(SelectAttackerToDefendUIEventArgs args) {
+        OnSelectAttackerToDefendUI?.Invoke(this, args);
     }
     #endregion
 
@@ -237,53 +240,60 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Declaring and Undeclaring Creatures
-    public void InvokeOnDeclareAttacker(DeclareAttackerEventArgs args) {
+    public void InvokeOnSelectAttackerToDefend(CanDefendEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnSelectAttackerToDefend can only be called by the server");
+
+        OnSelectAttackerToDefend?.Invoke(this, args);
+    }
+
+    public void InvokeOnDeclareAttacker(CombatCreatureEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnDeclareAttacker can only be called by the server");
 
         OnDeclareAttacker?.Invoke(this, args);
     }
 
-    public void InvokeOnDeclareAttackerFinished(DeclareAttackerPayloadEventArgs args) {
+    public void InvokeOnDeclareAttackerFinished(CombatCreaturePayloadEventArgs args) {
         OnDeclareAttackerFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnDeclareDefender(DeclareDefenderEventArgs args) {
+    public void InvokeOnDeclareDefender(CreatureCombatEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnDeclareDefender can only be called by the server");
 
         OnDeclareDefender?.Invoke(this, args);
     }
 
-    public void InvokeOnDeclareDefenderFinished(DeclareDefenderPayloadEventArgs args) {
+    public void InvokeOnDeclareDefenderFinished(CreatureCombatPayloadEventArgs args) {
         OnDeclareDefenderFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnUndelcareAttacker(UndeclareAttackerEventArgs args) {
+    public void InvokeOnUndelcareAttacker(CombatCreatureEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnUnDeclareAttacker can only be called by the server");
 
         OnUndeclareAttacker?.Invoke(this, args);
     }
 
-    public void InvokeOnUndelcareAttackerFinished(UndeclareAttackerPayloadEventArgs args) {
+    public void InvokeOnUndelcareAttackerFinished(CombatCreaturePayloadEventArgs args) {
         OnUndeclareAttackerFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnUndeclareDefender(UndeclareDefenderEventArgs args) {
+    public void InvokeOnUndeclareDefender(CombatCreatureEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnUnDeclareDefender can only be called by the server");
 
         OnUndeclareDefender?.Invoke(this, args);
     }
 
-    public void InvokeOnUndeclareDefenderFinished(UndeclareDefenderPayloadEventArgs args) {
+    public void InvokeOnUndeclareDefenderFinished(CombatCreaturePayloadEventArgs args) {
         OnUndeclareDefenderFinished?.Invoke(this, args);
     }
     #endregion
 
     #region Combat
-    public void InvokeOnCreatureAttack(CreatureAttackEventArgs args) {
+    public void InvokeOnCreatureAttack(CreatureCombatEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnCreatureAttack can only be invoked by the server");
 
@@ -348,6 +358,15 @@ public class EventBus : NetworkBehaviour {
 
     public void InvokeOnCreatureUntapped(CardPayloadEventArgs<CreatureCardPayload> args) {
         OnCreatureUntapped?.Invoke(this, args);
+    }
+    #endregion
+
+    #region Creature Effects
+    public void InvokeOnSelectElusiveAttackerToDefend(CanDefendEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnSelectElusiveAttackerToDefend can only be called by the server");
+
+        OnSelectElusiveAttackerToDefend?.Invoke(this, args);
     }
     #endregion
 }

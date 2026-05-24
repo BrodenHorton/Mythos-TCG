@@ -75,13 +75,13 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (creatureCard == null)
             return;
 
-        EventBus.Instance.InvokeOnUndelcareAttacker(new UndeclareAttackerEventArgs(initiator.PlayerId, targetId, creatureCard));
+        EventBus.Instance.InvokeOnUndelcareAttacker(new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard));
         InvokeOnUndeclareAttackerFinishedClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(creatureCard));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnUndeclareAttackerFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload card) {
-        EventBus.Instance.InvokeOnUndelcareAttackerFinished(new UndeclareAttackerPayloadEventArgs(initiatorId, targetId, card));
+        EventBus.Instance.InvokeOnUndelcareAttackerFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, card));
     }
 
     private void UndeclareDefender(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
@@ -108,13 +108,13 @@ public class CombatFieldUIController : NetworkBehaviour {
             return;
 
         ulong initiatorId = duelManager.GetCurrentPlayerTurn().PlayerId;
-        EventBus.Instance.InvokeOnUndeclareDefender(new UndeclareDefenderEventArgs(initiatorId, targetId, defender));
+        EventBus.Instance.InvokeOnUndeclareDefender(new CombatCreatureEventArgs(initiatorId, targetId, defender));
         InvokeOnUndeclareDefenderFinishedClientRpc(initiatorId, targetId, new CreatureCardPayload(defender));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnUndeclareDefenderFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload defender) {
-        EventBus.Instance.InvokeOnUndeclareDefenderFinished(new UndeclareDefenderPayloadEventArgs(initiatorId, targetId, defender));
+        EventBus.Instance.InvokeOnUndeclareDefenderFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, defender));
     }
 
     public void ReleaseCreatureCards(ulong initiatorId, ulong targetId) {

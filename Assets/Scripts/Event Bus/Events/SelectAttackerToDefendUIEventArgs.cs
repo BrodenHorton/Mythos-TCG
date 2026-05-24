@@ -1,11 +1,11 @@
 ﻿using System;
 
-public class SelectAttackerToDefendEventArgs : EventArgs {
+public class SelectAttackerToDefendUIEventArgs : EventArgs {
     private CombatFieldUI combatFieldUI;
     private CreatureFieldCardUI attacker;
     private CreatureFieldCardUI defender;
 
-    public SelectAttackerToDefendEventArgs(CombatFieldUI combatFieldUI, CreatureFieldCardUI attacker, CreatureFieldCardUI defender) {
+    public SelectAttackerToDefendUIEventArgs(CombatFieldUI combatFieldUI, CreatureFieldCardUI attacker, CreatureFieldCardUI defender) {
         this.combatFieldUI = combatFieldUI;
         this.attacker = attacker;
         this.defender = defender;

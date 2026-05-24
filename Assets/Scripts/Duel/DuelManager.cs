@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEngine;
 
 public class DuelManager : NetworkBehaviour {
     private static readonly int STARTING_LIFE_POINTS = 20;
@@ -12,6 +13,8 @@ public class DuelManager : NetworkBehaviour {
     public event EventHandler<NextPlayerTurnEventArgs> OnNextPlayerTurn;
     public event EventHandler<int> OnNextPlayerTurnClient;
     public event EventHandler<int> OnNextFullTurn;
+
+    [SerializeField] private DeckSimulation deckSim;
 
     private List<MatchPlayer> players;
     private int currentPlayerTurnIndex;
@@ -48,7 +51,8 @@ public class DuelManager : NetworkBehaviour {
 
         players = new List<MatchPlayer>();
         for (int i = 0; i < playerOrder.Length; i++) {
-            MatchPlayer player = new MatchPlayer(playerOrder[i], Temp_PopulateDeck());
+            List<Card> deck = deckSim != null ? deckSim.GenerateDeck() : Temp_PopulateDeck();
+            MatchPlayer player = new MatchPlayer(playerOrder[i], deck);
             players.Add(player);
         }
 
@@ -72,6 +76,7 @@ public class DuelManager : NetworkBehaviour {
             Card card = CardDatabase.Instance.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase();
             result.Add(card);
         }
+
         return result;
     }
 

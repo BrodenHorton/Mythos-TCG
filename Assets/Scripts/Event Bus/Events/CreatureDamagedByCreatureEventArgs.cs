@@ -1,4 +1,4 @@
-﻿public class CreatureDamagedByCreatureEventArgs : CreatureAttackEventArgs {
+﻿public class CreatureDamagedByCreatureEventArgs : CreatureCombatEventArgs {
     private int damage;
     private bool isCanceled;
 

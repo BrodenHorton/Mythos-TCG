@@ -2832,7 +2832,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cbe48f0c2781324ea26c075e82d9086, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellChainManager: {fileID: 1065170591}
   spellChainUI: {fileID: 5916366222310076826}
 --- !u!1 &1065170589
 GameObject:
@@ -3880,6 +3879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  deckSim: {fileID: 11400000, guid: 8f3fe12b486aa9b49bae122c39cb948b, type: 2}
 --- !u!114 &1336480731
 MonoBehaviour:
   m_ObjectHideFlags: 0

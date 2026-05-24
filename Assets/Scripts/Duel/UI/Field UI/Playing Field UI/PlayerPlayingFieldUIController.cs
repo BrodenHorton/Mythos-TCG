@@ -12,7 +12,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += SetSelectableCards;
         combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += SetSelectableCards;
         EventBus.Instance.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
-        EventBus.Instance.OnSelectAttackerToDefend += DeclareDefender;
+        EventBus.Instance.OnSelectAttackerToDefendUI += DeclareDefender;
         actionManager.OnActionStateChanged += (sender, args) => {
             SetSelectableCardsServerRpc();
         };
@@ -151,16 +151,16 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (!creatureCard.CanAttack())
             return;
 
-        EventBus.Instance.InvokeOnDeclareAttacker(new DeclareAttackerEventArgs(initiator.PlayerId, targetId, creatureCard));
+        EventBus.Instance.InvokeOnDeclareAttacker(new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard));
         InvokeOnDeclareAttackerPayloadClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(creatureCard));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnDeclareAttackerPayloadClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload cardPayload) {
-        EventBus.Instance.InvokeOnDeclareAttackerFinished(new DeclareAttackerPayloadEventArgs(initiatorId, targetId, cardPayload));
+        EventBus.Instance.InvokeOnDeclareAttackerFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, cardPayload));
     }
 
-    private void DeclareDefender(object sender, SelectAttackerToDefendEventArgs args) {
+    private void DeclareDefender(object sender, SelectAttackerToDefendUIEventArgs args) {
         TcgLogger.Log("DeclareDefender Entered");
         DeclareDefenderServerRpc(args.CombatFieldUI.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
     }
@@ -186,13 +186,18 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (attacker == null)
             return;
 
-        EventBus.Instance.InvokeOnDeclareDefender(new DeclareDefenderEventArgs(initiator.PlayerId, targetId, attacker, defender));
+        CanDefendEventArgs args = new CanDefendEventArgs(initiator.PlayerId, targetId, attacker, defender);
+        EventBus.Instance.InvokeOnSelectAttackerToDefend(args);
+        if (!args.CanDefend)
+            return;
+
+        EventBus.Instance.InvokeOnDeclareDefender(new CreatureCombatEventArgs(initiator.PlayerId, targetId, attacker, defender));
         InvokeOnDeclareDefenderPayloadClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(attacker), new CreatureCardPayload(defender));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnDeclareDefenderPayloadClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload attacker, CreatureCardPayload defender) {
-        EventBus.Instance.InvokeOnDeclareDefenderFinished(new DeclareDefenderPayloadEventArgs(initiatorId, targetId, attacker, defender));
+        EventBus.Instance.InvokeOnDeclareDefenderFinished(new CreatureCombatPayloadEventArgs(initiatorId, targetId, attacker, defender));
     }
 
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {

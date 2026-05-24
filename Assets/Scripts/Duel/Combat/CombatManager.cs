@@ -27,18 +27,18 @@ public class CombatManager : NetworkBehaviour {
         EventBus.Instance.OnUndeclareDefender += UndeclareDefender;
     }
 
-    private void DeclareAttacker(object sender, DeclareAttackerEventArgs args) {
+    private void DeclareAttacker(object sender, CombatCreatureEventArgs args) {
         if (!IsServer)
             return;
 
-        AddAttacker(args.InitiatorId, args.TargetId, args.Attacker);
+        AddAttacker(args.InitiatorId, args.TargetId, args.Card);
     }
 
-    private void UndeclareAttacker(object sender, UndeclareAttackerEventArgs args) {
+    private void UndeclareAttacker(object sender, CombatCreatureEventArgs args) {
         if (!IsServer)
             return;
 
-        RemoveAttacker(args.InitiatorId, args.TargetId, args.Attacker.Uuid);
+        RemoveAttacker(args.InitiatorId, args.TargetId, args.Card.Uuid);
     }
 
     public void AddAttacker(ulong initiatorId, ulong targetId, CreatureCard card) {
@@ -56,18 +56,18 @@ public class CombatManager : NetworkBehaviour {
         }
     }
 
-    private void DeclareDefender(object sender, DeclareDefenderEventArgs args) {
+    private void DeclareDefender(object sender, CreatureCombatEventArgs args) {
         if (!IsServer)
             return;
 
         AddDefender(args.InitiatorId, args.TargetId, args.Attacker, args.Defender);
     }
 
-    private void UndeclareDefender(object sender, UndeclareDefenderEventArgs args) {
+    private void UndeclareDefender(object sender, CombatCreatureEventArgs args) {
         if (!IsServer)
             return;
 
-        RemoveDefender(args.InitiatorId, args.TargetId, args.Defender.Uuid);
+        RemoveDefender(args.InitiatorId, args.TargetId, args.Card.Uuid);
     }
 
     public void AddDefender(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
@@ -109,7 +109,7 @@ public class CombatManager : NetworkBehaviour {
         DuelistCombat duelistCombat = duelistCombats[0];
         for (int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
             CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
-            EventBus.Instance.InvokeOnCreatureAttack(new CreatureAttackEventArgs(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombat));
+            EventBus.Instance.InvokeOnCreatureAttack(new CreatureCombatEventArgs(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombat));
             if (creatureCombat.Defender == null) {
                 MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
                 target.DamageLifePoints(creatureCombat.Attacker.GetAtk());

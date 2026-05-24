@@ -1,19 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
 public class DomainCard : Card {
     [SerializeField] private DomainCardBase cardBase;
     //[SerializeField] private List<SpellCardEffect> effects;
 
-    public DomainCard() {
-        cardType = CardType.Domain;
-    }
-
     public DomainCard(DomainCardBase cardBase) {
-        cardType = CardType.Domain;
         this.cardBase = cardBase;
         //effects = new List<SpellCardEffect>();
     }

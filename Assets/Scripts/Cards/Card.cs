@@ -3,7 +3,6 @@ using System;
 [Serializable]
 public abstract class Card {
     protected Guid uuid;
-    protected CardType cardType;
 
     public Card() {
         uuid = Guid.NewGuid();
@@ -20,6 +19,4 @@ public abstract class Card {
     public abstract CardPayload GetCardPayload();
 
     public Guid Uuid { get { return uuid; } }
-
-    public CardType CardType { get { return cardType; } }
 }

@@ -8,12 +8,7 @@ public class SpellCard : Card {
     [SerializeField] private SpellCardBase cardBase;
     //[SerializeField] private List<SpellCardEffect> effects;
 
-    public SpellCard() {
-        cardType = CardType.Spell;
-    }
-
     public SpellCard(SpellCardBase cardBase) {
-        cardType = CardType.Spell;
         this.cardBase = cardBase;
         //effects = new List<SpellCardEffect>();
     }

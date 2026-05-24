@@ -16,12 +16,7 @@ public partial class CreatureCard : Card {
     private Action<CreatureCard> creatureDamagedCallback;
     private Action<CreatureCard> creatureDestroyedCallback;
 
-    public CreatureCard() {
-        cardType = CardType.Creature;
-    }
-
     public CreatureCard(CreatureCardBase cardBase) {
-        cardType = CardType.Creature;
         this.cardBase = cardBase;
         effects = new List<CreatureCardEffect>();
         for(int i = 0; i < cardBase.BaseEffects.Count; i++) {

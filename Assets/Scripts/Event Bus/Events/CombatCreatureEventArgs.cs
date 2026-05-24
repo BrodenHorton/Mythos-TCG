@@ -1,19 +1,19 @@
 ﻿using System;
 
-public class DeclareAttackerEventArgs : EventArgs {
+public class CombatCreatureEventArgs : EventArgs {
     private ulong initiatorId;
     private ulong targetId;
-    private CreatureCard attacker;
+    private CreatureCard card;
 
-    public DeclareAttackerEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker) {
+    public CombatCreatureEventArgs(ulong initiatorId, ulong targetId, CreatureCard card) {
         this.initiatorId = initiatorId;
         this.targetId = targetId;
-        this.attacker = attacker;
+        this.card = card;
     }
 
     public ulong InitiatorId { get { return initiatorId; } }
 
     public ulong TargetId { get { return targetId; } }
 
-    public CreatureCard Attacker { get { return attacker; } }
+    public CreatureCard Card { get { return card; } }
 }

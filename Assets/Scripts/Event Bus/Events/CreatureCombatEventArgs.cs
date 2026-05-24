@@ -1,12 +1,15 @@
 ﻿using System;
 
-public class DeclareDefenderEventArgs : EventArgs {
+public class CreatureCombatEventArgs : EventArgs {
     private ulong initiatorId;
     private ulong targetId;
     private CreatureCard attacker;
     private CreatureCard defender;
 
-    public DeclareDefenderEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
+    public CreatureCombatEventArgs(ulong initiatorid, ulong targetId, CreatureCombat creatureCombat)
+        : this(initiatorid, targetId, creatureCombat.Attacker, creatureCombat.Defender) { }
+
+    public CreatureCombatEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender) {
         this.initiatorId = initiatorId;
         this.targetId = targetId;
         this.attacker = attacker;

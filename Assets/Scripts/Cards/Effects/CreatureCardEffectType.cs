@@ -1,4 +1,5 @@
 ﻿public enum CreatureCardEffectType {
     None,
-    Overwhelm
+    Overwhelm,
+    Elusive
 }
