@@ -7,7 +7,7 @@ public abstract class CardBase : ScriptableObject {
     [SerializeField] protected int manaCost;
     [SerializeField] protected Domain domain;
 
-    public abstract Card GenerateCardFromBase();
+    public abstract Card GenerateCardFromBase(ulong playerId);
 
     public string Id { get { return id; } }
 

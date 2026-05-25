@@ -2,7 +2,7 @@
 
 public class NullCard : Card {
 
-    public NullCard() { }
+    public NullCard(ulong playerId) : base(playerId) { }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
         return false;

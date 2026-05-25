@@ -41,14 +41,6 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.UpdateCreatureFieldCard(card);
     }
 
-    public override void TapCreature(Guid cardUuid) {
-        playingFieldUI.TapCreature(cardUuid);
-    }
-
-    public override void UntapCreature(Guid cardUuid) {
-        playingFieldUI.UntapCreature(cardUuid);
-    }
-
     private void SetSelectableCards(object sender, ulong playerId) {
         if (this.playerId != playerId)
             return;

@@ -48,9 +48,11 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDestroyedFinished;
     public event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
-    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnSummoningSickness;
-    public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureTapped;
-    public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntapped;
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnEnteringFieldSummoningSickness;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureTapped;
+    public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureTappedFinished;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureUntapped;
+    public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntappedFinished;
     // Creature Effects
     public event EventHandler<CanDefendEventArgs> OnSelectElusiveAttackerToDefend;
 
@@ -353,16 +355,28 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Creature Actions
-    public void InvokeOnSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
-        OnSummoningSickness?.Invoke(this, args);
+    public void InvokeOnEnteringFieldSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        OnEnteringFieldSummoningSickness?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureTapped(CardPayloadEventArgs<CreatureCardPayload> args) {
+    public void InvokeOnCreatureTapped(PlayerCardCancelableEventArgs<CreatureCard> args) {
         OnCreatureTapped?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureUntapped(CardPayloadEventArgs<CreatureCardPayload> args) {
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnCreatureTappedFinishedClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
+        PlayerCardPayloadEventArgs<CreatureCardPayload> args = new PlayerCardPayloadEventArgs<CreatureCardPayload>(playerId, cardPayload);
+        OnCreatureTappedFinished?.Invoke(this, args);
+    }
+
+    public void InvokeOnCreatureUntapped(PlayerCardCancelableEventArgs<CreatureCard> args) {
         OnCreatureUntapped?.Invoke(this, args);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnCreatureUntappedFinishedClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
+        PlayerCardPayloadEventArgs<CreatureCardPayload> args = new PlayerCardPayloadEventArgs<CreatureCardPayload>(playerId, cardPayload);
+        OnCreatureUntappedFinished?.Invoke(this, args);
     }
     #endregion
 

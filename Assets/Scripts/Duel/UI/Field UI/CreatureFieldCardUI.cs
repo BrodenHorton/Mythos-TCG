@@ -26,6 +26,9 @@ public class CreatureFieldCardUI : FieldCardUI {
             healthColor = Color.green;
         health.color = healthColor;
         health.text = card.Health.ToString();
+
+        if (card.IsTapped)
+            Tap();
     }
 
     public void Tap() {

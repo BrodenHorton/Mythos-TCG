@@ -70,7 +70,6 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         if (!IsServer)
             return;
 
-        TcgLogger.Log("Entered SkipActin");
         RemoveTopPlayerIndex();
         if (declareSpellsPlayerIndices.Count > 0)
             AddNextSpellAction();

@@ -51,7 +51,7 @@ public class DuelManager : NetworkBehaviour {
 
         players = new List<MatchPlayer>();
         for (int i = 0; i < playerOrder.Length; i++) {
-            List<Card> deck = deckSim != null ? deckSim.GenerateDeck() : Temp_PopulateDeck();
+            List<Card> deck = deckSim != null ? deckSim.GenerateDeck(playerOrder[i]) : Temp_PopulateDeck(playerOrder[i]);
             MatchPlayer player = new MatchPlayer(playerOrder[i], deck);
             players.Add(player);
         }
@@ -68,12 +68,12 @@ public class DuelManager : NetworkBehaviour {
         OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(new List<ulong>(playerOrder), localClientPlayerIndex, STARTING_LIFE_POINTS, STARTING_MANA_COUNT));
     }
 
-    private List<Card> Temp_PopulateDeck() {
+    private List<Card> Temp_PopulateDeck(ulong playerId) {
         List<Card> result = new List<Card>();
         int tempDeckSize = 40;
         int databaseCardCount = CardDatabase.Instance.Cards.Count;
         for (int i = 0; i < tempDeckSize; i++) {
-            Card card = CardDatabase.Instance.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase();
+            Card card = CardDatabase.Instance.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase(playerId);
             result.Add(card);
         }
 

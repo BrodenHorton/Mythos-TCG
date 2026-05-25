@@ -8,7 +8,7 @@ public class SpellCard : Card {
     [SerializeField] private SpellCardBase cardBase;
     //[SerializeField] private List<SpellCardEffect> effects;
 
-    public SpellCard(SpellCardBase cardBase) {
+    public SpellCard(ulong playerId, SpellCardBase cardBase) : base(playerId) {
         this.cardBase = cardBase;
         //effects = new List<SpellCardEffect>();
     }

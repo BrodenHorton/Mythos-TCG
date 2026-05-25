@@ -29,14 +29,6 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.UpdateCreatureFieldCard(card);
     }
 
-    public override void TapCreature(Guid cardUuid) {
-        playingFieldUI.TapCreature(cardUuid);
-    }
-
-    public override void UntapCreature(Guid cardUuid) {
-        playingFieldUI.UntapCreature(cardUuid);
-    }
-
     public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
             playingFieldUI.AddCreatureFieldCard(creatures[i]);

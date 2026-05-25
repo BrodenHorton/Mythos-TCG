@@ -28,10 +28,6 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
 
     public abstract void UpdateCreatureFieldCard(CreatureCardPayload card);
 
-    public abstract void TapCreature(Guid cardUuid);
-
-    public abstract void UntapCreature(Guid cardUuid);
-
     public abstract void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures);
 
     public abstract bool ContainsCreature(Guid uuid);

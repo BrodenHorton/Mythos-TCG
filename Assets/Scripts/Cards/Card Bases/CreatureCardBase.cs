@@ -8,8 +8,8 @@ public class CreatureCardBase : CardBase {
     [SerializeField] private List<CreatureClass> creatureClasses;
     [SerializeReference, SubclassSelector] private List<CreatureCardEffect> baseEffects;
 
-    public override Card GenerateCardFromBase() {
-        return new CreatureCard(this);
+    public override Card GenerateCardFromBase(ulong playerId) {
+        return new CreatureCard(playerId, this);
     }
 
     public int Atk { get { return atk; } }

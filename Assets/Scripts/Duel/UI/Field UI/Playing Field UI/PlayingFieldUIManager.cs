@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class PlayingFieldUIManager : NetworkBehaviour {
     [SerializeField] private List<PlayingFieldUIController> controllers;
@@ -16,8 +17,8 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         duelManager.OnPlayersInitialization += Init;
         EventBus.Instance.OnCreatureCardPlayedFromHand += PlayCreatureCard;
         EventBus.Instance.OnDomainCardPlayedFromHand += PlayDomainCard;
-        EventBus.Instance.OnCreatureTapped += TapCreature;
-        EventBus.Instance.OnCreatureUntapped += UntapCreature;
+        EventBus.Instance.OnCreatureTappedFinished += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureUntappedFinished += UpdateCreatureFieldCard;
         EventBus.Instance.OnDeclareAttackerFinished += RemoveAttacker;
         EventBus.Instance.OnDeclareDefenderFinished += RemoveDefender;
         EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
@@ -53,28 +54,6 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
 
         controllerByPlayerId[args.PlayerId].PlayDomainCard(args.CardPayload);
-    }
-
-    public void TapCreature(object sender, CardPayloadEventArgs<CreatureCardPayload> args) {
-        foreach(PlayerPlayingFieldUIController controller in controllerByPlayerId.Values) {
-            if(controller.ContainsCreature(args.CardPayload.Uuid)) {
-                controller.TapCreature(args.CardPayload.Uuid);
-                return;
-            }
-        }
-
-        throw new Exception("Unable to find playing field UI controller with card uuid: " + args.CardPayload.Uuid);
-    }
-
-    public void UntapCreature(object sender, CardPayloadEventArgs<CreatureCardPayload> args) {
-        foreach (PlayerPlayingFieldUIController controller in controllerByPlayerId.Values) {
-            if (controller.ContainsCreature(args.CardPayload.Uuid)) {
-                controller.UntapCreature(args.CardPayload.Uuid);
-                return;
-            }
-        }
-
-        throw new Exception("Unable to find playing field UI controller with card uuid: " + args.CardPayload.Uuid);
     }
 
     private void RemoveAttacker(object sender, CombatCreaturePayloadEventArgs args) {

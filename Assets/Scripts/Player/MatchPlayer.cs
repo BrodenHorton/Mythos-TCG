@@ -39,12 +39,10 @@ public class MatchPlayer {
     public void PlayCreatureCardFromHand(CreatureCard card) {
         RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
-        card.CreatureHealthChangedCallback = OnCreatureHealthChangedCallback;
-        card.CreatureDamagedCallback = OnCreatureDamagedCallback;
         card.CreatureDestroyedCallback = OnCreatureDestroyCallback;
 
         PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, card);
-        EventBus.Instance.InvokeOnSummoningSickness(args);
+        EventBus.Instance.InvokeOnEnteringFieldSummoningSickness(args);
         card.HasSummoningSickness = !args.IsCanceled;
 
         creatures.Add(card);
@@ -102,16 +100,6 @@ public class MatchPlayer {
             if (creatures[i].HasSummoningSickness)
                 creatures[i].HasSummoningSickness = false;
         }
-    }
-
-    public void OnCreatureHealthChangedCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureHealed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
-        EventBus.Instance.InvokeOnCreatureHealedFinishedClientRpc(playerId, new CreatureCardPayload(card));
-    }
-
-    public void OnCreatureDamagedCallback(CreatureCard card) {
-        EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, card));
-        EventBus.Instance.InvokeOnCreatureDamagedFinishedClientRpc(playerId, new CreatureCardPayload(card));
     }
 
     public void OnCreatureDestroyCallback(CreatureCard card) {

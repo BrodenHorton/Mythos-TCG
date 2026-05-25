@@ -21,6 +21,8 @@ public class CombatFieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnDeclareDefenderFinished += AddDefender;
         EventBus.Instance.OnUndeclareAttackerFinished += RemoveAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += RemoveDefender;
+        EventBus.Instance.OnCreatureTappedFinished += UpdateCreatureFieldCard;
+        EventBus.Instance.OnCreatureUntappedFinished += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDamagedFinished += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureHealedFinished += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
@@ -75,11 +77,9 @@ public class CombatFieldUIManager : NetworkBehaviour {
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
-        TcgLogger.Log("[CombatFieldUIManager] UpdatingCreatureFieldCard after creature damaged");
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + args.PlayerId);
 
-        TcgLogger.Log("[CombatFieldUIManager] PlayerId: " + args.PlayerId);
         if (controllerByPlayerId[args.PlayerId].ContainsAttacker(args.CardPayload.Uuid) || controllerByPlayerId[args.PlayerId].ContainsDefender(args.CardPayload.Uuid))
             controllerByPlayerId[args.PlayerId].UpdateCreatureFieldCard(args.CardPayload);
     }

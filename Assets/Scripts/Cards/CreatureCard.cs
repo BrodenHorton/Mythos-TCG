@@ -11,11 +11,9 @@ public partial class CreatureCard : Card {
     [SerializeField] private int damage;
     [SerializeField] private List<CreatureCardEffect> effects;
 
-    private Action<CreatureCard> creatureHealthChangedCallback;
-    private Action<CreatureCard> creatureDamagedCallback;
     private Action<CreatureCard> creatureDestroyedCallback;
 
-    public CreatureCard(CreatureCardBase cardBase) {
+    public CreatureCard(ulong playerId, CreatureCardBase cardBase) : base(playerId) {
         this.cardBase = cardBase;
         effects = new List<CreatureCardEffect>();
         for(int i = 0; i < cardBase.BaseEffects.Count; i++) {
@@ -60,13 +58,27 @@ public partial class CreatureCard : Card {
     }
 
     public void Tap() {
+        if (isTapped)
+            throw new Exception("Attempting to tap a creature that is already tapped");
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, this);
+        EventBus.Instance.InvokeOnCreatureTapped(args);
+        if (args.IsCanceled)
+            return;
+
         isTapped = true;
-        EventBus.Instance.InvokeOnCreatureTapped(new CardPayloadEventArgs<CreatureCardPayload>(new CreatureCardPayload(this))); 
+        EventBus.Instance.InvokeOnCreatureTappedFinishedClientRpc(playerId, new CreatureCardPayload(this));
     }
 
     public void Untap() {
+        if (!isTapped)
+            throw new Exception("Attempting to untap a creature that isn't tapped");
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, this);
+        EventBus.Instance.InvokeOnCreatureUntapped(args);
+        if (args.IsCanceled)
+            return;
+
         isTapped = false;
-        EventBus.Instance.InvokeOnCreatureUntapped(new CardPayloadEventArgs<CreatureCardPayload>(new CreatureCardPayload(this)));
+        EventBus.Instance.InvokeOnCreatureUntappedFinishedClientRpc(playerId, new CreatureCardPayload(this));
     }
 
     public bool CanAttack() {
@@ -79,8 +91,9 @@ public partial class CreatureCard : Card {
 
     public void InflictDamage(int amt) {
         damage += amt;
-        creatureDamagedCallback?.Invoke(this);
-        if(GetHealth() <= 0)
+        EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, this));
+        EventBus.Instance.InvokeOnCreatureDamagedFinishedClientRpc(playerId, new CreatureCardPayload(this));
+        if (GetHealth() <= 0)
             creatureDestroyedCallback?.Invoke(this);
     }
 
@@ -100,28 +113,13 @@ public partial class CreatureCard : Card {
 
     public int BaseHealth { get { return cardBase.Health; } }
 
-    // Might want to make a callback method for summoning sickness since the event needs to know the player id
     public bool HasSummoningSickness { get { return hasSummoningSickness; } set { hasSummoningSickness = value; } }
 
     public bool IsTapped { get { return isTapped; } }
 
-    public int CurrentDamage {
-        get {
-            return damage;
-        }
-        set {
-            if(damage != value) {
-                damage = value;
-                creatureHealthChangedCallback?.Invoke(this);
-            }
-        }
-    }
+    public int CurrentDamage { get { return damage; } set { damage = value; } }
 
     public List<CreatureCardEffect> Effects { get { return effects; } }
-
-    public Action<CreatureCard> CreatureHealthChangedCallback { get { return creatureDamagedCallback; } set { creatureHealthChangedCallback = value; } }
-
-    public Action<CreatureCard> CreatureDamagedCallback { get { return creatureDamagedCallback; } set { creatureDamagedCallback = value; } }
 
     public Action<CreatureCard> CreatureDestroyedCallback { get { return creatureDestroyedCallback; } set { creatureDestroyedCallback = value; } }
 }

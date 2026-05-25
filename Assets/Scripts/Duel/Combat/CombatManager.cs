@@ -124,6 +124,7 @@ public class CombatManager : NetworkBehaviour {
                     creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
 
             }
+            creatureCombat.Attacker?.Tap();
         }
         CreatureCombatPayload[] creatureCombatPayloads = new CreatureCombatPayload[duelistCombat.CreatureCombats.Count];
         for(int i = 0; i < duelistCombat.CreatureCombats.Count; i++)

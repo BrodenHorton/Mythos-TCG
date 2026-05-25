@@ -6,7 +6,7 @@ public class DomainCard : Card {
     [SerializeField] private DomainCardBase cardBase;
     //[SerializeField] private List<SpellCardEffect> effects;
 
-    public DomainCard(DomainCardBase cardBase) {
+    public DomainCard(ulong playerId, DomainCardBase cardBase) : base(playerId) {
         this.cardBase = cardBase;
         //effects = new List<SpellCardEffect>();
     }

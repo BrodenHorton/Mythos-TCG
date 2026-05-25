@@ -42,42 +42,16 @@ public class PlayingFieldUI : MonoBehaviour {
 
     public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (!ContainsCreature(card.Uuid))
-            throw new Exception("Attempting to update creature field card that is not in the playing field");
+            return; // We don't throw here since the creature field card could be in the combat field instead
 
         GetCreatureFieldCardUIBy(card.Uuid).UpdateCreatureFieldCard(card);
     }
 
-    public void TapCreature(Guid cardUuid) {
-        foreach (CreatureFieldCardUI cardUI in creatures) {
-            if (cardUI.CardUuid == cardUuid) {
-                cardUI.Tap();
-                return;
-            }
-        }
+    public void RemoveCreature(Guid cardUuid) {
+        if (!ContainsCreature(cardUuid))
+            throw new Exception("Attempting to remove creature that is not in the playing field");
 
-        throw new Exception("Attempting to tap creature that is not in the playing field");
-    }
-
-    public void UntapCreature(Guid cardUuid) {
-        foreach (CreatureFieldCardUI cardUI in creatures) {
-            if (cardUI.CardUuid == cardUuid) {
-                cardUI.Untap();
-                return;
-            }
-        }
-
-        throw new Exception("Attempting to untap creature that is not in the playing field");
-    }
-
-    public void RemoveCreature(Guid uuid) {
-        foreach (CreatureFieldCardUI cardUI in creatures) {
-            if (cardUI.CardUuid == uuid) {
-                RemoveCreature(cardUI);
-                return;
-            }
-        }
-
-        throw new Exception("Attempting to remove creature that is not in the playing field");
+        RemoveCreature(GetCreatureFieldCardUIBy(cardUuid));
     }
 
     public void RemoveCreature(CreatureFieldCardUI cardUI) {
@@ -95,7 +69,7 @@ public class PlayingFieldUI : MonoBehaviour {
         for (int i = 0; i < cardCount; i++) {
             FieldCardUI cardUI = creatures[i];
             cardUI.transform.localScale = Vector3.one;
-            cardUI.transform.eulerAngles = Vector3.zero;
+            //cardUI.transform.eulerAngles = Vector3.zero;
             Vector3 cardPosition = creatureSlotOrigin.position;
             cardPosition.x += i * cardSpacing - handOffset;
             cardUI.transform.position = cardPosition;
