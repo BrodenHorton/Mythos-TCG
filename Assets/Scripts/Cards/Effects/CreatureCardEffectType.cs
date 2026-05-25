@@ -2,5 +2,6 @@
     None,
     Overwhelm,
     Elusive,
-    Range
+    Reach,
+    Swiftness
 }

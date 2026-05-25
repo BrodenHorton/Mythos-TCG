@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
@@ -101,7 +100,8 @@ public partial class CreatureCard : Card {
 
     public int BaseHealth { get { return cardBase.Health; } }
 
-    public bool HasSummoningSickness { get { return hasSummoningSickness; } }
+    // Might want to make a callback method for summoning sickness since the event needs to know the player id
+    public bool HasSummoningSickness { get { return hasSummoningSickness; } set { hasSummoningSickness = value; } }
 
     public bool IsTapped { get { return isTapped; } }
 

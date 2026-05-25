@@ -48,6 +48,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDestroyedFinished;
     public event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnSummoningSickness;
     public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureTapped;
     public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntapped;
     // Creature Effects
@@ -352,6 +353,10 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Creature Actions
+    public void InvokeOnSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        OnSummoningSickness?.Invoke(this, args);
+    }
+
     public void InvokeOnCreatureTapped(CardPayloadEventArgs<CreatureCardPayload> args) {
         OnCreatureTapped?.Invoke(this, args);
     }

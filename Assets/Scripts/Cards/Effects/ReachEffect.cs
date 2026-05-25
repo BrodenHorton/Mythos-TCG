@@ -2,11 +2,11 @@
 using Unity.Netcode;
 
 [Serializable]
-public class RangeEffect : CreatureCardEffect {
+public class ReachEffect : CreatureCardEffect {
 
-    public RangeEffect() : base() { }
+    public ReachEffect() : base() { }
 
-    public RangeEffect(RangeEffect effect) : base() { }
+    public ReachEffect(ReachEffect effect) : base() { }
 
     public override void Init(Guid creatureCardUuid) {
         this.creatureCardUuid = creatureCardUuid;
@@ -26,11 +26,11 @@ public class RangeEffect : CreatureCardEffect {
     }
 
     public override CreatureCardEffect DeepCopy() {
-        return new RangeEffect(this);
+        return new ReachEffect(this);
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {
-        return new RangeEffectPayload(this);
+        return new ReachEffectPayload(this);
     }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }

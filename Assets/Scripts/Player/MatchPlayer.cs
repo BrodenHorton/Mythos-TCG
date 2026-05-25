@@ -43,10 +43,15 @@ public class MatchPlayer {
     public void PlayCreatureCardFromHand(CreatureCard card) {
         RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
-        creatures.Add(card);
         card.CreatureHealthChangedCallback = OnCreatureHealthChangedCallback;
         card.CreatureDamagedCallback = OnCreatureDamagedCallback;
         card.CreatureDestroyedCallback = OnCreatureDestroyCallback;
+
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, card);
+        EventBus.Instance.InvokeOnSummoningSickness(args);
+        card.HasSummoningSickness = !args.IsCanceled;
+
+        creatures.Add(card);
         EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(playerId, card);
     }
 
