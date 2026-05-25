@@ -25,10 +25,6 @@ public class MatchPlayer {
         seriesWinCount = 0;
     }
 
-    public void ShuffleDeck() {
-        deck.Shuffle();
-    }
-
     public Card DrawCard() {
         if(deck.Count == 0)
             throw new Exception("Attempting to draw a card when the player has no cards in their deck");
@@ -91,46 +87,21 @@ public class MatchPlayer {
         EventBus.Instance.InvokeOnCardRemovedFromHand(playerId, card);
     }
 
-    public bool ContainsHandCardeUuid(Guid uuid) {
-        foreach (Card card in hand) {
-            if (card.Uuid == uuid)
-                return true;
-        }
-
-        return false;
-    }
-
-    public bool ContainsCreatureUuid(Guid uuid) {
-        foreach(CreatureCard card in creatures) {
-            if (card.Uuid == uuid)
-                return true;
-        }
-
-        return false;
-    }
-
-    public Card GetHandCardByUuid(Guid uuid) {
-        for (int i = 0; i < hand.Count; i++) {
-            if (hand[i].Uuid == uuid)
-                return hand[i];
-        }
-
-        throw new Exception("Unable to find player hand card with a Uuid of: " + uuid);
-    }
-
-    public CreatureCard GetCreatureByUuid(Guid uuid) {
-        for(int i = 0; i < creatures.Count; i++) {
-            if (creatures[i].Uuid == uuid)
-                return creatures[i];
-        }
-
-        throw new Exception("Unable to find player creature card with a Uuid of: " + uuid);
+    public void ShuffleDeck() {
+        deck.Shuffle();
     }
 
     public void DamageLifePoints(int amt) {
         int temp = lifePoints;
         lifePoints -= amt;
         EventBus.Instance.InvokeOnLifePointsChanged(playerId, lifePoints);
+    }
+
+    public void ClearSummoningSickness() {
+        for(int i = 0; i < creatures.Count; i++) {
+            if (creatures[i].HasSummoningSickness)
+                creatures[i].HasSummoningSickness = false;
+        }
     }
 
     public void OnCreatureHealthChangedCallback(CreatureCard card) {
@@ -147,6 +118,42 @@ public class MatchPlayer {
         EventBus.Instance.InvokeOnCreatureDestroyed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
         creatures.Remove(card);
         EventBus.Instance.InvokeOnCreatureDestroyedFinishedClientRpc(playerId, new CreatureCardPayload(card));
+    }
+
+    public Card GetHandCardByUuid(Guid uuid) {
+        for (int i = 0; i < hand.Count; i++) {
+            if (hand[i].Uuid == uuid)
+                return hand[i];
+        }
+
+        throw new Exception("Unable to find player hand card with a Uuid of: " + uuid);
+    }
+
+    public CreatureCard GetCreatureByUuid(Guid uuid) {
+        for (int i = 0; i < creatures.Count; i++) {
+            if (creatures[i].Uuid == uuid)
+                return creatures[i];
+        }
+
+        throw new Exception("Unable to find player creature card with a Uuid of: " + uuid);
+    }
+
+    public bool ContainsHandCardeUuid(Guid uuid) {
+        foreach (Card card in hand) {
+            if (card.Uuid == uuid)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool ContainsCreatureUuid(Guid uuid) {
+        foreach (CreatureCard card in creatures) {
+            if (card.Uuid == uuid)
+                return true;
+        }
+
+        return false;
     }
 
     public ulong PlayerId { get { return playerId; } }

@@ -10,8 +10,9 @@ public class DomainCardPayload : CardPayload {
     }
 
     public DomainCardPayload(DomainCard card) {
-        uuid = card.Uuid;
         cardType = CardType.Domain;
+        uuid = card.Uuid;
+        manaCost = card.GetManaCost();
         cardBase = card.CardBase;
     }
 
@@ -24,6 +25,7 @@ public class DomainCardPayload : CardPayload {
         serializer.SerializeValue(ref uuidStr);
         if (serializer.IsReader)
             uuid = Guid.Parse(uuidStr.ToString());
+        serializer.SerializeValue(ref manaCost);
         FixedString128Bytes cardBaseId = serializer.IsWriter ? cardBase.Id : "";
         serializer.SerializeValue(ref cardBaseId);
         if (serializer.IsReader)

@@ -16,8 +16,8 @@ public class CreatureCardPayload : CardPayload {
     }
 
     public CreatureCardPayload(CreatureCard card) {
-        uuid = card.Uuid;
         cardType = CardType.Creature;
+        uuid = card.Uuid;
         cardBase = card.CardBase;
         manaCost = card.GetManaCost();
         atk = card.GetAtk();

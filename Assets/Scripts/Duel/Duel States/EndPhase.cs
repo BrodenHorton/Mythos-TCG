@@ -5,9 +5,11 @@ using UnityEngine;
 public class EndPhase : NetworkBehaviour, DuelState {
     public EventHandler<ulong> OnEndPhase;
 
+    private DuelManager duelManager;
     private DuelStateManager stateManager;
 
     private void Start() {
+        duelManager = ServiceLocator.Get<DuelManager>();
         stateManager = ServiceLocator.Get<DuelStateManager>();
     }
 
@@ -15,8 +17,9 @@ public class EndPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        InvokeOnEndPhaseClientRpc(stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
-        stateManager.DuelManager.NextTurn();
+        InvokeOnEndPhaseClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId);
+        duelManager.GetCurrentPlayerTurn().ClearSummoningSickness();
+        duelManager.NextTurn();
         stateManager.SwitchState(stateManager.UntapPhase);
     }
 

@@ -10,14 +10,14 @@ public class SwiftnessEffect : CreatureCardEffect {
 
     public override void Init(Guid creatureCardUuid) {
         this.creatureCardUuid = creatureCardUuid;
-        EventBus.Instance.OnSummoningSickness += RestrictDefenders;
+        EventBus.Instance.OnSummoningSickness += RemoveSummoningSickness;
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnSummoningSickness -= RestrictDefenders;
+        EventBus.Instance.OnSummoningSickness -= RemoveSummoningSickness;
     }
 
-    private void RestrictDefenders(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {
+    private void RemoveSummoningSickness(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {
         if (args.Card.Uuid != creatureCardUuid)
             return;
 
