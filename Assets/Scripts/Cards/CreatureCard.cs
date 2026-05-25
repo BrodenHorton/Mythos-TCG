@@ -58,6 +58,7 @@ public partial class CreatureCard : Card {
     }
 
     public void Tap() {
+        TcgLogger.Log("Tap method entered");
         if (isTapped)
             throw new Exception("Attempting to tap a creature that is already tapped");
         PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, this);
@@ -65,6 +66,7 @@ public partial class CreatureCard : Card {
         if (args.IsCanceled)
             return;
 
+        TcgLogger.Log("Creature tapped");
         isTapped = true;
         EventBus.Instance.InvokeOnCreatureTappedFinishedClientRpc(playerId, new CreatureCardPayload(this));
     }

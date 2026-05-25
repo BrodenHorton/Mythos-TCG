@@ -107,8 +107,8 @@ public class CombatManager : NetworkBehaviour {
             throw new Exception("Attempting to process the next DuelistCombat when the duelistCombats list is empty");
 
         DuelistCombat duelistCombat = duelistCombats[0];
-        for (int j = 0; j < duelistCombat.CreatureCombats.Count; j++) {
-            CreatureCombat creatureCombat = duelistCombat.CreatureCombats[j];
+        for (int i = 0; i < duelistCombat.CreatureCombats.Count; i++) {
+            CreatureCombat creatureCombat = duelistCombat.CreatureCombats[i];
             EventBus.Instance.InvokeOnCreatureAttack(new CreatureCombatEventArgs(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombat));
             if (creatureCombat.Defender == null) {
                 MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);

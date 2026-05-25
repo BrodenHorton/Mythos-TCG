@@ -91,7 +91,6 @@ public class PlayerPlayingFieldUI : PlayingFieldUI {
         if (!ContainsCreature(draggingCard))
             throw new Exception("Unable to find draggingCard for ReleaseCardDrag");
 
-        TcgLogger.Log("Released field card");
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
         EventBus.Instance.InvokeOnReleaseCardDragPlayingField(new PlayingFieldCardEventArgs<CreatureFieldCardUI>(this, cardUI));

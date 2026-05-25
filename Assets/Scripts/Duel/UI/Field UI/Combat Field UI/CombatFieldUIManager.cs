@@ -76,12 +76,12 @@ public class CombatFieldUIManager : NetworkBehaviour {
             controllerByPlayerId[args.TargetId].RemoveDefender(args.Card.Uuid);
     }
 
+    // Move event listeners for card update into the FieldCard class
     public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
-        if (controllerByPlayerId[args.PlayerId] == null)
-            throw new Exception("Unable to find combat field UI controller with player Id: " + args.PlayerId);
-
-        if (controllerByPlayerId[args.PlayerId].ContainsAttacker(args.CardPayload.Uuid) || controllerByPlayerId[args.PlayerId].ContainsDefender(args.CardPayload.Uuid))
-            controllerByPlayerId[args.PlayerId].UpdateCreatureFieldCard(args.CardPayload);
+        foreach (CombatFieldUIController controller in controllerByPlayerId.Values) {
+            if (controller.ContainsAttacker(args.CardPayload.Uuid) || controller.ContainsDefender(args.CardPayload.Uuid))
+                controller.UpdateCreatureFieldCard(args.CardPayload);
+        }
     }
 
     public void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
