@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 public class PlayingFieldUIManager : NetworkBehaviour {
     [SerializeField] private List<PlayingFieldUIController> controllers;

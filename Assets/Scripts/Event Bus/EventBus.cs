@@ -49,9 +49,9 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnEnteringFieldSummoningSickness;
-    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureTapped;
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureTapped;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureTappedFinished;
-    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureUntapped;
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureUntapped;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntappedFinished;
     // Creature Effects
     public event EventHandler<CanDefendEventArgs> OnSelectElusiveAttackerToDefend;

@@ -3,5 +3,6 @@
     Overwhelm,
     Elusive,
     Reach,
-    Swiftness
+    Swiftness,
+    Endurance
 }

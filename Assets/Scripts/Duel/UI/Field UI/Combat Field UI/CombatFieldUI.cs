@@ -133,7 +133,6 @@ public class CombatFieldUI : MonoBehaviour {
         if (!ContainsAttacker(cardUI) && !ContainsDefender(cardUI))
             return;
 
-        TcgLogger.Log("OnSelectFieldCard Invoked");
         OnSelectFieldCard?.Invoke(this, new CombatFieldCardEventArgs<CreatureFieldCardUI>(this, cardUI));
     }
 

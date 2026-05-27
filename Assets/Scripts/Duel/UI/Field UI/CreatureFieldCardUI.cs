@@ -29,6 +29,8 @@ public class CreatureFieldCardUI : FieldCardUI {
 
         if (card.IsTapped)
             Tap();
+        else
+            Untap();
     }
 
     public void Tap() {
