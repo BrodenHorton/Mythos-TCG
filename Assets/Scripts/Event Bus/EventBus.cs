@@ -28,6 +28,8 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Declaring and Undeclaring creatures
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureAttack;
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureDefend;
     public event EventHandler<CanDefendEventArgs> OnSelectAttackerToDefend;
     public event EventHandler<CombatCreatureEventArgs> OnDeclareAttacker;
     public event EventHandler<CombatCreaturePayloadEventArgs> OnDeclareAttackerFinished;
@@ -243,6 +245,20 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Declaring and Undeclaring Creatures
+    public void InvokeOnCanCreatureAttack(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCanCreatureAttack can only be called by the server");
+
+        OnCanCreatureAttack?.Invoke(this, args);
+    }
+
+    public void InvokeOnCanCreatureDefend(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCanCreatureDefend can only be called by the server");
+
+        OnCanCreatureDefend?.Invoke(this, args);
+    }
+
     public void InvokeOnSelectAttackerToDefend(CanDefendEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnSelectAttackerToDefend can only be called by the server");

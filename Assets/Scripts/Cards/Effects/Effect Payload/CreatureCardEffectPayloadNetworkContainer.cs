@@ -14,6 +14,8 @@ public struct CreatureCardEffectPayloadNetworkContainer : INetworkSerializable {
                 CreatureCardEffectType.Reach => new ReachEffectPayload(),
                 CreatureCardEffectType.Swiftness => new SwiftnessEffectPayload(),
                 CreatureCardEffectType.Endurance => new EnduranceEffectPayload(),
+                CreatureCardEffectType.Defender => new DefenderEffectPayload(),
+                CreatureCardEffectType.Menace => new MenaceEffectPayload(),
                 _ => throw new NotImplementedException("Attempting to read card type that is not defined: " + effectType.ToString())
             };
         }

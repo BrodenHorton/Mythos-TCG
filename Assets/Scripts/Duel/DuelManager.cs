@@ -149,6 +149,7 @@ public class DuelManager : NetworkBehaviour {
         }
     }
 
+    // TODO: Add event for when creatures health is regenerated at the end of a turn
     private void RegenerateCreaturesHealth() {
         if (!IsServer)
             return;

@@ -106,6 +106,10 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
             return false;
         if (!card.CanAttack())
             return false;
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, card);
+        EventBus.Instance.InvokeOnCanCreatureAttack(args);
+        if (args.IsCanceled)
+            return false;
 
         return true;
     }
@@ -120,6 +124,10 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (combatManager.IsCreatureInCombat(card.Uuid))
             return false;
         if (!card.CanDefend())
+            return false;
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, card);
+        EventBus.Instance.InvokeOnCanCreatureDefend(args);
+        if (args.IsCanceled)
             return false;
 
         return true;

@@ -4,5 +4,7 @@
     Elusive,
     Reach,
     Swiftness,
-    Endurance
+    Endurance,
+    Defender,
+    Menace
 }
