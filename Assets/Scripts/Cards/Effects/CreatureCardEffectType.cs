@@ -6,5 +6,6 @@
     Swiftness,
     Endurance,
     Defender,
-    Menace
+    Menace,
+    Bloodthirsty
 }

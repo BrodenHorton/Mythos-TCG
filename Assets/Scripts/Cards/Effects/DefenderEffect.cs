@@ -32,6 +32,4 @@ public class DefenderEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new DefenderEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

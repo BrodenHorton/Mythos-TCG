@@ -32,6 +32,4 @@ public class EnduranceEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new EnduranceEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

@@ -20,7 +20,7 @@ public class OverwhelmEffect : CreatureCardEffect {
         EventBus.Instance.OnCreatureDamagedByCreature -= DealOverwhelmDamage;
     }
 
-    private void DealOverwhelmDamage(object sender, CreatureDamagedByCreatureEventArgs args) {
+    private void DealOverwhelmDamage(object sender, CreatureCombatDamageEventArgs args) {
         if (args.Attacker.Uuid != creatureCardUuid)
             return;
         if (args.IsCanceled)
@@ -46,6 +46,4 @@ public class OverwhelmEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new OverwhelmEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

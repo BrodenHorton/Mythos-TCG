@@ -43,14 +43,18 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<CreatureCombatEventArgs> OnCreatureAttack;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealed;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureHealedFinished;
-    public event EventHandler<CreatureDamagedByCreatureEventArgs> OnCreatureDamagedByCreature;
+    public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureDamagedByCreature;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDamaged;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDamagedFinished;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDestroyedFinished;
+    public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureCombatFinished;
     public event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnEnteringFieldSummoningSickness;
+    public event EventHandler<PlayerCardStatEventArgs<Card>> OnCalculateCardManaCount;
+    public event EventHandler<PlayerCardStatEventArgs<CreatureCard>> OnCalculateCreatureAttack;
+    public event EventHandler<PlayerCardStatEventArgs<CreatureCard>> OnCalculateCreatureHealth;
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureTapped;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureTappedFinished;
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureUntapped;
@@ -332,7 +336,7 @@ public class EventBus : NetworkBehaviour {
         OnCreatureHealedFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureDamagedByCreature(CreatureDamagedByCreatureEventArgs args) {
+    public void InvokeOnCreatureDamagedByCreature(CreatureCombatDamageEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnCreatureDamagedByCreature can only be invoked by the server");
 
@@ -365,6 +369,10 @@ public class EventBus : NetworkBehaviour {
         OnCreatureDestroyedFinished?.Invoke(this, args);
     }
 
+    public void InvokeOnCreatureCombatFinished(CreatureCombatDamageEventArgs args) {
+        OnCreatureCombatFinished?.Invoke(this, args);
+    }
+
     public void InvokeOnReleaseCombatCreatures(ReleaseCombatCreaturesEventArgs args) {
         OnReleaseCombatCreatures?.Invoke(this, args);
     }
@@ -373,6 +381,18 @@ public class EventBus : NetworkBehaviour {
     #region Creature Actions
     public void InvokeOnEnteringFieldSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
         OnEnteringFieldSummoningSickness?.Invoke(this, args);
+    }
+
+    public void InvokeOnCalculateCardManaCount(PlayerCardStatEventArgs<Card> args) {
+        OnCalculateCardManaCount?.Invoke(this, args);
+    }
+
+    public void InvokeOnCalculateCreatureAttack(PlayerCardStatEventArgs<CreatureCard> args) {
+        OnCalculateCreatureAttack?.Invoke(this, args);
+    }
+
+    public void InvokeOnCalculateCreatureHealth(PlayerCardStatEventArgs<CreatureCard> args) {
+        OnCalculateCreatureHealth?.Invoke(this, args);
     }
 
     public void InvokeOnCreatureTapped(PlayerCardCancelableEventArgs<CreatureCard> args) {

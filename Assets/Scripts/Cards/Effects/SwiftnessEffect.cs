@@ -32,6 +32,4 @@ public class SwiftnessEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new SwiftnessEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

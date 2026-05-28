@@ -32,6 +32,4 @@ public class ReachEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new ReachEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

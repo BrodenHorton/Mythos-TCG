@@ -46,15 +46,25 @@ public partial class CreatureCard : Card {
     }
 
     public override int GetManaCost() {
-        return cardBase.ManaCost;
+        PlayerCardStatEventArgs<Card> args = new PlayerCardStatEventArgs<Card>(playerId, this, cardBase.ManaCost);
+        EventBus.Instance.InvokeOnCalculateCardManaCount(args);
+        return args.Value;
     }
 
     public int GetAtk() {
-        return cardBase.Atk;
+        PlayerCardStatEventArgs<CreatureCard> args = new PlayerCardStatEventArgs<CreatureCard>(playerId,
+                                                                                               this,
+                                                                                               cardBase.Atk);
+        EventBus.Instance.InvokeOnCalculateCreatureAttack(args);
+        return args.Value;
     }
 
     public int GetHealth() {
-        return cardBase.Health - damage;
+        PlayerCardStatEventArgs<CreatureCard> args = new PlayerCardStatEventArgs<CreatureCard>(playerId,
+                                                                                               this,
+                                                                                               cardBase.Health - damage);
+        EventBus.Instance.InvokeOnCalculateCreatureHealth(args);
+        return args.Value;
     }
 
     public void Tap() {

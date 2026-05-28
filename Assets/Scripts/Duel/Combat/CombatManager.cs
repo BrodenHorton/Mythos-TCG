@@ -107,23 +107,30 @@ public class CombatManager : NetworkBehaviour {
             throw new Exception("Attempting to process the next DuelistCombat when the duelistCombats list is empty");
 
         DuelistCombat duelistCombat = duelistCombats[0];
+        int damage = 0;
         for (int i = 0; i < duelistCombat.CreatureCombats.Count; i++) {
             CreatureCombat creatureCombat = duelistCombat.CreatureCombats[i];
+            // TODO: Change this event so it returns the attack damage
             EventBus.Instance.InvokeOnCreatureAttack(new CreatureCombatEventArgs(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombat));
+            damage = creatureCombat.Attacker.GetAtk();
             if (creatureCombat.Defender == null) {
                 MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
-                target.DamageLifePoints(creatureCombat.Attacker.GetAtk());
+                target.DamageLifePoints(damage);
             }
             else {
-                CreatureDamagedByCreatureEventArgs args = new CreatureDamagedByCreatureEventArgs(duelistCombat.InitiatorId,
+                CreatureCombatDamageEventArgs args = new CreatureCombatDamageEventArgs(duelistCombat.InitiatorId,
                                                                                                  duelistCombat.TargetId,
                                                                                                  creatureCombat,
-                                                                                                 creatureCombat.Attacker.GetAtk());
+                                                                                                 ref damage);
                 EventBus.Instance.InvokeOnCreatureDamagedByCreature(args);
                 if (!args.IsCanceled)
-                    creatureCombat.Defender.InflictDamage(creatureCombat.Attacker.GetAtk());
+                    creatureCombat.Defender.InflictDamage(damage);
 
             }
+            EventBus.Instance.InvokeOnCreatureCombatFinished(new CreatureCombatDamageEventArgs(duelistCombat.InitiatorId,
+                                                                                               duelistCombat.TargetId,
+                                                                                               creatureCombat,
+                                                                                               ref damage));
             creatureCombat.Attacker?.Tap();
         }
         CreatureCombatPayload[] creatureCombatPayloads = new CreatureCombatPayload[duelistCombat.CreatureCombats.Count];

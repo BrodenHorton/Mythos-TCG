@@ -50,6 +50,4 @@ public class ElusiveEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new ElusiveEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

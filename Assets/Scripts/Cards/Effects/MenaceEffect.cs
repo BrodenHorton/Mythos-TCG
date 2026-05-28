@@ -25,7 +25,7 @@ public class MenaceEffect : CreatureCardEffect {
             return;
 
         TcgLogger.Log("Menace Effect triggered");
-        if (args.Defender.GetHealth() > BLOCKABLE_HEALTH_MIN)
+        if (args.Defender.GetHealth() < BLOCKABLE_HEALTH_MIN)
             args.CanDefend = false;
     }
 
@@ -36,6 +36,4 @@ public class MenaceEffect : CreatureCardEffect {
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new MenaceEffectPayload(this);
     }
-
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) { }
 }

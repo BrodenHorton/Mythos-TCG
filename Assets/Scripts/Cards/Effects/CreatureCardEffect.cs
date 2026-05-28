@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 
 [Serializable]
-public abstract class CreatureCardEffect : INetworkSerializable {
+public abstract class CreatureCardEffect {
     protected Guid creatureCardUuid;
 
     public CreatureCardEffect() { }
@@ -14,8 +14,6 @@ public abstract class CreatureCardEffect : INetworkSerializable {
     public abstract CreatureCardEffect DeepCopy();
 
     public abstract CreatureCardEffectPayload GetEffectPayload();
-
-    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
 
     public Guid CreatureCardUuid { get { return creatureCardUuid; } }
 }
