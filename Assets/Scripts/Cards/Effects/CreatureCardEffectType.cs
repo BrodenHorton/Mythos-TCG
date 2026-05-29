@@ -7,5 +7,7 @@
     Endurance,
     Defender,
     Menace,
-    Bloodthirsty
+    Bloodthirsty,
+    Wither,
+    WitherStatus
 }

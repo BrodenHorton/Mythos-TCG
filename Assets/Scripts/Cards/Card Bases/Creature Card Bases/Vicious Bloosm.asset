@@ -10,25 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d884deb7188e42e4c86259bffd9cb5cb, type: 3}
-  m_Name: Fluttersky
+  m_Name: Vicious Bloosm
   m_EditorClassIdentifier: 
-  id: fluttersky
-  cardName: Fluttersky
+  id: vicious_bloosm
+  cardName: Vicious Bloosm
   splashArt: {fileID: 2100000, guid: 99660b6d9d7b6214b8f63abbe7d8bbbb, type: 2}
-  manaCost: 4
+  manaCost: 2
   domain: 2
-  atk: 5
-  health: 3
-  creatureClasses: 05000000
+  atk: 1
+  health: 1
+  creatureClasses: 19000000
   baseEffects:
-  - rid: 4397248843862507614
-  - rid: 4397248932105420800
+  - rid: 4397248932105420883
   references:
     version: 2
     RefIds:
-    - rid: 4397248843862507614
-      type: {class: SwiftnessEffect, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 4397248932105420800
-      type: {class: BloodthirstyEffect, ns: , asm: Assembly-CSharp}
+    - rid: 4397248932105420883
+      type: {class: WitherEffect, ns: , asm: Assembly-CSharp}
       data: 

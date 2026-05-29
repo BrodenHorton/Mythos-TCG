@@ -59,8 +59,11 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureTappedFinished;
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureUntapped;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntappedFinished;
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureEndOfTurnRegeneration;
+    public event EventHandler<CreatureCardPayload[]> OnCreatureEndOfTurnRegenerationFinished;
     // Creature Effects
     public event EventHandler<CanDefendEventArgs> OnSelectElusiveAttackerToDefend;
+    public event EventHandler<CreatureCombatDamageEventArgs> OnWitherProked;
 
     public static EventBus Instance { get; private set; }
 
@@ -370,6 +373,9 @@ public class EventBus : NetworkBehaviour {
     }
 
     public void InvokeOnCreatureCombatFinished(CreatureCombatDamageEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureCombatFinished can only be called by the server");
+
         OnCreatureCombatFinished?.Invoke(this, args);
     }
 
@@ -380,22 +386,37 @@ public class EventBus : NetworkBehaviour {
 
     #region Creature Actions
     public void InvokeOnEnteringFieldSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnEnteringFieldSummoningSickness can only be invoked by the server");
+
         OnEnteringFieldSummoningSickness?.Invoke(this, args);
     }
 
     public void InvokeOnCalculateCardManaCount(PlayerCardStatEventArgs<Card> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCalculateCardManaCost can only be invoked by the server");
+
         OnCalculateCardManaCount?.Invoke(this, args);
     }
 
     public void InvokeOnCalculateCreatureAttack(PlayerCardStatEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCalculateCreatureAttack can only be invoked by the server");
+
         OnCalculateCreatureAttack?.Invoke(this, args);
     }
 
     public void InvokeOnCalculateCreatureHealth(PlayerCardStatEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCalculateCreatureHealth can only be invoked by the server");
+
         OnCalculateCreatureHealth?.Invoke(this, args);
     }
 
     public void InvokeOnCreatureTapped(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureTapped can only be invoked by the server");
+
         OnCreatureTapped?.Invoke(this, args);
     }
 
@@ -406,6 +427,9 @@ public class EventBus : NetworkBehaviour {
     }
 
     public void InvokeOnCreatureUntapped(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureUntapped can only be invoked by the server");
+
         OnCreatureUntapped?.Invoke(this, args);
     }
 
@@ -413,6 +437,18 @@ public class EventBus : NetworkBehaviour {
     public void InvokeOnCreatureUntappedFinishedClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
         PlayerCardPayloadEventArgs<CreatureCardPayload> args = new PlayerCardPayloadEventArgs<CreatureCardPayload>(playerId, cardPayload);
         OnCreatureUntappedFinished?.Invoke(this, args);
+    }
+
+    public void InvokeOnCreatureEndOfTurnRegeneration(PlayerCardCancelableEventArgs<CreatureCard> args) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureEndOfTurnRegeneration can only be called by the server");
+
+        OnCreatureEndOfTurnRegeneration?.Invoke(this, args);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnCreatureEndOfTurnRegenerationFinishedClientRpc(CreatureCardPayload[] cardPayloads) {
+        OnCreatureEndOfTurnRegenerationFinished?.Invoke(this, cardPayloads);
     }
     #endregion
 
@@ -422,6 +458,13 @@ public class EventBus : NetworkBehaviour {
             throw new Exception("The event OnSelectElusiveAttackerToDefend can only be called by the server");
 
         OnSelectElusiveAttackerToDefend?.Invoke(this, args);
+    }
+
+    public void InvokeOnWitherProked(CreatureCombatDamageEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnWitherProked can only be called by the server");
+
+        OnWitherProked?.Invoke(this, args);
     }
     #endregion
 }

@@ -107,6 +107,23 @@ public partial class CreatureCard : Card {
             creatureDestroyedCallback?.Invoke(this);
     }
 
+    public void AddEffect(CreatureCardEffect effect) {
+        effect.Init(uuid);
+        effects.Add(effect);
+    }
+
+    public void RemoveEffect(CreatureCardEffect effect) {
+        foreach(CreatureCardEffect entry in effects) {
+            if(entry == effect) {
+                entry.RemoveListeners();
+                effects.Remove(entry);
+                return;
+            }
+        }
+
+        throw new Exception("Unable to find specified CreatureCardEffect on CreatureCard");
+    }
+
     public override CardPayload GetCardPayload() {
         return new CreatureCardPayload(this);
     }

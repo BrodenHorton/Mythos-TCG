@@ -149,17 +149,24 @@ public class DuelManager : NetworkBehaviour {
         }
     }
 
-    // TODO: Add event for when creatures health is regenerated at the end of a turn
     private void RegenerateCreaturesHealth() {
         if (!IsServer)
             return;
 
+        List<CreatureCardPayload> regeneratedCreatureCardPayloads = new List<CreatureCardPayload>();
         foreach (MatchPlayer player in Players) {
             for (int i = 0; i < player.Creatures.Count; i++) {
-                if (player.Creatures[i].CurrentDamage > 0)
-                    player.Creatures[i].CurrentDamage = 0;
+                if (player.Creatures[i].CurrentDamage > 0) {
+                    PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, player.Creatures[i]);
+                    EventBus.Instance.InvokeOnCreatureEndOfTurnRegeneration(args);
+                    if(!args.IsCanceled) {
+                        player.Creatures[i].CurrentDamage = 0;
+                        regeneratedCreatureCardPayloads.Add(new CreatureCardPayload(player.Creatures[i]));
+                    }
+                }
             }
         }
+        EventBus.Instance.InvokeOnCreatureEndOfTurnRegenerationFinishedClientRpc(regeneratedCreatureCardPayloads.ToArray());
     }
 
     [Rpc(SendTo.ClientsAndHost)]
