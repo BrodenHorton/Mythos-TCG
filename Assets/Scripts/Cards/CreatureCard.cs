@@ -52,6 +52,7 @@ public partial class CreatureCard : Card {
     }
 
     public int GetAtk() {
+        TcgLogger.Log("CreatureCard GetAtk Entered");
         PlayerCardStatEventArgs<CreatureCard> args = new PlayerCardStatEventArgs<CreatureCard>(playerId,
                                                                                                this,
                                                                                                cardBase.Atk);
@@ -60,6 +61,7 @@ public partial class CreatureCard : Card {
     }
 
     public int GetHealth() {
+        TcgLogger.Log("CreatureCard GetHealth Entered");
         PlayerCardStatEventArgs<CreatureCard> args = new PlayerCardStatEventArgs<CreatureCard>(playerId,
                                                                                                this,
                                                                                                cardBase.Health - damage);

@@ -49,6 +49,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDestroyedFinished;
     public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureCombatFinished;
+    public event EventHandler<CreatureCombatPayloadEventArgs> OnPostCreatureCombat;
     public event EventHandler<ReleaseCombatCreaturesEventArgs> OnReleaseCombatCreatures;
     // Creature Actions
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnEnteringFieldSummoningSickness;
@@ -60,7 +61,8 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureUntapped;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureUntappedFinished;
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCreatureEndOfTurnRegeneration;
-    public event EventHandler<CreatureCardPayload[]> OnCreatureEndOfTurnRegenerationFinished;
+    public event EventHandler<List<CreatureCardPayload>> OnCreatureEndOfTurnRegenerationFinished;
+    public event EventHandler<CreatureCardPayload> OnCreatureFieldCardUpdate;
     // Creature Effects
     public event EventHandler<CanDefendEventArgs> OnSelectElusiveAttackerToDefend;
     public event EventHandler<CreatureCombatDamageEventArgs> OnWitherProked;
@@ -374,9 +376,15 @@ public class EventBus : NetworkBehaviour {
 
     public void InvokeOnCreatureCombatFinished(CreatureCombatDamageEventArgs args) {
         if (!IsServer)
-            throw new Exception("The event OnCreatureCombatFinished can only be called by the server");
+            throw new Exception("The event OnPostCreatureCombat can only be called by the server");
 
         OnCreatureCombatFinished?.Invoke(this, args);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnPostCreatureCombatClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload attacker, CreatureCardPayload defender) {
+        CreatureCombatPayloadEventArgs args = new CreatureCombatPayloadEventArgs(initiatorId, targetId, attacker, defender);
+        OnPostCreatureCombat?.Invoke(this, args);
     }
 
     public void InvokeOnReleaseCombatCreatures(ReleaseCombatCreaturesEventArgs args) {
@@ -448,7 +456,12 @@ public class EventBus : NetworkBehaviour {
 
     [Rpc(SendTo.ClientsAndHost)]
     public void InvokeOnCreatureEndOfTurnRegenerationFinishedClientRpc(CreatureCardPayload[] cardPayloads) {
-        OnCreatureEndOfTurnRegenerationFinished?.Invoke(this, cardPayloads);
+        OnCreatureEndOfTurnRegenerationFinished?.Invoke(this, new List<CreatureCardPayload>(cardPayloads));
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnCreatureFieldCardUpdateClientRpc(CreatureCardPayload cardPayload) {
+        OnCreatureFieldCardUpdate?.Invoke(this, cardPayload);
     }
     #endregion
 

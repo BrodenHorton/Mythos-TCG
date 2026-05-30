@@ -44,7 +44,7 @@ public class PlayingFieldUI : MonoBehaviour {
         if (!ContainsCreature(card.Uuid))
             return; // We don't throw here since the creature field card could be in the combat field instead
 
-        GetCreatureFieldCardUIBy(card.Uuid).UpdateCreatureFieldCard(card);
+        GetCreatureFieldCardUIBy(card.Uuid).UpdateFieldCard(card);
     }
 
     public void RemoveCreature(Guid cardUuid) {

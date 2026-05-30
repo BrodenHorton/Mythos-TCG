@@ -39,6 +39,7 @@ public class WitherStatusEffect : CreatureCardEffect {
         if (args.Card.Uuid != creatureCardUuid)
             return;
 
+        TcgLogger.Log("WitherStatus UpdateAttack Entered");
         args.Value -= witherCount;
     }
 
@@ -46,6 +47,7 @@ public class WitherStatusEffect : CreatureCardEffect {
         if (args.Card.Uuid != creatureCardUuid)
             return;
 
+        TcgLogger.Log("WitherStatus UpdateHealth Entered");
         args.Value -= witherCount;
     }
 

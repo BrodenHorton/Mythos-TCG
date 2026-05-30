@@ -101,9 +101,9 @@ public class CombatFieldUI : MonoBehaviour {
 
     public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (ContainsAttacker(card.Uuid))
-            GetAttacker(card.Uuid).UpdateCreatureFieldCard(card);
+            GetAttacker(card.Uuid).UpdateFieldCard(card);
         else if (ContainsDefender(card.Uuid))
-            GetDefender(card.Uuid).UpdateCreatureFieldCard(card);
+            GetDefender(card.Uuid).UpdateFieldCard(card);
         else
             throw new Exception("Attempting to update creature field card that is not in combat field");
     }

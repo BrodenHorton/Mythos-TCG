@@ -33,10 +33,8 @@ public class OverwhelmEffect : CreatureCardEffect {
         else if (args.Defender.GetHealth() < args.Damage)
             overwhelmDamage = args.Damage - args.Defender.GetHealth();
 
-        if (overwhelmDamage > 0) {
-            MatchPlayer target = duelManager.GetPlayerById(args.TargetId);
-            target.DamageLifePoints(overwhelmDamage);
-        }
+        if (overwhelmDamage > 0)
+            args.DirectDamage = overwhelmDamage;
     }
 
     public override CreatureCardEffect DeepCopy() {

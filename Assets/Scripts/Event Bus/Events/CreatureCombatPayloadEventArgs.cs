@@ -6,6 +6,12 @@ public class CreatureCombatPayloadEventArgs : EventArgs {
     private CreatureCardPayload attacker;
     private CreatureCardPayload defender;
 
+    public CreatureCombatPayloadEventArgs(ulong initiatorId, ulong targetId, CreatureCombat creatureCombat)
+        : this(initiatorId, targetId, new CreatureCardPayload(creatureCombat.Attacker), new CreatureCardPayload(creatureCombat.Defender)) { }
+
+    public CreatureCombatPayloadEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender)
+        : this (initiatorId, targetId, new CreatureCardPayload(attacker), new CreatureCardPayload(defender)) { }
+
     public CreatureCombatPayloadEventArgs(ulong initiatorId, ulong targetId, CreatureCardPayload attacker, CreatureCardPayload defender) {
         this.initiatorId = initiatorId;
         this.targetId = targetId;

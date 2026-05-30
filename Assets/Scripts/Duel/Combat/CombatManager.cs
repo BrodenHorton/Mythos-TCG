@@ -4,7 +4,6 @@ using Unity.Netcode;
 
 public class CombatManager : NetworkBehaviour {
     public event EventHandler<DuelistCombatEventArgs> OnDuelistCombatFinsihed;
-    public event EventHandler OnCombatFinsihed;
 
     private DuelManager duelManager;
     private List<DuelistCombat> duelistCombats;
@@ -107,30 +106,41 @@ public class CombatManager : NetworkBehaviour {
             throw new Exception("Attempting to process the next DuelistCombat when the duelistCombats list is empty");
 
         DuelistCombat duelistCombat = duelistCombats[0];
-        int damage = 0;
         for (int i = 0; i < duelistCombat.CreatureCombats.Count; i++) {
             CreatureCombat creatureCombat = duelistCombat.CreatureCombats[i];
             // TODO: Change this event so it returns the attack damage
             EventBus.Instance.InvokeOnCreatureAttack(new CreatureCombatEventArgs(duelistCombat.InitiatorId, duelistCombat.TargetId, creatureCombat));
-            damage = creatureCombat.Attacker.GetAtk();
+            int damage = creatureCombat.Attacker.GetAtk();
             if (creatureCombat.Defender == null) {
                 MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
                 target.DamageLifePoints(damage);
             }
             else {
                 CreatureCombatDamageEventArgs args = new CreatureCombatDamageEventArgs(duelistCombat.InitiatorId,
-                                                                                                 duelistCombat.TargetId,
-                                                                                                 creatureCombat,
-                                                                                                 ref damage);
+                                                                                       duelistCombat.TargetId,
+                                                                                       creatureCombat,
+                                                                                       damage);
                 EventBus.Instance.InvokeOnCreatureDamagedByCreature(args);
-                if (!args.IsCanceled)
-                    creatureCombat.Defender.InflictDamage(damage);
-
+                damage = args.Damage;
+                if (!args.IsCanceled) {
+                    if(args.ShouldDamageDefender)
+                        creatureCombat.Defender.InflictDamage(damage);
+                    if(args.DirectDamage > 0) {
+                        MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
+                        target.DamageLifePoints(args.DirectDamage);
+                    }
+                }
             }
             EventBus.Instance.InvokeOnCreatureCombatFinished(new CreatureCombatDamageEventArgs(duelistCombat.InitiatorId,
                                                                                                duelistCombat.TargetId,
                                                                                                creatureCombat,
-                                                                                               ref damage));
+                                                                                               damage));
+            TcgLogger.Log("Before OnPostCreatureCombatClientRpc");
+            EventBus.Instance.InvokeOnPostCreatureCombatClientRpc(duelistCombat.InitiatorId,
+                                                                  duelistCombat.TargetId,
+                                                                  new CreatureCardPayload(creatureCombat.Attacker),
+                                                                  new CreatureCardPayload(creatureCombat.Defender));
+            TcgLogger.Log("After OnPostCreatureCombatClientRpc");
             creatureCombat.Attacker?.Tap();
         }
         CreatureCombatPayload[] creatureCombatPayloads = new CreatureCombatPayload[duelistCombat.CreatureCombats.Count];

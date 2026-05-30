@@ -9,11 +9,11 @@ public class WitherEffect : CreatureCardEffect {
 
     public override void Init(Guid creatureCardUuid) {
         this.creatureCardUuid = creatureCardUuid;
-        EventBus.Instance.OnWitherProked += AddWitherStatus;
+        EventBus.Instance.OnCreatureDamagedByCreature += AddWitherStatus;
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnWitherProked -= AddWitherStatus;
+        EventBus.Instance.OnCreatureDamagedByCreature -= AddWitherStatus;
     }
 
     private void AddWitherStatus(object sender, CreatureCombatDamageEventArgs args) {
@@ -30,11 +30,12 @@ public class WitherEffect : CreatureCardEffect {
                                                                                      args.TargetId,
                                                                                      args.Attacker,
                                                                                      args.Defender,
-                                                                                     ref damage);
+                                                                                     damage);
         EventBus.Instance.InvokeOnWitherProked(witherArgs);
+        args.ShouldDamageDefender = false;
         if(!witherArgs.IsCanceled) {
-            args.Damage = 0;
-            args.Defender.Effects.Add(new WitherStatusEffect(damage));
+            TcgLogger.Log("Wither Status added to Defender");
+            args.Defender.AddEffect(new WitherStatusEffect(damage));
         }
     }
 
