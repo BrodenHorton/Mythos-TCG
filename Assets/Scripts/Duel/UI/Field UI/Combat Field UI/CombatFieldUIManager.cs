@@ -21,10 +21,6 @@ public class CombatFieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnDeclareDefenderFinished += AddDefender;
         EventBus.Instance.OnUndeclareAttackerFinished += RemoveAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += RemoveDefender;
-        EventBus.Instance.OnCreatureTappedFinished += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureUntappedFinished += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureDamagedFinished += UpdateCreatureFieldCard;
-        EventBus.Instance.OnCreatureHealedFinished += UpdateCreatureFieldCard;
         EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
         combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
     }
@@ -74,14 +70,6 @@ public class CombatFieldUIManager : NetworkBehaviour {
 
         if (controllerByPlayerId[args.TargetId].ContainsDefender(args.Card.Uuid))
             controllerByPlayerId[args.TargetId].RemoveDefender(args.Card.Uuid);
-    }
-
-    // Move event listeners for card update into the FieldCard class
-    public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
-        foreach (CombatFieldUIController controller in controllerByPlayerId.Values) {
-            if (controller.ContainsAttacker(args.CardPayload.Uuid) || controller.ContainsDefender(args.CardPayload.Uuid))
-                controller.UpdateCreatureFieldCard(args.CardPayload);
-        }
     }
 
     public void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {

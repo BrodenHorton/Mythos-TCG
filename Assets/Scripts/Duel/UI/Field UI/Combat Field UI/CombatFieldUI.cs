@@ -99,6 +99,29 @@ public class CombatFieldUI : MonoBehaviour {
         throw new Exception("Attempting to remove defender that is not in combat field");
     }
 
+    public void ReleaseAttacker(Guid uuid) {
+        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in attackerByPositionIndex.ToList()) {
+            if (entry.Value.CardUuid == uuid) {
+                CreatureFieldCardUI cardUI = entry.Value;
+                attackerByPositionIndex.Remove(entry.Key);
+                return;
+            }
+        }
+        throw new Exception("Attempting to release attacker that is not in combat field");
+    }
+
+    public void ReleaseDefender(Guid uuid) {
+        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in defenderByPositionIndex.ToList()) {
+            if (entry.Value.CardUuid == uuid) {
+                CreatureFieldCardUI cardUI = entry.Value;
+                defenderByPositionIndex.Remove(entry.Key);
+                // TODO: Call Release event
+                return;
+            }
+        }
+        throw new Exception("Attempting to release defender that is not in combat field");
+    }
+
     public void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (ContainsAttacker(card.Uuid))
             GetAttacker(card.Uuid).UpdateFieldCard(card);

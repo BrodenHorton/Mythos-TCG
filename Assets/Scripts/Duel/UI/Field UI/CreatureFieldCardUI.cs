@@ -9,23 +9,23 @@ public class CreatureFieldCardUI : FieldCardUI {
     public void Init(CreatureCardPayload card) {
         cardUuid = card.Uuid;
 
-        EventBus.Instance.OnPostCreatureCombat += (sender, args) => {
-            if(args.Attacker != null && args.Attacker.Uuid == cardUuid) {
-                TcgLogger.Log("Attacker update entered");
-                UpdateFieldCard(args.Attacker);
-            }
-            else if (args.Defender != null && args.Defender.Uuid == cardUuid) {
-                TcgLogger.Log("Defender update entered");
-                UpdateFieldCard(args.Defender);
-            }
-        };
         EventBus.Instance.OnCreatureEndOfTurnRegenerationFinished += UpdateFieldCardOnEndOfTurnRegeneration;
+        EventBus.Instance.OnCreatureTappedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnCreatureUntappedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnCreatureDamagedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnCreatureHealedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnPostCreatureCombat += UpdateFieldCardOnPostCreatureCombat;
 
         UpdateFieldCard(card);
     }
 
     public void OnDestroy() {
         EventBus.Instance.OnCreatureEndOfTurnRegenerationFinished -= UpdateFieldCardOnEndOfTurnRegeneration;
+        EventBus.Instance.OnCreatureTappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnCreatureUntappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnCreatureDamagedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnCreatureHealedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnPostCreatureCombat -= UpdateFieldCardOnPostCreatureCombat;
     }
 
     public void UpdateFieldCard(CreatureCardPayload card) {
@@ -54,6 +54,11 @@ public class CreatureFieldCardUI : FieldCardUI {
             Untap();
     }
 
+    public void UpdateFieldCardOnPlayerFieldCardPayload(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
+        if (args.CardPayload.Uuid == cardUuid)
+            UpdateFieldCard(args.CardPayload);
+    }
+
     public void UpdateFieldCardOnEndOfTurnRegeneration(object sender, List<CreatureCardPayload> cards) {
         foreach (CreatureCardPayload card in cards) {
             if (card.Uuid == cardUuid) {
@@ -61,6 +66,13 @@ public class CreatureFieldCardUI : FieldCardUI {
                 break;
             }
         }
+    }
+
+    public void UpdateFieldCardOnPostCreatureCombat(object sender, CreatureCombatPayloadEventArgs args) {
+        if (args.Attacker != null && args.Attacker.Uuid == cardUuid)
+            UpdateFieldCard(args.Attacker);
+        else if (args.Defender != null && args.Defender.Uuid == cardUuid)
+            UpdateFieldCard(args.Defender);
     }
 
     public void Tap() {

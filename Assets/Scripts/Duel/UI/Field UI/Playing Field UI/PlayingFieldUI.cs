@@ -63,13 +63,22 @@ public class PlayingFieldUI : MonoBehaviour {
         SetDefaultCardPositions();
     }
 
+    public CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
+        if (!ContainsCreature(cardUuid))
+            throw new Exception("Attempting to release creature that is not in the playing field");
+
+        CreatureFieldCardUI cardUI = GetCreatureFieldCardUIBy(cardUuid);
+        creatures.Remove(cardUI);
+        SetDefaultCardPositions();
+        return cardUI;
+    }
+
     protected void SetDefaultCardPositions() {
         int cardCount = creatures.Count;
         float handOffset = (cardCount - 1) * cardSpacing / 2;
         for (int i = 0; i < cardCount; i++) {
             FieldCardUI cardUI = creatures[i];
             cardUI.transform.localScale = Vector3.one;
-            //cardUI.transform.eulerAngles = Vector3.zero;
             Vector3 cardPosition = creatureSlotOrigin.position;
             cardPosition.x += i * cardSpacing - handOffset;
             cardUI.transform.position = cardPosition;

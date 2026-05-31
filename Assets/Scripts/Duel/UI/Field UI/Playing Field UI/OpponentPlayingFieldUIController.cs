@@ -22,6 +22,10 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.RemoveCreature(cardUuid);
     }
 
+    public override void ReleaseCreature(Guid cardUuid) {
+        playingFieldUI.ReleaseCreature(cardUuid);
+    }
+
     public override void UpdateCreatureFieldCard(CreatureCardPayload card) {
         if (!ContainsCreature(card.Uuid))
             return;

@@ -37,6 +37,10 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.RemoveCreature(cardUuid);
     }
 
+    public override CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
+        return playingFieldUI.ReleaseCreature(cardUuid);
+    }
+
     public override void UpdateCreatureFieldCard(CreatureCardPayload card) {
         playingFieldUI.UpdateCreatureFieldCard(card);
     }

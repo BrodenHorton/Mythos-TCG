@@ -26,6 +26,8 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
 
     public abstract void RemoveCreature(Guid cardUuid);
 
+    public abstract CreatureFieldCardUI ReleaseCreature(Guid cardUuid);
+
     public abstract void UpdateCreatureFieldCard(CreatureCardPayload card);
 
     public abstract void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures);
