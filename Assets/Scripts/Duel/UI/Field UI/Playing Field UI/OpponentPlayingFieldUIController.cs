@@ -18,12 +18,16 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         playingFieldUI.PlayDomainCard(card);
     }
 
+    public override void AddCreatureCard(CreatureFieldCardUI card) {
+        playingFieldUI.AddCreatureFieldCard(card);
+    }
+
     public override void RemoveCreature(Guid cardUuid) {
         playingFieldUI.RemoveCreature(cardUuid);
     }
 
-    public override void ReleaseCreature(Guid cardUuid) {
-        playingFieldUI.ReleaseCreature(cardUuid);
+    public override CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
+        return playingFieldUI.ReleaseCreature(cardUuid);
     }
 
     public override void UpdateCreatureFieldCard(CreatureCardPayload card) {

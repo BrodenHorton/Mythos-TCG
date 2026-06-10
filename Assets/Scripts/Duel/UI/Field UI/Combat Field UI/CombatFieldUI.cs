@@ -37,12 +37,10 @@ public class CombatFieldUI : MonoBehaviour {
         this.targetPlayerId = targetPlayerId;
     }
 
-    public void AddAttacker(CreatureCardPayload card) {
+    public void AddAttacker(CreatureFieldCardUI cardUI) {
         if (attackerByPositionIndex.Count >= MAX_FIELD_CREATURES)
             throw new Exception("Attempting to add new attacker when there is already " + MAX_FIELD_CREATURES + " attackers");
 
-        CreatureFieldCardUI cardUI = Instantiate(creatureFieldCardUIPrefab);
-        cardUI.Init(card);
         for (int i = 0; i < MAX_FIELD_CREATURES; i++) {
             if (!attackerByPositionIndex.ContainsKey(i)) {
                 attackerByPositionIndex.Add(i, cardUI);
@@ -52,7 +50,7 @@ public class CombatFieldUI : MonoBehaviour {
         SpaceAttackers();
     }
 
-    public void AddDefender(CreatureCardPayload defender, Guid attackerCardUuid) {
+    public void AddDefender(CreatureFieldCardUI defender, Guid attackerCardUuid) {
         if (defenderByPositionIndex.Count >= MAX_FIELD_CREATURES)
             throw new Exception("Attempting to add new defender when there is already " + MAX_FIELD_CREATURES + " defenders");
 
@@ -68,10 +66,8 @@ public class CombatFieldUI : MonoBehaviour {
         if (defenderByPositionIndex.ContainsKey(attackerIndex))
             throw new Exception("Attempting to add a defender to the position " + attackerIndex + " which already has an active defender");
 
-        CreatureFieldCardUI cardUI = Instantiate(creatureFieldCardUIPrefab);
-        cardUI.Init(defender);
-        defenderByPositionIndex.Add(attackerIndex, cardUI);
-        PlaceDefender(cardUI, attackerIndex);
+        defenderByPositionIndex.Add(attackerIndex, defender);
+        PlaceDefender(defender, attackerIndex);
     }
 
     public void RemoveAttacker(Guid uuid) {
@@ -99,24 +95,23 @@ public class CombatFieldUI : MonoBehaviour {
         throw new Exception("Attempting to remove defender that is not in combat field");
     }
 
-    public void ReleaseAttacker(Guid uuid) {
+    public CreatureFieldCardUI ReleaseAttacker(Guid uuid) {
         foreach (KeyValuePair<int, CreatureFieldCardUI> entry in attackerByPositionIndex.ToList()) {
             if (entry.Value.CardUuid == uuid) {
                 CreatureFieldCardUI cardUI = entry.Value;
                 attackerByPositionIndex.Remove(entry.Key);
-                return;
+                return cardUI;
             }
         }
         throw new Exception("Attempting to release attacker that is not in combat field");
     }
 
-    public void ReleaseDefender(Guid uuid) {
+    public CreatureFieldCardUI ReleaseDefender(Guid uuid) {
         foreach (KeyValuePair<int, CreatureFieldCardUI> entry in defenderByPositionIndex.ToList()) {
             if (entry.Value.CardUuid == uuid) {
                 CreatureFieldCardUI cardUI = entry.Value;
                 defenderByPositionIndex.Remove(entry.Key);
-                // TODO: Call Release event
-                return;
+                return cardUI;
             }
         }
         throw new Exception("Attempting to release defender that is not in combat field");

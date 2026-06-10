@@ -16,10 +16,6 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         duelManager.OnPlayersInitialization += Init;
         EventBus.Instance.OnCreatureCardPlayedFromHand += PlayCreatureCard;
         EventBus.Instance.OnDomainCardPlayedFromHand += PlayDomainCard;
-        EventBus.Instance.OnDeclareAttackerFinished += RemoveAttacker;
-        EventBus.Instance.OnDeclareDefenderFinished += RemoveDefender;
-        EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
-        EventBus.Instance.OnUndeclareDefenderFinished += UndeclareDefender;
         EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
         EventBus.Instance.OnReleaseCombatCreatures += GetCreatureCardsFromCombat;
     }
@@ -51,20 +47,11 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         controllerByPlayerId[args.PlayerId].PlayDomainCard(args.CardPayload);
     }
 
-    private void RemoveAttacker(object sender, CombatCreaturePayloadEventArgs args) {
-        if (controllerByPlayerId[args.InitiatorId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
+    public void AddCreatureCard(ulong playerId, CreatureFieldCardUI cardUI) {
+        if (controllerByPlayerId[playerId] == null)
+            throw new Exception("Unable to find playing field UI controller with player Id: " + playerId);
 
-        if (controllerByPlayerId[args.InitiatorId].ContainsCreature(args.Card.Uuid))
-            controllerByPlayerId[args.InitiatorId].RemoveCreature(args.Card.Uuid);
-    }
-
-    private void RemoveDefender(object sender, CreatureCombatPayloadEventArgs args) {
-        if (controllerByPlayerId[args.TargetId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.TargetId);
-
-        if (controllerByPlayerId[args.TargetId].ContainsCreature(args.Defender.Uuid))
-            controllerByPlayerId[args.TargetId].RemoveCreature(args.Defender.Uuid);
+        controllerByPlayerId[playerId].AddCreatureCard(cardUI);
     }
 
     public CreatureFieldCardUI ReleaseCreature(ulong playerId, Guid cardUuid) {
@@ -74,20 +61,6 @@ public class PlayingFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find creature field card with uuid: " + cardUuid);
 
         return controllerByPlayerId[playerId].ReleaseCreature(cardUuid);
-    }
-
-    public void UndeclareAttacker(object sender, CombatCreaturePayloadEventArgs args) {
-        if (controllerByPlayerId[args.InitiatorId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.InitiatorId);
-
-        controllerByPlayerId[args.InitiatorId].PlayCreatureCard(args.Card);
-    }
-
-    public void UndeclareDefender(object sender, CombatCreaturePayloadEventArgs args) {
-        if (controllerByPlayerId[args.TargetId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.TargetId);
-
-        controllerByPlayerId[args.TargetId].PlayCreatureCard(args.Card);
     }
 
     public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
@@ -120,7 +93,7 @@ public class FieldUIManager : NetworkBehaviour {
 
     private void Start() {
         EventBus.Instance.OnDeclareAttackerFinished += DeclareAttacker;
-        EventBus.Instance.OnDeclareDefenderFinished += RemoveDefender;
+        EventBus.Instance.OnDeclareDefenderFinished += DeclareDefender;
         EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += UndeclareDefender;
         EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
@@ -129,6 +102,21 @@ public class FieldUIManager : NetworkBehaviour {
 
     private void DeclareAttacker(object sender, CombatCreaturePayloadEventArgs args) {
         CreatureFieldCardUI cardUI =  playingFieldUIManager.ReleaseCreature(args.InitiatorId, args.Card.Uuid);
-        combatFieldUIManager.DeclareAttacker(args.TargetId, cardUI);
+        combatFieldUIManager.AddAttacker(args.TargetId, cardUI);
+    }
+
+    private void DeclareDefender(object sender, CreatureCombatPayloadEventArgs args) {
+        CreatureFieldCardUI cardUI = playingFieldUIManager.ReleaseCreature(args.TargetId, args.Defender.Uuid);
+        combatFieldUIManager.AddDefender(args.TargetId, args.Attacker.Uuid, cardUI);
+    }
+
+    private void UndeclareAttacker(object sender, CombatCreaturePayloadEventArgs args) {
+        CreatureFieldCardUI cardUI = combatFieldUIManager.ReleaseAttacker(args.TargetId, args.Card.Uuid);
+        playingFieldUIManager.AddCreatureCard(args.InitiatorId, cardUI);
+    }
+
+    private void UndeclareDefender(object sender, CombatCreaturePayloadEventArgs args) {
+        CreatureFieldCardUI cardUI = combatFieldUIManager.ReleaseDefender(args.TargetId, args.Card.Uuid);
+        playingFieldUIManager.AddCreatureCard(args.TargetId, cardUI);
     }
 }

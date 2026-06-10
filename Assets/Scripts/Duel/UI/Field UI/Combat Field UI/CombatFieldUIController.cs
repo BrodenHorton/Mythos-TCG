@@ -31,11 +31,11 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.Init(playerId);
     }
 
-    public void AddAttacker(CreatureCardPayload attacker) {
-        combatFieldUI.AddAttacker(attacker);
+    public void AddAttacker(CreatureFieldCardUI cardUI) {
+        combatFieldUI.AddAttacker(cardUI);
     }
 
-    public void AddDefender(CreatureCardPayload defender, Guid attackerCardUuid) {
+    public void AddDefender(CreatureFieldCardUI defender, Guid attackerCardUuid) {
         combatFieldUI.AddDefender(defender, attackerCardUuid);
     }
 
@@ -45,6 +45,14 @@ public class CombatFieldUIController : NetworkBehaviour {
 
     public void RemoveDefender(Guid cardUuid) {
         combatFieldUI.RemoveDefender(cardUuid);
+    }
+
+    public CreatureFieldCardUI ReleaseAttacker(Guid cardUuid) {
+        return combatFieldUI.ReleaseAttacker(cardUuid);
+    }
+
+    public CreatureFieldCardUI ReleaseDefender(Guid cardUuid) {
+        return combatFieldUI.ReleaseDefender(cardUuid);
     }
 
     public void UpdateCreatureFieldCard(CreatureCardPayload card) {

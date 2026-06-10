@@ -33,6 +33,10 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         SetSelectableCardsServerRpc();
     }
 
+    public override void AddCreatureCard(CreatureFieldCardUI card) {
+        playingFieldUI.AddCreatureFieldCard(card);
+    }
+
     public override void RemoveCreature(Guid cardUuid) {
         playingFieldUI.RemoveCreature(cardUuid);
     }
