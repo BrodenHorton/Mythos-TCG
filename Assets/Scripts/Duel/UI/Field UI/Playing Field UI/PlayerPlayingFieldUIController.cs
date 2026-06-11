@@ -208,7 +208,7 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         EventBus.Instance.InvokeOnDeclareDefenderFinished(new CreatureCombatPayloadEventArgs(initiatorId, targetId, attacker, defender));
     }
 
-    public override void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures) {
+    public override void AddCreatureCards(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
             playingFieldUI.AddCreatureFieldCard(creatures[i]);
     }

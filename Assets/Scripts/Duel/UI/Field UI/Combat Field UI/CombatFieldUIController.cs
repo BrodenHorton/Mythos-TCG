@@ -125,10 +125,16 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.Instance.InvokeOnUndeclareDefenderFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, defender));
     }
 
-    public void ReleaseCreatureCards(ulong initiatorId, ulong targetId) {
-        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(initiatorId, combatFieldUI.Attackers));
-        EventBus.Instance.InvokeOnReleaseCombatCreatures(new ReleaseCombatCreaturesEventArgs(targetId, combatFieldUI.Defenders));
-        combatFieldUI.ClearCreatures();
+    public List<CreatureFieldCardUI> ReleaseAttackers() {
+        List<CreatureFieldCardUI> attackers = combatFieldUI.Attackers;
+        combatFieldUI.ClearAttackers();
+        return attackers;
+    }
+
+    public List<CreatureFieldCardUI> ReleaseDefenders() {
+        List<CreatureFieldCardUI> defenders = combatFieldUI.Defenders;
+        combatFieldUI.ClearDefenders();
+        return defenders;
     }
 
     public bool ContainsAttacker(Guid uuid) {

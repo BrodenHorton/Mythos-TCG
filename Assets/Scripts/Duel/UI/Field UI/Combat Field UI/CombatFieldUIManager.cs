@@ -9,16 +9,11 @@ public class CombatFieldUIManager : NetworkBehaviour {
     private Dictionary<ulong, CombatFieldUIController> controllerByPlayerId;
 
     private void Start() {
-        DuelManager duelManager = FindFirstObjectByType<DuelManager>();
-        if (duelManager == null)
-            throw new Exception("Could not find DuelManager object");
-        CombatManager combatManager = FindFirstObjectByType<CombatManager>();
-        if (combatManager == null)
-            throw new Exception("Could not find CombatManager object");
+        DuelManager duelManager = ServiceLocator.Get<DuelManager>();
+        CombatManager combatManager = ServiceLocator.Get<CombatManager>();
 
         duelManager.OnPlayersInitialization += Init;
         EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
-        combatManager.OnDuelistCombatFinsihed += ReleaseCreatureCards;
     }
 
     private void Init(object sender, PlayersInitializedEventArgs args) {
@@ -57,6 +52,13 @@ public class CombatFieldUIManager : NetworkBehaviour {
         return controllerByPlayerId[targetId].ReleaseAttacker(cardUuid);
     }
 
+    public List<CreatureFieldCardUI> ReleaseAttackers(ulong targetId) {
+        if (controllerByPlayerId[targetId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + targetId);
+
+        return controllerByPlayerId[targetId].ReleaseAttackers();
+    }
+
     public CreatureFieldCardUI ReleaseDefender(ulong targetId, Guid cardUuid) {
         if (controllerByPlayerId[targetId] == null)
             throw new Exception("Unable to find combat field UI controller with player Id: " + targetId);
@@ -64,6 +66,13 @@ public class CombatFieldUIManager : NetworkBehaviour {
             throw new Exception("Unable to find combat field UI controller with creature Uuid: " + cardUuid);
 
         return controllerByPlayerId[targetId].ReleaseDefender(cardUuid);
+    }
+
+    public List<CreatureFieldCardUI> ReleaseDefenders(ulong targetId) {
+        if (controllerByPlayerId[targetId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + targetId);
+
+        return controllerByPlayerId[targetId].ReleaseDefenders();
     }
 
     public void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
@@ -74,12 +83,5 @@ public class CombatFieldUIManager : NetworkBehaviour {
             controllerByPlayerId[args.PlayerId].RemoveAttacker(args.CardPayload.Uuid);
         else if (controllerByPlayerId[args.PlayerId].ContainsDefender(args.CardPayload.Uuid))
             controllerByPlayerId[args.PlayerId].RemoveDefender(args.CardPayload.Uuid);
-    }
-
-    private void ReleaseCreatureCards(object sender, DuelistCombatEventArgs args) {
-        if (controllerByPlayerId[args.TargetId] == null)
-            throw new Exception("Unable to find combat field UI controller with player Id: " + args.TargetId);
-
-        controllerByPlayerId[args.TargetId].ReleaseCreatureCards(args.InitiatorId, args.TargetId);
     }
 }

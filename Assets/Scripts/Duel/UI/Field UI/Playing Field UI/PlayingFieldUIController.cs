@@ -25,14 +25,14 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
     public abstract void PlayDomainCard(DomainCardPayload card);
 
     public abstract void AddCreatureCard(CreatureFieldCardUI card);
+    
+    public abstract void AddCreatureCards(List<CreatureFieldCardUI> creatures);
 
     public abstract void RemoveCreature(Guid cardUuid);
 
     public abstract CreatureFieldCardUI ReleaseCreature(Guid cardUuid);
 
     public abstract void UpdateCreatureFieldCard(CreatureCardPayload card);
-
-    public abstract void GetCreatureCardsFromCombat(List<CreatureFieldCardUI> creatures);
 
     public abstract bool ContainsCreature(Guid uuid);
 }

@@ -210,6 +210,14 @@ public class CombatFieldUI : MonoBehaviour {
             attackerByPositionIndex.Add(i, attackers[i].Value);
     }
 
+    public void ClearAttackers() {
+        attackerByPositionIndex.Clear();
+    }
+
+    public void ClearDefenders() {
+        defenderByPositionIndex.Clear();
+    }
+
     public void ClearCreatures() {
         attackerByPositionIndex.Clear();
         defenderByPositionIndex.Clear();
