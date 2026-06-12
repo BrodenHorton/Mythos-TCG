@@ -38,6 +38,11 @@ public class FieldUIManager : NetworkBehaviour {
         playingFieldUIManager.AddCreatureCard(args.TargetId, cardUI);
     }
 
+    private void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
+        playingFieldUIManager.DestroyCreature(args.PlayerId, args.CardPayload.Uuid);
+        combatFieldUIManager.DestroyCreature(args.PlayerId, args.CardPayload.Uuid);
+    }
+
     private void ReleaseCombatCreatures(object sender, DuelistCombatEventArgs args) {
         List<CreatureFieldCardUI> attackers = combatFieldUIManager.ReleaseAttackers(args.TargetId);
         List<CreatureFieldCardUI> defenders = combatFieldUIManager.ReleaseDefenders(args.TargetId);
