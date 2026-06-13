@@ -8,7 +8,7 @@ public class BloodthirstyEffectPayload : CreatureCardEffectPayload {
     }
 
     public BloodthirstyEffectPayload(BloodthirstyEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Bloodthirsty;
         effectProkCount = effect.EffectProkCount;
     }

@@ -44,6 +44,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealed;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureHealedFinished;
     public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureDamagedByCreature;
+    public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureDamagedByCreatureFinished;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDamaged;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDamagedFinished;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
@@ -347,6 +348,13 @@ public class EventBus : NetworkBehaviour {
         OnCreatureDamagedByCreature?.Invoke(this, args);
     }
 
+    public void InvokeOnCreatureDamagedByCreatureFinished(CreatureCombatDamageEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureDamagedByCreature can only be invoked by the server");
+
+        OnCreatureDamagedByCreatureFinished?.Invoke(this, args);
+    }
+
     public void InvokeOnCreatureDamaged(PlayerCardEventArgs<CreatureCard> args) {
         if (!IsServer)
             throw new Exception("The event OnCreatureDamaged can only be invoked by the server");
@@ -381,8 +389,8 @@ public class EventBus : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void InvokeOnPostCreatureCombatClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload attacker, CreatureCardPayload defender) {
-        CreatureCombatPayloadEventArgs args = new CreatureCombatPayloadEventArgs(initiatorId, targetId, attacker, defender);
+    public void InvokeOnPostCreatureCombatClientRpc(CreatureCombatNetworkContainer creatureCombatNetworkContainer) {
+        CreatureCombatPayloadEventArgs args = new CreatureCombatPayloadEventArgs(creatureCombatNetworkContainer);
         OnPostCreatureCombat?.Invoke(this, args);
     }
     #endregion

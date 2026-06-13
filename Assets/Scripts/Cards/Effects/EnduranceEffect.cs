@@ -8,8 +8,8 @@ public class EnduranceEffect : CreatureCardEffect {
 
     public EnduranceEffect(EnduranceEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnCreatureTapped += CancelCreatureTap;
     }
 
@@ -18,7 +18,7 @@ public class EnduranceEffect : CreatureCardEffect {
     }
 
     private void CancelCreatureTap(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
         TcgLogger.Log("Endurance Effect triggered");

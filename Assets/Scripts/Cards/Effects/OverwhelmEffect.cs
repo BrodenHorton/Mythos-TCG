@@ -3,16 +3,13 @@ using Unity.Netcode;
 
 [Serializable]
 public class OverwhelmEffect : CreatureCardEffect {
-    private DuelManager duelManager;
 
     public OverwhelmEffect() : base() { }
 
-    public OverwhelmEffect(OverwhelmEffect effect) : base() {
-        duelManager = ServiceLocator.Get<DuelManager>();
-    }
+    public OverwhelmEffect(OverwhelmEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnCreatureDamagedByCreature += DealOverwhelmDamage;
     }
 
@@ -21,7 +18,7 @@ public class OverwhelmEffect : CreatureCardEffect {
     }
 
     private void DealOverwhelmDamage(object sender, CreatureCombatDamageEventArgs args) {
-        if (args.Attacker.Uuid != creatureCardUuid)
+        if (args.Attacker.Uuid != card.Uuid)
             return;
         if (args.IsCanceled)
             return;

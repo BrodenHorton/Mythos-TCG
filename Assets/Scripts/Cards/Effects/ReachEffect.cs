@@ -8,8 +8,8 @@ public class ReachEffect : CreatureCardEffect {
 
     public ReachEffect(ReachEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnSelectElusiveAttackerToDefend += SetCanDefendElusiveAttacker;
     }
 
@@ -18,7 +18,7 @@ public class ReachEffect : CreatureCardEffect {
     }
 
     private void SetCanDefendElusiveAttacker(object sender, CanDefendEventArgs args) {
-        if (args.Defender.Uuid != creatureCardUuid)
+        if (args.Defender.Uuid != card.Uuid)
             return;
 
         TcgLogger.Log("Range Effect triggered");

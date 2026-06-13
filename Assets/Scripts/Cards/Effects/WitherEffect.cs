@@ -7,19 +7,30 @@ public class WitherEffect : CreatureCardEffect {
 
     public WitherEffect(WitherEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
-        EventBus.Instance.OnCreatureDamagedByCreature += AddWitherStatus;
+    public override void Init(CreatureCard card) {
+        this.card = card;
+        EventBus.Instance.OnCreatureDamagedByCreature += StopDamageToDefender;
+        EventBus.Instance.OnCreatureDamagedByCreatureFinished += AddWitherStatus;
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnCreatureDamagedByCreature -= AddWitherStatus;
+        EventBus.Instance.OnCreatureDamagedByCreature -= StopDamageToDefender;
+        EventBus.Instance.OnCreatureDamagedByCreatureFinished -= AddWitherStatus;
+    }
+
+    private void StopDamageToDefender(object sender, CreatureCombatDamageEventArgs args) {
+        if (args.Attacker.Uuid != card.Uuid)
+            return;
+        if (args.IsCanceled)
+            return;
+        if (args.Defender == null)
+            return;
+
+        args.ShouldDamageDefender = false;
     }
 
     private void AddWitherStatus(object sender, CreatureCombatDamageEventArgs args) {
-        if (args.Attacker.Uuid != creatureCardUuid)
-            return;
-        if (args.IsCanceled)
+        if (args.Attacker.Uuid != card.Uuid)
             return;
         if (args.Defender == null)
             return;
@@ -32,7 +43,6 @@ public class WitherEffect : CreatureCardEffect {
                                                                                      args.Defender,
                                                                                      damage);
         EventBus.Instance.InvokeOnWitherProked(witherArgs);
-        args.ShouldDamageDefender = false;
         if(!witherArgs.IsCanceled) {
             TcgLogger.Log("Wither Status added to Defender");
             args.Defender.AddEffect(new WitherStatusEffect(damage));

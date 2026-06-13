@@ -1,13 +1,12 @@
 using System;
-using Unity.Netcode;
 
 [Serializable]
 public abstract class CreatureCardEffect {
-    protected Guid creatureCardUuid;
+    protected CreatureCard card;
 
     public CreatureCardEffect() { }
 
-    public abstract void Init(Guid creatureCardUuid);
+    public abstract void Init(CreatureCard card);
 
     public abstract void RemoveListeners();
 
@@ -15,5 +14,5 @@ public abstract class CreatureCardEffect {
 
     public abstract CreatureCardEffectPayload GetEffectPayload();
 
-    public Guid CreatureCardUuid { get { return creatureCardUuid; } }
+    public CreatureCard Card { get { return card; } }
 }

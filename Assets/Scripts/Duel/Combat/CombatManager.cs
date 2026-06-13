@@ -129,18 +129,18 @@ public class CombatManager : NetworkBehaviour {
                         MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
                         target.DamageLifePoints(args.DirectDamage);
                     }
+                    EventBus.Instance.InvokeOnCreatureDamagedByCreatureFinished(args);
                 }
             }
             EventBus.Instance.InvokeOnCreatureCombatFinished(new CreatureCombatDamageEventArgs(duelistCombat.InitiatorId,
                                                                                                duelistCombat.TargetId,
                                                                                                creatureCombat,
                                                                                                damage));
-            TcgLogger.Log("Before OnPostCreatureCombatClientRpc");
-            EventBus.Instance.InvokeOnPostCreatureCombatClientRpc(duelistCombat.InitiatorId,
-                                                                  duelistCombat.TargetId,
-                                                                  new CreatureCardPayload(creatureCombat.Attacker),
-                                                                  new CreatureCardPayload(creatureCombat.Defender));
-            TcgLogger.Log("After OnPostCreatureCombatClientRpc");
+            CreatureCardPayload defender = creatureCombat.Defender != null ? new CreatureCardPayload(creatureCombat.Defender) : null;
+            EventBus.Instance.InvokeOnPostCreatureCombatClientRpc(new CreatureCombatNetworkContainer(duelistCombat.InitiatorId,
+                                                                                                     duelistCombat.TargetId,
+                                                                                                     new CreatureCardPayload(creatureCombat.Attacker),
+                                                                                                     defender));
             creatureCombat.Attacker?.Tap();
         }
         CreatureCombatPayload[] creatureCombatPayloads = new CreatureCombatPayload[duelistCombat.CreatureCombats.Count];

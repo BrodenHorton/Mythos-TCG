@@ -7,7 +7,7 @@ public class ReachEffectPayload : CreatureCardEffectPayload {
     }
 
     public ReachEffectPayload(ReachEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Reach;
     }
 

@@ -29,7 +29,6 @@ public class CreatureFieldCardUI : FieldCardUI {
     }
 
     public void UpdateFieldCard(CreatureCardPayload card) {
-        TcgLogger.Log("CreaturefieldCard Update uuid: " + card.Uuid);
         Color atkColor = Color.white;
         if(card.Atk < card.CardBase.Atk)
             atkColor = Color.red;
@@ -37,7 +36,6 @@ public class CreatureFieldCardUI : FieldCardUI {
             atkColor = Color.green;
         atk.color = atkColor;
         atk.text = card.Atk.ToString();
-        TcgLogger.Log("CreaturefieldCard atk set to: " + card.Atk.ToString());
 
         Color healthColor = Color.white;
         if (card.Health < card.CardBase.Health)
@@ -46,7 +44,6 @@ public class CreatureFieldCardUI : FieldCardUI {
             healthColor = Color.green;
         health.color = healthColor;
         health.text = card.Health.ToString();
-        TcgLogger.Log("CreaturefieldCard health set to: " + card.Health.ToString());
 
         if (card.IsTapped)
             Tap();

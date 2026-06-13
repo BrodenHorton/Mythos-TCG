@@ -9,8 +9,8 @@ public class MenaceEffect : CreatureCardEffect {
 
     public MenaceEffect(MenaceEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnSelectAttackerToDefend += RestrictDefenders;
     }
 
@@ -19,7 +19,7 @@ public class MenaceEffect : CreatureCardEffect {
     }
 
     private void RestrictDefenders(object sender, CanDefendEventArgs args) {
-        if (args.Attacker.Uuid != creatureCardUuid)
+        if (args.Attacker.Uuid != card.Uuid)
             return;
         if (!args.CanDefend)
             return;

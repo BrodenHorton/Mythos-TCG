@@ -7,7 +7,7 @@ public class EnduranceEffectPayload : CreatureCardEffectPayload {
     }
 
     public EnduranceEffectPayload(EnduranceEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Endurance;
     }
 

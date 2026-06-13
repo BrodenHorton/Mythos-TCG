@@ -10,8 +10,8 @@ public class BloodthirstyEffect : CreatureCardEffect {
         effectProkCount = effect.effectProkCount;
     }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnCreatureCombatFinished += AddEffectProk;
         EventBus.Instance.OnCalculateCreatureAttack += AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth += AddHealth;
@@ -24,7 +24,7 @@ public class BloodthirstyEffect : CreatureCardEffect {
     }
 
     private void AddEffectProk(object sender, CreatureCombatDamageEventArgs args) {
-        if (args.Attacker == null || args.Attacker.Uuid != creatureCardUuid)
+        if (args.Attacker == null || args.Attacker.Uuid != card.Uuid)
             return;
 
         TcgLogger.Log("Bloodthirsty Proked");
@@ -32,14 +32,14 @@ public class BloodthirstyEffect : CreatureCardEffect {
     }
 
     private void AddAttack(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
         args.Value += effectProkCount;
     }
 
     private void AddHealth(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
         args.Value += effectProkCount;

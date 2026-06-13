@@ -8,8 +8,8 @@ public class DefenderEffect : CreatureCardEffect {
 
     public DefenderEffect(DefenderEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnCanCreatureAttack += CancelCanAttack;
     }
 
@@ -18,7 +18,7 @@ public class DefenderEffect : CreatureCardEffect {
     }
 
     private void CancelCanAttack(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
         TcgLogger.Log("Defender Effect triggered");

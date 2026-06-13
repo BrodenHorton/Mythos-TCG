@@ -7,7 +7,7 @@ public class SwiftnessEffectPayload : CreatureCardEffectPayload {
     }
 
     public SwiftnessEffectPayload(SwiftnessEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Swiftness;
     }
 

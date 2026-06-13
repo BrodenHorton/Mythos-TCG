@@ -8,8 +8,8 @@ public class SwiftnessEffect : CreatureCardEffect {
 
     public SwiftnessEffect(SwiftnessEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnEnteringFieldSummoningSickness += RemoveSummoningSickness;
     }
 
@@ -18,7 +18,7 @@ public class SwiftnessEffect : CreatureCardEffect {
     }
 
     private void RemoveSummoningSickness(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
         TcgLogger.Log("Swiftness Effect triggered");

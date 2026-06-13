@@ -7,7 +7,7 @@ public class ElusiveEffectPayload : CreatureCardEffectPayload {
     }
 
     public ElusiveEffectPayload(ElusiveEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Elusive;
     }
 

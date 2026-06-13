@@ -7,7 +7,7 @@ public class OverwhelmEffectPayload : CreatureCardEffectPayload {
     }
 
     public OverwhelmEffectPayload(OverwhelmEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Overwhelm;
     }
 

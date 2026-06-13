@@ -7,7 +7,7 @@ public class WitherEffectPayload : CreatureCardEffectPayload {
     }
 
     public WitherEffectPayload(WitherEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Wither;
     }
 

@@ -14,8 +14,8 @@ public class WitherStatusEffect : CreatureCardEffect {
         witherCount = effect.witherCount;
     }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnWitherProked += AddEffectProk;
         EventBus.Instance.OnCalculateCreatureAttack += UpdateAttack;
         EventBus.Instance.OnCalculateCreatureHealth += UpdateHealth;
@@ -28,26 +28,26 @@ public class WitherStatusEffect : CreatureCardEffect {
     }
 
     private void AddEffectProk(object sender, CreatureCombatDamageEventArgs args) {
-        if (args.Attacker == null || args.Attacker.Uuid != creatureCardUuid)
+        if (args.Defender?.Uuid != card.Uuid)
             return;
 
-        TcgLogger.Log("Wither Status incremented");
-        witherCount++;
+        args.IsCanceled = true;
+        witherCount += args.Damage;
+        TcgLogger.Log("Wither Status Proked. Count: " + witherCount);
+        card.CheckHealthState();
     }
 
     private void UpdateAttack(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
-        TcgLogger.Log("WitherStatus UpdateAttack Entered");
         args.Value -= witherCount;
     }
 
     private void UpdateHealth(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
-        if (args.Card.Uuid != creatureCardUuid)
+        if (args.Card.Uuid != card.Uuid)
             return;
 
-        TcgLogger.Log("WitherStatus UpdateHealth Entered");
         args.Value -= witherCount;
     }
 

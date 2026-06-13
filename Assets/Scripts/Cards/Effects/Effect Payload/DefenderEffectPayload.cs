@@ -7,7 +7,7 @@ public class DefenderEffectPayload : CreatureCardEffectPayload {
     }
 
     public DefenderEffectPayload(DefenderEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Defender;
     }
 

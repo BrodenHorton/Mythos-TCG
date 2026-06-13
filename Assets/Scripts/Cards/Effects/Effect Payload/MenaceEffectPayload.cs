@@ -7,7 +7,7 @@ public class MenaceEffectPayload : CreatureCardEffectPayload {
     }
 
     public MenaceEffectPayload(MenaceEffect effect) {
-        creatureUuidStr = effect.CreatureCardUuid.ToString();
+        creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Menace;
     }
 

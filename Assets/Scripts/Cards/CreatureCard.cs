@@ -18,7 +18,7 @@ public partial class CreatureCard : Card {
         effects = new List<CreatureCardEffect>();
         for(int i = 0; i < cardBase.BaseEffects.Count; i++) {
             CreatureCardEffect effect = cardBase.BaseEffects[i].DeepCopy();
-            effect.Init(uuid);
+            effect.Init(this);
             effects.Add(effect);
         }
     }
@@ -52,7 +52,6 @@ public partial class CreatureCard : Card {
     }
 
     public int GetAtk() {
-        TcgLogger.Log("CreatureCard GetAtk Entered");
         PlayerCardStatEventArgs<CreatureCard> args = new PlayerCardStatEventArgs<CreatureCard>(playerId,
                                                                                                this,
                                                                                                cardBase.Atk);
@@ -61,7 +60,6 @@ public partial class CreatureCard : Card {
     }
 
     public int GetHealth() {
-        TcgLogger.Log("CreatureCard GetHealth Entered");
         PlayerCardStatEventArgs<CreatureCard> args = new PlayerCardStatEventArgs<CreatureCard>(playerId,
                                                                                                this,
                                                                                                cardBase.Health - damage);
@@ -105,12 +103,16 @@ public partial class CreatureCard : Card {
         damage += amt;
         EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, this));
         EventBus.Instance.InvokeOnCreatureDamagedFinishedClientRpc(playerId, new CreatureCardPayload(this));
+        CheckHealthState();
+    }
+
+    public void CheckHealthState() {
         if (GetHealth() <= 0)
             creatureDestroyedCallback?.Invoke(this);
     }
 
     public void AddEffect(CreatureCardEffect effect) {
-        effect.Init(uuid);
+        effect.Init(this);
         effects.Add(effect);
     }
 

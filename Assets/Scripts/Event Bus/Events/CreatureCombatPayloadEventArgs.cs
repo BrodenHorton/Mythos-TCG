@@ -6,8 +6,17 @@ public class CreatureCombatPayloadEventArgs : EventArgs {
     private CreatureCardPayload attacker;
     private CreatureCardPayload defender;
 
+    public CreatureCombatPayloadEventArgs(CreatureCombatNetworkContainer creatureCombatNetworkContainer)
+        : this(creatureCombatNetworkContainer.initiatorId,
+               creatureCombatNetworkContainer.targetId,
+               creatureCombatNetworkContainer.attacker,
+               creatureCombatNetworkContainer.defender) { }
+
     public CreatureCombatPayloadEventArgs(ulong initiatorId, ulong targetId, CreatureCombat creatureCombat)
-        : this(initiatorId, targetId, new CreatureCardPayload(creatureCombat.Attacker), new CreatureCardPayload(creatureCombat.Defender)) { }
+        : this(initiatorId,
+               targetId,
+               new CreatureCardPayload(creatureCombat.Attacker),
+               new CreatureCardPayload(creatureCombat.Defender)) { }
 
     public CreatureCombatPayloadEventArgs(ulong initiatorId, ulong targetId, CreatureCard attacker, CreatureCard defender)
         : this (initiatorId, targetId, new CreatureCardPayload(attacker), new CreatureCardPayload(defender)) { }

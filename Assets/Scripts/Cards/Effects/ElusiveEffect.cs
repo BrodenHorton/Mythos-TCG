@@ -8,8 +8,8 @@ public class ElusiveEffect : CreatureCardEffect {
 
     public ElusiveEffect(ElusiveEffect effect) : base() { }
 
-    public override void Init(Guid creatureCardUuid) {
-        this.creatureCardUuid = creatureCardUuid;
+    public override void Init(CreatureCard card) {
+        this.card = card;
         EventBus.Instance.OnSelectAttackerToDefend += RestrictDefenders;
         EventBus.Instance.OnSelectElusiveAttackerToDefend += SetCanDefendElusiveAttacker;
     }
@@ -20,7 +20,7 @@ public class ElusiveEffect : CreatureCardEffect {
     }
 
     private void RestrictDefenders(object sender, CanDefendEventArgs args) {
-        if (args.Attacker.Uuid != creatureCardUuid)
+        if (args.Attacker.Uuid != card.Uuid)
             return;
         if (!args.CanDefend)
             return;
@@ -36,7 +36,7 @@ public class ElusiveEffect : CreatureCardEffect {
     }
 
     private void SetCanDefendElusiveAttacker(object sender, CanDefendEventArgs args) {
-        if (args.Defender.Uuid != creatureCardUuid)
+        if (args.Defender.Uuid != card.Uuid)
             return;
 
         TcgLogger.Log("Elusive Effect triggered");
