@@ -9,5 +9,6 @@
     Menace,
     Bloodthirsty,
     Wither,
-    WitherStatus
+    WitherStatus,
+    Lifelink
 }

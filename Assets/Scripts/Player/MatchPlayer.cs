@@ -89,9 +89,12 @@ public class MatchPlayer {
         deck.Shuffle();
     }
 
-    public void DamageLifePoints(int amt) {
-        int temp = lifePoints;
-        lifePoints -= amt;
+    // TODO: Update this method so an event is called when the life points are either damaged or healed
+    public void ModifyLifePoints(int amt) {
+        if (amt == 0)
+            throw new Exception("Attempting to modify life points by 0");
+
+        lifePoints += amt;
         EventBus.Instance.InvokeOnLifePointsChanged(playerId, lifePoints);
     }
 

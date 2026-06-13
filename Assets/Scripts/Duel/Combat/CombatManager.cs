@@ -113,7 +113,7 @@ public class CombatManager : NetworkBehaviour {
             int damage = creatureCombat.Attacker.GetAtk();
             if (creatureCombat.Defender == null) {
                 MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
-                target.DamageLifePoints(damage);
+                target.ModifyLifePoints(-damage);
             }
             else {
                 CreatureCombatDamageEventArgs args = new CreatureCombatDamageEventArgs(duelistCombat.InitiatorId,
@@ -127,7 +127,7 @@ public class CombatManager : NetworkBehaviour {
                         creatureCombat.Defender.InflictDamage(damage);
                     if(args.DirectDamage > 0) {
                         MatchPlayer target = duelManager.GetPlayerById(duelistCombat.TargetId);
-                        target.DamageLifePoints(args.DirectDamage);
+                        target.ModifyLifePoints(-args.DirectDamage);
                     }
                     EventBus.Instance.InvokeOnCreatureDamagedByCreatureFinished(args);
                 }
