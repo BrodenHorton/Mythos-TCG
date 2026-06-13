@@ -20,6 +20,7 @@ public struct CreatureCardEffectPayloadNetworkContainer : INetworkSerializable {
                 CreatureCardEffectType.Wither => new WitherEffectPayload(),
                 CreatureCardEffectType.WitherStatus => new WitherStatusEffectPayload(),
                 CreatureCardEffectType.Lifelink => new LifelinkEffectPayload(),
+                CreatureCardEffectType.Deathtouch => new DeathtouchEffectPayload(),
                 _ => throw new NotImplementedException("Attempting to read card type that is not defined: " + effectType.ToString())
             };
         }

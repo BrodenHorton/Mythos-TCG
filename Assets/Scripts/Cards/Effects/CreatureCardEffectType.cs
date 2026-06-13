@@ -10,5 +10,6 @@
     Bloodthirsty,
     Wither,
     WitherStatus,
-    Lifelink
+    Lifelink,
+    Deathtouch
 }

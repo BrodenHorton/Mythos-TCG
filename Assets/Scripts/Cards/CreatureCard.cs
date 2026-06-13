@@ -108,7 +108,11 @@ public partial class CreatureCard : Card {
 
     public void CheckHealthState() {
         if (GetHealth() <= 0)
-            creatureDestroyedCallback?.Invoke(this);
+            DestroyCreature();
+    }
+
+    public void DestroyCreature() {
+        creatureDestroyedCallback?.Invoke(this);
     }
 
     public void AddEffect(CreatureCardEffect effect) {
