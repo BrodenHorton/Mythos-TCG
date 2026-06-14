@@ -11,5 +11,7 @@
     Wither,
     WitherStatus,
     Lifelink,
-    Deathtouch
+    Deathtouch,
+    Spellshield,
+    Duelist
 }
