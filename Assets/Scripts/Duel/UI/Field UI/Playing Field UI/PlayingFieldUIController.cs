@@ -32,7 +32,5 @@ public abstract class PlayingFieldUIController : NetworkBehaviour {
 
     public abstract CreatureFieldCardUI ReleaseCreature(Guid cardUuid);
 
-    public abstract void UpdateCreatureFieldCard(CreatureCardPayload card);
-
     public abstract bool ContainsCreature(Guid uuid);
 }

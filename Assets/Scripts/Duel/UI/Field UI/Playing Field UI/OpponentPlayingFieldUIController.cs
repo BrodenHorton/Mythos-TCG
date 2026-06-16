@@ -30,13 +30,6 @@ public class OpponentPlayingFieldUIController : PlayingFieldUIController {
         return playingFieldUI.ReleaseCreature(cardUuid);
     }
 
-    public override void UpdateCreatureFieldCard(CreatureCardPayload card) {
-        if (!ContainsCreature(card.Uuid))
-            return;
-
-        playingFieldUI.UpdateCreatureFieldCard(card);
-    }
-
     public override void AddCreatureCards(List<CreatureFieldCardUI> creatures) {
         for (int i = 0; i < creatures.Count; i++)
             playingFieldUI.AddCreatureFieldCard(creatures[i]);

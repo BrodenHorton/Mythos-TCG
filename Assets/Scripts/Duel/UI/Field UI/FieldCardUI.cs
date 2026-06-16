@@ -5,6 +5,7 @@ public abstract class FieldCardUI : MonoBehaviour {
     [SerializeField] protected GameObject selectableBorder;
 
     protected Guid cardUuid;
+    protected ulong playerId;
     protected bool isSelectable;
 
     private void Awake() {
@@ -18,6 +19,8 @@ public abstract class FieldCardUI : MonoBehaviour {
     }
 
     public Guid CardUuid { get { return cardUuid; } }
+
+    public ulong PlayerId { get { return playerId; } }
 
     public bool IsSelectable { get { return isSelectable; } }
 }

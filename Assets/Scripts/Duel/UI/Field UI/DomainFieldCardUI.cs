@@ -1,6 +1,7 @@
 ﻿public class DomainFieldCardUI : FieldCardUI {
 
-    public void Init(DomainCardPayload card) {
+    public void Init(ulong playerId, DomainCardPayload card) {
         cardUuid = card.Uuid;
+        this.playerId = playerId;
     }
 }

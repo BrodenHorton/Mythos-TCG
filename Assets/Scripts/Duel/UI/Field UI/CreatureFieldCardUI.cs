@@ -5,9 +5,12 @@ using UnityEngine;
 public class CreatureFieldCardUI : FieldCardUI {
     [SerializeField] private TextMeshPro atk;
     [SerializeField] private TextMeshPro health;
+    private bool isInCombatField;
 
-    public void Init(CreatureCardPayload card) {
+    public void Init(ulong playerId, CreatureCardPayload card) {
         cardUuid = card.Uuid;
+        this.playerId = playerId;
+        isInCombatField = false;
 
         EventBus.Instance.OnCreatureEndOfTurnRegenerationFinished += UpdateFieldCardOnEndOfTurnRegeneration;
         EventBus.Instance.OnCreatureTappedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
@@ -79,4 +82,6 @@ public class CreatureFieldCardUI : FieldCardUI {
     public void Untap() {
         transform.eulerAngles = Vector3.zero;
     }
+
+    public bool IsInCombatField { get { return isInCombatField; } set { isInCombatField = value; } }
 }

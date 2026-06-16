@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FieldUIManager : NetworkBehaviour {
     [SerializeField] private PlayingFieldUIManager playingFieldUIManager;
@@ -48,5 +50,75 @@ public class FieldUIManager : NetworkBehaviour {
         List<CreatureFieldCardUI> defenders = combatFieldUIManager.ReleaseDefenders(args.TargetId);
         playingFieldUIManager.AddCreatureCards(args.InitiatorId, attackers);
         playingFieldUIManager.AddCreatureCards(args.TargetId, defenders);
+    }
+}
+
+// TODO: Finish class
+public class FieldCardSelectionManager : MonoBehaviour {
+    public event EventHandler<> OnSelectCreatureFieldCard;
+    public event EventHandler<> OnInspectCreatureFieldCard;
+
+    private Camera cam;
+
+    private void Start() {
+        cam = Camera.main;
+
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.started += SelectFieldCard;
+        // TODO: Create Inspect action map
+        playerInputActions.Player.Select.started += InspectFieldCard;
+    }
+
+    private void OnDestroy() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        playerInputActions.Player.Select.started -= SelectFieldCard;
+        playerInputActions.Player.Select.started -= InspectFieldCard;
+    }
+
+    private void SelectFieldCard(InputAction.CallbackContext context) {
+        if (!context.started)
+            return;
+        CreatureFieldCardUI cardUI = CreatureFieldCardRaycastColliderCheck();
+        if (cardUI == null)
+            return;
+        if (!cardUI.IsSelectable)
+            return;
+
+
+    }
+
+    private void InspectFieldCard(InputAction.CallbackContext context) {
+
+    }
+
+    // TODO: Figure out how to create a fieldCardCollisionPointer that encompasses all other collision pointers
+    private FieldCardUI FieldCardRaycastColliderCheck() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        FieldCardUI cardUI = null;
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.GetComponent<FieldCardCollisionPointer>()) {
+                cardUI = hit.collider.GetComponent<FieldCardCollisionPointer>().CardUI;
+                break;
+            }
+        }
+
+        return cardUI;
+    }
+
+    private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        CreatureFieldCardUI cardUI = null;
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
+                cardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
+                break;
+            }
+        }
+
+        return cardUI;
     }
 }

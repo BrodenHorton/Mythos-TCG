@@ -23,12 +23,13 @@ public class PlayingFieldUI : MonoBehaviour {
     public void PlayCreatureCard(CreatureCardPayload card) {
         CreatureFieldCardUI creatureCardUI = Instantiate(creatureCardUIPrefab);
         creatureCardUI.transform.parent = creatureSlotOrigin;
-        creatureCardUI.Init(card);
+        creatureCardUI.Init(playerId, card);
         AddCreatureFieldCard(creatureCardUI);
     }
 
     public void AddCreatureFieldCard(CreatureFieldCardUI cardUI) {
         creatures.Add(cardUI);
+        cardUI.IsInCombatField = false;
         SetDefaultCardPositions();
     }
 
@@ -36,7 +37,7 @@ public class PlayingFieldUI : MonoBehaviour {
         DomainFieldCardUI domainCardUI = Instantiate(domainCardUIPrefab);
         domainCardUI.transform.parent = domainSlotOrigin;
         domainCardUI.transform.localPosition = Vector3.zero;
-        domainCardUI.Init(card);
+        domainCardUI.Init(playerId, card);
         domainCard = domainCardUI;
     }
 

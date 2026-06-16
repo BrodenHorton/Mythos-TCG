@@ -66,14 +66,6 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         return controllerByPlayerId[playerId].ReleaseCreature(cardUuid);
     }
 
-    public void UpdateCreatureFieldCard(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
-        if (controllerByPlayerId[args.PlayerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + args.PlayerId);
-
-        if (controllerByPlayerId[args.PlayerId].ContainsCreature(args.CardPayload.Uuid))
-            controllerByPlayerId[args.PlayerId].UpdateCreatureFieldCard(args.CardPayload);
-    }
-
     public void DestroyCreature(ulong playerId, Guid cardUuid) {
         if (controllerByPlayerId[playerId] == null)
             throw new Exception("Unable to find playing field UI controller with player Id: " + playerId);

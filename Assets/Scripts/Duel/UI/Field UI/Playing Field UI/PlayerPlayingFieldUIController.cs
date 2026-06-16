@@ -45,10 +45,6 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         return playingFieldUI.ReleaseCreature(cardUuid);
     }
 
-    public override void UpdateCreatureFieldCard(CreatureCardPayload card) {
-        playingFieldUI.UpdateCreatureFieldCard(card);
-    }
-
     private void SetSelectableCards(object sender, ulong playerId) {
         if (this.playerId != playerId)
             return;
