@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class OpponentPlayingFieldUIController : PlayingFieldUIController {
-    [SerializeField] private PlayingFieldUI playingFieldUI;
 
     public override void Init(ulong playerId) {
         this.playerId = playerId;

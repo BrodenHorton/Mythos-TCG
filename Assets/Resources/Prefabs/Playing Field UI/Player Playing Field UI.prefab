@@ -109,37 +109,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &3559634976586841411
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3689575478617416704}
-  m_Layer: 0
-  m_Name: Spell Slot Origin
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3689575478617416704
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3559634976586841411}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0.02, z: -0.35}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8641841102797122468}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3767379253246929733
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,7 +118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8641841102797122468}
-  - component: {fileID: 2121813918429068511}
+  - component: {fileID: 8559481239642798855}
   m_Layer: 0
   m_Name: Player Playing Field UI
   m_TagString: Untagged
@@ -171,12 +140,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3074724133692166430}
-  - {fileID: 3689575478617416704}
   - {fileID: 3921344399750140061}
   - {fileID: 4461264709719846827}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2121813918429068511
+--- !u!114 &8559481239642798855
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185,7 +153,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3767379253246929733}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad1806613c425f643968a28f9682a018, type: 3}
+  m_Script: {fileID: 11500000, guid: 2d444f45d386e244cb1f7d24b78c6893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   creatureSlotOrigin: {fileID: 3074724133692166430}
@@ -194,9 +162,7 @@ MonoBehaviour:
   creatures: []
   domainCard: {fileID: 0}
   creatureCardUIPrefab: {fileID: 8696858695724869291, guid: 22c6877d40548284b8208578e672fe58, type: 3}
-  spellCardUIPrefab: {fileID: 2365724326917806165, guid: 65603f203dde6f54da27889cd3168450, type: 3}
   domainCardUIPrefab: {fileID: 4368443066705305381, guid: d59822a3cccd6f34982fe32cae9797e5, type: 3}
-  dragOffset: 0.5
 --- !u!1 &6060642195019149288
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cec33a87eda12b54f94ca409166088a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playingFieldUI: {fileID: 2121813918429068511}
+  playingFieldUI: {fileID: 8559481239642798855}
   playableAreaCollider: {fileID: 5681576184872425004}
   playableAreaVisual: {fileID: 3025622732599146495}
 --- !u!1 &9040775679754799836

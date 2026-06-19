@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayingFieldUI : MonoBehaviour {
-    [SerializeField] protected Transform creatureSlotOrigin;
-    [SerializeField] protected Transform domainSlotOrigin;
-    [SerializeField] protected float cardSpacing;
+    [SerializeField] private Transform creatureSlotOrigin;
+    [SerializeField] private Transform domainSlotOrigin;
+    [SerializeField] private float cardSpacing;
     [Header("Field Cards")]
-    [SerializeField] protected List<CreatureFieldCardUI> creatures;
-    [SerializeField] protected DomainFieldCardUI domainCard;
+    [SerializeField] private List<CreatureFieldCardUI> creatures;
+    [SerializeField] private DomainFieldCardUI domainCard;
     [Header("Prefabs")]
-    [SerializeField] protected CreatureFieldCardUI creatureCardUIPrefab;
-    [SerializeField] protected SpellFieldCardUI spellCardUIPrefab;
-    [SerializeField] protected DomainFieldCardUI domainCardUIPrefab;
+    [SerializeField] private CreatureFieldCardUI creatureCardUIPrefab;
+    [SerializeField] private DomainFieldCardUI domainCardUIPrefab;
 
-    protected ulong playerId;
+    private ulong playerId;
+
+    private void Start() {
+        FieldCardSelectionManager.Instance.OnReleaseCreatureFieldCardDragFinished += (sender, args) => {
+            if(args.CardUI.PlayerId == playerId) 
+                SetDefaultCardPositions();
+        };
+    }
 
     public void Init(ulong playerId) {
         this.playerId = playerId;
@@ -41,13 +47,6 @@ public class PlayingFieldUI : MonoBehaviour {
         domainCard = domainCardUI;
     }
 
-    public void UpdateCreatureFieldCard(CreatureCardPayload card) {
-        if (!ContainsCreature(card.Uuid))
-            return; // We don't throw here since the creature field card could be in the combat field instead
-
-        GetCreatureFieldCardUIBy(card.Uuid).UpdateFieldCard(card);
-    }
-
     public void RemoveCreature(Guid cardUuid) {
         if (!ContainsCreature(cardUuid))
             throw new Exception("Attempting to remove creature that is not in the playing field");
@@ -72,6 +71,18 @@ public class PlayingFieldUI : MonoBehaviour {
         creatures.Remove(cardUI);
         SetDefaultCardPositions();
         return cardUI;
+    }
+
+    public void SetCardSelectable(Guid cardUuid) {
+        if (!ContainsCreature(cardUuid))
+            throw new Exception("Attempting to set selectable card border visibility to card that is not in the PlayUI hand");
+
+        GetCreatureFieldCardUIBy(cardUuid).SetSelectable(true);
+    }
+
+    public void SetCardSelectableAll(bool isSelectable) {
+        foreach (FieldCardUI cardUI in creatures)
+            cardUI.SetSelectable(isSelectable);
     }
 
     protected void SetDefaultCardPositions() {

@@ -5,7 +5,6 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerPlayingFieldUIController : PlayingFieldUIController {
-    [SerializeField] private PlayerPlayingFieldUI playingFieldUI;
 
     protected override void Start() {
         base.Start();

@@ -46,6 +46,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Inspect"",
+                    ""type"": ""Button"",
+                    ""id"": ""fb64ef12-6865-4be5-9c85-f100b3e09d16"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Enter"",
                     ""type"": ""Button"",
                     ""id"": ""a751547f-788c-402a-9199-435239cf7bd9"",
@@ -188,6 +197,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""ScrollDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b6abd620-3e67-4592-a5ec-7046f313bddf"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inspect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -226,6 +246,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Debug1 = m_Player.FindAction("Debug1", throwIfNotFound: true);
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
+        m_Player_Inspect = m_Player.FindAction("Inspect", throwIfNotFound: true);
         m_Player_Enter = m_Player.FindAction("Enter", throwIfNotFound: true);
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
         m_Player_OpenConsole = m_Player.FindAction("OpenConsole", throwIfNotFound: true);
@@ -304,6 +325,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Debug1;
     private readonly InputAction m_Player_Select;
+    private readonly InputAction m_Player_Inspect;
     private readonly InputAction m_Player_Enter;
     private readonly InputAction m_Player_Escape;
     private readonly InputAction m_Player_OpenConsole;
@@ -316,6 +338,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Debug1 => m_Wrapper.m_Player_Debug1;
         public InputAction @Select => m_Wrapper.m_Player_Select;
+        public InputAction @Inspect => m_Wrapper.m_Player_Inspect;
         public InputAction @Enter => m_Wrapper.m_Player_Enter;
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
         public InputAction @OpenConsole => m_Wrapper.m_Player_OpenConsole;
@@ -337,6 +360,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Select.started += instance.OnSelect;
             @Select.performed += instance.OnSelect;
             @Select.canceled += instance.OnSelect;
+            @Inspect.started += instance.OnInspect;
+            @Inspect.performed += instance.OnInspect;
+            @Inspect.canceled += instance.OnInspect;
             @Enter.started += instance.OnEnter;
             @Enter.performed += instance.OnEnter;
             @Enter.canceled += instance.OnEnter;
@@ -365,6 +391,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Select.started -= instance.OnSelect;
             @Select.performed -= instance.OnSelect;
             @Select.canceled -= instance.OnSelect;
+            @Inspect.started -= instance.OnInspect;
+            @Inspect.performed -= instance.OnInspect;
+            @Inspect.canceled -= instance.OnInspect;
             @Enter.started -= instance.OnEnter;
             @Enter.performed -= instance.OnEnter;
             @Enter.canceled -= instance.OnEnter;
@@ -450,6 +479,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     {
         void OnDebug1(InputAction.CallbackContext context);
         void OnSelect(InputAction.CallbackContext context);
+        void OnInspect(InputAction.CallbackContext context);
         void OnEnter(InputAction.CallbackContext context);
         void OnEscape(InputAction.CallbackContext context);
         void OnOpenConsole(InputAction.CallbackContext context);

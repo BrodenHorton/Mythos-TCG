@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CombatFieldUI : MonoBehaviour {
     private static readonly int MAX_FIELD_CREATURES = 6;
-
-    public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnSelectFieldCard;
 
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
@@ -20,17 +17,10 @@ public class CombatFieldUI : MonoBehaviour {
     private ulong targetPlayerId;
     private Dictionary<int, CreatureFieldCardUI> attackerByPositionIndex;
     private Dictionary<int, CreatureFieldCardUI> defenderByPositionIndex;
-    private Camera cam;
 
     private void Awake() {
         attackerByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
         defenderByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.started += SelectFieldCard;
-    }
-
-    private void Start() {
-        cam = Camera.main;
     }
 
     public void Init(ulong targetPlayerId) {
@@ -118,58 +108,6 @@ public class CombatFieldUI : MonoBehaviour {
             }
         }
         throw new Exception("Attempting to release defender that is not in combat field");
-    }
-
-    public void UpdateCreatureFieldCard(CreatureCardPayload card) {
-        if (ContainsAttacker(card.Uuid))
-            GetAttacker(card.Uuid).UpdateFieldCard(card);
-        else if (ContainsDefender(card.Uuid))
-            GetDefender(card.Uuid).UpdateFieldCard(card);
-        else
-            throw new Exception("Attempting to update creature field card that is not in combat field");
-    }
-
-    public void SetCardSelectable(Guid cardUuid) {
-        if (!ContainsAttacker(cardUuid))
-            GetAttacker(cardUuid).SetSelectable(true);
-        else if(ContainsDefender(cardUuid))
-            GetDefender(cardUuid).SetSelectable(true);
-        else
-            throw new Exception("Unable to find card uuid in combat field UI cards");
-    }
-
-    public void SetCardSelectableAll(bool isSelectable) {
-        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in attackerByPositionIndex.ToList())
-            entry.Value.SetSelectable(isSelectable);
-        foreach (KeyValuePair<int, CreatureFieldCardUI> entry in defenderByPositionIndex.ToList())
-            entry.Value.SetSelectable(isSelectable);
-    }
-
-    private void SelectFieldCard(InputAction.CallbackContext context) {
-        if (!context.started)
-            return;
-        CreatureFieldCardUI cardUI = CreatureFieldCardRaycastColliderCheck();
-        if (cardUI == null)
-            return;
-        if (!ContainsAttacker(cardUI) && !ContainsDefender(cardUI))
-            return;
-
-        OnSelectFieldCard?.Invoke(this, new CombatFieldCardEventArgs<CreatureFieldCardUI>(this, cardUI));
-    }
-
-    private CreatureFieldCardUI CreatureFieldCardRaycastColliderCheck() {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray);
-        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        CreatureFieldCardUI cardUI = null;
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
-                cardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
-                break;
-            }
-        }
-
-        return cardUI;
     }
 
     private void SpaceAttackers() {

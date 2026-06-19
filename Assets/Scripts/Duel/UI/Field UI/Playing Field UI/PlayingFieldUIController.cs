@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEngine;
 
 public abstract class PlayingFieldUIController : NetworkBehaviour {
+    [SerializeField] protected PlayingFieldUI playingFieldUI;
     protected ulong playerId;
     protected DuelManager duelManager;
     protected DuelStateManager stateManager;

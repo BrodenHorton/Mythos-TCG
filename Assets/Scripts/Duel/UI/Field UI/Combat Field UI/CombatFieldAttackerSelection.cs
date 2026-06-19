@@ -10,11 +10,11 @@ public class CombatFieldAttackerSelection : MonoBehaviour {
         combatFieldUI = GetComponent<CombatFieldUI>();
         cam = Camera.main;
 
-        EventBus.Instance.OnReleaseCardDragPlayingField += SelectAttackerToDefend;
+        FieldCardSelectionManager.Instance.OnReleaseCreatureFieldCardDrag += SelectAttackerToDefend;
     }
 
-    private void SelectAttackerToDefend(object sender, PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
-        if (combatFieldUI.TargetPlayerId != args.PlayingFieldUI.PlayerId)
+    private void SelectAttackerToDefend(object sender, FieldCardEventArgs<CreatureFieldCardUI> args) {
+        if (combatFieldUI.TargetPlayerId != args.CardUI.PlayerId)
             return;
 
         if (IsHoveringCombatFieldAttacker(out CreatureFieldCardUI attackerUI))

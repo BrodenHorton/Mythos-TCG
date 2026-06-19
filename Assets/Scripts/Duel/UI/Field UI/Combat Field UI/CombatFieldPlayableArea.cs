@@ -12,25 +12,24 @@ public class CombatFieldPlayableArea : MonoBehaviour {
         cam = Camera.main;
         playableAreaVisual.SetActive(false);
 
-        EventBus.Instance.OnStartCardDragPlayingField += ShowPlayableAreaVisual;
-        EventBus.Instance.OnReleaseCardDragPlayingField += PlayCardOnReleaseDrag;
+        FieldCardSelectionManager.Instance.OnSelectCreatureFieldCardDrag += ShowPlayableAreaVisual;
+        FieldCardSelectionManager.Instance.OnReleaseCreatureFieldCardDrag += PlayCardOnReleaseDrag;
     }
 
-    private void ShowPlayableAreaVisual(object sender, PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
-        if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
+    private void ShowPlayableAreaVisual(object sender, FieldCardEventArgs<CreatureFieldCardUI> args) {
+        if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(true);
     }
 
-    private void PlayCardOnReleaseDrag(object sender, PlayingFieldCardEventArgs<CreatureFieldCardUI> args) {
-        if (combatFieldUI.TargetPlayerId == args.PlayingFieldUI.PlayerId)
+    private void PlayCardOnReleaseDrag(object sender, FieldCardEventArgs<CreatureFieldCardUI> args) {
+        if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(false);
-        if (IsHoveringCombatArea()) {
+        if (IsHoveringCombatArea())
             EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CombatFieldCardEventArgs<CreatureFieldCardUI>(combatFieldUI, args.CardUI));
-        }
     }
 
     private bool IsHoveringCombatArea() {

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameInputManager : MonoBehaviour {
@@ -20,6 +22,10 @@ public class GameInputManager : MonoBehaviour {
     }
 
     public void SwitchCurrentActionMap(InputActionMap actionMap) {
+        bool hasActionMap = playerInputActions.asset.actionMaps.Any(map => map.id == actionMap.id);
+        if (!hasActionMap)
+            throw new Exception("Unable to find action map with id: " + actionMap.id + " and name: " + actionMap.name);
+
         foreach (InputActionMap entry in playerInputActions.asset.actionMaps) {
             if (entry.id == actionMap.id)
                 entry.Enable();
