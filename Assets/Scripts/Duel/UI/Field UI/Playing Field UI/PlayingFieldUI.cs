@@ -47,22 +47,6 @@ public class PlayingFieldUI : MonoBehaviour {
         domainCard = domainCardUI;
     }
 
-    public void RemoveCreature(Guid cardUuid) {
-        if (!ContainsCreature(cardUuid))
-            throw new Exception("Attempting to remove creature that is not in the playing field");
-
-        RemoveCreature(GetCreatureFieldCardUIBy(cardUuid));
-    }
-
-    public void RemoveCreature(CreatureFieldCardUI cardUI) {
-        if(!creatures.Contains(cardUI))
-            throw new Exception("Attempting to remove creature that is not in the playing field");
-
-        creatures.Remove(cardUI);
-        Destroy(cardUI.gameObject);
-        SetDefaultCardPositions();
-    }
-
     public CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
         if (!ContainsCreature(cardUuid))
             throw new Exception("Attempting to release creature that is not in the playing field");
@@ -73,16 +57,21 @@ public class PlayingFieldUI : MonoBehaviour {
         return cardUI;
     }
 
-    public void SetCardSelectable(Guid cardUuid) {
+    public void RemoveCreature(Guid cardUuid) {
         if (!ContainsCreature(cardUuid))
-            throw new Exception("Attempting to set selectable card border visibility to card that is not in the PlayUI hand");
+            throw new Exception("Attempting to remove creature that is not in the playing field");
 
-        GetCreatureFieldCardUIBy(cardUuid).SetSelectable(true);
+        CreatureFieldCardUI cardUI = GetCreatureFieldCardUIBy(cardUuid);
+        creatures.Remove(cardUI);
+        SetDefaultCardPositions();
     }
 
-    public void SetCardSelectableAll(bool isSelectable) {
-        foreach (FieldCardUI cardUI in creatures)
-            cardUI.SetSelectable(isSelectable);
+    public void RemoveCreature(CreatureFieldCardUI cardUI) {
+        if(!creatures.Contains(cardUI))
+            throw new Exception("Attempting to remove creature that is not in the playing field");
+
+        creatures.Remove(cardUI);
+        SetDefaultCardPositions();
     }
 
     protected void SetDefaultCardPositions() {

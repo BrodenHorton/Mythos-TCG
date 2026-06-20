@@ -8,13 +8,8 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     protected override void Start() {
         base.Start();
-        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += SetSelectableCards;
-        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += SetSelectableCards;
         EventBus.Instance.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
         EventBus.Instance.OnSelectAttackerToDefendUI += DeclareDefender;
-        actionManager.OnActionStateChanged += (sender, args) => {
-            SetSelectableCardsServerRpc();
-        };
     }
 
     public override void Init(ulong playerId) {
@@ -24,16 +19,19 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     public override void PlayCreatureCard(CreatureCardPayload card) {
         playingFieldUI.PlayCreatureCard(card);
-        SetSelectableCardsServerRpc();
     }
 
     public override void PlayDomainCard(DomainCardPayload card) {
         playingFieldUI.PlayDomainCard(card);
-        SetSelectableCardsServerRpc();
     }
 
     public override void AddCreatureCard(CreatureFieldCardUI card) {
         playingFieldUI.AddCreatureFieldCard(card);
+    }
+
+    public override void AddCreatureCards(List<CreatureFieldCardUI> creatures) {
+        for (int i = 0; i < creatures.Count; i++)
+            playingFieldUI.AddCreatureFieldCard(creatures[i]);
     }
 
     public override void RemoveCreature(Guid cardUuid) {
@@ -42,98 +40,6 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
 
     public override CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
         return playingFieldUI.ReleaseCreature(cardUuid);
-    }
-
-    private void SetSelectableCards(object sender, ulong playerId) {
-        if (this.playerId != playerId)
-            return;
-
-        SetSelectableCardsServerRpc();
-    }
-
-    [Rpc(SendTo.Server)]
-    private void SetSelectableCardsServerRpc(RpcParams rpcParams = default) {
-        ulong clientPlayerId = rpcParams.Receive.SenderClientId;
-        FixedString128Bytes[] selectableCardUuidStrs;
-        if (actionManager.ActionFocusPlayerIds.Contains(clientPlayerId)) {
-            List<Guid> selectableCardGuids = GetSelectableCardGuids(clientPlayerId);
-            selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
-            for (int i = 0; i < selectableCardGuids.Count; i++)
-                selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
-        }
-        else
-            selectableCardUuidStrs = new FixedString128Bytes[0];
-
-        BaseRpcTarget target = RpcTarget.Single(clientPlayerId, RpcTargetUse.Temp);
-        SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
-    }
-
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void SetSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
-        playingFieldUI.SetCardSelectableAll(false);
-        for (int i = 0; i < selectableCardUuidStrs.Length; i++) {
-            Guid selectableCardUuid = Guid.Parse(selectableCardUuidStrs[i].ToString());
-            playingFieldUI.SetCardSelectable(selectableCardUuid);
-        }
-    }
-
-    private void DisableSelectableCards(object sender, ulong playerId) {
-        if (this.playerId != playerId)
-            return;
-
-        playingFieldUI.SetCardSelectableAll(false);
-    }
-
-    public List<Guid> GetSelectableCardGuids(ulong clientPlayerId) {
-        if (!IsServer)
-            throw new Exception("Attempting the call GetSelectableCardGuids from a client");
-
-        List<Guid> selectableCardGuids = new List<Guid>();
-        MatchPlayer player = duelManager.GetPlayerById(clientPlayerId);
-        for (int i = 0; i < player.Creatures.Count; i++) {
-            if (CanSelectAttacker(player, player.Creatures[i]) || CanSelectDefender(player, player.Creatures[i]))
-                selectableCardGuids.Add(player.Creatures[i].Uuid);
-        }
-
-        return selectableCardGuids;
-    }
-
-    private bool CanSelectAttacker(MatchPlayer player, CreatureCard card) {
-        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
-            return false;
-        if (!combatStateManager.CurrentState.CanDeclareAttackers())
-            return false;
-        if (!player.ContainsCreatureUuid(card.Uuid))
-            return false;
-        if(combatManager.IsCreatureInCombat(card.Uuid))
-            return false;
-        if (!card.CanAttack())
-            return false;
-        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, card);
-        EventBus.Instance.InvokeOnCanCreatureAttack(args);
-        if (args.IsCanceled)
-            return false;
-
-        return true;
-    }
-
-    private bool CanSelectDefender(MatchPlayer player, CreatureCard card) {
-        if (player.PlayerId == duelManager.GetCurrentPlayerTurn().PlayerId)
-            return false;
-        if (!combatStateManager.CurrentState.CanDeclareDefenders())
-            return false;
-        if (!player.ContainsCreatureUuid(card.Uuid))
-            return false;
-        if (combatManager.IsCreatureInCombat(card.Uuid))
-            return false;
-        if (!card.CanDefend())
-            return false;
-        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, card);
-        EventBus.Instance.InvokeOnCanCreatureDefend(args);
-        if (args.IsCanceled)
-            return false;
-
-        return true;
     }
 
     private void DeclareAttacker(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
@@ -164,7 +70,6 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     }
 
     private void DeclareDefender(object sender, SelectAttackerToDefendUIEventArgs args) {
-        TcgLogger.Log("DeclareDefender Entered");
         DeclareDefenderServerRpc(args.CombatFieldUI.TargetPlayerId, args.Attacker.CardUuid.ToString(), args.Defender.CardUuid.ToString());
     }
 
@@ -201,11 +106,6 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnDeclareDefenderPayloadClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload attacker, CreatureCardPayload defender) {
         EventBus.Instance.InvokeOnDeclareDefenderFinished(new CreatureCombatPayloadEventArgs(initiatorId, targetId, attacker, defender));
-    }
-
-    public override void AddCreatureCards(List<CreatureFieldCardUI> creatures) {
-        for (int i = 0; i < creatures.Count; i++)
-            playingFieldUI.AddCreatureFieldCard(creatures[i]);
     }
 
     public override bool ContainsCreature(Guid uuid) {

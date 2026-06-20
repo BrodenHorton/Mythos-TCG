@@ -109,6 +109,7 @@ public class MatchPlayer {
         EventBus.Instance.InvokeOnCreatureDestroyed(new PlayerCardEventArgs<CreatureCard>(playerId, card));
         creatures.Remove(card);
         EventBus.Instance.InvokeOnCreatureDestroyedFinishedClientRpc(playerId, new CreatureCardPayload(card));
+        EventBus.Instance.InvokeOnPostCreatureDestroyedClientRpc(playerId, new CreatureCardPayload(card));
     }
 
     public Card GetHandCardByUuid(Guid uuid) {

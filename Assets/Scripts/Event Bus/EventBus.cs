@@ -50,6 +50,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDamagedFinished;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureDestroyed;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureDestroyedFinished;
+    public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnPostCreatureDestroyed;
     public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureCombatFinished;
     public event EventHandler<CreatureCombatPayloadEventArgs> OnPostCreatureCombat;
     // Creature Actions
@@ -382,6 +383,12 @@ public class EventBus : NetworkBehaviour {
     public void InvokeOnCreatureDestroyedFinishedClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
         PlayerCardPayloadEventArgs<CreatureCardPayload> args = new PlayerCardPayloadEventArgs<CreatureCardPayload>(playerId, cardPayload);
         OnCreatureDestroyedFinished?.Invoke(this, args);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InvokeOnPostCreatureDestroyedClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
+        PlayerCardPayloadEventArgs<CreatureCardPayload> args = new PlayerCardPayloadEventArgs<CreatureCardPayload>(playerId, cardPayload);
+        OnPostCreatureDestroyed?.Invoke(this, args);
     }
 
     public void InvokeOnCreatureCombatFinished(CreatureCombatDamageEventArgs args) {

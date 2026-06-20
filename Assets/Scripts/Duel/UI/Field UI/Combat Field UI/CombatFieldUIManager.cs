@@ -13,6 +13,7 @@ public class CombatFieldUIManager : NetworkBehaviour {
         CombatManager combatManager = ServiceLocator.Get<CombatManager>();
 
         duelManager.OnPlayersInitialization += Init;
+        EventBus.Instance.OnCreatureDestroyedFinished += RemoveCreature;
     }
 
     private void Init(object sender, PlayersInitializedEventArgs args) {
@@ -74,13 +75,13 @@ public class CombatFieldUIManager : NetworkBehaviour {
         return controllerByPlayerId[targetId].ReleaseDefenders();
     }
 
-    public void DestroyCreature(ulong playerId, Guid cardUuid) {
-        if (controllerByPlayerId[playerId] == null)
-            throw new Exception("Unable to find playing field UI controller with player Id: " + playerId);
+    public void RemoveCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
+        if (controllerByPlayerId[args.PlayerId] == null)
+            throw new Exception("Unable to find combat field UI controller with player Id: " + args.PlayerId);
 
-        if (controllerByPlayerId[playerId].ContainsAttacker(cardUuid))
-            controllerByPlayerId[playerId].RemoveAttacker(cardUuid);
-        else if (controllerByPlayerId[playerId].ContainsDefender(cardUuid))
-            controllerByPlayerId[playerId].RemoveDefender(cardUuid);
+        if (controllerByPlayerId[args.PlayerId].ContainsAttacker(args.CardPayload.Uuid))
+            controllerByPlayerId[args.PlayerId].RemoveAttacker(args.CardPayload.Uuid);
+        else if (controllerByPlayerId[args.PlayerId].ContainsDefender(args.CardPayload.Uuid))
+            controllerByPlayerId[args.PlayerId].RemoveDefender(args.CardPayload.Uuid);
     }
 }

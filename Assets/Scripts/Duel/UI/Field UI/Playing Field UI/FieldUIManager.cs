@@ -14,7 +14,6 @@ public class FieldUIManager : NetworkBehaviour {
         EventBus.Instance.OnDeclareDefenderFinished += DeclareDefender;
         EventBus.Instance.OnUndeclareAttackerFinished += UndeclareAttacker;
         EventBus.Instance.OnUndeclareDefenderFinished += UndeclareDefender;
-        EventBus.Instance.OnCreatureDestroyedFinished += DestroyCreature;
         combatManager.OnDuelistCombatFinsihed += ReleaseCombatCreatures;
     }
 
@@ -36,11 +35,6 @@ public class FieldUIManager : NetworkBehaviour {
     private void UndeclareDefender(object sender, CombatCreaturePayloadEventArgs args) {
         CreatureFieldCardUI cardUI = combatFieldUIManager.ReleaseDefender(args.TargetId, args.Card.Uuid);
         playingFieldUIManager.AddCreatureCard(args.TargetId, cardUI);
-    }
-
-    private void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
-        playingFieldUIManager.DestroyCreature(args.PlayerId, args.CardPayload.Uuid);
-        combatFieldUIManager.DestroyCreature(args.PlayerId, args.CardPayload.Uuid);
     }
 
     private void ReleaseCombatCreatures(object sender, DuelistCombatEventArgs args) {

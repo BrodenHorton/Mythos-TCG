@@ -17,6 +17,10 @@ public class TcgLogger : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
+    private void Start() {
+        Application.logMessageReceived += LogConsoleException;
+    }
+
     public static void Log(string msg) {
         if (Instance == null)
             throw new Exception("TcgLogger Instance is null");
@@ -31,5 +35,12 @@ public class TcgLogger : MonoBehaviour {
 
         Debug.Log(msg);
         Instance.OnLog?.Invoke(Instance, sender.GetLogPrefix() + " " + msg);
+    }
+
+    private void LogConsoleException(string exceptionMessage, string stackTrace, LogType logType) {
+        if (logType != LogType.Exception && logType != LogType.Error)
+            return;
+
+        Log("&1" + exceptionMessage + "\n" + stackTrace);
     }
 }

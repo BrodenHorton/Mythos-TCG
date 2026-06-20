@@ -31,7 +31,6 @@ public class CombatFieldUI : MonoBehaviour {
         if (attackerByPositionIndex.Count >= MAX_FIELD_CREATURES)
             throw new Exception("Attempting to add new attacker when there is already " + MAX_FIELD_CREATURES + " attackers");
 
-
         for (int i = 0; i < MAX_FIELD_CREATURES; i++) {
             if (!attackerByPositionIndex.ContainsKey(i)) {
                 attackerByPositionIndex.Add(i, cardUI);
@@ -68,7 +67,6 @@ public class CombatFieldUI : MonoBehaviour {
             if (entry.Value.CardUuid == uuid) {
                 CreatureFieldCardUI cardUI = entry.Value;
                 attackerByPositionIndex.Remove(entry.Key);
-                Destroy(cardUI.gameObject);
                 SpaceAttackers();
                 return;
             }
@@ -81,7 +79,6 @@ public class CombatFieldUI : MonoBehaviour {
             if (entry.Value.CardUuid == uuid) {
                 CreatureFieldCardUI cardUI = entry.Value;
                 defenderByPositionIndex.Remove(entry.Key);
-                Destroy(cardUI.gameObject);
                 return;
             }
         }

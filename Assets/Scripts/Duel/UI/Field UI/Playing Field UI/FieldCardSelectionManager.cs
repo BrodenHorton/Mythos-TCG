@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class FieldCardSelectionManager : MonoBehaviour {
+public class FieldCardSelectionManager : NetworkBehaviour {
+    public event EventHandler<List<Guid>> OnSetSelectableFieldCards;
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCardDrag;
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDrag;
@@ -12,9 +16,14 @@ public class FieldCardSelectionManager : MonoBehaviour {
     public static FieldCardSelectionManager Instance {  get; private set; }
 
     [SerializeField] private float dragOffset;
+
     private Camera cam;
     private bool isDragging;
     private CreatureFieldCardUI draggingCard;
+    private DuelManager duelManager;
+    private ActionManager actionManager;
+    private CombatManager combatManager;
+    private CombatStateManager combatStateManager;
 
     private void Awake() {
         if (Instance != null) {
@@ -30,13 +39,38 @@ public class FieldCardSelectionManager : MonoBehaviour {
     private void Start() {
         cam = Camera.main;
 
+        duelManager = ServiceLocator.Get<DuelManager>();
+        actionManager = ServiceLocator.Get<ActionManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+
+        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += (sender, args) => {
+            if (!IsServer)
+                return;
+            
+            SetSelectableCardsForActionFocusPlayers();
+        };
+        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += (sender, args) => {
+            if (!IsServer)
+                return;
+
+            SetSelectableCardsForActionFocusPlayers();
+        };
+        actionManager.OnActionStateChanged += (sender, args) => {
+            if (!IsServer)
+                return;
+
+            SetSelectableCardsForActionFocusPlayers();
+        };
+
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started += SelectCreatureFieldCard;
         playerInputActions.Player.Select.canceled += ReleaseCreatureFieldCardDrag;
         playerInputActions.Player.Inspect.started += InspectFieldCard;
     }
 
-    private void OnDestroy() {
+    public override void OnNetworkDespawn() {
+        base.OnNetworkDespawn();
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started -= SelectCreatureFieldCard;
         playerInputActions.Player.Select.canceled -= ReleaseCreatureFieldCardDrag;
@@ -64,6 +98,92 @@ public class FieldCardSelectionManager : MonoBehaviour {
         float t = (endPoint - origin.y) / ray.direction.y;
 
         return ray.direction * t + origin;
+    }
+
+    private void SetSelectableCardsForActionFocusPlayers() {
+        if (!IsServer)
+            throw new Exception("Only the server can call the method SetSelectableCardsForActionFocusPlayers");
+
+        foreach (ulong playerId in actionManager.ActionFocusPlayerIds)
+            SetSelectableCards(playerId);
+    }
+
+    private void SetSelectableCards(ulong playerId) {
+        if(!IsServer)
+            throw new Exception("Only the server can call the method SetSelectableCards");
+
+        FixedString128Bytes[] selectableCardUuidStrs;
+        if (actionManager.ActionFocusPlayerIds.Contains(playerId)) {
+            List<Guid> selectableCardGuids = GetSelectableCardGuids(playerId);
+            selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
+            for (int i = 0; i < selectableCardGuids.Count; i++)
+                selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
+        }
+        else
+            selectableCardUuidStrs = new FixedString128Bytes[0];
+
+        BaseRpcTarget target = RpcTarget.Single(playerId, RpcTargetUse.Temp);
+        SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void SetSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
+        List<Guid> selectableCardUuids = new List<Guid>();
+        for (int i = 0; i < selectableCardUuidStrs.Length; i++)
+            selectableCardUuids.Add(Guid.Parse(selectableCardUuidStrs[i].ToString()));
+        OnSetSelectableFieldCards?.Invoke(this, selectableCardUuids);
+    }
+
+    public List<Guid> GetSelectableCardGuids(ulong playerId) {
+        if (!IsServer)
+            throw new Exception("Only the server can call the method GetSelectableCardGuids");
+
+        List<Guid> selectableCardGuids = new List<Guid>();
+        MatchPlayer player = duelManager.GetPlayerById(playerId);
+        for (int i = 0; i < player.Creatures.Count; i++) {
+            if (CanSelectAttacker(player, player.Creatures[i]) || CanSelectDefender(player, player.Creatures[i]))
+                selectableCardGuids.Add(player.Creatures[i].Uuid);
+        }
+
+        return selectableCardGuids;
+    }
+
+    private bool CanSelectAttacker(MatchPlayer player, CreatureCard card) {
+        if (player.PlayerId != duelManager.GetCurrentPlayerTurn().PlayerId)
+            return false;
+        if (!combatStateManager.CurrentState.CanDeclareAttackers())
+            return false;
+        if (!player.ContainsCreatureUuid(card.Uuid))
+            return false;
+        if (combatManager.IsCreatureInCombat(card.Uuid))
+            return false;
+        if (!card.CanAttack())
+            return false;
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, card);
+        EventBus.Instance.InvokeOnCanCreatureAttack(args);
+        if (args.IsCanceled)
+            return false;
+
+        return true;
+    }
+
+    private bool CanSelectDefender(MatchPlayer player, CreatureCard card) {
+        if (player.PlayerId == duelManager.GetCurrentPlayerTurn().PlayerId)
+            return false;
+        if (!combatStateManager.CurrentState.CanDeclareDefenders())
+            return false;
+        if (!player.ContainsCreatureUuid(card.Uuid))
+            return false;
+        if (combatManager.IsCreatureInCombat(card.Uuid))
+            return false;
+        if (!card.CanDefend())
+            return false;
+        PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(player.PlayerId, card);
+        EventBus.Instance.InvokeOnCanCreatureDefend(args);
+        if (args.IsCanceled)
+            return false;
+
+        return true;
     }
 
     private void SelectCreatureFieldCard(InputAction.CallbackContext context) {
