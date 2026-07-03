@@ -60,8 +60,10 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (!creatureCard.CanAttack())
             return;
 
-        EventBus.Instance.InvokeOnDeclareAttacker(new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard));
+        CombatCreatureEventArgs combatCreatureEventArgs = new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard);
+        EventBus.Instance.InvokeOnDeclareAttacker(combatCreatureEventArgs);
         InvokeOnDeclareAttackerPayloadClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(creatureCard));
+        EventBus.Instance.InvokeOnPostDeclareAttacker(combatCreatureEventArgs);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -99,8 +101,10 @@ public class PlayerPlayingFieldUIController : PlayingFieldUIController {
         if (!args.CanDefend)
             return;
 
-        EventBus.Instance.InvokeOnDeclareDefender(new CreatureCombatEventArgs(initiator.PlayerId, targetId, attacker, defender));
+        CreatureCombatEventArgs creatureCombatEventArgs = new CreatureCombatEventArgs(initiator.PlayerId, targetId, attacker, defender);
+        EventBus.Instance.InvokeOnDeclareDefender(creatureCombatEventArgs);
         InvokeOnDeclareDefenderPayloadClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(attacker), new CreatureCardPayload(defender));
+        EventBus.Instance.InvokeOnPostDeclareDefender(creatureCombatEventArgs);
     }
 
     [Rpc(SendTo.ClientsAndHost)]

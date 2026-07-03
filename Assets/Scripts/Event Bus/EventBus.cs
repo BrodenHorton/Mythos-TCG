@@ -34,12 +34,16 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<CanDefendEventArgs> OnSelectAttackerToDefend;
     public event EventHandler<CombatCreatureEventArgs> OnDeclareAttacker;
     public event EventHandler<CombatCreaturePayloadEventArgs> OnDeclareAttackerFinished;
+    public event EventHandler<CombatCreatureEventArgs> OnPostDeclareAttacker;
     public event EventHandler<CreatureCombatEventArgs> OnDeclareDefender;
     public event EventHandler<CreatureCombatPayloadEventArgs> OnDeclareDefenderFinished;
+    public event EventHandler<CreatureCombatEventArgs> OnPostDeclareDefender;
     public event EventHandler<CombatCreatureEventArgs> OnUndeclareAttacker;
     public event EventHandler<CombatCreaturePayloadEventArgs> OnUndeclareAttackerFinished;
+    public event EventHandler<CombatCreatureEventArgs> OnPostUndeclareAttacker;
     public event EventHandler<CombatCreatureEventArgs> OnUndeclareDefender;
     public event EventHandler<CombatCreaturePayloadEventArgs> OnUndeclareDefenderFinished;
+    public event EventHandler<CombatCreatureEventArgs> OnPostUndeclareDefender;
     // Combat
     public event EventHandler<CreatureCombatEventArgs> OnCreatureAttack;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureHealed;
@@ -290,6 +294,13 @@ public class EventBus : NetworkBehaviour {
         OnDeclareAttackerFinished?.Invoke(this, args);
     }
 
+    public void InvokeOnPostDeclareAttacker(CombatCreatureEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnPostDeclareAttacker can only be called by the server");
+
+        OnPostDeclareAttacker?.Invoke(this, args);
+    }
+
     public void InvokeOnDeclareDefender(CreatureCombatEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnDeclareDefender can only be called by the server");
@@ -299,6 +310,13 @@ public class EventBus : NetworkBehaviour {
 
     public void InvokeOnDeclareDefenderFinished(CreatureCombatPayloadEventArgs args) {
         OnDeclareDefenderFinished?.Invoke(this, args);
+    }
+
+    public void InvokeOnPostDeclareDefender(CreatureCombatEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnPostDeclareDefender can only be called by the server");
+
+        OnPostDeclareDefender?.Invoke(this, args);
     }
 
     public void InvokeOnUndelcareAttacker(CombatCreatureEventArgs args) {
@@ -312,6 +330,13 @@ public class EventBus : NetworkBehaviour {
         OnUndeclareAttackerFinished?.Invoke(this, args);
     }
 
+    public void InvokeOnPostUndelcareAttacker(CombatCreatureEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnPostUnDeclareAttacker can only be called by the server");
+
+        OnPostUndeclareAttacker?.Invoke(this, args);
+    }
+
     public void InvokeOnUndeclareDefender(CombatCreatureEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnUnDeclareDefender can only be called by the server");
@@ -321,6 +346,13 @@ public class EventBus : NetworkBehaviour {
 
     public void InvokeOnUndeclareDefenderFinished(CombatCreaturePayloadEventArgs args) {
         OnUndeclareDefenderFinished?.Invoke(this, args);
+    }
+
+    public void InvokeOnPostUndeclareDefender(CombatCreatureEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnPostUnDeclareDefender can only be called by the server");
+
+        OnPostUndeclareDefender?.Invoke(this, args);
     }
     #endregion
 

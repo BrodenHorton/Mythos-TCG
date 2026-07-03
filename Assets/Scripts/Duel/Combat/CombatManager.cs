@@ -167,7 +167,7 @@ public class CombatManager : NetworkBehaviour {
         duelistCombats.Add(combat);
     }
 
-    private bool HasExistingDuelistCombat(ulong initiatorId, ulong targetId) {
+    public bool HasExistingDuelistCombat(ulong initiatorId, ulong targetId) {
         foreach(DuelistCombat combat in duelistCombats) {
             if (combat.InitiatorId == initiatorId && combat.TargetId == targetId)
                 return true;
@@ -176,22 +176,27 @@ public class CombatManager : NetworkBehaviour {
         return false;
     }
 
-    private DuelistCombat GetDuelistCombat(ulong initiatorId, ulong targetId) {
+    public DuelistCombat GetDuelistCombat(ulong initiatorId, ulong targetId) {
         foreach (DuelistCombat combat in duelistCombats) {
             if (combat.InitiatorId == initiatorId && combat.TargetId == targetId)
                 return combat;
         }
-
-        return null;
+        throw new Exception("Unable to find duelist combat with initiatorId: " + initiatorId + " and targetId: " + targetId);
     }
 
-    public void ClearCombats() {
-        duelistCombats.Clear();
+    public DuelistCombat GetDuelistCombat(Guid creatureUuid) {
+        foreach (DuelistCombat duelistCombat in duelistCombats) {
+            foreach (CreatureCombat creatureCombat in duelistCombat.CreatureCombats) {
+                if (creatureCombat.Attacker.Uuid == creatureUuid || (creatureCombat.Defender != null && creatureCombat.Defender.Uuid == creatureUuid))
+                    return duelistCombat;
+            }
+        }
+        throw new Exception("Unable to find DuelistCombat that has a CreatureCombat with a creature uuid: " + creatureUuid);
     }
 
     public List<MatchPlayer> GetTargets() {
         List<MatchPlayer> targets = new List<MatchPlayer>();
-        foreach(DuelistCombat combat in duelistCombats) {
+        foreach (DuelistCombat combat in duelistCombats) {
             MatchPlayer target = duelManager.GetPlayerById(combat.TargetId);
             if (!targets.Contains(target))
                 targets.Add(target);
@@ -209,6 +214,16 @@ public class CombatManager : NetworkBehaviour {
         }
 
         return false;
+    }
+
+    public CreatureCombat GetCreatureCombat(Guid creatureUuid) {
+        foreach (DuelistCombat duelistCombat in duelistCombats) {
+            foreach (CreatureCombat creatureCombat in duelistCombat.CreatureCombats) {
+                if (creatureCombat.Attacker.Uuid == creatureUuid || (creatureCombat.Defender != null && creatureCombat.Defender.Uuid == creatureUuid))
+                    return creatureCombat;
+            }
+        }
+        throw new Exception("Unable to find CreatureCombat with the creature uuid: " + creatureUuid);
     }
 
     public List<DuelistCombat> DuelistCombats { get { return duelistCombats; } }

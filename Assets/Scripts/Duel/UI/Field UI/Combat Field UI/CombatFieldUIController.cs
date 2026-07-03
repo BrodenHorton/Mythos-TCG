@@ -84,7 +84,8 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (creatureCard == null)
             throw new Exception("Unable to undeclare attacker since attacking creature is null");
 
-        EventBus.Instance.InvokeOnUndelcareAttacker(new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard));
+        CombatCreatureEventArgs combatCreatureEventArgs = new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard);
+        EventBus.Instance.InvokeOnUndelcareAttacker(combatCreatureEventArgs);
         InvokeOnUndeclareAttackerFinishedClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(creatureCard));
     }
 
@@ -108,7 +109,8 @@ public class CombatFieldUIController : NetworkBehaviour {
             throw new Exception("Unable to undeclare defender since defending creature is null");
 
         ulong initiatorId = duelManager.GetCurrentPlayerTurn().PlayerId;
-        EventBus.Instance.InvokeOnUndeclareDefender(new CombatCreatureEventArgs(initiatorId, targetId, defender));
+        CombatCreatureEventArgs combatCreatureEventArgs = new CombatCreatureEventArgs(initiatorId, targetId, defender);
+        EventBus.Instance.InvokeOnUndeclareDefender(combatCreatureEventArgs);
         InvokeOnUndeclareDefenderFinishedClientRpc(initiatorId, targetId, new CreatureCardPayload(defender));
     }
 

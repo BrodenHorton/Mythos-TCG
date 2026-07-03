@@ -137,6 +137,9 @@ public class PlayerUI : DuelistUI {
     public void HoverCard(HandCardUI card) {
         card.transform.Translate(cardHoverOffset, Space.World);
         card.transform.localScale = new Vector3(cardHoverScale, cardHoverScale, cardHoverScale);
+        card.transform.localEulerAngles = new Vector3(card.transform.localEulerAngles.x,
+                                                      0f,
+                                                      card.transform.localEulerAngles.z);
     }
 
     public void ExitHoverCard(HandCardUI card) {

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class FieldCardSelectionManager : NetworkBehaviour {
+    public event EventHandler<SelectableCardsEventArgs> OnGetSelectableFieldCards;
     public event EventHandler<List<Guid>> OnSetSelectableFieldCards;
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCardDrag;
@@ -47,7 +48,7 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += (sender, args) => {
             if (!IsServer)
                 return;
-            
+
             SetSelectableCardsForActionFocusPlayers();
         };
         combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += (sender, args) => {
@@ -56,12 +57,11 @@ public class FieldCardSelectionManager : NetworkBehaviour {
 
             SetSelectableCardsForActionFocusPlayers();
         };
-        actionManager.OnActionStateChanged += (sender, args) => {
-            if (!IsServer)
-                return;
-
-            SetSelectableCardsForActionFocusPlayers();
-        };
+        actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostDeclareAttacker += SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostDeclareDefender += SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostUndeclareAttacker += SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostUndeclareDefender += SetSelectableCardsForActionFocusPlayers;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started += SelectCreatureFieldCard;
@@ -71,6 +71,13 @@ public class FieldCardSelectionManager : NetworkBehaviour {
 
     public override void OnNetworkDespawn() {
         base.OnNetworkDespawn();
+
+        actionManager.OnActionStateChanged -= SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostDeclareAttacker -= SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostDeclareDefender -= SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostUndeclareAttacker -= SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnPostUndeclareDefender -= SetSelectableCardsForActionFocusPlayers;
+
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started -= SelectCreatureFieldCard;
         playerInputActions.Player.Select.canceled -= ReleaseCreatureFieldCardDrag;
@@ -98,6 +105,13 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         float t = (endPoint - origin.y) / ray.direction.y;
 
         return ray.direction * t + origin;
+    }
+
+    private void SetSelectableCardsForActionFocusPlayers(object sender, EventArgs args) {
+        if (!IsServer)
+            return;
+
+        SetSelectableCardsForActionFocusPlayers();
     }
 
     private void SetSelectableCardsForActionFocusPlayers() {
@@ -144,6 +158,7 @@ public class FieldCardSelectionManager : NetworkBehaviour {
             if (CanSelectAttacker(player, player.Creatures[i]) || CanSelectDefender(player, player.Creatures[i]))
                 selectableCardGuids.Add(player.Creatures[i].Uuid);
         }
+        OnGetSelectableFieldCards?.Invoke(this, new SelectableCardsEventArgs(playerId, selectableCardGuids));
 
         return selectableCardGuids;
     }
@@ -154,8 +169,6 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         if (!combatStateManager.CurrentState.CanDeclareAttackers())
             return false;
         if (!player.ContainsCreatureUuid(card.Uuid))
-            return false;
-        if (combatManager.IsCreatureInCombat(card.Uuid))
             return false;
         if (!card.CanAttack())
             return false;
@@ -173,8 +186,6 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return false;
         if (!player.ContainsCreatureUuid(card.Uuid))
-            return false;
-        if (combatManager.IsCreatureInCombat(card.Uuid))
             return false;
         if (!card.CanDefend())
             return false;

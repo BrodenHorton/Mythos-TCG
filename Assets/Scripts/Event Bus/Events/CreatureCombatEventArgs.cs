@@ -1,5 +1,4 @@
 ﻿using System;
-using Unity.Netcode;
 
 public class CreatureCombatEventArgs : EventArgs {
     private ulong initiatorId;
