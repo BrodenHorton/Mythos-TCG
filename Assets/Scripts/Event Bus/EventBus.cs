@@ -16,7 +16,6 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<FieldCardEventArgs<FieldCardUI>> OnInspectFieldCard;
     // PlayingField Card Drag
     public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardOverCombatArea;
-    public event EventHandler<SelectAttackerToDefendUIEventArgs> OnSelectAttackerToDefendUI;
     // Playing Cards
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
     public event EventHandler<PlayerCardEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
@@ -163,10 +162,6 @@ public class EventBus : NetworkBehaviour {
     #region PlayingField Card Drag
     public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
-    }
-
-    public void InvokeOnSelectAttackerToDefendUI(SelectAttackerToDefendUIEventArgs args) {
-        OnSelectAttackerToDefendUI?.Invoke(this, args);
     }
     #endregion
 
@@ -330,7 +325,7 @@ public class EventBus : NetworkBehaviour {
         OnUndeclareAttackerFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnPostUndelcareAttacker(CombatCreatureEventArgs args) {
+    public void InvokeOnPostUndeclareAttacker(CombatCreatureEventArgs args) {
         if (!IsServer)
             throw new Exception("The event OnPostUnDeclareAttacker can only be called by the server");
 

@@ -3,36 +3,41 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public abstract class PlayingFieldUIController : NetworkBehaviour {
-    [SerializeField] protected PlayingFieldUI playingFieldUI;
-    protected ulong playerId;
-    protected DuelManager duelManager;
-    protected DuelStateManager stateManager;
-    protected CombatStateManager combatStateManager;
-    protected CombatManager combatManager;
-    protected ActionManager actionManager;
+public class PlayingFieldUIController : NetworkBehaviour {
+    [SerializeField] private PlayingFieldUI playingFieldUI;
+    private ulong playerId;
 
-    protected virtual void Start() {
-        duelManager = ServiceLocator.Get<DuelManager>();
-        stateManager = ServiceLocator.Get<DuelStateManager>();
-        combatStateManager = ServiceLocator.Get<CombatStateManager>();
-        combatManager = ServiceLocator.Get<CombatManager>();
-        actionManager = ServiceLocator.Get<ActionManager>();
+    public void Init(ulong playerId) {
+        this.playerId = playerId;
+        playingFieldUI.Init(playerId);
     }
 
-    public abstract void Init(ulong playerId);
+    public void PlayCreatureCard(CreatureCardPayload card) {
+        playingFieldUI.PlayCreatureCard(card);
+    }
 
-    public abstract void PlayCreatureCard(CreatureCardPayload card);
+    public void PlayDomainCard(DomainCardPayload card) {
+        playingFieldUI.PlayDomainCard(card);
+    }
 
-    public abstract void PlayDomainCard(DomainCardPayload card);
+    public void AddCreatureCard(CreatureFieldCardUI card) {
+        playingFieldUI.AddCreatureFieldCard(card);
+    }
 
-    public abstract void AddCreatureCard(CreatureFieldCardUI card);
-    
-    public abstract void AddCreatureCards(List<CreatureFieldCardUI> creatures);
+    public void AddCreatureCards(List<CreatureFieldCardUI> creatures) {
+        for (int i = 0; i < creatures.Count; i++)
+            playingFieldUI.AddCreatureFieldCard(creatures[i]);
+    }
 
-    public abstract void RemoveCreature(Guid cardUuid);
+    public void RemoveCreature(Guid cardUuid) {
+        playingFieldUI.RemoveCreature(cardUuid);
+    }
 
-    public abstract CreatureFieldCardUI ReleaseCreature(Guid cardUuid);
+    public CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
+        return playingFieldUI.ReleaseCreature(cardUuid);
+    }
 
-    public abstract bool ContainsCreature(Guid uuid);
+    public bool ContainsCreature(Guid uuid) {
+        return playingFieldUI.ContainsCreature(uuid);
+    }
 }

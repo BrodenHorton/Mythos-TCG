@@ -409,7 +409,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 70944707}
-  - component: {fileID: 70944708}
+  - component: {fileID: 70944710}
   - component: {fileID: 70944709}
   m_Layer: 0
   m_Name: PlayerPlayingFieldUIController
@@ -433,20 +433,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1151302305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &70944708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 70944706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18f504f9e38a66d4f81944e72c67d1ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  playingFieldUI: {fileID: 392120562}
 --- !u!114 &70944709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,6 +458,20 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &70944710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70944706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c126cc308033c7408d575384fe8fd89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  playingFieldUI: {fileID: 392120562}
 --- !u!1 &82727043
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   controllers:
-  - {fileID: 70944708}
+  - {fileID: 70944710}
   - {fileID: 1294806333}
 --- !u!1 &100082107
 GameObject:
@@ -3562,6 +3562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84e62b51f3d995040a9a0d6b0e0f12d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   dragOffset: 0.6
 --- !u!1 &1209193703
 GameObject:
@@ -3777,7 +3778,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1294806329}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fc74c12a6403104cae0bad654c3ab0b, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c126cc308033c7408d575384fe8fd89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1

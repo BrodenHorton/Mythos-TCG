@@ -17,10 +17,12 @@ public class DuelistEffect : CreatureCardEffect {
     public override void Init(CreatureCard card) {
         this.card = card;
         FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += SetTargetCardsSelectable;
+        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += SetDuelistDefender;
     }
 
     public override void RemoveListeners() {
         FieldCardSelectionManager.Instance.OnGetSelectableFieldCards -= SetTargetCardsSelectable;
+        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature -= SetDuelistDefender;
     }
 
     private void SetTargetCardsSelectable(object sender, SelectableCardsEventArgs args) {
@@ -44,7 +46,27 @@ public class DuelistEffect : CreatureCardEffect {
         }
     }
 
-    // TODO: Add event handler for when a player drags a target players creature over a duelist attacker
+    private void SetDuelistDefender(object sender, CreatureReleasedOverCreatureEventArgs args) {
+        if (args.DraggingPlayerId != card.PlayerId)
+            return;
+        if (args.HoveredCard.Uuid != card.Uuid)
+            return;
+        if (duelManager.GetCurrentPlayerTurn().PlayerId != card.PlayerId)
+            return;
+        if (combatStateManager.CurrentState != combatStateManager.DeclareAttackersState)
+            return;
+        if (!combatManager.HasExistingDuelistCombat(card.PlayerId, args.HeldCard.PlayerId))
+            return;
+        if (combatManager.IsCreatureInCombat(card.Uuid))
+            return;
+        if (combatManager.IsCreatureInCombat(args.HeldCard.Uuid))
+            return;
+        CreatureCombat creatureCombat = combatManager.GetCreatureCombat(card.Uuid);
+        if (creatureCombat.Defender != null)
+            return;
+
+        creatureCombat.Defender = args.HeldCard;
+    }
 
     public override CreatureCardEffect DeepCopy() {
         return new DuelistEffect(this);
