@@ -227,24 +227,29 @@ public class FieldCardSelectionManager : NetworkBehaviour {
 
         CreatureFieldCardUI cardUI = draggingCard;
         ResetCardDragging();
-        OnReleaseCreatureFieldCardDrag?.Invoke(this, new FieldCardEventArgs<CreatureFieldCardUI>(cardUI));
-        if (CreatureFieldCardRaycast(out CreatureFieldCardUI hoveredCardUI))
+        FieldCardEventArgs<CreatureFieldCardUI> args = new FieldCardEventArgs<CreatureFieldCardUI>(cardUI);
+        OnReleaseCreatureFieldCardDrag?.Invoke(this, args);
+        if (CreatureFieldCardRaycast(out CreatureFieldCardUI hoveredCardUI, cardUI)) {
             CreatureReleasedOverCreatureServerRpc(cardUI.PlayerId,
                                                   hoveredCardUI.PlayerId,
                                                   cardUI.CardUuid.ToString(),
                                                   hoveredCardUI.CardUuid.ToString());
-        OnReleaseCreatureFieldCardDragFinished?.Invoke(this, new FieldCardEventArgs<CreatureFieldCardUI>(cardUI));
+        }
+        OnReleaseCreatureFieldCardDragFinished?.Invoke(this, args);
     }
 
     [Rpc(SendTo.Server)]
     private void CreatureReleasedOverCreatureServerRpc(ulong heldCardPlayerId, ulong hoveredCardPlayerId, FixedString128Bytes heldCreatureUuidStr, FixedString128Bytes hoveredCreatureUuidStr, RpcParams rpcParams = default) {
         TcgLogger.Log("Creature Released over Creature");
+        TcgLogger.Log("HeldCardPlayerId: " + heldCardPlayerId + " hoveredCardPlayerId: " + hoveredCardPlayerId);
         MatchPlayer heldCardPlayer = duelManager.GetPlayerById(heldCardPlayerId);
         MatchPlayer hoveredCardPlayer = duelManager.GetPlayerById(hoveredCardPlayerId);
         Guid heldCreatureUuid = Guid.Parse(heldCreatureUuidStr.ToString());
         Guid hoveredCreatureUuid = Guid.Parse(hoveredCreatureUuidStr.ToString());
         CreatureCard heldCreature = heldCardPlayer.GetCreatureByUuid(heldCreatureUuid);
         CreatureCard hoveredCreature = hoveredCardPlayer.GetCreatureByUuid(hoveredCreatureUuid);
+        TcgLogger.Log("Is held Card null: " + (heldCreature == null));
+        TcgLogger.Log("Is hovered Card null: " + (hoveredCreature == null));
 
         CreatureReleasedOverCreatureEventArgs args = new CreatureReleasedOverCreatureEventArgs(rpcParams.Receive.SenderClientId,
                                                                                                heldCreature,
@@ -278,13 +283,16 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         return false;
     }
 
-    private bool CreatureFieldCardRaycast(out CreatureFieldCardUI cardUI) {
+    private bool CreatureFieldCardRaycast(out CreatureFieldCardUI cardUI, CreatureFieldCardUI ignoreCard = null) {
         cardUI = null;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<CreatureFieldCardCollisionPointer>()) {
+            if (hit.collider.TryGetComponent(out CreatureFieldCardCollisionPointer collisionPointer)) {
+                if (ignoreCard != null && collisionPointer.CardUI.CardUuid == ignoreCard.CardUuid)
+                    continue;
+
                 cardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
                 return true;
             }

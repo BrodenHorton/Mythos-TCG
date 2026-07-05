@@ -47,25 +47,34 @@ public class DuelistEffect : CreatureCardEffect {
     }
 
     private void SetDuelistDefender(object sender, CreatureReleasedOverCreatureEventArgs args) {
+        TcgLogger.Log("SetDuelistDefender Entered");
         if (args.DraggingPlayerId != card.PlayerId)
             return;
+        TcgLogger.Log("SetDuelistDefender 1");
         if (args.HoveredCard.Uuid != card.Uuid)
             return;
+        TcgLogger.Log("SetDuelistDefender 2");
         if (duelManager.GetCurrentPlayerTurn().PlayerId != card.PlayerId)
             return;
+        TcgLogger.Log("SetDuelistDefender 3");
         if (combatStateManager.CurrentState != combatStateManager.DeclareAttackersState)
             return;
+        TcgLogger.Log("SetDuelistDefender 4");
         if (!combatManager.HasExistingDuelistCombat(card.PlayerId, args.HeldCard.PlayerId))
             return;
-        if (combatManager.IsCreatureInCombat(card.Uuid))
+        TcgLogger.Log("SetDuelistDefender 5");
+        if (!combatManager.IsCreatureInCombat(card.Uuid))
             return;
+        TcgLogger.Log("SetDuelistDefender 6");
         if (combatManager.IsCreatureInCombat(args.HeldCard.Uuid))
             return;
+        TcgLogger.Log("SetDuelistDefender 7");
         CreatureCombat creatureCombat = combatManager.GetCreatureCombat(card.Uuid);
         if (creatureCombat.Defender != null)
             return;
 
-        creatureCombat.Defender = args.HeldCard;
+        TcgLogger.Log("SetDuelistDefender 8");
+        combatManager.SetDefender(args.HeldCard.PlayerId, args.HoveredCard, args.HeldCard);
     }
 
     public override CreatureCardEffect DeepCopy() {
