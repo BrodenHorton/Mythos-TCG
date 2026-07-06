@@ -21,7 +21,7 @@ public class CombatManager : NetworkBehaviour {
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
 
         EventBus.Instance.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
-        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += DeclareDefender;
+        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += PlayerSelectDeclareDefender;
     }
 
     private void DeclareAttacker(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
@@ -54,21 +54,20 @@ public class CombatManager : NetworkBehaviour {
         EventBus.Instance.InvokeOnDeclareAttackerFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, cardPayload));
     }
 
-    private void DeclareDefender(object sender, CreatureReleasedOverCreatureEventArgs args) {
+    private void PlayerSelectDeclareDefender(object sender, CreatureReleasedOverCreatureEventArgs args) {
         if (!IsServer)
             throw new Exception("Only the server can call the method DeclareDefender");
 
-        TcgLogger.Log("Declare Defender called");
-        DeclareDefender(args.DraggingPlayerId, args.HoveredCard, args.HeldCard);
+        TcgLogger.Log("Player Select Declare Defender called");
+        if (combatStateManager.CurrentState.CanDeclareDefenders())
+            DeclareDefender(args.DraggingPlayerId, args.HoveredCard, args.HeldCard);
     }
 
-    private void DeclareDefender(ulong targetId, CreatureCard attacker, CreatureCard defender) {
+    public void DeclareDefender(ulong targetId, CreatureCard attacker, CreatureCard defender) {
         if (!IsServer)
             throw new Exception("Only the server can call the method DeclareDefender");
         MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
         MatchPlayer target = duelManager.GetPlayerById(targetId);
-        if (!combatStateManager.CurrentState.CanDeclareDefenders())
-            return;
         if (!target.ContainsCreatureUuid(defender.Uuid))
             return;
         if (!defender.CanDefend())
@@ -104,6 +103,12 @@ public class CombatManager : NetworkBehaviour {
         CreatureCard creatureCard = initiator.GetCreatureByUuid(creatureCardUuid);
         if (creatureCard == null)
             throw new Exception("Unable to undeclare attacker since attacking creature is null");
+        CreatureCombat creatureCombat = GetCreatureCombat(creatureCardUuid);
+        if (creatureCombat == null)
+            throw new Exception("Unable to find Creature Combat with creature uuid: " + creatureCardUuid);
+
+        if (creatureCombat.Defender != null)
+            UndeclareDefender(targetId, creatureCombat.Defender.Uuid);
 
         CombatCreatureEventArgs combatCreatureEventArgs = new CombatCreatureEventArgs(initiator.PlayerId, targetId, creatureCard);
         EventBus.Instance.InvokeOnUndelcareAttacker(combatCreatureEventArgs);
@@ -117,13 +122,20 @@ public class CombatManager : NetworkBehaviour {
         EventBus.Instance.InvokeOnUndelcareAttackerFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, card));
     }
 
-    public void UndeclareDefender(ulong targetId, Guid creatureCardUuid) {
+    public void PlayerSelectUndeclareDefender(ulong targetId, Guid creatureCardUuid) {
         if (!IsServer)
-            throw new Exception("Only the server can call the method UndeclareDefender");
+            throw new Exception("Only the server can call the method PlayerUndeclareDefender");
         if (targetId == duelManager.GetCurrentPlayerTurn().PlayerId)
             return;
         if (!combatStateManager.CurrentState.CanDeclareDefenders())
             return;
+
+        UndeclareDefender(targetId, creatureCardUuid);
+    }
+
+    public void UndeclareDefender(ulong targetId, Guid creatureCardUuid) {
+        if (!IsServer)
+            throw new Exception("Only the server can call the method UndeclareDefender");
         MatchPlayer target = duelManager.GetPlayerById(targetId);
         if (!target.ContainsCreatureUuid(creatureCardUuid))
             return;
@@ -142,25 +154,6 @@ public class CombatManager : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnUndeclareDefenderFinishedClientRpc(ulong initiatorId, ulong targetId, CreatureCardPayload defender) {
         EventBus.Instance.InvokeOnUndeclareDefenderFinished(new CombatCreaturePayloadEventArgs(initiatorId, targetId, defender));
-    }
-
-    public void SetDefender(ulong targetId, CreatureCard attacker, CreatureCard defender) {
-        if (!IsServer)
-            throw new Exception("Only the server can call the method SetDefender");
-        MatchPlayer initiator = duelManager.GetCurrentPlayerTurn();
-        MatchPlayer target = duelManager.GetPlayerById(targetId);
-        if (!target.ContainsCreatureUuid(defender.Uuid))
-            return;
-        if (!defender.CanDefend())
-            return;
-        if (!initiator.ContainsCreatureUuid(attacker.Uuid))
-            return;
-
-        CreatureCombatEventArgs creatureCombatEventArgs = new CreatureCombatEventArgs(initiator.PlayerId, targetId, attacker, defender);
-        EventBus.Instance.InvokeOnDeclareDefender(creatureCombatEventArgs);
-        AddDefender(initiator.PlayerId, targetId, attacker, defender);
-        InvokeOnDeclareDefenderPayloadClientRpc(initiator.PlayerId, targetId, new CreatureCardPayload(attacker), new CreatureCardPayload(defender));
-        EventBus.Instance.InvokeOnPostDeclareDefender(creatureCombatEventArgs);
     }
 
     public void AddAttacker(ulong initiatorId, ulong targetId, CreatureCard card) {

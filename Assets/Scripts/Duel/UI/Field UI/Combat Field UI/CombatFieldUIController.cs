@@ -67,7 +67,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (clientId == duelManager.GetCurrentPlayerTurn().PlayerId)
             combatManager.UndeclareAttacker(targetId, Guid.Parse(creatureCardUuidStr.ToString()));
         else
-            combatManager.UndeclareDefender(targetId, Guid.Parse(creatureCardUuidStr.ToString()));
+            combatManager.PlayerSelectUndeclareDefender(targetId, Guid.Parse(creatureCardUuidStr.ToString()));
     }
 
     public List<CreatureFieldCardUI> ReleaseAttackers() {

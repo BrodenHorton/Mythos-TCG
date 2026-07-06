@@ -74,7 +74,7 @@ public class DuelistEffect : CreatureCardEffect {
             return;
 
         TcgLogger.Log("SetDuelistDefender 8");
-        combatManager.SetDefender(args.HeldCard.PlayerId, args.HoveredCard, args.HeldCard);
+        combatManager.DeclareDefender(args.HeldCard.PlayerId, args.HoveredCard, args.HeldCard);
     }
 
     public override CreatureCardEffect DeepCopy() {
