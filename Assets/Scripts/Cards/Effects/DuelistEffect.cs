@@ -5,8 +5,11 @@ public class DuelistEffect : CreatureCardEffect {
     private DuelManager duelManager;
     private CombatStateManager combatStateManager;
     private CombatManager combatManager;
+    private CreatureCard duelistDefender;
 
-    public DuelistEffect() : base() { }
+    public DuelistEffect() : base() {
+        duelistDefender = null;
+    }
 
     public DuelistEffect(DuelistEffect effect) : base() {
         duelManager = ServiceLocator.Get<DuelManager>();
@@ -18,11 +21,15 @@ public class DuelistEffect : CreatureCardEffect {
         this.card = card;
         FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += SetTargetCardsSelectable;
         FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += SetDuelistDefender;
+        FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += RemoveDuelistTargetFromSelectableCards;
+        EventBus.Instance.OnUndeclareAttacker += ClearDuelistDefender;
     }
 
     public override void RemoveListeners() {
         FieldCardSelectionManager.Instance.OnGetSelectableFieldCards -= SetTargetCardsSelectable;
         FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature -= SetDuelistDefender;
+        FieldCardSelectionManager.Instance.OnGetSelectableFieldCards -= RemoveDuelistTargetFromSelectableCards;
+        EventBus.Instance.OnUndeclareAttacker -= ClearDuelistDefender;
     }
 
     private void SetTargetCardsSelectable(object sender, SelectableCardsEventArgs args) {
@@ -47,34 +54,50 @@ public class DuelistEffect : CreatureCardEffect {
     }
 
     private void SetDuelistDefender(object sender, CreatureReleasedOverCreatureEventArgs args) {
-        TcgLogger.Log("SetDuelistDefender Entered");
         if (args.DraggingPlayerId != card.PlayerId)
             return;
-        TcgLogger.Log("SetDuelistDefender 1");
         if (args.HoveredCard.Uuid != card.Uuid)
             return;
-        TcgLogger.Log("SetDuelistDefender 2");
         if (duelManager.GetCurrentPlayerTurn().PlayerId != card.PlayerId)
             return;
-        TcgLogger.Log("SetDuelistDefender 3");
         if (combatStateManager.CurrentState != combatStateManager.DeclareAttackersState)
             return;
-        TcgLogger.Log("SetDuelistDefender 4");
         if (!combatManager.HasExistingDuelistCombat(card.PlayerId, args.HeldCard.PlayerId))
             return;
-        TcgLogger.Log("SetDuelistDefender 5");
         if (!combatManager.IsCreatureInCombat(card.Uuid))
             return;
-        TcgLogger.Log("SetDuelistDefender 6");
         if (combatManager.IsCreatureInCombat(args.HeldCard.Uuid))
             return;
-        TcgLogger.Log("SetDuelistDefender 7");
         CreatureCombat creatureCombat = combatManager.GetCreatureCombat(card.Uuid);
         if (creatureCombat.Defender != null)
             return;
 
-        TcgLogger.Log("SetDuelistDefender 8");
+        TcgLogger.Log("Duelist Set Targets Activated");
+        duelistDefender = args.HeldCard;
         combatManager.DeclareDefender(args.HeldCard.PlayerId, args.HoveredCard, args.HeldCard);
+    }
+
+    private void RemoveDuelistTargetFromSelectableCards(object sender, SelectableCardsEventArgs args) {
+        if (duelistDefender == null)
+            return;
+        if (args.PlayerId != duelistDefender.PlayerId)
+            return;
+        if (!args.CardUuids.Contains(duelistDefender.Uuid))
+            return;
+
+        TcgLogger.Log("Duelist Remove Defender from Selectable Cards Activated");
+        args.CardUuids.Remove(duelistDefender.Uuid);
+    }
+
+    private void ClearDuelistDefender(object sender, CombatCreatureEventArgs args) {
+        if (args.InitiatorId != card.PlayerId)
+            return;
+        if (duelistDefender == null)
+            return;
+        if (args.TargetId != duelistDefender.PlayerId)
+            return;
+
+        duelistDefender = null;
     }
 
     public override CreatureCardEffect DeepCopy() {
