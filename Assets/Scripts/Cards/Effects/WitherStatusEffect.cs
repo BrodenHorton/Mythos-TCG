@@ -2,16 +2,19 @@
 
 [Serializable]
 public class WitherStatusEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Wither Status";
+    private static readonly string EFFECT_DESCRIPTION = ""; // TODO: Dynamically update with current wither count
+
     private int witherCount;
 
-    public WitherStatusEffect() : base() { }
+    public WitherStatusEffect() : this(0) { }
+
+    public WitherStatusEffect(WitherStatusEffect effect) : this(effect.witherCount) { }
 
     public WitherStatusEffect(int witherCount) : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
         this.witherCount = witherCount;
-    }
-
-    public WitherStatusEffect(WitherStatusEffect effect) : base() {
-        witherCount = effect.witherCount;
     }
 
     public override void Init(CreatureCard card) {
@@ -49,6 +52,10 @@ public class WitherStatusEffect : CreatureCardEffect {
             return;
 
         args.Value -= witherCount;
+    }
+
+    public override bool IsStaticKeyword() {
+        return false;
     }
 
     public override CreatureCardEffect DeepCopy() {

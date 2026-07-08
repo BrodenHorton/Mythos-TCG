@@ -3,11 +3,16 @@ using Unity.Netcode;
 
 [Serializable]
 public class MenaceEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Menace";
+    private static readonly string EFFECT_DESCRIPTION = "This Creature cannot be blocked by creatures with 3 or less Health.";
     private static readonly int BLOCKABLE_HEALTH_MIN = 4;
 
-    public MenaceEffect() : base() { }
+    public MenaceEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public MenaceEffect(MenaceEffect effect) : base() { }
+    public MenaceEffect(MenaceEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -27,6 +32,10 @@ public class MenaceEffect : CreatureCardEffect {
         TcgLogger.Log("Menace Effect triggered");
         if (args.Defender.GetHealth() < BLOCKABLE_HEALTH_MIN)
             args.CanDefend = false;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

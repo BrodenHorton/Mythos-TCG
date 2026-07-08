@@ -7,11 +7,15 @@ public class WitherEffectPayload : CreatureCardEffectPayload {
     }
 
     public WitherEffectPayload(WitherEffect effect) {
+        effectName = effect.EffectName;
+        description = effect.Description;
         creatureUuidStr = effect.Card.Uuid.ToString();
         effectType = CreatureCardEffectType.Wither;
     }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+        serializer.SerializeValue(ref effectName);
+        serializer.SerializeValue(ref description);
         serializer.SerializeValue(ref creatureUuidStr);
     }
 }

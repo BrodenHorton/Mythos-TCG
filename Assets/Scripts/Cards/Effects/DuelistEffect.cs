@@ -2,23 +2,33 @@
 
 [Serializable]
 public class DuelistEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Duelist";
+    private static readonly string EFFECT_DESCRIPTION = "When this creature attacks, choose the enemy creature that defends.";
+
     private DuelManager duelManager;
     private CombatStateManager combatStateManager;
     private CombatManager combatManager;
     private CreatureCard duelistDefender;
 
     public DuelistEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
         duelistDefender = null;
     }
 
     public DuelistEffect(DuelistEffect effect) : base() {
-        duelManager = ServiceLocator.Get<DuelManager>();
-        combatStateManager = ServiceLocator.Get<CombatStateManager>();
-        combatManager = ServiceLocator.Get<CombatManager>();
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+        duelistDefender = effect.duelistDefender;
     }
 
     public override void Init(CreatureCard card) {
         this.card = card;
+
+        duelManager = ServiceLocator.Get<DuelManager>();
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
+
         FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += SetTargetCardsSelectable;
         FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += SetDuelistDefender;
         FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += RemoveDuelistTargetFromSelectableCards;
@@ -98,6 +108,10 @@ public class DuelistEffect : CreatureCardEffect {
             return;
 
         duelistDefender = null;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

@@ -1,12 +1,16 @@
 ﻿using System;
-using Unity.Netcode;
 
 [Serializable]
 public class ElusiveEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Elusive";
+    private static readonly string EFFECT_DESCRIPTION = "Can only be blocked by creatures with Elusive or Reach.";
 
-    public ElusiveEffect() : base() { }
+    public ElusiveEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public ElusiveEffect(ElusiveEffect effect) : base() { }
+    public ElusiveEffect(ElusiveEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -41,6 +45,10 @@ public class ElusiveEffect : CreatureCardEffect {
 
         TcgLogger.Log("Elusive Effect triggered");
         args.CanDefend = true;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

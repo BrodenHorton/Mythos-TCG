@@ -2,10 +2,15 @@
 
 [Serializable]
 public class DeathtouchEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Deathtouch";
+    private static readonly string EFFECT_DESCRIPTION = "When this creature deals damage to another creature, that creature dies.";
 
-    public DeathtouchEffect() : base() { }
+    public DeathtouchEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public DeathtouchEffect(DeathtouchEffect effect) : base() { }
+    public DeathtouchEffect(DeathtouchEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -24,6 +29,10 @@ public class DeathtouchEffect : CreatureCardEffect {
 
         TcgLogger.Log("Deathtouch Effect triggered");
         args.Defender.DestroyCreature();
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

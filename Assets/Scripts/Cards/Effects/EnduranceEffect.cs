@@ -1,12 +1,16 @@
 ﻿using System;
-using Unity.Netcode;
 
 [Serializable]
 public class EnduranceEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Endurance";
+    private static readonly string EFFECT_DESCRIPTION = "Attacking does not cause this creature to tap.";
 
-    public EnduranceEffect() : base() { }
+    public EnduranceEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public EnduranceEffect(EnduranceEffect effect) : base() { }
+    public EnduranceEffect(EnduranceEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -23,6 +27,10 @@ public class EnduranceEffect : CreatureCardEffect {
 
         TcgLogger.Log("Endurance Effect triggered");
         args.IsCanceled = true;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

@@ -2,10 +2,15 @@
 
 [Serializable]
 public class WitherEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Wither";
+    private static readonly string EFFECT_DESCRIPTION = "Deals damage as -1/-1 debuffs.";
 
-    public WitherEffect() : base() { }
+    public WitherEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public WitherEffect(WitherEffect effect) : base() { }
+    public WitherEffect(WitherEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -47,6 +52,10 @@ public class WitherEffect : CreatureCardEffect {
             TcgLogger.Log("Wither Status added to Defender");
             args.Defender.AddEffect(new WitherStatusEffect(damage));
         }
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

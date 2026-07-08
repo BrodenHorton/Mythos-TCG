@@ -2,11 +2,17 @@
 
 [Serializable]
 public class LifelinkEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Life Link";
+    private static readonly string EFFECT_DESCRIPTION = "Increase life points equal to the damage dealt to the defender.";
+
     private DuelManager duelManager;
 
-    public LifelinkEffect() : base() { }
+    public LifelinkEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public LifelinkEffect(LifelinkEffect effect) : base() { }
+    public LifelinkEffect(LifelinkEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -26,6 +32,10 @@ public class LifelinkEffect : CreatureCardEffect {
 
         TcgLogger.Log("Lifelink Effect triggered");
         duelManager.GetPlayerById(args.InitiatorId).ModifyLifePoints(args.Damage);
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

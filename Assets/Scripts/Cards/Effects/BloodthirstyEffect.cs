@@ -2,11 +2,20 @@
 
 [Serializable]
 public class BloodthirstyEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Bloodthirsty";
+    private static readonly string EFFECT_DESCRIPTION = "When this creature deals damage, it gains +1/+1.";
+
     private int effectProkCount;
 
-    public BloodthirstyEffect() : base() { }
+    public BloodthirstyEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+        effectProkCount = 0;
+    }
 
     public BloodthirstyEffect(BloodthirstyEffect effect) : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
         effectProkCount = effect.effectProkCount;
     }
 
@@ -43,6 +52,10 @@ public class BloodthirstyEffect : CreatureCardEffect {
             return;
 
         args.Value += effectProkCount;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

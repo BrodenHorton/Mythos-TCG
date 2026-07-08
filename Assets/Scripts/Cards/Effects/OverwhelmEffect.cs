@@ -1,12 +1,16 @@
 using System;
-using Unity.Netcode;
 
 [Serializable]
 public class OverwhelmEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Overwhelm";
+    private static readonly string EFFECT_DESCRIPTION = "Overflow damage that isn’t blocked by a defender's Health is dealt as life point damage.";
 
-    public OverwhelmEffect() : base() { }
+    public OverwhelmEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public OverwhelmEffect(OverwhelmEffect effect) : base() { }
+    public OverwhelmEffect(OverwhelmEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -32,6 +36,10 @@ public class OverwhelmEffect : CreatureCardEffect {
 
         if (overwhelmDamage > 0)
             args.DirectDamage = overwhelmDamage;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

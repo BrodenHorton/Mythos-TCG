@@ -1,12 +1,16 @@
 ﻿using System;
-using Unity.Netcode;
 
 [Serializable]
 public class ReachEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Reach";
+    private static readonly string EFFECT_DESCRIPTION = "Can block creatures with Elusive.";
 
-    public ReachEffect() : base() { }
+    public ReachEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public ReachEffect(ReachEffect effect) : base() { }
+    public ReachEffect(ReachEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -23,6 +27,10 @@ public class ReachEffect : CreatureCardEffect {
 
         TcgLogger.Log("Range Effect triggered");
         args.CanDefend = true;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {

@@ -1,12 +1,16 @@
 ﻿using System;
-using Unity.Netcode;
 
 [Serializable]
 public class DefenderEffect : CreatureCardEffect {
+    private static readonly string EFFECT_NAME = "Defender";
+    private static readonly string EFFECT_DESCRIPTION = "This creature cannot declare an attack.";
 
-    public DefenderEffect() : base() { }
+    public DefenderEffect() : base() {
+        effectName = EFFECT_NAME;
+        description = EFFECT_DESCRIPTION;
+    }
 
-    public DefenderEffect(DefenderEffect effect) : base() { }
+    public DefenderEffect(DefenderEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -23,6 +27,10 @@ public class DefenderEffect : CreatureCardEffect {
 
         TcgLogger.Log("Defender Effect triggered");
         args.IsCanceled = true;
+    }
+
+    public override bool IsStaticKeyword() {
+        return true;
     }
 
     public override CreatureCardEffect DeepCopy() {
