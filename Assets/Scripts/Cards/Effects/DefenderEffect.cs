@@ -1,13 +1,14 @@
 ﻿using System;
 
 [Serializable]
-public class DefenderEffect : CreatureCardEffect {
+public class DefenderEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Defender";
     private static readonly string EFFECT_DESCRIPTION = "This creature cannot declare an attack.";
 
     public DefenderEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public DefenderEffect(DefenderEffect effect) : this() { }
@@ -29,9 +30,10 @@ public class DefenderEffect : CreatureCardEffect {
         args.IsCanceled = true;
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
+    
 
     public override CreatureCardEffect DeepCopy() {
         return new DefenderEffect(this);

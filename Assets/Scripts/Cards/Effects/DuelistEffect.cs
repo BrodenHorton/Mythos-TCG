@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Serializable]
-public class DuelistEffect : CreatureCardEffect {
+public class DuelistEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Duelist";
     private static readonly string EFFECT_DESCRIPTION = "When this creature attacks, choose the enemy creature that defends.";
 
@@ -13,12 +13,14 @@ public class DuelistEffect : CreatureCardEffect {
     public DuelistEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
         duelistDefender = null;
     }
 
     public DuelistEffect(DuelistEffect effect) : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
         duelistDefender = effect.duelistDefender;
     }
 
@@ -110,8 +112,8 @@ public class DuelistEffect : CreatureCardEffect {
         duelistDefender = null;
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

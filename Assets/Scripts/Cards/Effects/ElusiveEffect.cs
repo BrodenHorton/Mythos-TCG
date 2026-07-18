@@ -1,13 +1,14 @@
 ﻿using System;
 
 [Serializable]
-public class ElusiveEffect : CreatureCardEffect {
+public class ElusiveEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Elusive";
     private static readonly string EFFECT_DESCRIPTION = "Can only be blocked by creatures with Elusive or Reach.";
 
     public ElusiveEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public ElusiveEffect(ElusiveEffect effect) : this() { }
@@ -47,8 +48,8 @@ public class ElusiveEffect : CreatureCardEffect {
         args.CanDefend = true;
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

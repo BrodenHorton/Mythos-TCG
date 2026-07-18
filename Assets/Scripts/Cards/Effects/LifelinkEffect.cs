@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Serializable]
-public class LifelinkEffect : CreatureCardEffect {
+public class LifelinkEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Life Link";
     private static readonly string EFFECT_DESCRIPTION = "Increase life points equal to the damage dealt to the defender.";
 
@@ -10,6 +10,7 @@ public class LifelinkEffect : CreatureCardEffect {
     public LifelinkEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public LifelinkEffect(LifelinkEffect effect) : this() { }
@@ -34,8 +35,8 @@ public class LifelinkEffect : CreatureCardEffect {
         duelManager.GetPlayerById(args.InitiatorId).ModifyLifePoints(args.Damage);
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

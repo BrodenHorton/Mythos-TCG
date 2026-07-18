@@ -1,21 +1,17 @@
 ﻿using Unity.Netcode;
 
-public class SwiftnessEffectPayload : CreatureCardEffectPayload {
+public class SwiftnessEffectPayload : StaticCreatureCardEffectPayload {
 
     public SwiftnessEffectPayload() {
         effectType = CreatureCardEffectType.Swiftness;
     }
 
-    public SwiftnessEffectPayload(SwiftnessEffect effect) {
-        effectName = effect.EffectName;
-        description = effect.Description;
-        creatureUuidStr = effect.Card.Uuid.ToString();
-        effectType = CreatureCardEffectType.Swiftness;
-    }
+    public SwiftnessEffectPayload(SwiftnessEffect effect) : base(effect) { }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);
         serializer.SerializeValue(ref description);
         serializer.SerializeValue(ref creatureUuidStr);
+        serializer.SerializeValue(ref iconId);
     }
 }

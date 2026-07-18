@@ -1,13 +1,14 @@
 ﻿using System;
 
 [Serializable]
-public class EnduranceEffect : CreatureCardEffect {
+public class EnduranceEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Endurance";
     private static readonly string EFFECT_DESCRIPTION = "Attacking does not cause this creature to tap.";
 
     public EnduranceEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public EnduranceEffect(EnduranceEffect effect) : this() { }
@@ -29,8 +30,8 @@ public class EnduranceEffect : CreatureCardEffect {
         args.IsCanceled = true;
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

@@ -1,17 +1,13 @@
 ﻿using Unity.Netcode;
 
-public class BloodthirstyEffectPayload : CreatureCardEffectPayload {
+public class BloodthirstyEffectPayload : StaticCreatureCardEffectPayload {
     private int effectProkCount;
 
-    public BloodthirstyEffectPayload() {
+    public BloodthirstyEffectPayload() : base() {
         effectType = CreatureCardEffectType.Bloodthirsty;
     }
 
-    public BloodthirstyEffectPayload(BloodthirstyEffect effect) {
-        effectName = effect.EffectName;
-        description = effect.Description;
-        creatureUuidStr = effect.Card.Uuid.ToString();
-        effectType = CreatureCardEffectType.Bloodthirsty;
+    public BloodthirstyEffectPayload(BloodthirstyEffect effect) : base(effect) {
         effectProkCount = effect.EffectProkCount;
     }
 
@@ -20,5 +16,6 @@ public class BloodthirstyEffectPayload : CreatureCardEffectPayload {
         serializer.SerializeValue(ref description);
         serializer.SerializeValue(ref creatureUuidStr);
         serializer.SerializeValue(ref effectProkCount);
+        serializer.SerializeValue(ref iconId);
     }
 }

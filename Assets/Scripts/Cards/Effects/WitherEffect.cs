@@ -1,13 +1,14 @@
 ﻿using System;
 
 [Serializable]
-public class WitherEffect : CreatureCardEffect {
+public class WitherEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Wither";
     private static readonly string EFFECT_DESCRIPTION = "Deals damage as -1/-1 debuffs.";
 
     public WitherEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public WitherEffect(WitherEffect effect) : this() { }
@@ -54,8 +55,8 @@ public class WitherEffect : CreatureCardEffect {
         }
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

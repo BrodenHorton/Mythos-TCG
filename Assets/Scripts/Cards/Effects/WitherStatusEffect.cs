@@ -54,8 +54,8 @@ public class WitherStatusEffect : CreatureCardEffect {
         args.Value -= witherCount;
     }
 
-    public override bool IsStaticKeyword() {
-        return false;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

@@ -1,13 +1,14 @@
 ﻿using System;
 
 [Serializable]
-public class SwiftnessEffect : CreatureCardEffect {
+public class SwiftnessEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Swiftness";
     private static readonly string EFFECT_DESCRIPTION = "This creature does not have summoning sickness.";
 
     public SwiftnessEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public SwiftnessEffect(SwiftnessEffect effect) : this() { }
@@ -29,8 +30,8 @@ public class SwiftnessEffect : CreatureCardEffect {
         args.IsCanceled = true;
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

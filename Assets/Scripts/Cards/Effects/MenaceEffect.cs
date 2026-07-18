@@ -1,8 +1,7 @@
 ﻿using System;
-using Unity.Netcode;
 
 [Serializable]
-public class MenaceEffect : CreatureCardEffect {
+public class MenaceEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Menace";
     private static readonly string EFFECT_DESCRIPTION = "This Creature cannot be blocked by creatures with 3 or less Health.";
     private static readonly int BLOCKABLE_HEALTH_MIN = 4;
@@ -10,6 +9,7 @@ public class MenaceEffect : CreatureCardEffect {
     public MenaceEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public MenaceEffect(MenaceEffect effect) : this() { }
@@ -34,8 +34,8 @@ public class MenaceEffect : CreatureCardEffect {
             args.CanDefend = false;
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {

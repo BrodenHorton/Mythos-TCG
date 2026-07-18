@@ -1,13 +1,14 @@
 ﻿using System;
 
 [Serializable]
-public class DeathtouchEffect : CreatureCardEffect {
+public class DeathtouchEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Deathtouch";
     private static readonly string EFFECT_DESCRIPTION = "When this creature deals damage to another creature, that creature dies.";
 
     public DeathtouchEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
+        effectIconId = "";
     }
 
     public DeathtouchEffect(DeathtouchEffect effect) : this() { }
@@ -31,8 +32,8 @@ public class DeathtouchEffect : CreatureCardEffect {
         args.Defender.DestroyCreature();
     }
 
-    public override bool IsStaticKeyword() {
-        return true;
+    public override string GetFullDescription() {
+        return description;
     }
 
     public override CreatureCardEffect DeepCopy() {
