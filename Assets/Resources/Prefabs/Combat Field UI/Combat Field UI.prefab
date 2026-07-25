@@ -52,7 +52,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.36, y: 0.1, z: 1.32}
+  m_Size: {x: 16.8, y: 0.1, z: 6.6}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6860910511499903336
 MonoBehaviour:
@@ -141,7 +141,7 @@ Transform:
   m_GameObject: {fileID: 3626765314365384157}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: -0.35}
+  m_LocalPosition: {x: 0, y: 0.02, z: -1.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -157,7 +157,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8476063783691046019}
   - component: {fileID: 7243036786812047451}
-  - component: {fileID: 8184768766828169918}
   m_Layer: 0
   m_Name: Combat Field UI
   m_TagString: Untagged
@@ -201,18 +200,6 @@ MonoBehaviour:
   combatFieldForwardVector: {x: 0, y: 1}
   spacingVector: {x: 1, y: 0}
   creatureFieldCardUIPrefab: {fileID: 8696858695724869291, guid: 22c6877d40548284b8208578e672fe58, type: 3}
---- !u!114 &8184768766828169918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3757984834520461964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20c21e21f514c974f8537a4e9f472f94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7521183134167319789
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,7 +225,7 @@ Transform:
   m_GameObject: {fileID: 7521183134167319789}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: 0.35}
+  m_LocalPosition: {x: 0, y: 0.02, z: 1.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -273,7 +260,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.002, z: 0}
-  m_LocalScale: {x: 0.33499998, y: 1, z: 0.132}
+  m_LocalScale: {x: 1.675, y: 1, z: 0.66}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4533630574535736870}

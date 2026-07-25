@@ -8,6 +8,7 @@ public class BloodthirstyEffectPayload : StaticCreatureCardEffectPayload {
     }
 
     public BloodthirstyEffectPayload(BloodthirstyEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Bloodthirsty;
         effectProkCount = effect.EffectProkCount;
     }
 
@@ -15,7 +16,7 @@ public class BloodthirstyEffectPayload : StaticCreatureCardEffectPayload {
         serializer.SerializeValue(ref effectName);
         serializer.SerializeValue(ref description);
         serializer.SerializeValue(ref creatureUuidStr);
-        serializer.SerializeValue(ref effectProkCount);
         serializer.SerializeValue(ref iconId);
+        serializer.SerializeValue(ref effectProkCount);
     }
 }

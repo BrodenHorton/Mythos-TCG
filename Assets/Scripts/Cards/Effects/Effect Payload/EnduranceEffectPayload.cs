@@ -6,7 +6,9 @@ public class EnduranceEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Endurance;
     }
 
-    public EnduranceEffectPayload(EnduranceEffect effect) : base(effect) { }
+    public EnduranceEffectPayload(EnduranceEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Endurance;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

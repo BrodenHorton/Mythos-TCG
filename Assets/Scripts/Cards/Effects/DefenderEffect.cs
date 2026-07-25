@@ -8,7 +8,7 @@ public class DefenderEffect : StaticCreatureCardEffect {
     public DefenderEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public DefenderEffect(DefenderEffect effect) : this() { }

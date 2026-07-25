@@ -8,6 +8,7 @@ public class WitherStatusEffectPayload : CreatureCardEffectPayload {
     }
 
     public WitherStatusEffectPayload(WitherStatusEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.WitherStatus;
         witherCount = effect.WitherCount;
     }
 

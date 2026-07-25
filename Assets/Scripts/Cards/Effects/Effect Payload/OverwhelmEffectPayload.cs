@@ -6,7 +6,9 @@ public class OverwhelmEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Overwhelm;
     }
 
-    public OverwhelmEffectPayload(OverwhelmEffect effect) : base(effect) { }
+    public OverwhelmEffectPayload(OverwhelmEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Overwhelm;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

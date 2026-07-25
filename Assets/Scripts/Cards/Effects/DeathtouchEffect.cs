@@ -8,7 +8,7 @@ public class DeathtouchEffect : StaticCreatureCardEffect {
     public DeathtouchEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public DeathtouchEffect(DeathtouchEffect effect) : this() { }

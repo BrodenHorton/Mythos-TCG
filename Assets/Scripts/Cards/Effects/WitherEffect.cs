@@ -8,7 +8,7 @@ public class WitherEffect : StaticCreatureCardEffect {
     public WitherEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public WitherEffect(WitherEffect effect) : this() { }

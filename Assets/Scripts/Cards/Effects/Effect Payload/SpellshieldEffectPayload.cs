@@ -6,7 +6,9 @@ public class SpellshieldEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Spellshield;
     }
 
-    public SpellshieldEffectPayload(SpellshieldEffect effect) : base(effect) { }
+    public SpellshieldEffectPayload(SpellshieldEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Spellshield;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

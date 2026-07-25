@@ -6,7 +6,9 @@ public class MenaceEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Menace;
     }
 
-    public MenaceEffectPayload(MenaceEffect effect) : base(effect) { }
+    public MenaceEffectPayload(MenaceEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Menace;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

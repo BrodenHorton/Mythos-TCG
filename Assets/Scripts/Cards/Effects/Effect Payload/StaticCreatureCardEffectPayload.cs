@@ -4,11 +4,7 @@ public abstract class StaticCreatureCardEffectPayload : CreatureCardEffectPayloa
 
     public StaticCreatureCardEffectPayload() { }
 
-    public StaticCreatureCardEffectPayload(StaticCreatureCardEffect effect) {
-        effectName = effect.EffectName;
-        description = effect.GetFullDescription();
-        creatureUuidStr = effect.Card.Uuid.ToString();
-        effectType = CreatureCardEffectType.Bloodthirsty;
+    public StaticCreatureCardEffectPayload(StaticCreatureCardEffect effect) : base(effect) {
         iconId = effect.EffectIconId;
     }
 

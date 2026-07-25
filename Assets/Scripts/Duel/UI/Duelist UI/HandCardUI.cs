@@ -4,8 +4,8 @@ using UnityEngine;
 
 public abstract class HandCardUI : MonoBehaviour {
     [SerializeField] protected GameObject selectableBorder;
-    [SerializeField] protected TextMeshPro cardName;
-    [SerializeField] protected TextMeshPro manaCost;
+    [SerializeField] protected TextMeshProUGUI cardName;
+    [SerializeField] protected TextMeshProUGUI manaCost;
 
     protected Guid cardUuid;
     protected bool isSelectable;

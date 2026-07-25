@@ -8,7 +8,7 @@ public class ElusiveEffect : StaticCreatureCardEffect {
     public ElusiveEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public ElusiveEffect(ElusiveEffect effect) : this() { }

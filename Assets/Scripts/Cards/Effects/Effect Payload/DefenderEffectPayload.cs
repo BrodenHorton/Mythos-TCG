@@ -6,7 +6,9 @@ public class DefenderEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Defender;
     }
 
-    public DefenderEffectPayload(DefenderEffect effect) : base(effect) { }
+    public DefenderEffectPayload(DefenderEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Defender;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

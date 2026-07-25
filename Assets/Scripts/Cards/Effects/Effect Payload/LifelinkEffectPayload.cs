@@ -6,7 +6,9 @@ public class LifelinkEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Lifelink;
     }
 
-    public LifelinkEffectPayload(LifelinkEffect effect) : base(effect) { }
+    public LifelinkEffectPayload(LifelinkEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Lifelink;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

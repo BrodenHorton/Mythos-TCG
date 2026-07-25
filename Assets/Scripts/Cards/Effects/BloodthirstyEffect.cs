@@ -10,14 +10,14 @@ public class BloodthirstyEffect : StaticCreatureCardEffect {
     public BloodthirstyEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
         effectProkCount = 0;
     }
 
     public BloodthirstyEffect(BloodthirstyEffect effect) : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
         effectProkCount = effect.effectProkCount;
     }
 

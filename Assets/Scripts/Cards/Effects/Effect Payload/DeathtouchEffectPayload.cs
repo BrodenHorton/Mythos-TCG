@@ -6,7 +6,9 @@ public class DeathtouchEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Deathtouch;
     }
 
-    public DeathtouchEffectPayload(DeathtouchEffect effect) : base(effect) { }
+    public DeathtouchEffectPayload(DeathtouchEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Deathtouch;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

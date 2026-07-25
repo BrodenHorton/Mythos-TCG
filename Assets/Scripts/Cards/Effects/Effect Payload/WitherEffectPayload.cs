@@ -6,7 +6,9 @@ public class WitherEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Wither;
     }
 
-    public WitherEffectPayload(WitherEffect effect) : base(effect) { }
+    public WitherEffectPayload(WitherEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Wither;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

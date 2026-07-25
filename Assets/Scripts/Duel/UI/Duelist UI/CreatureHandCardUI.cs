@@ -3,8 +3,8 @@ using TMPro;
 using UnityEngine;
 
 public class CreatureHandCardUI : HandCardUI {
-    [SerializeField] private TextMeshPro atk;
-    [SerializeField] private TextMeshPro health;
+    [SerializeField] private TextMeshProUGUI atk;
+    [SerializeField] private TextMeshProUGUI health;
 
     public void Init(CreatureCardPayload card) {
         cardUuid = Guid.Parse(card.Uuid.ToString());

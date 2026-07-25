@@ -13,14 +13,14 @@ public class DuelistEffect : StaticCreatureCardEffect {
     public DuelistEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
         duelistDefender = null;
     }
 
     public DuelistEffect(DuelistEffect effect) : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
         duelistDefender = effect.duelistDefender;
     }
 

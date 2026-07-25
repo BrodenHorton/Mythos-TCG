@@ -8,7 +8,7 @@ public class OverwhelmEffect : StaticCreatureCardEffect {
     public OverwhelmEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public OverwhelmEffect(OverwhelmEffect effect) : this() { }

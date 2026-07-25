@@ -6,7 +6,9 @@ public class ReachEffectPayload : StaticCreatureCardEffectPayload {
         effectType = CreatureCardEffectType.Reach;
     }
 
-    public ReachEffectPayload(ReachEffect effect) : base(effect) { }
+    public ReachEffectPayload(ReachEffect effect) : base(effect) {
+        effectType = CreatureCardEffectType.Reach;
+    }
 
     public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
         serializer.SerializeValue(ref effectName);

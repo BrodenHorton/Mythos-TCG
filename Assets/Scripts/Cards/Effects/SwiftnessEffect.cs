@@ -8,7 +8,7 @@ public class SwiftnessEffect : StaticCreatureCardEffect {
     public SwiftnessEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public SwiftnessEffect(SwiftnessEffect effect) : this() { }

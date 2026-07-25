@@ -205,8 +205,8 @@ public class PlayerUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions() {
-        float cardSpacing = 0.34f;
-        float cardVerticalOffset = -0.003f;
+        float cardSpacing = 1.7f;
+        float cardVerticalOffset = -0.015f;
         float cardRotation = 1f;
 
         int cardCount = cardsInHand.Count;
@@ -221,7 +221,7 @@ public class PlayerUI : DuelistUI {
             cardsInHand[i].transform.position = handOrigin.position;
             float xOffset = (i * cardSpacing - handOffsetX);
             float zOffset = (float)Math.Floor(Math.Abs(i - centerCardPoint)) * cardVerticalOffset * 3f;
-            Vector3 cardPosition = new Vector3(xOffset, i * 0.005f, zOffset);
+            Vector3 cardPosition = new Vector3(xOffset, i * 0.1f, zOffset);
             cardsInHand[i].transform.Translate(cardPosition, Space.World);
             cardsInHand[i].transform.eulerAngles = new Vector3(cardsInHand[i].transform.eulerAngles.x, 0f, cardsInHand[i].transform.eulerAngles.z);
             cardsInHand[i].transform.Rotate(new Vector3(0, i * cardRotation - handRotation, 0), Space.World);

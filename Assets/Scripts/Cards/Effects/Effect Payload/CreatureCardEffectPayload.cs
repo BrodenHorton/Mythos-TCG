@@ -13,7 +13,6 @@ public abstract class CreatureCardEffectPayload : INetworkSerializable {
         effectName = effect.EffectName;
         description = effect.GetFullDescription();
         creatureUuidStr = effect.Card.Uuid.ToString();
-        effectType = CreatureCardEffectType.Bloodthirsty;
     }
 
     public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;

@@ -8,7 +8,7 @@ public class ReachEffect : StaticCreatureCardEffect {
     public ReachEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public ReachEffect(ReachEffect effect) : this() { }

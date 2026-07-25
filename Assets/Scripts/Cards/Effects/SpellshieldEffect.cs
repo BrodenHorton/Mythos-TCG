@@ -8,7 +8,7 @@ public class SpellshieldEffect : StaticCreatureCardEffect {
     public SpellshieldEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public SpellshieldEffect(SpellshieldEffect effect) : this() { }

@@ -9,7 +9,7 @@ public class MenaceEffect : StaticCreatureCardEffect {
     public MenaceEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public MenaceEffect(MenaceEffect effect) : this() { }

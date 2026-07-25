@@ -8,7 +8,7 @@ public class EnduranceEffect : StaticCreatureCardEffect {
     public EnduranceEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public EnduranceEffect(EnduranceEffect effect) : this() { }
