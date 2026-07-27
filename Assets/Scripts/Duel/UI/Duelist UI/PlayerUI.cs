@@ -205,26 +205,25 @@ public class PlayerUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions() {
-        float cardSpacing = 1.7f;
-        float cardVerticalOffset = -0.015f;
-        float cardRotation = 1f;
+        float cardSpacing = 1.2f;
+        float cardVerticalOffset = -0.07f;
 
         int cardCount = cardsInHand.Count;
         float handOffsetX = (cardCount - 1) * cardSpacing / 2;
         float centerCardPoint = (cardCount - 1) / 2f;
-        float handRotation = (cardCount - 1) * cardRotation / 2;
+        float handRotation = (cardCount - 1) / 2;
         for (int i = 0; i < cardCount; i++) {
-            if(isDragging && i == GetDraggingCardIndex())
+            if (isDragging && i == GetDraggingCardIndex())
                 continue;
 
             cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
             float xOffset = (i * cardSpacing - handOffsetX);
-            float zOffset = (float)Math.Floor(Math.Abs(i - centerCardPoint)) * cardVerticalOffset * 3f;
-            Vector3 cardPosition = new Vector3(xOffset, i * 0.1f, zOffset);
+            float zOffset = (float)Math.Floor(Math.Abs(i - centerCardPoint)) * cardVerticalOffset;
+            Vector3 cardPosition = new Vector3(xOffset, i * 0.05f, zOffset);
             cardsInHand[i].transform.Translate(cardPosition, Space.World);
             cardsInHand[i].transform.eulerAngles = new Vector3(cardsInHand[i].transform.eulerAngles.x, 0f, cardsInHand[i].transform.eulerAngles.z);
-            cardsInHand[i].transform.Rotate(new Vector3(0, i * cardRotation - handRotation, 0), Space.World);
+            cardsInHand[i].transform.Rotate(new Vector3(0, i - handRotation, 0), Space.World);
         }
     }
 

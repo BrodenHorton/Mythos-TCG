@@ -10,7 +10,7 @@ public class LifelinkEffect : StaticCreatureCardEffect {
     public LifelinkEffect() : base() {
         effectName = EFFECT_NAME;
         description = EFFECT_DESCRIPTION;
-        effectIconId = "";
+        effectIconId = "swords";
     }
 
     public LifelinkEffect(LifelinkEffect effect) : this() { }
