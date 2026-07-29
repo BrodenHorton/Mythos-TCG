@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -9.87, y: 0.01}
+  m_AnchoredPosition: {x: -7.64, y: 0.01}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &257474490586261517
@@ -129,8 +129,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -233,9 +233,9 @@ MonoBehaviour:
   spellCardPrefab: {fileID: 2315697197007250659, guid: 3df4d14d8b7a2704d9357cf88214cf53, type: 3}
   domainCardPrefab: {fileID: 4056201593920334295, guid: 7f646dd48b055b54d9d929938279b097, type: 3}
   nullCardPrefab: {fileID: 1753178960024317612, guid: 00a1edc5daa86574ea44d4743697a599, type: 3}
-  handHoverOffset: {x: 0, y: 2.4, z: 2.55}
-  cardHoverOffset: {x: 0, y: 0.15, z: 0.69}
-  cardHoverScale: 1.25
+  handHoverOffset: {x: 0, y: 2.4, z: 3}
+  cardHoverOffset: {x: 0, y: 0.15, z: 0.65}
+  cardHoverScale: 1.33
 --- !u!1 &6229987266681270232
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +262,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6229987266681270232}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: -2.33}
+  m_LocalPosition: {x: 0, y: 0, z: -1.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -270,7 +270,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10.39, y: 0.01}
+  m_AnchoredPosition: {x: 8.115, y: 0.01}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4769865342937960560
@@ -365,8 +365,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -437,7 +437,7 @@ Transform:
   m_GameObject: {fileID: 7192386006791262969}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: -4.95}
+  m_LocalPosition: {x: 0, y: 0.02, z: -5.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -457,7 +457,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4634222202274475183, guid: cc8c5c22b08abb2499bf53281d5412a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.817
+      value: -6.057
       objectReference: {fileID: 0}
     - target: {fileID: 4634222202274475183, guid: cc8c5c22b08abb2499bf53281d5412a9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -465,7 +465,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4634222202274475183, guid: cc8c5c22b08abb2499bf53281d5412a9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.98
+      value: -3.065
       objectReference: {fileID: 0}
     - target: {fileID: 4634222202274475183, guid: cc8c5c22b08abb2499bf53281d5412a9, type: 3}
       propertyPath: m_LocalRotation.w
