@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 
@@ -58,6 +59,14 @@ public class CreatureCardPayload : CardPayload {
             effectNetworkContainers = new CreatureCardEffectPayloadNetworkContainer[effectCount];
         for(int i = 0; i < effectCount; i++)
             serializer.SerializeNetworkSerializable(ref effectNetworkContainers[i]);
+    }
+
+    public List<CreatureCardEffectPayload> GetCreatureCardEffectPayloads() {
+        List<CreatureCardEffectPayload> creatureCardEffectPayloads = new List<CreatureCardEffectPayload>();
+        for (int i = 0; i < effectNetworkContainers.Length; i++)
+            creatureCardEffectPayloads.Add(effectNetworkContainers[i].effectPayload);
+        
+        return creatureCardEffectPayloads;
     }
 
     public CreatureCardBase CardBase { get { return cardBase; } }

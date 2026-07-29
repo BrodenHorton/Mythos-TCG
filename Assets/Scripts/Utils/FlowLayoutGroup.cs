@@ -10,7 +10,7 @@ public class FlowLayoutGroup : MonoBehaviour {
 
     private RectTransform rectTransform;
 
-    private void Start() {
+    private void Awake() {
         rectTransform = GetComponent<RectTransform>();
     }
 

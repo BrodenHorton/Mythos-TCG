@@ -2,12 +2,17 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(HorizontalLayoutGroup))]
+[RequireComponent(typeof(RectTransform), typeof(HorizontalLayoutGroup))]
 public class StaticKeywordUI : MonoBehaviour {
     [SerializeField] private Image icon;
     [SerializeField] private TextMeshProUGUI staticKeywordText;
 
+    private RectTransform rectTransform;
     private string effectDescription;
+
+    private void Awake() {
+        rectTransform = GetComponent<RectTransform>();
+    }
 
     public void Init(StaticCreatureCardEffectPayload effect) {
         IconDatabase iconDatabase = ServiceLocator.Get<IconDatabase>();
@@ -15,5 +20,6 @@ public class StaticKeywordUI : MonoBehaviour {
             icon.sprite = iconDatabase.GetIcon(effect.IconId);
         staticKeywordText.text = effect.EffectName.ToString();
         effectDescription = effect.Description.ToString();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 }
