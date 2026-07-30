@@ -99,7 +99,23 @@ public partial class CreatureCard : Card {
         return !isTapped;
     }
 
+    public void HealDamage(int amt) {
+        if (amt == 0)
+            return;
+        if (amt < 0)
+            throw new Exception("Attempted to heal creature by a negative amount of health. Amount: " + amt);
+
+        damage = damage - amt >= 0 ? damage - amt : 0;
+        EventBus.Instance.InvokeOnCreatureHealed(new PlayerCardEventArgs<CreatureCard>(playerId, this));
+        EventBus.Instance.InvokeOnCreatureHealedFinishedClientRpc(playerId, new CreatureCardPayload(this));
+    }
+
     public void InflictDamage(int amt) {
+        if (amt == 0)
+            return;
+        if (amt < 0)
+            throw new Exception("Attempted to inflict negative damage to creature. Damage: " + amt);
+
         damage += amt;
         EventBus.Instance.InvokeOnCreatureDamaged(new PlayerCardEventArgs<CreatureCard>(playerId, this));
         EventBus.Instance.InvokeOnCreatureDamagedFinishedClientRpc(playerId, new CreatureCardPayload(this));

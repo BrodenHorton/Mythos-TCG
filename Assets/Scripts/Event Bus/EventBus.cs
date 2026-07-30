@@ -26,6 +26,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed;
     // Player Status Changes
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
+    public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChangedFinished;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     // Declaring and Undeclaring creatures
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureAttack;
@@ -229,17 +230,17 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Player Status Changes
-    public void InvokeOnLifePointsChanged(ulong playerId, int lifePoints) {
+    public void InvokeOnLifePointsChanged(LifePointsChangedEventArgs args) {
         if (!IsServer)
-            return;
+            throw new Exception("The event InvokeOnLifePointsChanged can only be called by the server");
 
-        InvokeOnLifePointsChangedClientRpc(playerId, lifePoints);
+        OnLifePointsChanged?.Invoke(this, args);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void InvokeOnLifePointsChangedClientRpc(ulong playerId, int lifePoints) {
-        LifePointsChangedEventArgs args = new LifePointsChangedEventArgs(playerId, lifePoints);
-        OnLifePointsChanged?.Invoke(this, args);
+    public void InvokeOnLifePointsChangedFinishedClientRpc(ulong playerId, int previousLifePoints, int lifePoints) {
+        LifePointsChangedEventArgs args = new LifePointsChangedEventArgs(playerId, previousLifePoints, lifePoints);
+        OnLifePointsChangedFinished?.Invoke(this, args);
     }
 
     public void InvokeOnManaCountChanged(ulong playerId, int manaCount) {

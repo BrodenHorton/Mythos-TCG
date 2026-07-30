@@ -89,13 +89,14 @@ public class MatchPlayer {
         deck.Shuffle();
     }
 
-    // TODO: Update this method so an event is called when the life points are either damaged or healed
     public void ModifyLifePoints(int amt) {
-        if (amt == 0)
-            throw new Exception("Attempting to modify life points by 0");
+        if (amt <= 0)
+            throw new Exception("Attempting to modify life points by an invalid amount: Amount: " + amt);
 
+        int previousLifePoints = lifePoints;
         lifePoints += amt;
-        EventBus.Instance.InvokeOnLifePointsChanged(playerId, lifePoints);
+        EventBus.Instance.InvokeOnLifePointsChanged(new LifePointsChangedEventArgs(playerId, previousLifePoints, lifePoints));
+        EventBus.Instance.InvokeOnLifePointsChangedFinishedClientRpc(playerId, previousLifePoints, lifePoints);
     }
 
     public void ClearSummoningSickness() {
