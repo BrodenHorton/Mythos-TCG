@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7fcbde60eea8814f89a1a3441c977b6, type: 3}
   m_Name: Overwhelm
   m_EditorClassIdentifier: 
+  id: overwhelm
   effectName: Overwhelm
   effectIconId: swords

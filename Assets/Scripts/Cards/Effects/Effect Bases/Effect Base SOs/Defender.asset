@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cbd7d21158ae6c4081ca44568dbf095, type: 3}
   m_Name: Defender
   m_EditorClassIdentifier: 
+  id: defender
   effectName: Defender
   effectIconId: swords

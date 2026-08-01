@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa2d083e9802a14aa5d5c8e5c739051, type: 3}
   m_Name: Spellshield
   m_EditorClassIdentifier: 
+  id: spellshield
   effectName: Spellshield
   effectIconId: swords

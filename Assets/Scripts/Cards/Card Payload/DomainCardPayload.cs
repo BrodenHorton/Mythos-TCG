@@ -29,7 +29,7 @@ public class DomainCardPayload : CardPayload {
         FixedString128Bytes cardBaseId = serializer.IsWriter ? cardBase.Id : "";
         serializer.SerializeValue(ref cardBaseId);
         if (serializer.IsReader)
-            cardBase = CardDatabase.Instance.GetDomainCardById(cardBaseId.ToString());
+            cardBase = ServiceLocator.Get<CardRegistry>().GetDomainCardById(cardBaseId.ToString());
     }
 
     public DomainCardBase CardBase { get { return cardBase; } }

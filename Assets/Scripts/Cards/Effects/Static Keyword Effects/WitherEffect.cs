@@ -46,8 +46,7 @@ public class WitherEffect : StaticCreatureCardEffect {
         EventBus.Instance.InvokeOnWitherProked(witherArgs);
         if(!witherArgs.IsCanceled) {
             TcgLogger.Log("Wither Status added to Defender");
-            // TODO: Create EffectBase database and then create a new WitherStausEffect here
-            //args.Defender.AddEffect(new WitherStatusEffect(damage));
+            args.Defender.AddEffect(new WitherStatusEffect(effectBase.WitherStatusEffectBase, damage));
         }
     }
 

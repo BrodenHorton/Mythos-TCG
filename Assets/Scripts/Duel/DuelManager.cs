@@ -38,6 +38,10 @@ public class DuelManager : NetworkBehaviour {
         EventBus.Instance.OnSpellCardPlayedFromHand += PlaySpellCard;
     }
 
+    public override void OnNetworkDespawn() {
+        ServiceLocator.Unregister(this);
+    }
+
     private void InitializePlayers(object sender, StartGameEventArgs args) {
         if (!IsServer)
             return;
@@ -71,9 +75,10 @@ public class DuelManager : NetworkBehaviour {
     private List<Card> Temp_PopulateDeck(ulong playerId) {
         List<Card> result = new List<Card>();
         int tempDeckSize = 40;
-        int databaseCardCount = CardDatabase.Instance.Cards.Count;
+        CardRegistry cardRegistry = ServiceLocator.Get<CardRegistry>();
+        int databaseCardCount = cardRegistry.Cards.Count;
         for (int i = 0; i < tempDeckSize; i++) {
-            Card card = CardDatabase.Instance.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase(playerId);
+            Card card = cardRegistry.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase(playerId);
             result.Add(card);
         }
 

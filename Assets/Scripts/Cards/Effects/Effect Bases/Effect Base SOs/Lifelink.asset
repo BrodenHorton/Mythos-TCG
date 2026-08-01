@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61c8f292e5ccedd45bd4615eaad89ae9, type: 3}
   m_Name: Lifelink
   m_EditorClassIdentifier: 
+  id: lifelink
   effectName: Lifelink
   effectIconId: swords

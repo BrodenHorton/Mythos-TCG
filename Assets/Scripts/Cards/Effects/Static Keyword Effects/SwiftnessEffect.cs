@@ -2,7 +2,6 @@
 
 [Serializable]
 public class SwiftnessEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Swiftness";
 
     private SwiftnessEffectBase effectBase;
 

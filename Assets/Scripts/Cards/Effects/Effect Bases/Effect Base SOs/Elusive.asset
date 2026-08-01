@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 888eb708455855b498b6c0e1a17815e0, type: 3}
   m_Name: Elusive
   m_EditorClassIdentifier: 
+  id: elusive
   effectName: Elusive
   effectIconId: swords

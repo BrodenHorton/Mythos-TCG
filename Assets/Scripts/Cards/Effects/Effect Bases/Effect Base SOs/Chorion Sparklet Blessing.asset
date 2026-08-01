@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b592da69398fc2469a09ed21d7a1665, type: 3}
   m_Name: Chorion Sparklet Blessing
   m_EditorClassIdentifier: 
+  id: chorion_sparklet_blessing
   effectName: Chorion Sparklet Blessing
+  keyword: {fileID: 11400000, guid: 1989465e8c01d6e489e819c4cfb9e660, type: 2}
   atkBoost: 1
   healthBoost: 1
   isResetAfterTurn: 1

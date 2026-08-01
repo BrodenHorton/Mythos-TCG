@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24144360c7e205d43940c473e3de12b1, type: 3}
   m_Name: Wither
   m_EditorClassIdentifier: 
+  id: wither
   effectName: Wither
   effectIconId: swords
+  witherStatusEffectBase: {fileID: 0}

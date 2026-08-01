@@ -5,7 +5,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
     private BlessingStatBoostEffectBase effectBase;
     private int effectProkCount;
 
-    public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) {
+    public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) : base(effectBase) {
         this.effectBase = effectBase;
         effectProkCount = 0;
     }
@@ -51,7 +51,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
         args.Value += effectProkCount * effectBase.HealthBoost;
     }
 
-    public override DynamicCreatureCardEffectBase GetDynamicCreatureEffectBase() {
+    public override CreatureCardEffectBase GetCreatureEffectBase() {
         return effectBase;
     }
 

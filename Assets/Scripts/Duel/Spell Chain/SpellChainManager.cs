@@ -33,6 +33,10 @@ public class SpellChainManager : NetworkBehaviour {
         EventBus.Instance.OnSpellChainCardPlayed += AddSpellToChain;
     }
 
+    public override void OnNetworkDespawn() {
+        ServiceLocator.Unregister(this);
+    }
+
     private void AddSpellToChain(object sender, PlayerCardEventArgs<SpellCard> args) {
         if (!IsServer)
             return;

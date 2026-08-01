@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e876b1e8154af344b96c9a5c9c7a0a55, type: 3}
   m_Name: Deathtouch
   m_EditorClassIdentifier: 
+  id: deathtouch
   effectName: Deathtouch
   effectIconId: swords

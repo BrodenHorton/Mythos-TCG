@@ -24,6 +24,10 @@ public class CombatManager : NetworkBehaviour {
         FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += PlayerSelectDeclareDefender;
     }
 
+    public override void OnNetworkDespawn() {
+        ServiceLocator.Unregister(this);
+    }
+
     private void DeclareAttacker(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         DeclareAttackerServerRpc(args.CombatFieldUI.TargetPlayerId, args.CardUI.CardUuid.ToString());
     }

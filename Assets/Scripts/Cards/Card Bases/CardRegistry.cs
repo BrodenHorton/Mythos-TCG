@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CardDatabase : MonoBehaviour {
-    public static CardDatabase Instance { get; private set; }
-
+public class CardRegistry : MonoBehaviour {
     [SerializeField] private CreatureCardBases creatureBases;
     [SerializeField] private SpellCardBases spellBases;
     [SerializeField] private DomainCardBases domainBases;
@@ -12,19 +10,16 @@ public class CardDatabase : MonoBehaviour {
     private List<CardBase> cards;
 
     private void Awake() {
-        if (Instance != null) {
-            Debug.LogWarning("CardDatabase already exists in scene. Destroying redundant object.");
-            Destroy(this);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
         cards = new List<CardBase>();
         cards.AddRange(creatureBases.Cards);
         cards.AddRange(spellBases.Cards);
         cards.AddRange(domainBases.Cards);
+
+        ServiceLocator.Register(this);
+    }
+
+    private void OnDestroy() {
+        ServiceLocator.Unregister(this);
     }
 
     public CardBase GetCardById(string id) {

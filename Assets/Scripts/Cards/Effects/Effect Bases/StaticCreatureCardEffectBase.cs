@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class StaticCreatureCardEffectBase : CreatureCardEffectBase {
     [SerializeField] private string effectIconId;

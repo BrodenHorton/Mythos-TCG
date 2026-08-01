@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff2c52a359a994d47b93fb568889b350, type: 3}
   m_Name: Endurance
   m_EditorClassIdentifier: 
+  id: endurance
   effectName: Endurance
   effectIconId: swords

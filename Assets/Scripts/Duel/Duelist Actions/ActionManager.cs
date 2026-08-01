@@ -31,6 +31,10 @@ public class ActionManager : NetworkBehaviour {
         };
     }
 
+    public override void OnNetworkDespawn() {
+        ServiceLocator.Unregister(this);
+    }
+
     private void InitializeActionManager(object sender, PlayersInitializedEventArgs args) {
         if (!IsServer)
             return;

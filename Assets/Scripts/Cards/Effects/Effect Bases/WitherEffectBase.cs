@@ -4,6 +4,8 @@
 public class WitherEffectBase : StaticCreatureCardEffectBase {
     private static readonly string EFFECT_DESCRIPTION = "Deals damage as -1/-1 debuffs.";
 
+    [SerializeField] private WitherStatusEffectBase witherStatusEffectBase;
+
     public override CreatureCardEffect CreateCreatureCardEffect() {
         return new WitherEffect(this);
     }
@@ -11,4 +13,6 @@ public class WitherEffectBase : StaticCreatureCardEffectBase {
     public override string GetFullDescription() {
         return EFFECT_DESCRIPTION;
     }
+
+    public WitherStatusEffectBase WitherStatusEffectBase { get { return witherStatusEffectBase; } }
 }

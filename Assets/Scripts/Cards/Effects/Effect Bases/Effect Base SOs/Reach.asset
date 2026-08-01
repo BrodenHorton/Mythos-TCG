@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa9f6f920317e6f40961eeaa5a9e9871, type: 3}
   m_Name: Reach
   m_EditorClassIdentifier: 
+  id: reach
   effectName: Reach
   effectIconId: swords

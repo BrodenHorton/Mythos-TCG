@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df4f94be25cfd8f46b3874016373edbe, type: 3}
   m_Name: Menace
   m_EditorClassIdentifier: 
+  id: menace
   effectName: Menace
   effectIconId: swords

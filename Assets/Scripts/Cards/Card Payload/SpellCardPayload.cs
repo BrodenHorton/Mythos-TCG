@@ -29,7 +29,7 @@ public class SpellCardPayload : CardPayload {
         FixedString128Bytes cardBaseId = serializer.IsWriter ? cardBase.Id : "";
         serializer.SerializeValue(ref cardBaseId);
         if (serializer.IsReader)
-            cardBase = CardDatabase.Instance.GetSpellCardById(cardBaseId.ToString());
+            cardBase = ServiceLocator.Get<CardRegistry>().GetSpellCardById(cardBaseId.ToString());
     }
 
     public SpellCardBase CardBase { get { return cardBase; } }

@@ -30,6 +30,10 @@ public class DuelStateManager : NetworkBehaviour {
         DuelManager.OnPlayersInitializationFinished += StartStateMachine;
     }
 
+    public override void OnNetworkDespawn() {
+        ServiceLocator.Unregister(this);
+    }
+
     private void Update() {
         if (!IsServer)
             return;

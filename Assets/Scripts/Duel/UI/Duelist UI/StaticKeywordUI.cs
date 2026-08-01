@@ -17,9 +17,9 @@ public class StaticKeywordUI : MonoBehaviour {
     }
 
     public void Init(StaticCreatureCardEffectPayload effect) {
-        IconDatabase iconDatabase = ServiceLocator.Get<IconDatabase>();
-        if(iconDatabase.ContainsId(effect.IconId))
-            icon.sprite = iconDatabase.GetIcon(effect.IconId);
+        IconRegistry iconDatabase = ServiceLocator.Get<IconRegistry>();
+        if(iconDatabase.Contains(effect.IconId))
+            icon.sprite = iconDatabase.Get(effect.IconId);
         staticKeywordText.text = effect.EffectName.ToString().ToUpper();
         staticKeywordText.color = STATIC_KEYWORD_COLOR;
         effectDescription = effect.Description.ToString();

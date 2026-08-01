@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class ServiceLocator {
     private static Dictionary<Type, object> services = new Dictionary<Type, object>();
@@ -10,6 +9,13 @@ public static class ServiceLocator {
             throw new Exception("Service of type " + typeof(T).ToString() + " is already register in Service Locator");
 
         services.Add(typeof(T), service);
+    }
+
+    public static void Unregister<T>(T service) {
+        if (!services.ContainsKey(typeof(T)))
+            throw new Exception("Unable to unregister service that is not currently registered. Service: " + typeof(T).ToString());
+
+        services.Remove(typeof(T));
     }
 
     public static T Get<T>() {

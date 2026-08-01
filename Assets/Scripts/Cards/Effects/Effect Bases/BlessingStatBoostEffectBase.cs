@@ -11,7 +11,7 @@ public class BlessingStatBoostEffectBase : BlessingEffectBase {
         return new BlessingStatBoostEffect(this);
     }
 
-    public override string GetDynamicDescription() {
+    public override string GetEffectDescription() {
         StringBuilder sb = new StringBuilder();
         sb.Append("Gain +" + atkBoost + " +" + healthBoost);
         if (isResetAfterTurn)

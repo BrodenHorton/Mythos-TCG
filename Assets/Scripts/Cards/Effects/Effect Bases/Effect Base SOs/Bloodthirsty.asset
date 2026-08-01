@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6150c76ba2d01545b2cd4d5d56e0fd5, type: 3}
   m_Name: Bloodthirsty
   m_EditorClassIdentifier: 
+  id: bloodthirsty
   effectName: Bloodthirsty
   effectIconId: swords

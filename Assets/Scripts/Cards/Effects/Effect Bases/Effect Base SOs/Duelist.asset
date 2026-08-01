@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d3d7e21b51a3247b8e656218e7396e, type: 3}
   m_Name: Duelist
   m_EditorClassIdentifier: 
+  id: duelist
   effectName: Duelist
   effectIconId: swords

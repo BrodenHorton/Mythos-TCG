@@ -46,7 +46,7 @@ public class CreatureCardPayload : CardPayload {
         FixedString128Bytes cardBaseId = serializer.IsWriter ? cardBase.Id : "";
         serializer.SerializeValue(ref cardBaseId);
         if (serializer.IsReader)
-            cardBase = CardDatabase.Instance.GetCreatureCardById(cardBaseId.ToString());
+            cardBase = ServiceLocator.Get<CardRegistry>().GetCreatureCardById(cardBaseId.ToString());
         serializer.SerializeValue(ref manaCost);
         serializer.SerializeValue(ref atk);
         serializer.SerializeValue(ref health);

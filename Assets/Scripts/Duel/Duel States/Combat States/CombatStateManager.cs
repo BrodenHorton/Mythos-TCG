@@ -27,6 +27,10 @@ public class CombatStateManager : NetworkBehaviour {
         combatManager = ServiceLocator.Get<CombatManager>();
     }
 
+    public override void OnNetworkDespawn() {
+        ServiceLocator.Unregister(this);
+    }
+
     private void Update() {
         if (!IsServer)
             return;
