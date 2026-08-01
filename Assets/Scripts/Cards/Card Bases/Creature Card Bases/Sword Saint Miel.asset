@@ -21,10 +21,4 @@ MonoBehaviour:
   health: 6
   creatureClasses: 0200000022000000
   baseEffects:
-  - rid: 4397248320320045126
-  references:
-    version: 2
-    RefIds:
-    - rid: 4397248320320045126
-      type: {class: OverwhelmEffect, ns: , asm: Assembly-CSharp}
-      data: 
+  - {fileID: 11400000, guid: f2f93d12f0c48eb4f816a07009512ff3, type: 2}

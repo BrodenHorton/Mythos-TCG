@@ -6,7 +6,7 @@ public class CreatureCardBase : CardBase {
     [SerializeField] private int atk;
     [SerializeField] private int health;
     [SerializeField] private List<CreatureClass> creatureClasses;
-    [SerializeReference, SubclassSelector] private List<CreatureCardEffectBase> baseEffects;
+    [SerializeField] private List<CreatureCardEffectBase> baseEffects;
 
     public override Card GenerateCardFromBase(ulong playerId) {
         return new CreatureCard(playerId, this);

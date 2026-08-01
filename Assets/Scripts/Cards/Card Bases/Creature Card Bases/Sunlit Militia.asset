@@ -21,10 +21,4 @@ MonoBehaviour:
   health: 2
   creatureClasses: 12000000
   baseEffects:
-  - rid: 4397248898293039198
-  references:
-    version: 2
-    RefIds:
-    - rid: 4397248898293039198
-      type: {class: EnduranceEffect, ns: , asm: Assembly-CSharp}
-      data: 
+  - {fileID: 11400000, guid: 9e7bf477818f02e4cb49dfa898dde562, type: 2}

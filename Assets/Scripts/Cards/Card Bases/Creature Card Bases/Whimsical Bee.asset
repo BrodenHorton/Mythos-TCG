@@ -21,10 +21,4 @@ MonoBehaviour:
   health: 1
   creatureClasses: 05000000
   baseEffects:
-  - rid: 4397248823860396102
-  references:
-    version: 2
-    RefIds:
-    - rid: 4397248823860396102
-      type: {class: ElusiveEffect, ns: , asm: Assembly-CSharp}
-      data: 
+  - {fileID: 11400000, guid: 8e0667e1e1748954fa151dc79eafe4e7, type: 2}

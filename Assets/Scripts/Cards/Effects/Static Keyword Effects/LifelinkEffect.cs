@@ -2,9 +2,6 @@
 
 [Serializable]
 public class LifelinkEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Lifelink";
-    private static readonly string EFFECT_DESCRIPTION = "Increase life points equal to the damage dealt to the defender.";
-
     private LifelinkEffectBase effectBase;
     private DuelManager duelManager;
 
@@ -30,10 +27,6 @@ public class LifelinkEffect : StaticCreatureCardEffect {
 
         TcgLogger.Log("Lifelink Effect triggered");
         duelManager.GetPlayerById(args.InitiatorId).ModifyLifePoints(args.Damage);
-    }
-
-    public override string GetFullDescription() {
-        return effectBase.Description;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

@@ -2,16 +2,11 @@
 
 [Serializable]
 public class ElusiveEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Elusive";
-    private static readonly string EFFECT_DESCRIPTION = "Can only be blocked by creatures with Elusive or Reach.";
+    private ElusiveEffectBase effectBase;
 
-    public ElusiveEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public ElusiveEffect(ElusiveEffectBase effectBase) {
+        this.effectBase = effectBase;
     }
-
-    public ElusiveEffect(ElusiveEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -48,12 +43,8 @@ public class ElusiveEffect : StaticCreatureCardEffect {
         args.CanDefend = true;
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new ElusiveEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

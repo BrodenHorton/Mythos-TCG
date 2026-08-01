@@ -2,16 +2,11 @@
 
 [Serializable]
 public class WitherEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Wither";
-    private static readonly string EFFECT_DESCRIPTION = "Deals damage as -1/-1 debuffs.";
+    private WitherEffectBase effectBase;
 
-    public WitherEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public WitherEffect(WitherEffectBase effectBase) {
+        this.effectBase = effectBase;
     }
-
-    public WitherEffect(WitherEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -51,16 +46,13 @@ public class WitherEffect : StaticCreatureCardEffect {
         EventBus.Instance.InvokeOnWitherProked(witherArgs);
         if(!witherArgs.IsCanceled) {
             TcgLogger.Log("Wither Status added to Defender");
-            args.Defender.AddEffect(new WitherStatusEffect(damage));
+            // TODO: Create EffectBase database and then create a new WitherStausEffect here
+            //args.Defender.AddEffect(new WitherStatusEffect(damage));
         }
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new WitherEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

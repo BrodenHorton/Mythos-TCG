@@ -5,7 +5,7 @@ public abstract class StaticCreatureCardEffectPayload : CreatureCardEffectPayloa
     public StaticCreatureCardEffectPayload() { }
 
     public StaticCreatureCardEffectPayload(StaticCreatureCardEffect effect) : base(effect) {
-        iconId = effect.EffectIconId;
+        iconId = effect.GetStaticCreatureEffectBase().EffectIconId;
     }
 
     public string IconId { get { return iconId; } }

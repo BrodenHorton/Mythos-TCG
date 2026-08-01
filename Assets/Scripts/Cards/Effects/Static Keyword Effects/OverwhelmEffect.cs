@@ -2,16 +2,11 @@ using System;
 
 [Serializable]
 public class OverwhelmEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Overwhelm";
-    private static readonly string EFFECT_DESCRIPTION = "Overflow damage that isn’t blocked by a defender's Health is dealt as life point damage.";
+    private OverwhelmEffectBase effectBase;
 
-    public OverwhelmEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public OverwhelmEffect(OverwhelmEffectBase effectBase) {
+        this.effectBase = effectBase;
     }
-
-    public OverwhelmEffect(OverwhelmEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -39,12 +34,8 @@ public class OverwhelmEffect : StaticCreatureCardEffect {
             args.DirectDamage = overwhelmDamage;
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new OverwhelmEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

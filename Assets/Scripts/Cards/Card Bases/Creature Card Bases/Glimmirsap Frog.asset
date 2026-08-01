@@ -21,14 +21,5 @@ MonoBehaviour:
   health: 2
   creatureClasses: 0d000000
   baseEffects:
-  - rid: 1849635050786652290
-  - rid: 1849635050786652291
-  references:
-    version: 2
-    RefIds:
-    - rid: 1849635050786652290
-      type: {class: ReachEffect, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 1849635050786652291
-      type: {class: LifelinkEffect, ns: , asm: Assembly-CSharp}
-      data: 
+  - {fileID: 11400000, guid: dbc071d0c3d326b4e8618d0c9829a77a, type: 2}
+  - {fileID: 11400000, guid: 253cc3800f5c8d544a0a7d474a5df35c, type: 2}

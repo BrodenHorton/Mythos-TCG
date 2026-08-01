@@ -2,17 +2,13 @@
 
 [Serializable]
 public class MenaceEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Menace";
-    private static readonly string EFFECT_DESCRIPTION = "This Creature cannot be blocked by creatures with 3 or less Health.";
     private static readonly int BLOCKABLE_HEALTH_MIN = 4;
 
-    public MenaceEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
-    }
+    private MenaceEffectBase effectBase;
 
-    public MenaceEffect(MenaceEffect effect) : this() { }
+    public MenaceEffect(MenaceEffectBase effectBase) {
+        this.effectBase = effectBase;
+    }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -34,12 +30,8 @@ public class MenaceEffect : StaticCreatureCardEffect {
             args.CanDefend = false;
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new MenaceEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

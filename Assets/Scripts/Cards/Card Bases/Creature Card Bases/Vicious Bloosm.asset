@@ -21,10 +21,4 @@ MonoBehaviour:
   health: 1
   creatureClasses: 19000000
   baseEffects:
-  - rid: 4397248932105420883
-  references:
-    version: 2
-    RefIds:
-    - rid: 4397248932105420883
-      type: {class: WitherEffect, ns: , asm: Assembly-CSharp}
-      data: 
+  - {fileID: 11400000, guid: 3b65441e43b2b6d4994c6bc57f8bbc31, type: 2}

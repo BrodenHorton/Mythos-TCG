@@ -2,26 +2,15 @@
 
 [Serializable]
 public class DuelistEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Duelist";
-    private static readonly string EFFECT_DESCRIPTION = "When this creature attacks, choose the enemy creature that defends.";
-
+    private DuelistEffectBase effectBase;
     private DuelManager duelManager;
     private CombatStateManager combatStateManager;
     private CombatManager combatManager;
     private CreatureCard duelistDefender;
 
-    public DuelistEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public DuelistEffect(DuelistEffectBase effectBase) {
+        this.effectBase = effectBase;
         duelistDefender = null;
-    }
-
-    public DuelistEffect(DuelistEffect effect) : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
-        duelistDefender = effect.duelistDefender;
     }
 
     public override void Init(CreatureCard card) {
@@ -112,12 +101,8 @@ public class DuelistEffect : StaticCreatureCardEffect {
         duelistDefender = null;
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new DuelistEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

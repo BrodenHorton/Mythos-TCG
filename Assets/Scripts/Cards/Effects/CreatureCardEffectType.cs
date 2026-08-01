@@ -13,5 +13,6 @@
     Lifelink,
     Deathtouch,
     Spellshield,
-    Duelist
+    Duelist,
+    BlessingStatBoost
 }

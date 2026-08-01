@@ -10,8 +10,8 @@ public abstract class CreatureCardEffectPayload : INetworkSerializable {
     public CreatureCardEffectPayload() { }
 
     public CreatureCardEffectPayload(CreatureCardEffect effect) {
-        effectName = effect.EffectName;
-        description = effect.GetFullDescription();
+        effectName = effect.GetCreatureEffectBase().EffectName;
+        description = effect.GetCreatureEffectBase().GetFullDescription();
         creatureUuidStr = effect.Card.Uuid.ToString();
     }
 

@@ -2,16 +2,11 @@
 
 [Serializable]
 public class EnduranceEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Endurance";
-    private static readonly string EFFECT_DESCRIPTION = "Attacking does not cause this creature to tap.";
+    private EnduranceEffectBase effectBase;
 
-    public EnduranceEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public EnduranceEffect(EnduranceEffectBase effectBase) {
+        this.effectBase = effectBase;
     }
-
-    public EnduranceEffect(EnduranceEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -30,12 +25,8 @@ public class EnduranceEffect : StaticCreatureCardEffect {
         args.IsCanceled = true;
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new EnduranceEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

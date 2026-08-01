@@ -20,11 +20,4 @@ MonoBehaviour:
   atk: 2
   health: 3
   creatureClasses: 02000000
-  baseEffects:
-  - rid: 4397248909686866003
-  references:
-    version: 2
-    RefIds:
-    - rid: 4397248909686866003
-      type: {class: MenaceEffect, ns: , asm: Assembly-CSharp}
-      data: 
+  baseEffects: []

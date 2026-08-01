@@ -1,31 +1,13 @@
 ﻿using System;
-using System.Text;
 
 [Serializable]
 public class BlessingStatBoostEffect : BlessingEffect {
-    private int atkBoost;
-    private int healthBoost;
-    private bool isResetAfterTurn;
+    private BlessingStatBoostEffectBase effectBase;
     private int effectProkCount;
 
-    public BlessingStatBoostEffect() : base() {
-        StringBuilder sb = new StringBuilder();
-        sb.Append("Gain +" + atkBoost + " +" + healthBoost);
-        if (isResetAfterTurn)
-            sb.Append(" until the end of the turn");
-        description = sb.ToString();
-        effectName = dynamicEffectName;
+    public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) {
+        this.effectBase = effectBase;
         effectProkCount = 0;
-    }
-
-    public BlessingStatBoostEffect(BlessingStatBoostEffect effect) : base() {
-        StringBuilder sb = new StringBuilder();
-        sb.Append("Gain +" + atkBoost + " +" + healthBoost);
-        if (isResetAfterTurn)
-            sb.Append(" until the end of the turn");
-        description = sb.ToString();
-        effectName = dynamicEffectName;
-        effectProkCount = effect.effectProkCount;
     }
 
     public override void Init(CreatureCard card) {
@@ -54,26 +36,28 @@ public class BlessingStatBoostEffect : BlessingEffect {
     private void AddAttack(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
         if (args.Card.Uuid != card.Uuid)
             return;
-        if (effectProkCount <= 0 || atkBoost <= 0)
+        if (effectProkCount <= 0 || effectBase.AtkBoost <= 0)
             return;
 
-        args.Value += effectProkCount * atkBoost;
+        args.Value += effectProkCount * effectBase.AtkBoost;
     }
 
     private void AddHealth(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
         if (args.Card.Uuid != card.Uuid)
             return;
-        if (effectProkCount <= 0 || healthBoost <= 0)
+        if (effectProkCount <= 0 || effectBase.HealthBoost <= 0)
             return;
 
-        args.Value += effectProkCount * healthBoost;
+        args.Value += effectProkCount * effectBase.HealthBoost;
     }
 
-    public override CreatureCardEffect DeepCopy() {
-        return new BlessingStatBoostEffect(this);
+    public override DynamicCreatureCardEffectBase GetDynamicCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {
-        throw new System.NotImplementedException();
+        return new BlessingStatBoostEffectPayload(this);
     }
+
+    public int EffectProkCount { get { return effectProkCount; } }
 }

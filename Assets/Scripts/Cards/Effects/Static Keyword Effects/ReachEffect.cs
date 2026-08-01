@@ -2,16 +2,11 @@
 
 [Serializable]
 public class ReachEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Reach";
-    private static readonly string EFFECT_DESCRIPTION = "Can block creatures with Elusive.";
+    private ReachEffectBase effectBase;
 
-    public ReachEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public ReachEffect(ReachEffectBase effectBase) {
+        this.effectBase = effectBase;
     }
-
-    public ReachEffect(ReachEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -30,12 +25,8 @@ public class ReachEffect : StaticCreatureCardEffect {
         args.CanDefend = true;
     }
 
-    public override string GetFullDescription() {
-        return description;
-    }
-
-    public override CreatureCardEffect DeepCopy() {
-        return new ReachEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {
