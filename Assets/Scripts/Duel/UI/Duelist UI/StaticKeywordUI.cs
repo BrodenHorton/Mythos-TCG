@@ -20,7 +20,7 @@ public class StaticKeywordUI : MonoBehaviour {
         IconDatabase iconDatabase = ServiceLocator.Get<IconDatabase>();
         if(iconDatabase.ContainsId(effect.IconId))
             icon.sprite = iconDatabase.GetIcon(effect.IconId);
-        staticKeywordText.text = effect.EffectName.ToString();
+        staticKeywordText.text = effect.EffectName.ToString().ToUpper();
         staticKeywordText.color = STATIC_KEYWORD_COLOR;
         effectDescription = effect.Description.ToString();
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);

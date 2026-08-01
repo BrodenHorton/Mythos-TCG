@@ -11,6 +11,7 @@ public class CreatureHandCardUI : HandCardUI {
     [SerializeField] private RectTransform uniqueEffectContainer;
     [Header("Prefabs")]
     [SerializeField] private StaticKeywordUI staticKeywordUIPrefab;
+    [SerializeField] private TextMeshProUGUI uniqueEffectTextPrefab;
 
     public void Init(CreatureCardPayload card) {
         cardUuid = Guid.Parse(card.Uuid.ToString());
@@ -24,7 +25,7 @@ public class CreatureHandCardUI : HandCardUI {
             }
             else {
                 hasUniqueEffect = true;
-                // TODO: Add unique effect
+                AddUniqueEffect(effect);
             }
         }
         if (!hasStaticKeyword)
@@ -64,6 +65,13 @@ public class CreatureHandCardUI : HandCardUI {
         StaticKeywordUI staticKeywordUI = Instantiate(staticKeywordUIPrefab);
         staticKeywordUI.Init(effect);
         staticKeywordUI.transform.SetParent(staticKeywordContainer.transform, false);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(infoContainer);
+    }
+
+    private void AddUniqueEffect(CreatureCardEffectPayload effect) {
+        TextMeshProUGUI effectText = Instantiate(uniqueEffectTextPrefab, uniqueEffectContainer);
+        effectText.text = effect.Description.ToString();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(effectText.rectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(infoContainer);
     }
 }
