@@ -2,18 +2,15 @@
 
 [Serializable]
 public class LifelinkEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "Life Link";
+    private static readonly string EFFECT_NAME = "Lifelink";
     private static readonly string EFFECT_DESCRIPTION = "Increase life points equal to the damage dealt to the defender.";
 
+    private LifelinkEffectBase effectBase;
     private DuelManager duelManager;
 
-    public LifelinkEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public LifelinkEffect(LifelinkEffectBase effectBase) : base() {
+        this.effectBase = effectBase;
     }
-
-    public LifelinkEffect(LifelinkEffect effect) : this() { }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -36,11 +33,11 @@ public class LifelinkEffect : StaticCreatureCardEffect {
     }
 
     public override string GetFullDescription() {
-        return description;
+        return effectBase.Description;
     }
 
-    public override CreatureCardEffect DeepCopy() {
-        return new LifelinkEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

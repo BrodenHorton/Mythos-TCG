@@ -17,7 +17,7 @@ public partial class CreatureCard : Card {
         this.cardBase = cardBase;
         effects = new List<CreatureCardEffect>();
         for(int i = 0; i < cardBase.BaseEffects.Count; i++) {
-            CreatureCardEffect effect = cardBase.BaseEffects[i].DeepCopy();
+            CreatureCardEffect effect = cardBase.BaseEffects[i].CreateCreatureCardEffect();
             effect.Init(this);
             effects.Add(effect);
         }

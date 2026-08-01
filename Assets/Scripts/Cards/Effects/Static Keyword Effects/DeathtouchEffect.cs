@@ -5,13 +5,11 @@ public class DeathtouchEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Deathtouch";
     private static readonly string EFFECT_DESCRIPTION = "When this creature deals damage to another creature, that creature dies.";
 
-    public DeathtouchEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
-    }
+    private DeathtouchEffectBase effectBase;
 
-    public DeathtouchEffect(DeathtouchEffect effect) : this() { }
+    public DeathtouchEffect(DeathtouchEffectBase effectBase) : base() {
+        this.effectBase = effectBase;
+    }
 
     public override void Init(CreatureCard card) {
         this.card = card;
@@ -33,11 +31,11 @@ public class DeathtouchEffect : StaticCreatureCardEffect {
     }
 
     public override string GetFullDescription() {
-        return description;
+        return effectBase.Description;
     }
 
-    public override CreatureCardEffect DeepCopy() {
-        return new DeathtouchEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {

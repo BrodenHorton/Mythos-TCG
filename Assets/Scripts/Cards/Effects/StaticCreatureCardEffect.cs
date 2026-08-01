@@ -1,7 +1,8 @@
 ﻿public abstract class StaticCreatureCardEffect : CreatureCardEffect {
-    protected string effectIconId;
 
-    protected StaticCreatureCardEffect() { }
+    public abstract StaticCreatureCardEffectBase GetStaticCreatureEffectBase();
 
-    public string EffectIconId { get { return effectIconId; } }
+    public override CreatureCardEffectBase GetCreatureEffectBase() {
+        return GetStaticCreatureEffectBase();
+    }
 }

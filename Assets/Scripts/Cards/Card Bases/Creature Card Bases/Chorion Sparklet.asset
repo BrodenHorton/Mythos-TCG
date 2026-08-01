@@ -29,6 +29,6 @@ MonoBehaviour:
       type: {class: BlessingStatBoostEffect, ns: , asm: Assembly-CSharp}
       data:
         dynamicEffectName: 
-        isResetAfterTurn: 0
-        atkBoost: 0
-        healthBoost: 0
+        atkBoost: 1
+        healthBoost: 1
+        isResetAfterTurn: 1

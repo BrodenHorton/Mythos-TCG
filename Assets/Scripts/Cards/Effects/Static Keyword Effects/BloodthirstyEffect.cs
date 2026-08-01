@@ -5,20 +5,12 @@ public class BloodthirstyEffect : StaticCreatureCardEffect {
     private static readonly string EFFECT_NAME = "Bloodthirsty";
     private static readonly string EFFECT_DESCRIPTION = "When this creature deals damage, it gains +1/+1.";
 
+    private BloodthirstyEffectBase effectBase;
     private int effectProkCount;
 
-    public BloodthirstyEffect() : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
+    public BloodthirstyEffect(BloodthirstyEffectBase effectBase) : base() {
+        this.effectBase = effectBase;
         effectProkCount = 0;
-    }
-
-    public BloodthirstyEffect(BloodthirstyEffect effect) : base() {
-        effectName = EFFECT_NAME;
-        description = EFFECT_DESCRIPTION;
-        effectIconId = "swords";
-        effectProkCount = effect.effectProkCount;
     }
 
     public override void Init(CreatureCard card) {
@@ -57,16 +49,18 @@ public class BloodthirstyEffect : StaticCreatureCardEffect {
     }
 
     public override string GetFullDescription() {
-        return description;
+        return effectBase.Description;
     }
 
-    public override CreatureCardEffect DeepCopy() {
-        return new BloodthirstyEffect(this);
+    public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
+        return effectBase;
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {
         return new BloodthirstyEffectPayload(this);
     }
+
+    public BloodthirstyEffectBase EffectBase { get { return effectBase; } }
 
     public int EffectProkCount { get { return effectProkCount; } }
 }
