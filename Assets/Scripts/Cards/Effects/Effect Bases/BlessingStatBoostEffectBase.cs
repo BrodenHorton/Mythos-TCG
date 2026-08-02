@@ -7,7 +7,7 @@ public class BlessingStatBoostEffectBase : BlessingEffectBase {
     [SerializeField] private int healthBoost;
     [SerializeField] private bool isResetAfterTurn;
 
-    public override CreatureCardEffect CreateCreatureCardEffect() {
+    public override BlessingEffect CreateBlessingCreatureCardEffect() {
         return new BlessingStatBoostEffect(this);
     }
 

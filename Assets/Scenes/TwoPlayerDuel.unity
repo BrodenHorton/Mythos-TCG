@@ -1139,7 +1139,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 8.2, z: -0}
+  m_LocalPosition: {x: 0, y: 8.4, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1197,37 +1197,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 147645609}
     m_Modifications:
-    - target: {fileID: 3074724133692166430, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.2
-      objectReference: {fileID: 0}
     - target: {fileID: 3767379253246929733, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
       propertyPath: m_Name
       value: Player Playing Field UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 3921344399750140061, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 6.083
-      objectReference: {fileID: 0}
-    - target: {fileID: 3921344399750140061, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.981
-      objectReference: {fileID: 0}
-    - target: {fileID: 5633861371049595470, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.034208
-      objectReference: {fileID: 0}
-    - target: {fileID: 5633861371049595470, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.407835
-      objectReference: {fileID: 0}
-    - target: {fileID: 5681576184872425004, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_Size.x
-      value: 10.342907
-      objectReference: {fileID: 0}
-    - target: {fileID: 5681576184872425004, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
-      propertyPath: m_Size.z
-      value: 4.0770307
       objectReference: {fileID: 0}
     - target: {fileID: 8641841102797122468, guid: 5cc63048c9d289845a52bb5f34a187c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1980,21 +1952,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 147645609}
     m_Modifications:
-    - target: {fileID: 3074724133692166430, guid: a3e764a6402af2547be6b938def11486, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.05
-      objectReference: {fileID: 0}
     - target: {fileID: 3767379253246929733, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_Name
       value: Opponent Playing Field UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 3921344399750140061, guid: a3e764a6402af2547be6b938def11486, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -6.17
-      objectReference: {fileID: 0}
-    - target: {fileID: 3921344399750140061, guid: a3e764a6402af2547be6b938def11486, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.96
       objectReference: {fileID: 0}
     - target: {fileID: 8641841102797122468, guid: a3e764a6402af2547be6b938def11486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5882,45 +5842,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 147645609}
     m_Modifications:
-    - target: {fileID: 613851896445854473, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5.981
-      objectReference: {fileID: 0}
-    - target: {fileID: 613851896445854473, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.088
-      objectReference: {fileID: 0}
-    - target: {fileID: 4076627492552950824, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_fontSize
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4076627492552950824, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 4619643054382922744, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
       propertyPath: m_Name
       value: Opponent UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 4910065538378640748, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 7.643
-      objectReference: {fileID: 0}
-    - target: {fileID: 5218075967919715047, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.56
-      objectReference: {fileID: 0}
-    - target: {fileID: 5218075967919715047, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -8.134
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642753490845534241, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_fontSize
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642753490845534241, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7844369168081223106, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5961,10 +5885,6 @@ PrefabInstance:
     - target: {fileID: 7844369168081223106, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8496425766226962873, guid: b4d99fd09f051b447b83d5e71dfac621, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -5.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

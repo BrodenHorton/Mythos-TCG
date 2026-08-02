@@ -233,7 +233,7 @@ MonoBehaviour:
   spellCardPrefab: {fileID: 2315697197007250659, guid: 3df4d14d8b7a2704d9357cf88214cf53, type: 3}
   domainCardPrefab: {fileID: 4056201593920334295, guid: 7f646dd48b055b54d9d929938279b097, type: 3}
   nullCardPrefab: {fileID: 1753178960024317612, guid: 00a1edc5daa86574ea44d4743697a599, type: 3}
-  handHoverOffset: {x: 0, y: 2.4, z: 3}
+  handHoverOffset: {x: 0, y: 2.4, z: 2.8}
   cardHoverOffset: {x: 0, y: 0.15, z: 0.65}
   cardHoverScale: 1.33
 --- !u!1 &6229987266681270232
@@ -437,7 +437,7 @@ Transform:
   m_GameObject: {fileID: 7192386006791262969}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: -5.2}
+  m_LocalPosition: {x: 0, y: 0.02, z: -5.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

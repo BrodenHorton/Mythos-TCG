@@ -205,25 +205,31 @@ public class PlayerUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions() {
-        float cardSpacing = 1.2f;
-        float cardVerticalOffset = -0.07f;
-
+        float radius = 40f;
+        float arcDistanceInterval = 1.15f;
+        // TODO: Figure out how to detect which axis and direction the radius should be added to so you get the correct circle center
+        Vector3 circleCenter = new Vector3(handOrigin.position.x,
+                                           handOrigin.position.y,
+                                           handOrigin.position.z - radius);
         int cardCount = cardsInHand.Count;
-        float handOffsetX = (cardCount - 1) * cardSpacing / 2;
-        float centerCardPoint = (cardCount - 1) / 2f;
-        float handRotation = (cardCount - 1) / 2;
+        float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
         for (int i = 0; i < cardCount; i++) {
             if (isDragging && i == GetDraggingCardIndex())
                 continue;
 
             cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
-            float xOffset = (i * cardSpacing - handOffsetX);
-            float zOffset = (float)Math.Floor(Math.Abs(i - centerCardPoint)) * cardVerticalOffset;
-            Vector3 cardPosition = new Vector3(xOffset, i * 0.05f, zOffset);
-            cardsInHand[i].transform.Translate(cardPosition, Space.World);
-            cardsInHand[i].transform.eulerAngles = new Vector3(cardsInHand[i].transform.eulerAngles.x, 0f, cardsInHand[i].transform.eulerAngles.z);
-            cardsInHand[i].transform.Rotate(new Vector3(0, i - handRotation, 0), Space.World);
+
+            float arcDistance = initialArcDistance - (arcDistanceInterval * i);
+            float angle = arcDistance / radius + (float)(Math.PI / 2);
+            Vector3 cardPosition = new Vector3(circleCenter.x + radius * (float)Math.Cos(angle),
+                                               0.05f + (i * 0.012f),
+                                               circleCenter.z + radius * (float)Math.Sin(angle));
+            Vector3 normal = (cardPosition - circleCenter).normalized;
+            cardsInHand[i].transform.position = cardPosition;
+            Quaternion targetRotation = Quaternion.LookRotation(normal);
+            cardsInHand[i].transform.rotation = targetRotation;
+            cardsInHand[i].transform.Rotate(new Vector3(90f, 0f, 0f));
         }
     }
 

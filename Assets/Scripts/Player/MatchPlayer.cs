@@ -90,9 +90,6 @@ public class MatchPlayer {
     }
 
     public void ModifyLifePoints(int amt) {
-        if (amt <= 0)
-            throw new Exception("Attempting to modify life points by an invalid amount: Amount: " + amt);
-
         int previousLifePoints = lifePoints;
         lifePoints += amt;
         EventBus.Instance.InvokeOnLifePointsChanged(new LifePointsChangedEventArgs(playerId, previousLifePoints, lifePoints));
