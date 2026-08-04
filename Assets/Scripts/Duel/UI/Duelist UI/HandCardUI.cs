@@ -6,6 +6,9 @@ public abstract class HandCardUI : MonoBehaviour {
     [SerializeField] protected GameObject selectableBorder;
     [SerializeField] protected TextMeshProUGUI cardName;
     [SerializeField] protected TextMeshProUGUI manaCost;
+    [SerializeField] protected RectTransform infoContainer;
+    [SerializeField] protected RectTransform uniqueEffectContainer;
+    [SerializeField] protected TextMeshProUGUI uniqueEffectTextPrefab;
 
     protected Guid cardUuid;
     protected bool isSelectable;
