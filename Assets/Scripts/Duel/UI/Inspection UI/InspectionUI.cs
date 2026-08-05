@@ -42,3 +42,9 @@ public class InspectionUI : MonoBehaviour {
 
     public bool IsOpen { get { return isOpen; } }
 }
+
+
+public class InspectionUIController : MonoBehaviour {
+    [SerializeField] private InspectionUI inspectionUI;
+
+}

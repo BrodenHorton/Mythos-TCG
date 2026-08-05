@@ -24,7 +24,6 @@ public class FieldCardSelectionManager : NetworkBehaviour {
     private CreatureFieldCardUI draggingCard;
     private DuelManager duelManager;
     private ActionManager actionManager;
-    private CombatManager combatManager;
     private CombatStateManager combatStateManager;
 
     private void Awake() {
@@ -43,7 +42,6 @@ public class FieldCardSelectionManager : NetworkBehaviour {
 
         duelManager = ServiceLocator.Get<DuelManager>();
         actionManager = ServiceLocator.Get<ActionManager>();
-        combatManager = ServiceLocator.Get<CombatManager>();
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
 
         combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += (sender, args) => {
@@ -239,17 +237,17 @@ public class FieldCardSelectionManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    private void CreatureReleasedOverCreatureServerRpc(ulong heldCardPlayerId, ulong hoveredCardPlayerId, FixedString128Bytes heldCreatureUuidStr, FixedString128Bytes hoveredCreatureUuidStr, RpcParams rpcParams = default) {
-        TcgLogger.Log("Creature Released over Creature");
-        TcgLogger.Log("HeldCardPlayerId: " + heldCardPlayerId + " hoveredCardPlayerId: " + hoveredCardPlayerId);
+    private void CreatureReleasedOverCreatureServerRpc(ulong heldCardPlayerId,
+                                                       ulong hoveredCardPlayerId,
+                                                       FixedString128Bytes heldCreatureUuidStr,
+                                                       FixedString128Bytes hoveredCreatureUuidStr,
+                                                       RpcParams rpcParams = default) {
         MatchPlayer heldCardPlayer = duelManager.GetPlayerById(heldCardPlayerId);
         MatchPlayer hoveredCardPlayer = duelManager.GetPlayerById(hoveredCardPlayerId);
         Guid heldCreatureUuid = Guid.Parse(heldCreatureUuidStr.ToString());
         Guid hoveredCreatureUuid = Guid.Parse(hoveredCreatureUuidStr.ToString());
         CreatureCard heldCreature = heldCardPlayer.GetCreatureByUuid(heldCreatureUuid);
         CreatureCard hoveredCreature = hoveredCardPlayer.GetCreatureByUuid(hoveredCreatureUuid);
-        TcgLogger.Log("Is held Card null: " + (heldCreature == null));
-        TcgLogger.Log("Is hovered Card null: " + (hoveredCreature == null));
 
         CreatureReleasedOverCreatureEventArgs args = new CreatureReleasedOverCreatureEventArgs(rpcParams.Receive.SenderClientId,
                                                                                                heldCreature,
@@ -274,7 +272,7 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
             FieldCardCollisionPointer fieldCardCollisionPointer;
-            if (hit.collider.TryGetComponent<FieldCardCollisionPointer>(out fieldCardCollisionPointer)) {
+            if (hit.collider.TryGetComponent(out fieldCardCollisionPointer)) {
                 cardUI = fieldCardCollisionPointer.GetFieldCardUI();
                 return true;
             }
@@ -290,10 +288,67 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
             if (hit.collider.TryGetComponent(out CreatureFieldCardCollisionPointer collisionPointer)) {
-                if (ignoreCard != null && collisionPointer.CardUI.CardUuid == ignoreCard.CardUuid)
+                if (ignoreCard != null && collisionPointer.GetFieldCardUI().CardUuid == ignoreCard.CardUuid)
                     continue;
 
                 cardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void ResetCardDragging() {
+        isDragging = false;
+        draggingCard = null;
+    }
+}
+
+public class CardSelectionManager : NetworkBehaviour {
+    public static CardSelectionManager Instance { get; private set; }
+
+    [SerializeField] private float dragOffset;
+    private Camera cam;
+    private bool isDragging;
+    private CardUI draggingCard;
+
+    private void Awake() {
+        if (Instance != null) {
+            Debug.LogWarning("CardSelectionManager already exists in scene. Destroying redundant object.");
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start() {
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        /*playerInputActions.Player.Select.started += SelectCreatureFieldCard;
+        playerInputActions.Player.Select.canceled += ReleaseCreatureFieldCardDrag;
+        playerInputActions.Player.Inspect.started += InspectFieldCard;*/
+    }
+
+    public override void OnNetworkDespawn() {
+        base.OnNetworkDespawn();
+
+        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
+        /*playerInputActions.Player.Select.started -= SelectCreatureFieldCard;
+        playerInputActions.Player.Select.canceled -= ReleaseCreatureFieldCardDrag;
+        playerInputActions.Player.Inspect.started -= InspectFieldCard;*/
+    }
+
+    private bool CardUIRaycast(out CardUI cardUI) {
+        cardUI = null;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit hit in hits) {
+            CardCollisionPointer fieldCardCollisionPointer;
+            if (hit.collider.TryGetComponent(out fieldCardCollisionPointer)) {
+                cardUI = fieldCardCollisionPointer.GetCardUI();
                 return true;
             }
         }
