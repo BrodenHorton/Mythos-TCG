@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63470846217db4e4a91b96f744b36267, type: 3}
-  m_Name: Blessing
+  m_Name: Summon
   m_EditorClassIdentifier: 
-  id: blessing
-  keywordName: Blessing
-  description: Activates effect when player's life points increase.
+  id: summon
+  keywordName: Summon
+  description: Activates effect when creature is played to the field.

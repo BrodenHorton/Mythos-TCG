@@ -14,5 +14,6 @@
     Deathtouch,
     Spellshield,
     Duelist,
-    BlessingStatBoost
+    BlessingStatBoost,
+    SummonLifeGain
 }

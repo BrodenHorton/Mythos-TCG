@@ -5,6 +5,7 @@ using System.Text;
 public class BlessingStatBoostEffect : BlessingEffect {
     private BlessingStatBoostEffectBase effectBase;
     private int effectProkCount;
+    private DuelStateManager stateManager;
 
     public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) {
         this.effectBase = effectBase;
@@ -13,15 +14,18 @@ public class BlessingStatBoostEffect : BlessingEffect {
 
     public override void Init(CreatureCard card) {
         this.card = card;
+        stateManager = ServiceLocator.Get<DuelStateManager>();
         EventBus.Instance.OnLifePointsChanged += BlessingEffectHandler;
         EventBus.Instance.OnCalculateCreatureAttack += AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth += AddHealth;
+        stateManager.EndPhase.OnEndPhasEntered += ClearEffectProks;
     }
 
     public override void RemoveListeners() {
         EventBus.Instance.OnLifePointsChanged -= BlessingEffectHandler;
         EventBus.Instance.OnCalculateCreatureAttack -= AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth -= AddHealth;
+        stateManager.EndPhase.OnEndPhasEntered -= ClearEffectProks;
     }
 
     protected override void BlessingEffectHandler(object sender, LifePointsChangedEventArgs args) {
@@ -50,6 +54,15 @@ public class BlessingStatBoostEffect : BlessingEffect {
             return;
 
         args.Value += effectProkCount * effectBase.HealthBoost;
+    }
+
+    private void ClearEffectProks(object sender, ulong currentPlayerId) {
+        if (card.PlayerId != currentPlayerId)
+            return;
+        if (!effectBase.IsResetAfterTurn)
+            return;
+
+        effectProkCount = 0;
     }
 
     public override string GetEffectDescription() {

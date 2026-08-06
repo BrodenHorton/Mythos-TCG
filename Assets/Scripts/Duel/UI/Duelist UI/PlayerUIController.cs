@@ -22,7 +22,7 @@ public class PlayerUIController : DuelistUIController {
         stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
         stateManager.CombatPhase.OnCombatPhase += SetSelectableCards;
         stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
-        stateManager.EndPhase.OnEndPhase += DisableSelectableCards;
+        stateManager.EndPhase.OnEndPhasEnteredFinished += DisableSelectableCards;
         EventBus.Instance.OnManaCountChanged += (sender, args) => {
             if (playerId == args.PlayerId)
                 SetSelectableCardsServerRpc();

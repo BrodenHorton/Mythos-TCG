@@ -16,7 +16,7 @@ public class GameStateUIController : MonoBehaviour {
         stateManager.FirstMainPhase.OnFirstMainPhase += OnFirstMainPhase;
         stateManager.CombatPhase.OnCombatPhase += OnCombatPhase;
         stateManager.SecondMainPhase.OnSecondMainPhase += OnSecondMainPhase;
-        stateManager.EndPhase.OnEndPhase += OnEndPhase;
+        stateManager.EndPhase.OnEndPhasEnteredFinished += OnEndPhase;
         duelManager.OnNextPlayerTurnClient += SetPlayerTurnIndex;
         duelManager.OnNextFullTurn += SetFullTurn;
     }
