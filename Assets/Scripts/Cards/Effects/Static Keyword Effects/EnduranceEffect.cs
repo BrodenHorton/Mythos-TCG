@@ -2,6 +2,8 @@
 
 [Serializable]
 public class EnduranceEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "Attacking does not cause this creature to tap.";
+
     private EnduranceEffectBase effectBase;
 
     public EnduranceEffect(EnduranceEffectBase effectBase) {
@@ -23,6 +25,10 @@ public class EnduranceEffect : StaticCreatureCardEffect {
 
         TcgLogger.Log("Endurance Effect triggered");
         args.IsCanceled = true;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

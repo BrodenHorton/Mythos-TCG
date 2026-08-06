@@ -2,6 +2,8 @@
 
 [Serializable]
 public class ElusiveEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "Can only be blocked by creatures with Elusive or Reach.";
+
     private ElusiveEffectBase effectBase;
 
     public ElusiveEffect(ElusiveEffectBase effectBase) {
@@ -41,6 +43,10 @@ public class ElusiveEffect : StaticCreatureCardEffect {
 
         TcgLogger.Log("Elusive Effect triggered");
         args.CanDefend = true;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

@@ -20,7 +20,8 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
     public event EventHandler<PlayerCardEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
     public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
-    public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureCardPlayedFromHand;
+    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
+    public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureCardPlayedFromHandFinished;
     public event EventHandler<PlayerCardPayloadEventArgs<DomainCardPayload>> OnDomainCardPlayedFromHand;
     public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellCardPlayedFromHand;
     public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellChainCardPlayed;
@@ -188,17 +189,24 @@ public class EventBus : NetworkBehaviour {
         OnSpellCardSelectedForPlay?.Invoke(this, args);
     }
 
-    public void InvokeOnCreatureCardPlayedFromHand(ulong playerId, CreatureCard card) {
+    public void InvokeOnCreatureCardPlayedFromHand(PlayerCardEventArgs<CreatureCard> args) {
         if (!IsServer)
             throw new Exception("The event OnCreatureCardPlayedFromHand can only be invoked by the server");
 
-        InvokeOnCreatureCardPlayedFromHandClientRpc(playerId, new CreatureCardPayload(card));
+        OnCreatureCardPlayedFromHand?.Invoke(this, args);
+    }
+
+    public void InvokeOnCreatureCardPlayedFromHandFinished(ulong playerId, CreatureCard card) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureCardPlayedFromHandFinished can only be invoked by the server");
+
+        InvokeOnCreatureCardPlayedFromHandFinishedClientRpc(playerId, new CreatureCardPayload(card));
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnCreatureCardPlayedFromHandClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
+    private void InvokeOnCreatureCardPlayedFromHandFinishedClientRpc(ulong playerId, CreatureCardPayload cardPayload) {
         PlayerCardPayloadEventArgs<CreatureCardPayload> args = new PlayerCardPayloadEventArgs<CreatureCardPayload>(playerId, cardPayload);
-        OnCreatureCardPlayedFromHand?.Invoke(this, args);
+        OnCreatureCardPlayedFromHandFinished?.Invoke(this, args);
     }
 
     public void InvokeOnDomainCardPlayedFromHand(ulong playerId, DomainCard card) {

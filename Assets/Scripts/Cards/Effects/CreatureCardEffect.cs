@@ -10,6 +10,8 @@ public abstract class CreatureCardEffect {
 
     public abstract void RemoveListeners();
 
+    public abstract string GetFullDescription();
+
     public abstract CreatureCardEffectBase GetCreatureEffectBase();
 
     public abstract CreatureCardEffectPayload GetEffectPayload();

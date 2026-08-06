@@ -2,6 +2,8 @@
 
 [Serializable]
 public class ReachEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "Can block creatures with Elusive.";
+
     private ReachEffectBase effectBase;
 
     public ReachEffect(ReachEffectBase effectBase) {
@@ -21,8 +23,12 @@ public class ReachEffect : StaticCreatureCardEffect {
         if (args.Defender.Uuid != card.Uuid)
             return;
 
-        TcgLogger.Log("Range Effect triggered");
+        TcgLogger.Log("Reach Effect triggered");
         args.CanDefend = true;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

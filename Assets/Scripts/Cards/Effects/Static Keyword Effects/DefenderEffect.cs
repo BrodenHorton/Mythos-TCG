@@ -2,6 +2,8 @@
 
 [Serializable]
 public class DefenderEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "This creature cannot declare an attack.";
+
     private DefenderEffectBase effectBase;
 
     public DefenderEffect(DefenderEffectBase effectBase) {
@@ -23,6 +25,10 @@ public class DefenderEffect : StaticCreatureCardEffect {
 
         TcgLogger.Log("Defender Effect triggered");
         args.IsCanceled = true;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

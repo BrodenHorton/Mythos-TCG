@@ -2,7 +2,7 @@
 
 [Serializable]
 public class SpellshieldEffect : StaticCreatureCardEffect {
-    private static readonly string EFFECT_NAME = "SpellShield";
+    private static readonly string EFFECT_DESCRIPTION = "The first time this card is targeted by an opponent’s effect, it is negated.";
 
     private SpellshieldEffectBase effectBase;
 
@@ -15,6 +15,10 @@ public class SpellshieldEffect : StaticCreatureCardEffect {
     }
 
     public override void RemoveListeners() { }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
+    }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {
         return effectBase;

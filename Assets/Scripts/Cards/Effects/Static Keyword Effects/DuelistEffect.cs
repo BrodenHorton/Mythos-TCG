@@ -2,6 +2,8 @@
 
 [Serializable]
 public class DuelistEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "When this creature attacks, choose the enemy creature that defends.";
+
     private DuelistEffectBase effectBase;
     private DuelManager duelManager;
     private CombatStateManager combatStateManager;
@@ -99,6 +101,10 @@ public class DuelistEffect : StaticCreatureCardEffect {
             return;
 
         duelistDefender = null;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

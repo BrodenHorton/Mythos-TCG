@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Text;
 
 [Serializable]
 public class BlessingStatBoostEffect : BlessingEffect {
     private BlessingStatBoostEffectBase effectBase;
     private int effectProkCount;
 
-    public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) : base(effectBase) {
+    public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) {
         this.effectBase = effectBase;
         effectProkCount = 0;
     }
@@ -49,6 +50,14 @@ public class BlessingStatBoostEffect : BlessingEffect {
             return;
 
         args.Value += effectProkCount * effectBase.HealthBoost;
+    }
+
+    public override string GetEffectDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("Gain +" + effectBase.AtkBoost + " +" + effectBase.HealthBoost);
+        if (effectBase.IsResetAfterTurn)
+            sb.Append(" until the end of the turn");
+        return sb.ToString();
     }
 
     public override CreatureCardEffectBase GetCreatureEffectBase() {

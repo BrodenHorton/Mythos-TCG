@@ -2,6 +2,8 @@
 
 [Serializable]
 public class MenaceEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "This Creature cannot be blocked by creatures with 3 or less Health.";
+
     private static readonly int BLOCKABLE_HEALTH_MIN = 4;
 
     private MenaceEffectBase effectBase;
@@ -28,6 +30,10 @@ public class MenaceEffect : StaticCreatureCardEffect {
         TcgLogger.Log("Menace Effect triggered");
         if (args.Defender.GetHealth() < BLOCKABLE_HEALTH_MIN)
             args.CanDefend = false;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

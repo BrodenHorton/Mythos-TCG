@@ -46,7 +46,8 @@ public class MatchPlayer {
         card.HasSummoningSickness = !args.IsCanceled;
 
         creatures.Add(card);
-        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(playerId, card);
+        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        EventBus.Instance.InvokeOnCreatureCardPlayedFromHandFinished(playerId, card);
     }
 
     public void PlayDomainCardFromHand(DomainCard card) {

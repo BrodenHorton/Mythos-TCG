@@ -2,6 +2,8 @@
 
 [Serializable]
 public class BloodthirstyEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "When this creature deals damage, it gains +1/+1.";
+
     private BloodthirstyEffectBase effectBase;
     private int effectProkCount;
 
@@ -43,6 +45,10 @@ public class BloodthirstyEffect : StaticCreatureCardEffect {
             return;
 
         args.Value += effectProkCount;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

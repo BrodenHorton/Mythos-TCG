@@ -12,7 +12,7 @@ public class PlayingFieldUIManager : NetworkBehaviour {
         DuelManager duelManager = ServiceLocator.Get<DuelManager>();
 
         duelManager.OnPlayersInitialization += Init;
-        EventBus.Instance.OnCreatureCardPlayedFromHand += PlayCreatureCard;
+        EventBus.Instance.OnCreatureCardPlayedFromHandFinished += PlayCreatureCard;
         EventBus.Instance.OnDomainCardPlayedFromHand += PlayDomainCard;
         EventBus.Instance.OnCreatureDestroyedFinished += RemoveCreature;
     }

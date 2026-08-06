@@ -2,6 +2,7 @@
 
 [Serializable]
 public class SwiftnessEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "This creature does not have summoning sickness.";
 
     private SwiftnessEffectBase effectBase;
 
@@ -24,6 +25,10 @@ public class SwiftnessEffect : StaticCreatureCardEffect {
 
         TcgLogger.Log("Swiftness Effect triggered");
         args.IsCanceled = true;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

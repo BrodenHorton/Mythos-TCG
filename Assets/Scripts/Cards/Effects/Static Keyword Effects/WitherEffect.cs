@@ -2,6 +2,8 @@
 
 [Serializable]
 public class WitherEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "Deals damage as -1/-1 debuffs.";
+
     private WitherEffectBase effectBase;
 
     public WitherEffect(WitherEffectBase effectBase) {
@@ -48,6 +50,10 @@ public class WitherEffect : StaticCreatureCardEffect {
             TcgLogger.Log("Wither Status added to Defender");
             args.Defender.AddEffect(new WitherStatusEffect(effectBase.WitherStatusEffectBase, damage));
         }
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

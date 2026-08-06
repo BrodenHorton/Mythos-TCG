@@ -2,6 +2,8 @@
 
 [Serializable]
 public class WitherStatusEffect : CreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "Wither status Description"; // TODO: Update later
+
     private WitherStatusEffectBase effectBase;
     private int witherCount;
 
@@ -49,6 +51,10 @@ public class WitherStatusEffect : CreatureCardEffect {
             return;
 
         args.Value -= witherCount;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override CreatureCardEffectBase GetCreatureEffectBase() {

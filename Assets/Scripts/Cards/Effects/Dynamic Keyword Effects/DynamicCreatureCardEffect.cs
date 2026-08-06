@@ -1,5 +1,5 @@
 ﻿
-public abstract class DynamicCreatureCardEffectBase : CreatureCardEffectBase {
+public abstract class DynamicCreatureCardEffect : CreatureCardEffect {
 
     public abstract string GetEffectDescription();
 

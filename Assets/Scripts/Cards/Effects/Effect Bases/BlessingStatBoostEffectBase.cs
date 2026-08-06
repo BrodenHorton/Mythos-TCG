@@ -1,22 +1,13 @@
-﻿using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Blessing Effect Base", menuName = "Scriptable Objects/Effect/Base/Blessing Stat Boost")]
-public class BlessingStatBoostEffectBase : BlessingEffectBase {
+[CreateAssetMenu(fileName = "Blessing Stat Boost Effect Base", menuName = "Scriptable Objects/Effect/Base/Blessing Stat Boost")]
+public class BlessingStatBoostEffectBase : CreatureCardEffectBase {
     [SerializeField] private int atkBoost;
     [SerializeField] private int healthBoost;
     [SerializeField] private bool isResetAfterTurn;
 
-    public override BlessingEffect CreateBlessingCreatureCardEffect() {
+    public override CreatureCardEffect GenerateCardEffectFromBase() {
         return new BlessingStatBoostEffect(this);
-    }
-
-    public override string GetEffectDescription() {
-        StringBuilder sb = new StringBuilder();
-        sb.Append("Gain +" + atkBoost + " +" + healthBoost);
-        if (isResetAfterTurn)
-            sb.Append(" until the end of the turn");
-        return sb.ToString();
     }
 
     public int AtkBoost { get { return atkBoost; } }

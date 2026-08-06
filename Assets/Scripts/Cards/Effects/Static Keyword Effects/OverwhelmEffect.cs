@@ -2,6 +2,8 @@ using System;
 
 [Serializable]
 public class OverwhelmEffect : StaticCreatureCardEffect {
+    private static readonly string EFFECT_DESCRIPTION = "Overflow damage that isn’t blocked by a defender's Health is dealt as life point damage.";
+
     private OverwhelmEffectBase effectBase;
 
     public OverwhelmEffect(OverwhelmEffectBase effectBase) {
@@ -32,6 +34,10 @@ public class OverwhelmEffect : StaticCreatureCardEffect {
 
         if (overwhelmDamage > 0)
             args.DirectDamage = overwhelmDamage;
+    }
+
+    public override string GetFullDescription() {
+        return EFFECT_DESCRIPTION;
     }
 
     public override StaticCreatureCardEffectBase GetStaticCreatureEffectBase() {

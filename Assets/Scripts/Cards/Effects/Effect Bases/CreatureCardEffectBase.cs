@@ -6,9 +6,7 @@ public abstract class CreatureCardEffectBase : ScriptableObject {
     [SerializeField] private string id;
     [SerializeField] private string effectName;
 
-    public abstract CreatureCardEffect CreateCreatureCardEffect();
-
-    public abstract string GetFullDescription();
+    public abstract CreatureCardEffect GenerateCardEffectFromBase();
 
     public string Id { get { return id; } }
 
