@@ -7,9 +7,9 @@ public class EventBus : NetworkBehaviour {
     // Duelist UI Actions
     public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardDrawn;
     public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardRemovedFromHand;
-    // PlayerUI Card Drag
-    public event EventHandler<HandCardDragEventArgs> OnStartHandCardDrag;
-    public event EventHandler<HandCardDragEventArgs> OnReleaseHandCardDrag;
+    // Hand Card Drag
+    public event EventHandler<CardUIEventArgs<HandCardUI>> OnStartHandCardDrag;
+    public event EventHandler<CardUIEventArgs<HandCardUI>> OnReleaseHandCardDrag;
     public event EventHandler<PlayerCardUuidEventArgs> OnPlayHandCard;
     // Field Card Selection
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
@@ -137,12 +137,12 @@ public class EventBus : NetworkBehaviour {
     }
     #endregion
 
-    #region PlayerUI Card Drag
-    public void InvokeOnStartHandCardDrag(HandCardDragEventArgs args) {
+    #region Hand Card Drag
+    public void InvokeOnStartHandCardDrag(CardUIEventArgs<HandCardUI> args) {
         OnStartHandCardDrag?.Invoke(this, args);
     }
 
-    public void InvokeOnReleaseHandCardDrag(HandCardDragEventArgs args) {
+    public void InvokeOnReleaseHandCardDrag(CardUIEventArgs<HandCardUI> args) {
         OnReleaseHandCardDrag?.Invoke(this, args);
     }
 

@@ -11,7 +11,7 @@ public class SpellChainUIController : MonoBehaviour {
 
         spellChainManager.OnSpellAddedToSpellChain += AddSpellToChain;
         spellChainManager.OnSpellRemovedFromSpellChain += RemoveSpellFromChain;
-        spellChainManager.OnSpellChainFinished += ClearSpellChain;
+        spellChainManager.OnSpellChainEnd += ClearSpellChain;
     }
 
     private void AddSpellToChain(object sender, PlayerCardPayloadEventArgs<SpellCardPayload> args) {

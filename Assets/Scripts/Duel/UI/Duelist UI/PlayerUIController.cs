@@ -30,7 +30,7 @@ public class PlayerUIController : DuelistUIController {
         actionManager.OnActionStateChanged += (sender, args) => {
             SetSelectableCardsServerRpc();
         };
-        spellChainManager.OnSpellChainFinished += (sender, args) => {
+        spellChainManager.OnSpellChainEnd += (sender, args) => {
             SetSelectableCardsServerRpc();
         };
     }

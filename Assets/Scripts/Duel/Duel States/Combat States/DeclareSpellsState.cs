@@ -30,7 +30,7 @@ public class DeclareSpellsState : NetworkBehaviour, CombatState {
         actionManager = ServiceLocator.Get<ActionManager>();
         spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
-        spellChainManager.OnSpellChainFinished += SkipActionOnSpellChainFinished;
+        spellChainManager.OnSpellChainEndFinished += SkipActionOnSpellChainFinished;
     }
 
     public void EnterState() {

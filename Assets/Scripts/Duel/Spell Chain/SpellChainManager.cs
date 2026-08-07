@@ -7,7 +7,8 @@ public class SpellChainManager : NetworkBehaviour {
     public event EventHandler<PlayerEventArgs> OnSpellChainTurnEnd;
     public event EventHandler<PlayerCardPayloadEventArgs<SpellCardPayload>> OnSpellAddedToSpellChain;
     public event EventHandler<PlayerCardPayloadEventArgs<SpellCardPayload>> OnSpellRemovedFromSpellChain;
-    public event EventHandler OnSpellChainFinished;
+    public event EventHandler OnSpellChainEnd;
+    public event EventHandler OnSpellChainEndFinished;
 
     private DuelManager duelManager;
     private ActionManager actionManager;
@@ -86,7 +87,8 @@ public class SpellChainManager : NetworkBehaviour {
         if (currentIndex == startingIndex) {
             ExecuteActionChain();
             actionManager.SetActionFocusPlayerIndices(duelManager.GetCurrentPlayerTurn().PlayerId);
-            InvokeOnSpellChainFinishedClientRpc();
+            InvokeOnSpellChainEndClientRpc();
+            OnSpellChainEndFinished?.Invoke(this, EventArgs.Empty);
         }
         else {
             ulong currentIndexPlayerId = duelManager.Players[currentIndex].PlayerId;
@@ -137,8 +139,8 @@ public class SpellChainManager : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnSpellChainFinishedClientRpc() {
-        OnSpellChainFinished?.Invoke(this, EventArgs.Empty);
+    private void InvokeOnSpellChainEndClientRpc() {
+        OnSpellChainEnd?.Invoke(this, EventArgs.Empty);
     }
 
     public bool IsSpellChainActive() {

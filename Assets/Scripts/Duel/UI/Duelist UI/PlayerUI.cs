@@ -161,7 +161,7 @@ public class PlayerUI : DuelistUI {
             return;
 
         int handCardIndex = IndexOf(cardUI);
-        EventBus.Instance.InvokeOnStartHandCardDrag(new HandCardDragEventArgs(this, cardUI, handCardIndex));
+        EventBus.Instance.InvokeOnStartHandCardDrag(new CardUIEventArgs<HandCardUI>(cardUI));
         isDragging = true;
         draggingCard = cardUI;
         draggingCard.transform.localScale = Vector3.one;
@@ -180,7 +180,7 @@ public class PlayerUI : DuelistUI {
 
         HandCardUI cardUI = draggingCard;
         ResetCardDragging();
-        EventBus.Instance.InvokeOnReleaseHandCardDrag(new HandCardDragEventArgs(this, cardUI, IndexOf(cardUI)));
+        EventBus.Instance.InvokeOnReleaseHandCardDrag(new CardUIEventArgs<HandCardUI>(cardUI));
     }
 
     private HandCardUI HandCardRaycast() {

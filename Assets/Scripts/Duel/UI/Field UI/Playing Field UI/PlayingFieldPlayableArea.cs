@@ -16,20 +16,20 @@ public class PlayingFieldPlayableArea : MonoBehaviour {
         EventBus.Instance.OnReleaseHandCardDrag += PlayCardOnReleaseDrag;
     }
 
-    private void ShowPlayableAreaVisual(object sender, HandCardDragEventArgs args) {
-        if (playingFieldUI.PlayerId != args.PlayerUI.PlayerId)
+    private void ShowPlayableAreaVisual(object sender, CardUIEventArgs<HandCardUI> args) {
+        if (playingFieldUI.PlayerId != args.CardUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(true);
     }
 
-    private void PlayCardOnReleaseDrag(object sender, HandCardDragEventArgs args) {
-        if (playingFieldUI.PlayerId != args.PlayerUI.PlayerId)
+    private void PlayCardOnReleaseDrag(object sender, CardUIEventArgs<HandCardUI> args) {
+        if (playingFieldUI.PlayerId != args.CardUI.PlayerId)
             return;
 
         playableAreaVisual.SetActive(false);
         if (IsHoveringPlayableArea())
-            EventBus.Instance.InvokeOnPlayHandCard(new PlayerCardUuidEventArgs(args.PlayerUI.PlayerId, args.CardUI.CardUuid));
+            EventBus.Instance.InvokeOnPlayHandCard(new PlayerCardUuidEventArgs(args.CardUI.PlayerId, args.CardUI.CardUuid));
     }
 
     private bool IsHoveringPlayableArea() {

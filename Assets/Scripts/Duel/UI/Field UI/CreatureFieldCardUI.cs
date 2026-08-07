@@ -22,13 +22,36 @@ public class CreatureFieldCardUI : FieldCardUI {
         UpdateFieldCard(card);
     }
 
-    public void OnDestroy() {
+    protected override void OnDestroy() {
+        base.OnDestroy();
         EventBus.Instance.OnCreatureEndOfTurnRegenerationFinished -= UpdateFieldCardOnEndOfTurnRegeneration;
         EventBus.Instance.OnCreatureTappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureUntappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureDamagedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureHealedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnPostCreatureCombat -= UpdateFieldCardOnPostCreatureCombat;
+    }
+
+    public override void SelectCard(out bool canDragCard) {
+        if (!isSelectable)
+            throw new System.Exception("Attempting to call SelectCard when CardUI is not marked selectable");
+
+        if(isInCombatField) {
+            canDragCard = false;
+            // TODO: Invoke event
+        }
+        else {
+            canDragCard = true;
+            // TODO: Invoke event
+        }
+    }
+
+    public override void StartCardDrag() {
+        // TODO: Invoke event
+    }
+
+    public override void ReleaseCardDrag() {
+        // TODO: Invoke event
     }
 
     public void UpdateFieldCard(CreatureCardPayload card) {

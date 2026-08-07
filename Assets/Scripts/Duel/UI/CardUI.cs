@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class CardUI : MonoBehaviour {
@@ -11,6 +12,25 @@ public abstract class CardUI : MonoBehaviour {
     private void Awake() {
         selectableBorder.SetActive(false);
         isSelectable = false;
+    }
+
+    protected virtual void Start() {
+        CardSelectionManager.Instance.OnSetSelectableCards += SetSelectabilityOnSetSelectableCards;
+    }
+
+    protected virtual void OnDestroy() {
+        FieldCardSelectionManager.Instance.OnSetSelectableFieldCards -= SetSelectabilityOnSetSelectableCards;
+    }
+
+    public abstract void SelectCard(out bool canDragCard);
+
+    public abstract void StartCardDrag();
+
+    public abstract void ReleaseCardDrag();
+
+    protected void SetSelectabilityOnSetSelectableCards(object sender, List<Guid> cardUuids) {
+        bool isSelectable = cardUuids.Contains(cardUuid);
+        SetSelectable(isSelectable);
     }
 
     public void SetSelectable(bool isSelectable) {
