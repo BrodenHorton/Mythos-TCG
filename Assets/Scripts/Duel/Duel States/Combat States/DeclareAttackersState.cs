@@ -1,9 +1,9 @@
 ﻿using System;
 using Unity.Netcode;
-using UnityEngine;
 
 public class DeclareAttackersState : NetworkBehaviour, CombatState {
-    public event EventHandler<ulong> OnStartDeclareAttackers;
+    public event EventHandler<ulong> OnDeclareAttackersStateEntered;
+    public event EventHandler<ulong> OnDeclareAttackersStateEnteredFinished;
 
     private CombatStateManager combatStateManager;
     private ActionManager actionManager;
@@ -22,14 +22,15 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
 
         ulong currentPlayerTurnId = combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
         actionManager.AddAction(currentPlayerTurnId, SwitchToDeclareDefendersServerRpc, "Commit", "Waiting for Opponent");
-        InvokeOnStartDeclareAttackersClientRpc(currentPlayerTurnId);
+        InvokeOnDeclareAttackersStateEnteredClientRpc(currentPlayerTurnId);
+        OnDeclareAttackersStateEnteredFinished?.Invoke(this, currentPlayerTurnId);
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnStartDeclareAttackersClientRpc(ulong playerId) {
-        OnStartDeclareAttackers?.Invoke(this, playerId);
+    private void InvokeOnDeclareAttackersStateEnteredClientRpc(ulong playerId) {
+        OnDeclareAttackersStateEntered?.Invoke(this, playerId);
     }
 
     [Rpc(SendTo.Server)]

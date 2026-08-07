@@ -18,8 +18,8 @@ public class EndPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        OnEndPhasEntered?.Invoke(this, duelManager.GetCurrentPlayerTurn().PlayerId);
-        InvokeOnEndPhaseClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId);
+        InvokeOnEndPhaseEnteredClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId);
+        OnEndPhasEnteredFinished?.Invoke(this, duelManager.GetCurrentPlayerTurn().PlayerId);
         duelManager.GetCurrentPlayerTurn().ClearSummoningSickness();
         duelManager.NextTurn();
         stateManager.SwitchState(stateManager.UntapPhase);
@@ -28,9 +28,9 @@ public class EndPhase : NetworkBehaviour, DuelState {
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnEndPhaseClientRpc(ulong playerId) {
+    private void InvokeOnEndPhaseEnteredClientRpc(ulong playerId) {
         Debug.Log("Entered End Phase");
-        OnEndPhasEnteredFinished?.Invoke(this, playerId);
+        OnEndPhasEntered?.Invoke(this, playerId);
     }
 
     public bool CanPlaySetupCards() {

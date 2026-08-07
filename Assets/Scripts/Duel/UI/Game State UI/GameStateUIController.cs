@@ -12,11 +12,11 @@ public class GameStateUIController : MonoBehaviour {
         if (stateManager == null)
             throw new Exception("Could not find DuelStateManager object");
 
-        stateManager.UntapPhase.OnUntapPhase += OnUntapPhase;
-        stateManager.FirstMainPhase.OnFirstMainPhase += OnFirstMainPhase;
-        stateManager.CombatPhase.OnCombatPhase += OnCombatPhase;
-        stateManager.SecondMainPhase.OnSecondMainPhase += OnSecondMainPhase;
-        stateManager.EndPhase.OnEndPhasEnteredFinished += OnEndPhase;
+        stateManager.UntapPhase.OnUntapPhaseEntered += OnUntapPhase;
+        stateManager.FirstMainPhase.OnFirstMainPhaseEntered += OnFirstMainPhase;
+        stateManager.CombatPhase.OnCombatPhaseEntered += OnCombatPhase;
+        stateManager.SecondMainPhase.OnSecondMainPhaseEntered += OnSecondMainPhase;
+        stateManager.EndPhase.OnEndPhasEntered += OnEndPhase;
         duelManager.OnNextPlayerTurnClient += SetPlayerTurnIndex;
         duelManager.OnNextFullTurn += SetFullTurn;
     }

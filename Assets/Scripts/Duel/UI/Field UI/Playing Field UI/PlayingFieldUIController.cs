@@ -7,6 +7,10 @@ public class PlayingFieldUIController : NetworkBehaviour {
     [SerializeField] private PlayingFieldUI playingFieldUI;
     private ulong playerId;
 
+    private void Start() {
+        EventBus.Instance.OnReleaseHandCardDrag += ReleaseHandCardDragHandler;
+    }
+
     public void Init(ulong playerId) {
         this.playerId = playerId;
         playingFieldUI.Init(playerId);
@@ -35,6 +39,14 @@ public class PlayingFieldUIController : NetworkBehaviour {
 
     public CreatureFieldCardUI ReleaseCreature(Guid cardUuid) {
         return playingFieldUI.ReleaseCreature(cardUuid);
+    }
+
+    private void ReleaseHandCardDragHandler(object sender, CardUIEventArgs<HandCardUI> args) {
+        if (args.CardUI.PlayerId != playerId)
+            return;
+
+        // TODO: Handle logic for releasing hand card over playing field area
+        // Move PlayingFieldArea logic to this class
     }
 
     public bool ContainsCreature(Guid uuid) {

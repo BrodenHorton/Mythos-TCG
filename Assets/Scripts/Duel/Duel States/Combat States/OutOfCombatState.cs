@@ -2,10 +2,10 @@
 using System;
 
 public class OutOfCombatState : NetworkBehaviour, CombatState {
-    public event EventHandler OnOutOfCombatEntered;
+    public event EventHandler OnOutOfCombatStateEntered;
 
     public void EnterState() {
-        OnOutOfCombatEntered?.Invoke(this, EventArgs.Empty);
+        OnOutOfCombatStateEntered?.Invoke(this, EventArgs.Empty);
     }
 
     public void UpdateState() { }

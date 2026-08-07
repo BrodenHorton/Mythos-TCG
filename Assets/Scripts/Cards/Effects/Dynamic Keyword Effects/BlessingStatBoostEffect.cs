@@ -18,14 +18,14 @@ public class BlessingStatBoostEffect : BlessingEffect {
         EventBus.Instance.OnLifePointsChanged += BlessingEffectHandler;
         EventBus.Instance.OnCalculateCreatureAttack += AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth += AddHealth;
-        stateManager.EndPhase.OnEndPhasEntered += ClearEffectProks;
+        stateManager.EndPhase.OnEndPhasEnteredFinished += ClearEffectProks;
     }
 
     public override void RemoveListeners() {
         EventBus.Instance.OnLifePointsChanged -= BlessingEffectHandler;
         EventBus.Instance.OnCalculateCreatureAttack -= AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth -= AddHealth;
-        stateManager.EndPhase.OnEndPhasEntered -= ClearEffectProks;
+        stateManager.EndPhase.OnEndPhasEnteredFinished -= ClearEffectProks;
     }
 
     protected override void BlessingEffectHandler(object sender, LifePointsChangedEventArgs args) {

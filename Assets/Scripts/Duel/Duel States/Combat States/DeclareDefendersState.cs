@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 public class DeclareDefendersState : NetworkBehaviour, CombatState {
-    public event EventHandler<ulong> OnStartDeclareDefenders;
+    public event EventHandler<ulong> OnDeclareDefendersEntered;
+    public event EventHandler<ulong> OnDeclareDefendersEnteredFinished;
     public event EventHandler OnSetDeclareDefeners;
 
     private CombatStateManager combatStateManager;
@@ -41,7 +42,9 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
 
     [Rpc(SendTo.Server)]
     private void StartDefenderDeclarationServerRpc() {
-        StartDeclareDefenderCombatStateClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId);
+        ulong currentPlayerId = duelManager.GetCurrentPlayerTurn().PlayerId;
+        InvokeOnDeclareDefenderStateEnteredClientRpc(currentPlayerId);
+        OnDeclareDefendersEnteredFinished?.Invoke(this, currentPlayerId);
         List<MatchPlayer> targets = combatManager.GetTargets();
         List<ulong> targetIds = new List<ulong>();
         List<int> targetIndices = new List<int>();
@@ -55,8 +58,8 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void StartDeclareDefenderCombatStateClientRpc(ulong playerId) {
-        OnStartDeclareDefenders?.Invoke(this, playerId);
+    private void InvokeOnDeclareDefenderStateEnteredClientRpc(ulong playerId) {
+        OnDeclareDefendersEntered?.Invoke(this, playerId);
     }
 
     private void PlayerReadyUp(ulong playerId) {

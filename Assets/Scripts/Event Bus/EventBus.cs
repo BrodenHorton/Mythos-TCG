@@ -7,14 +7,13 @@ public class EventBus : NetworkBehaviour {
     // Duelist UI Actions
     public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardDrawn;
     public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardRemovedFromHand;
-    // Hand Card Drag
+    // Hand Card Selection
     public event EventHandler<CardUIEventArgs<HandCardUI>> OnStartHandCardDrag;
     public event EventHandler<CardUIEventArgs<HandCardUI>> OnReleaseHandCardDrag;
     public event EventHandler<PlayerCardUuidEventArgs> OnPlayHandCard;
     // Field Card Selection
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
-    public event EventHandler<FieldCardEventArgs<FieldCardUI>> OnInspectFieldCard;
-    // PlayingField Card Drag
+    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDrag;
     public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardOverCombatArea;
     // Playing Cards
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
@@ -156,12 +155,10 @@ public class EventBus : NetworkBehaviour {
         OnSelectCreatureFieldCard?.Invoke(this, args);
     }
 
-    public void InvokeOnInspectFieldCard(FieldCardEventArgs<FieldCardUI> args) {
-        OnInspectFieldCard?.Invoke(this, args);
+    public void InvokeOnReleaseCreatureFieldCardDrag(FieldCardEventArgs<CreatureFieldCardUI> args) {
+        OnReleaseCreatureFieldCardDrag?.Invoke(this, args);
     }
-    #endregion
 
-    #region PlayingField Card Drag
     public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
     }

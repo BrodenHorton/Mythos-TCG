@@ -3,7 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class DrawPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<ulong> OnDrawPhase;
+    public event EventHandler<ulong> OnDrawPhaseEntered;
+    public event EventHandler<ulong> OnDrawPhaseEnteredFinished;
 
     private DuelStateManager stateManager;
 
@@ -17,7 +18,8 @@ public class DrawPhase : NetworkBehaviour, DuelState {
 
         DuelManager duelManager = stateManager.DuelManager;
         MatchPlayer player = duelManager.GetCurrentPlayerTurn();
-        InvokeOnDrawPhaseClientRpc(player.PlayerId);
+        InvokeOnDrawPhaseEnteredClientRpc(player.PlayerId);
+        OnDrawPhaseEnteredFinished?.Invoke(this, player.PlayerId);
         player.CurrentMana = duelManager.GetStartOfTurnManaCount();
         player.DrawCard();
         stateManager.SwitchState(stateManager.FirstMainPhase);
@@ -26,9 +28,9 @@ public class DrawPhase : NetworkBehaviour, DuelState {
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnDrawPhaseClientRpc(ulong playerId) {
+    private void InvokeOnDrawPhaseEnteredClientRpc(ulong playerId) {
         Debug.Log("Entered Draw Phase");
-        OnDrawPhase?.Invoke(this, playerId);
+        OnDrawPhaseEntered?.Invoke(this, playerId);
     }
 
     public bool CanPlaySetupCards() {

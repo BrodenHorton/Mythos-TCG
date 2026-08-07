@@ -36,22 +36,16 @@ public class CreatureFieldCardUI : FieldCardUI {
         if (!isSelectable)
             throw new System.Exception("Attempting to call SelectCard when CardUI is not marked selectable");
 
-        if(isInCombatField) {
-            canDragCard = false;
-            // TODO: Invoke event
-        }
-        else {
-            canDragCard = true;
-            // TODO: Invoke event
-        }
+        canDragCard = !isInCombatField;
+        EventBus.Instance.InvokeOnSelectCreatureFieldCard(new FieldCardEventArgs<CreatureFieldCardUI>(this));
     }
 
     public override void StartCardDrag() {
-        // TODO: Invoke event
+        // TODO: Invoke event that will highlight selectable cards to attack or defend
     }
 
     public override void ReleaseCardDrag() {
-        // TODO: Invoke event
+        EventBus.Instance.InvokeOnReleaseCreatureFieldCardDrag(new FieldCardEventArgs<CreatureFieldCardUI>(this));
     }
 
     public void UpdateFieldCard(CreatureCardPayload card) {

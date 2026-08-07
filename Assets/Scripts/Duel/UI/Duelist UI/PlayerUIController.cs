@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -19,20 +18,7 @@ public class PlayerUIController : DuelistUIController {
         spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
         EventBus.Instance.OnPlayHandCard += PlayHandCard;
-        stateManager.FirstMainPhase.OnFirstMainPhase += SetSelectableCards;
-        stateManager.CombatPhase.OnCombatPhase += SetSelectableCards;
-        stateManager.SecondMainPhase.OnSecondMainPhase += SetSelectableCards;
-        stateManager.EndPhase.OnEndPhasEnteredFinished += DisableSelectableCards;
-        EventBus.Instance.OnManaCountChanged += (sender, args) => {
-            if (playerId == args.PlayerId)
-                SetSelectableCardsServerRpc();
-        };
-        actionManager.OnActionStateChanged += (sender, args) => {
-            SetSelectableCardsServerRpc();
-        };
-        spellChainManager.OnSpellChainEnd += (sender, args) => {
-            SetSelectableCardsServerRpc();
-        };
+        EventBus.Instance.OnReleaseHandCardDrag += ResetHandCardPosition;
     }
 
     public override void Init(ulong playerId, int lifePoints, int manaCount) {
@@ -56,58 +42,6 @@ public class PlayerUIController : DuelistUIController {
         playerUI.RemoveCardFromHand(cardUuid);
     }
 
-    private void SetSelectableCards(object sender, ulong playerId) {
-        if (this.playerId != playerId)
-            return;
-
-        SetSelectableCardsServerRpc();
-    }
-
-    [Rpc(SendTo.Server)]
-    private void SetSelectableCardsServerRpc(RpcParams rpcParams = default) {
-        ulong clientPlayerId = rpcParams.Receive.SenderClientId;
-        FixedString128Bytes[] selectableCardUuidStrs;
-        if (actionManager.ActionFocusPlayerIds.Contains(clientPlayerId)) {
-            List<Guid> selectableCardGuids = GetSelectableCardGuids(clientPlayerId);
-            selectableCardUuidStrs = new FixedString128Bytes[selectableCardGuids.Count];
-            for (int i = 0; i < selectableCardGuids.Count; i++)
-                selectableCardUuidStrs[i] = selectableCardGuids[i].ToString();
-        }
-        else
-            selectableCardUuidStrs = new FixedString128Bytes[0];
-
-        BaseRpcTarget target = RpcTarget.Single(clientPlayerId, RpcTargetUse.Temp);
-        SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
-    }
-
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void SetSelectableCardsClientRpc(FixedString128Bytes[] selectableCardUuidStrs, RpcParams rpcParams) {
-        playerUI.SetCardSelectableAll(false);
-        for (int i = 0; i < selectableCardUuidStrs.Length; i++)
-            playerUI.SetCardSelectable(Guid.Parse(selectableCardUuidStrs[i].ToString()));
-    }
-
-    private void DisableSelectableCards(object sender, ulong playerId) {
-        if (this.playerId != playerId)
-            return;
-
-        playerUI.SetCardSelectableAll(false);
-    }
-
-    public List<Guid> GetSelectableCardGuids(ulong clientPlayerId) {
-        if (!IsServer)
-            throw new Exception("Attempting the call GetSelectableCardGuids from a client");
-
-        List<Guid> selectableCardGuids = new List<Guid>();
-        MatchPlayer player = duelManager.GetPlayerById(clientPlayerId);
-        for (int i = 0; i < player.Hand.Count; i++) {
-            if (player.Hand[i].IsPlayable(duelManager, stateManager, spellChainManager, player))
-                selectableCardGuids.Add(player.Hand[i].Uuid);
-        }
-
-        return selectableCardGuids;
-    }
-
     private void PlayHandCard(object sender, PlayerCardUuidEventArgs args) {
         PlayHandCardServerRpc(args.PlayerId, args.CardUuid.ToString());
     }
@@ -124,6 +58,13 @@ public class PlayerUIController : DuelistUIController {
             return;
 
         duelManager.PlayCardFromHand(playerId, handCardUuid);
+    }
+
+    private void ResetHandCardPosition(object sender, CardUIEventArgs<HandCardUI> args) {
+        if (!playerUI.ContainsCard(args.CardUI.CardUuid))
+            return;
+
+        playerUI.SetDefaultCardPositions();
     }
 
     public override DuelistUI GetDuelistUI() {

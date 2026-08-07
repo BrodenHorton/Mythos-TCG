@@ -3,7 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class UntapPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<ulong> OnUntapPhase;
+    public event EventHandler<ulong> OnUntapPhaseEntered;
+    public event EventHandler<ulong> OnUntapPhaseEnteredFinished;
 
     private DuelStateManager stateManager;
 
@@ -16,7 +17,8 @@ public class UntapPhase : NetworkBehaviour, DuelState {
             return;
 
         MatchPlayer player = stateManager.DuelManager.GetCurrentPlayerTurn();
-        InvokeOnUntapPhaseClientRpc(player.PlayerId);
+        InvokeOnUntapPhaseEnteredClientRpc(player.PlayerId);
+        OnUntapPhaseEnteredFinished?.Invoke(this, player.PlayerId);
         for (int i = 0; i < player.Creatures.Count; i++) {
             if (player.Creatures[i].IsTapped)
                 player.Creatures[i].Untap();
@@ -27,9 +29,9 @@ public class UntapPhase : NetworkBehaviour, DuelState {
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnUntapPhaseClientRpc(ulong playerId) {
+    private void InvokeOnUntapPhaseEnteredClientRpc(ulong playerId) {
         Debug.Log("Entered Untap Phase");
-        OnUntapPhase?.Invoke(this, playerId);
+        OnUntapPhaseEntered?.Invoke(this, playerId);
     }
 
     public bool CanPlaySetupCards() {

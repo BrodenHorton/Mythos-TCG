@@ -44,16 +44,10 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         actionManager = ServiceLocator.Get<ActionManager>();
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
 
-        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += (sender, args) => {
-            if (!IsServer)
-                return;
-
+        combatStateManager.DeclareAttackersState.OnDeclareAttackersStateEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
-        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += (sender, args) => {
-            if (!IsServer)
-                return;
-
+        combatStateManager.DeclareDefendersState.OnDeclareDefendersEntered += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
         actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
@@ -311,9 +305,6 @@ public class CardSelectionManager : NetworkBehaviour {
     public event EventHandler<SelectableCardsEventArgs> OnGetSelectableCards;
     public event EventHandler<List<Guid>> OnSetSelectableCards;
     public event EventHandler OnClearSelectableCards;
-    public event EventHandler<CardUIEventArgs<CardUI>> OnSelectCard;
-    public event EventHandler<CardUIEventArgs<CardUI>> OnSelectCardDrag;
-    public event EventHandler<CardUIEventArgs<CardUI>> OnReleaseCardDrag;
     public event EventHandler<CardUIEventArgs<CardUI>> OnInspectCard;
 
     public static CardSelectionManager Instance { get; private set; }
@@ -349,40 +340,19 @@ public class CardSelectionManager : NetworkBehaviour {
         spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
         // Hand Card Selection Event Listeners
-        stateManager.FirstMainPhase.OnFirstMainPhase += (sender, args) => {
-            if (!IsServer)
-                return;
-
-            SetSelectableCards(args);
-        };
-        stateManager.CombatPhase.OnCombatPhase += (sender, args) => {
-            if (!IsServer)
-                return;
-
-            SetSelectableCards(args);
-        };
-        stateManager.SecondMainPhase.OnSecondMainPhase += (sender, args) => {
-            if (!IsServer)
-                return;
-
-            SetSelectableCards(args);
-        };
-        stateManager.EndPhase.OnEndPhasEntered += (sender, args) => ClearSelectableCards(args);
+        stateManager.FirstMainPhase.OnFirstMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
+        stateManager.CombatPhase.OnCombatPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
+        stateManager.SecondMainPhase.OnSecondMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
+        stateManager.EndPhase.OnEndPhasEnteredFinished += (sender, args) => ClearSelectableCards(args);
         spellChainManager.OnSpellChainEnd += SetSelectableCardsForActionFocusPlayers;
         EventBus.Instance.OnManaCountChanged += (sender, args) => SetSelectableCards(args.PlayerId);
         actionManager.OnActionStateChanged +=  SetSelectableCardsForActionFocusPlayers;
 
         // Field Card Selection Event Listeners
-        combatStateManager.DeclareAttackersState.OnStartDeclareAttackers += (sender, args) => {
-            if (!IsServer)
-                return;
-
+        combatStateManager.DeclareAttackersState.OnDeclareAttackersStateEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
-        combatStateManager.DeclareDefendersState.OnStartDeclareDefenders += (sender, args) => {
-            if (!IsServer)
-                return;
-
+        combatStateManager.DeclareDefendersState.OnDeclareDefendersEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
         actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
@@ -392,18 +362,18 @@ public class CardSelectionManager : NetworkBehaviour {
         EventBus.Instance.OnPostUndeclareDefender += SetSelectableCardsForActionFocusPlayers;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        /*playerInputActions.Player.Select.started += SelectCreatureFieldCard;
-        playerInputActions.Player.Select.canceled += ReleaseCreatureFieldCardDrag;
-        playerInputActions.Player.Inspect.started += InspectFieldCard;*/
+        playerInputActions.Player.Select.started += SelectCard;
+        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
+        playerInputActions.Player.Inspect.started += InspectFieldCard;
     }
 
     public override void OnNetworkDespawn() {
         base.OnNetworkDespawn();
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        /*playerInputActions.Player.Select.started -= SelectCreatureFieldCard;
-        playerInputActions.Player.Select.canceled -= ReleaseCreatureFieldCardDrag;
-        playerInputActions.Player.Inspect.started -= InspectFieldCard;*/
+        playerInputActions.Player.Select.started -= SelectCard;
+        playerInputActions.Player.Select.canceled -= ReleaseCardDrag;
+        playerInputActions.Player.Inspect.started -= InspectFieldCard;
     }
 
     private void Update() {
@@ -533,7 +503,36 @@ public class CardSelectionManager : NetworkBehaviour {
         SetSelectableCardsClientRpc(new FixedString128Bytes[0], target);
     }
 
-    // TODO: Add Card Dragging and Release methods. Call the corresponding methods on the CardUI
+    private void SelectCard(InputAction.CallbackContext context) {
+        if (!context.started)
+            return;
+        if (!CardUIRaycast(out CardUI cardUI))
+            return;
+        if (!cardUI.IsSelectable)
+            return;
+
+        cardUI.SelectCard(out bool canDragCard);
+
+        if(canDragCard) {
+            cardUI.StartCardDrag();
+            isDragging = true;
+            draggingCard = cardUI;
+            draggingCard.transform.position = new Vector3(draggingCard.transform.position.x,
+                                                          draggingCard.transform.position.y + dragOffset,
+                                                          draggingCard.transform.position.z);
+        }
+    }
+
+    private void ReleaseCardDrag(InputAction.CallbackContext context) {
+        if (!context.canceled)
+            return;
+        if (!isDragging)
+            return;
+
+        CardUI cardUI = draggingCard;
+        ResetCardDragging();
+        cardUI.ReleaseCardDrag();
+    }
 
     private void InspectFieldCard(InputAction.CallbackContext context) {
         if (!context.started)

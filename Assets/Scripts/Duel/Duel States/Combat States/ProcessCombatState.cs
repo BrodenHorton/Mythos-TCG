@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 
 public class ProcessCombatState : NetworkBehaviour, CombatState {
     private CombatStateManager combatStateManager;

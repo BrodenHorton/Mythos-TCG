@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class InitializationPhase : NetworkBehaviour, DuelState {
-    public event EventHandler OnInitializationPhase;
+    public event EventHandler OnInitializationPhaseEntered;
 
     private DuelStateManager stateManager;
     private ActionManager actionManager;
@@ -21,7 +21,7 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
         if (!IsServer)
             return;
 
-        InvokeOnInitializationPhaseClientRpc();
+        InvokeOnInitializationPhaseEnteredClientRpc();
         List<MatchPlayer> players = stateManager.DuelManager.Players;
         for(int i = 0; i < players.Count; i++) {
             players[i].ShuffleDeck();
@@ -35,9 +35,9 @@ public class InitializationPhase : NetworkBehaviour, DuelState {
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnInitializationPhaseClientRpc() {
+    private void InvokeOnInitializationPhaseEnteredClientRpc() {
         Debug.Log("Entered Initialization Phase");
-        OnInitializationPhase?.Invoke(this, EventArgs.Empty);
+        OnInitializationPhaseEntered?.Invoke(this, EventArgs.Empty);
     }
 
     public bool CanPlaySetupCards() {

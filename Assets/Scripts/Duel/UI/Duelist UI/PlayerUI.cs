@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerUI : DuelistUI {
     [SerializeField] private Vector3 handHoverOffset;
@@ -9,48 +8,20 @@ public class PlayerUI : DuelistUI {
 
     private Camera cam;
     private HandCardUI previousSelection;
-    private bool isDragging;
-    private HandCardUI draggingCard;
 
     private void Awake() {
         previousSelection = null;
-        isDragging = false;
-        draggingCard = null;
     }
 
     private void Start() {
         cam = Camera.main;
-
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.started += SelectCardDrag;
-        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
-    }
-
-    private void OnDestroy() {
-        PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.started -= SelectCardDrag;
-        playerInputActions.Player.Select.canceled -= ReleaseCardDrag;
     }
 
     private void Update() {
-        UpdateDragging();
         UpdateHovering();
     }
 
-    public void UpdateDragging() {
-        if (!isDragging)
-            return;
-        if (draggingCard == null)
-            throw new Exception("Dragging card is null while isDragging is true");
-
-        Vector3 dragPosition = GetScreenToWorldSapceVector();
-        draggingCard.transform.position = new Vector3(dragPosition.x, draggingCard.transform.position.y, dragPosition.z);
-    }
-
     public void UpdateHovering() {
-        if (isDragging)
-            return;
-
         HandCardUI cardUI = HoverDetection();
         if (cardUI == null && previousSelection != null) {
             SetDefaultCardPositions();
@@ -68,15 +39,6 @@ public class PlayerUI : DuelistUI {
                 previousSelection = cardUI;
             }
         }
-    }
-
-    private Vector3 GetScreenToWorldSapceVector() {
-        float endPoint = draggingCard.transform.position.y;
-        Vector3 origin = cam.transform.position;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        float t = (endPoint - origin.y) / ray.direction.y;
-
-        return ray.direction * t + origin;
     }
 
     public override void DrawCard(CardPayload card) {
@@ -117,18 +79,6 @@ public class PlayerUI : DuelistUI {
         SetDefaultCardPositions();
     }
 
-    public void SetCardSelectable(Guid cardUuid) {
-        if (!ContainsCard(cardUuid))
-            throw new Exception("Attempting to set selectable card border visibility to card that is not in the PlayUI hand");
-
-        GetCardByUuid(cardUuid).SetSelectable(true);
-    }
-
-    public void SetCardSelectableAll(bool isSelectable) {
-        foreach(HandCardUI cardUI in cardsInHand)
-            cardUI.SetSelectable(isSelectable);
-    }
-
     public void HoverHand() {
         for (int i = 0; i < cardsInHand.Count; i++)
             cardsInHand[i].transform.Translate(handHoverOffset, Space.World);
@@ -147,63 +97,6 @@ public class PlayerUI : DuelistUI {
         card.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    public void SelectCardDrag(InputAction.CallbackContext context) {
-        if (!context.started)
-            return;
-        if (isDragging)
-            return;
-        HandCardUI cardUI = HandCardRaycast();
-        if (cardUI == null)
-            return;
-        if (!ContainsCard(cardUI))
-            throw new Exception("Unable to find handCardUI for SelectCardDrag");
-        if (!cardUI.IsSelectable)
-            return;
-
-        int handCardIndex = IndexOf(cardUI);
-        EventBus.Instance.InvokeOnStartHandCardDrag(new CardUIEventArgs<HandCardUI>(cardUI));
-        isDragging = true;
-        draggingCard = cardUI;
-        draggingCard.transform.localScale = Vector3.one;
-        draggingCard.transform.eulerAngles = new Vector3(draggingCard.transform.eulerAngles.x, 0f, draggingCard.transform.eulerAngles.z);
-        draggingCard.transform.position = new Vector3(draggingCard.transform.position.x, handOrigin.transform.position.y, draggingCard.transform.position.z);
-        SetDefaultCardPositions();
-    }
-
-    public void ReleaseCardDrag(InputAction.CallbackContext context) {
-        if (!context.canceled)
-            return;
-        if (!isDragging)
-            return;
-        if (!ContainsCard(draggingCard))
-            throw new Exception("Unable to find draggingCard for ReleaseCardDrag");
-
-        HandCardUI cardUI = draggingCard;
-        ResetCardDragging();
-        EventBus.Instance.InvokeOnReleaseHandCardDrag(new CardUIEventArgs<HandCardUI>(cardUI));
-    }
-
-    private HandCardUI HandCardRaycast() {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray);
-        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        HandCardUI cardUI = null;
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<HandCardCollisionPointer>()) {
-                cardUI = hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
-                break;
-            }
-        }
-
-        return cardUI;
-    }
-
-    public void ResetCardDragging() {
-        isDragging = false;
-        draggingCard = null;
-        SetDefaultCardPositions();
-    }
-
     public override void SetDefaultCardPositions() {
         float radius = 40f;
         float arcDistanceInterval = 1.15f;
@@ -214,9 +107,6 @@ public class PlayerUI : DuelistUI {
         int cardCount = cardsInHand.Count;
         float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
         for (int i = 0; i < cardCount; i++) {
-            if (isDragging && i == GetDraggingCardIndex())
-                continue;
-
             cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
 
@@ -246,29 +136,6 @@ public class PlayerUI : DuelistUI {
         return null;
     }
 
-    public int IndexOf(HandCardUI cardUI) {
-        int cardIndex = -1;
-        for (int i = 0; i < cardsInHand.Count; i++) {
-            if (cardsInHand[i].Equals(cardUI)) {
-                cardIndex = i;
-                break;
-            }
-        }
-
-        return cardIndex;
-    }
-
-    public int GetDraggingCardIndex() {
-        if (!isDragging)
-            throw new Exception("Card is not currently being dragged");
-
-        for(int i = 0; i < cardsInHand.Count; i++) {
-            if (cardsInHand[i] == draggingCard)
-                return i;
-        }
-        throw new Exception("Unable to find dragging card");
-    }
-
     public HandCardUI GetCardByUuid(Guid cardUuid) {
         foreach(HandCardUI cardUI in cardsInHand) {
             if(cardUI.CardUuid == cardUuid)
@@ -276,8 +143,4 @@ public class PlayerUI : DuelistUI {
         }
         throw new Exception("Attempted to get cardUI that does not exists in PlayerUI hand");
     }
-
-    public bool IsDragging { get { return isDragging; } }
-
-    public HandCardUI DraggingCard { get { return draggingCard; } }
 }
