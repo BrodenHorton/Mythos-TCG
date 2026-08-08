@@ -21,7 +21,7 @@ public class CombatManager : NetworkBehaviour {
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
 
         EventBus.Instance.OnReleaseCreatureFieldCardOverCombatArea += DeclareAttacker;
-        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += PlayerSelectDeclareDefender;
+        EventBus.Instance.OnCreatureReleasedOverCreature += PlayerSelectDeclareDefender;
     }
 
     public override void OnNetworkDespawn() {

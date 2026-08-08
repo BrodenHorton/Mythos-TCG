@@ -2,14 +2,14 @@
 
 public class ManaChangedEventArgs : EventArgs {
     private ulong playerId;
-    private int currentMana;
+    private int manaCount;
 
-    public ManaChangedEventArgs(ulong playerId, int currentMana) {
+    public ManaChangedEventArgs(ulong playerId, int manaCount) {
         this.playerId = playerId;
-        this.currentMana = currentMana;
+        this.manaCount = manaCount;
     }
 
     public ulong PlayerId { get { return playerId; } }
 
-    public int CurrentMana { get { return currentMana; } }
+    public int ManaCount { get { return manaCount; } }
 }

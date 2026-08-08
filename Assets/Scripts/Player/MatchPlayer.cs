@@ -166,8 +166,11 @@ public class MatchPlayer {
             return currentMana;
         }
         set {
-            currentMana = value;
-            EventBus.Instance.InvokeOnManaCountChanged(playerId, currentMana);
+            ManaChangedEventArgs args = new ManaChangedEventArgs(playerId, value);
+            EventBus.Instance.InvokeOnManaCountChanged(args);
+            currentMana = args.ManaCount;
+            EventBus.Instance.InvokeOnManaCountChangedFinished(args);
+            EventBus.Instance.InvokeOnPostManaCountChanged(playerId, currentMana);
         }
     }
 }

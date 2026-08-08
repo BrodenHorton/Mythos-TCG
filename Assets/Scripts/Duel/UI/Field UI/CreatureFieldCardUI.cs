@@ -41,11 +41,12 @@ public class CreatureFieldCardUI : FieldCardUI {
     }
 
     public override void StartCardDrag() {
-        // TODO: Invoke event that will highlight selectable cards to attack or defend
+        EventBus.Instance.InvokeOnSelectCreatureFieldCardDrag(new FieldCardEventArgs<CreatureFieldCardUI>(this));
     }
 
     public override void ReleaseCardDrag() {
         EventBus.Instance.InvokeOnReleaseCreatureFieldCardDrag(new FieldCardEventArgs<CreatureFieldCardUI>(this));
+        EventBus.Instance.InvokeOnReleaseCreatureFieldCardDragFinished(new FieldCardEventArgs<CreatureFieldCardUI>(this));
     }
 
     public void UpdateFieldCard(CreatureCardPayload card) {

@@ -6,6 +6,8 @@ using UnityEngine;
 public class CombatFieldUI : MonoBehaviour {
     private static readonly int MAX_FIELD_CREATURES = 6;
 
+    [SerializeField] private Collider playableAreaCollider;
+    [SerializeField] private GameObject playableAreaVisual;
     [SerializeField] private Transform attackerOrigin;
     [SerializeField] private Transform defenderOrigin;
     [SerializeField] private float cardSpacing;
@@ -14,6 +16,7 @@ public class CombatFieldUI : MonoBehaviour {
     [Header("Prefab")]
     [SerializeField] private CreatureFieldCardUI creatureFieldCardUIPrefab;
 
+    private Camera cam;
     private ulong targetPlayerId;
     private Dictionary<int, CreatureFieldCardUI> attackerByPositionIndex;
     private Dictionary<int, CreatureFieldCardUI> defenderByPositionIndex;
@@ -21,6 +24,12 @@ public class CombatFieldUI : MonoBehaviour {
     private void Awake() {
         attackerByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
         defenderByPositionIndex = new Dictionary<int, CreatureFieldCardUI>();
+    }
+
+    private void Start() {
+        cam = Camera.main;
+
+        playableAreaVisual.SetActive(false);
     }
 
     public void Init(ulong targetPlayerId) {
@@ -159,6 +168,46 @@ public class CombatFieldUI : MonoBehaviour {
     public void ClearCreatures() {
         attackerByPositionIndex.Clear();
         defenderByPositionIndex.Clear();
+    }
+
+    public void ShowPlayableAreaVisual() {
+        playableAreaVisual.SetActive(true);
+    }
+
+    public void HidePlayableAreaVisual() {
+        playableAreaVisual.SetActive(false);
+    }
+
+    public bool IsHoveringCombatArea() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider == playableAreaCollider)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool IsHoveringCombatFieldCreatureCard(out CreatureFieldCardUI hoveredCard, CreatureFieldCardUI ignoreCard = null) {
+        hoveredCard = null;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider.TryGetComponent(out CreatureFieldCardCollisionPointer collisionPointer)) {
+                if (ignoreCard != null && collisionPointer.GetFieldCardUI().CardUuid == ignoreCard.CardUuid)
+                    continue;
+                if (!ContainsAttacker(collisionPointer.GetFieldCardUI().CardUuid) && !ContainsDefender(collisionPointer.GetFieldCardUI().CardUuid))
+                    continue;
+
+                hoveredCard = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public bool ContainsAttacker(CreatureFieldCardUI cardUI) {

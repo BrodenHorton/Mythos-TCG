@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f448bccf6c0c6764495f62455bcf338c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckOrigin: {fileID: 0}
+  deckOrigin: {fileID: 613851896445854473}
   handOrigin: {fileID: 8496425766226962873}
   lifePoints: {fileID: 4076627492552950824}
   manaCount: {fileID: 7642753490845534241}

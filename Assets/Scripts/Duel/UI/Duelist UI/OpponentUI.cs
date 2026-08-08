@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class OpponentUI : DuelistUI {
@@ -21,6 +22,10 @@ public class OpponentUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions() {
+        SetDefaultCardPositions(new List<Guid>());
+    }
+
+    public override void SetDefaultCardPositions(List<Guid> ignoreCards) {
         float radius = 40f;
         float arcDistanceInterval = 1.15f;
         // TODO: Figure out how to detect which axis and direction the radius should be added to so you get the correct circle center
@@ -30,6 +35,9 @@ public class OpponentUI : DuelistUI {
         int cardCount = cardsInHand.Count;
         float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
         for (int i = 0; i < cardCount; i++) {
+            if (ignoreCards.Contains(cardsInHand[i].CardUuid))
+                continue;
+
             cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
 

@@ -15,7 +15,7 @@ public class DuelistUIManager : NetworkBehaviour {
 
         duelManager.OnPlayersInitialization += Init;
         EventBus.Instance.OnLifePointsChanged += LifePointsChanged;
-        EventBus.Instance.OnManaCountChanged += ManaCountChanged;
+        EventBus.Instance.OnPostManaCountChanged += ManaCountChanged;
         EventBus.Instance.OnCardDrawn += CardDrawn;
         EventBus.Instance.OnCardRemovedFromHand += CardRemovedFromHand;
     }
@@ -44,7 +44,7 @@ public class DuelistUIManager : NetworkBehaviour {
         if (controllerByPlayerId[args.PlayerId] == null)
             throw new Exception("Unable to find duelist controller with player Id: " + args.PlayerId);
 
-        controllerByPlayerId[args.PlayerId].SetManaCount(args.CurrentMana);
+        controllerByPlayerId[args.PlayerId].SetManaCount(args.ManaCount);
     }
 
     private void CardDrawn(object sender, PlayerCardPayloadEventArgs<CardPayload> args) {

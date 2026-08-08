@@ -19,7 +19,7 @@ public abstract class CardUI : MonoBehaviour {
     }
 
     protected virtual void OnDestroy() {
-        FieldCardSelectionManager.Instance.OnSetSelectableFieldCards -= SetSelectabilityOnSetSelectableCards;
+        CardSelectionManager.Instance.OnSetSelectableCards -= SetSelectabilityOnSetSelectableCards;
     }
 
     public abstract void SelectCard(out bool canDragCard);

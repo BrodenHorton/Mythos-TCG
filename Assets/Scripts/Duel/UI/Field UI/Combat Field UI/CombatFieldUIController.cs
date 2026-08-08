@@ -15,11 +15,15 @@ public class CombatFieldUIController : NetworkBehaviour {
         duelManager = ServiceLocator.Get<DuelManager>();
         combatManager = ServiceLocator.Get<CombatManager>();
 
-        FieldCardSelectionManager.Instance.OnSelectCreatureFieldCard += SelectCombatCreature;
+        EventBus.Instance.OnSelectCreatureFieldCard += SelectCombatCreature;
+        EventBus.Instance.OnSelectCreatureFieldCardDrag += ShowPlayableAreaVisual;
+        EventBus.Instance.OnReleaseCreatureFieldCardDrag += ReleaseCreatureFieldCardDragHandler;
     }
 
     public override void OnNetworkDespawn() {
-        FieldCardSelectionManager.Instance.OnSelectCreatureFieldCard -= SelectCombatCreature;
+        EventBus.Instance.OnSelectCreatureFieldCard -= SelectCombatCreature;
+        EventBus.Instance.OnSelectCreatureFieldCardDrag -= ShowPlayableAreaVisual;
+        EventBus.Instance.OnReleaseCreatureFieldCardDrag -= ReleaseCreatureFieldCardDragHandler;
     }
 
     public void Init(ulong playerId) {
@@ -51,13 +55,22 @@ public class CombatFieldUIController : NetworkBehaviour {
         return combatFieldUI.ReleaseDefender(cardUuid);
     }
 
+    public List<CreatureFieldCardUI> ReleaseAttackers() {
+        List<CreatureFieldCardUI> attackers = combatFieldUI.Attackers;
+        combatFieldUI.ClearAttackers();
+        return attackers;
+    }
+
+    public List<CreatureFieldCardUI> ReleaseDefenders() {
+        List<CreatureFieldCardUI> defenders = combatFieldUI.Defenders;
+        combatFieldUI.ClearDefenders();
+        return defenders;
+    }
+
     private void SelectCombatCreature(object sender, FieldCardEventArgs<CreatureFieldCardUI> args) {
         if (args.CardUI == null || (!combatFieldUI.ContainsAttacker(args.CardUI) && !combatFieldUI.ContainsDefender(args.CardUI)))
             return;
 
-        // Setting IsCanceled to true will stop card dragging. Might want to make a separte event args class
-        // for this event to make this its own boolean for clarity.
-        args.IsCanceled = true;
         SelectCombatCreatureServerRpc(targetPlayerId, args.CardUI.CardUuid.ToString());
     }
 
@@ -70,16 +83,46 @@ public class CombatFieldUIController : NetworkBehaviour {
             combatManager.PlayerSelectUndeclareDefender(targetId, Guid.Parse(creatureCardUuidStr.ToString()));
     }
 
-    public List<CreatureFieldCardUI> ReleaseAttackers() {
-        List<CreatureFieldCardUI> attackers = combatFieldUI.Attackers;
-        combatFieldUI.ClearAttackers();
-        return attackers;
+    private void ShowPlayableAreaVisual(object sender, FieldCardEventArgs<CreatureFieldCardUI> args) {
+        if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId)
+            return;
+
+        combatFieldUI.ShowPlayableAreaVisual();
     }
 
-    public List<CreatureFieldCardUI> ReleaseDefenders() {
-        List<CreatureFieldCardUI> defenders = combatFieldUI.Defenders;
-        combatFieldUI.ClearDefenders();
-        return defenders;
+    private void ReleaseCreatureFieldCardDragHandler(object sender, FieldCardEventArgs<CreatureFieldCardUI> args) {
+        if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId)
+            return;
+
+        combatFieldUI.HidePlayableAreaVisual();
+        if (combatFieldUI.IsHoveringCombatArea()) {
+            EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CombatFieldCardEventArgs<CreatureFieldCardUI>(combatFieldUI, args.CardUI));
+            if (combatFieldUI.IsHoveringCombatFieldCreatureCard(out CreatureFieldCardUI hoveredCardUI, args.CardUI)) {
+                CreatureReleasedOverCreatureServerRpc(args.CardUI.PlayerId,
+                                                      hoveredCardUI.PlayerId,
+                                                      args.CardUI.CardUuid.ToString(),
+                                                      hoveredCardUI.CardUuid.ToString());
+            }
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void CreatureReleasedOverCreatureServerRpc(ulong heldCardPlayerId,
+                                                       ulong hoveredCardPlayerId,
+                                                       FixedString128Bytes heldCreatureUuidStr,
+                                                       FixedString128Bytes hoveredCreatureUuidStr,
+                                                       RpcParams rpcParams = default) {
+        MatchPlayer heldCardPlayer = duelManager.GetPlayerById(heldCardPlayerId);
+        MatchPlayer hoveredCardPlayer = duelManager.GetPlayerById(hoveredCardPlayerId);
+        Guid heldCreatureUuid = Guid.Parse(heldCreatureUuidStr.ToString());
+        Guid hoveredCreatureUuid = Guid.Parse(hoveredCreatureUuidStr.ToString());
+        CreatureCard heldCreature = heldCardPlayer.GetCreatureByUuid(heldCreatureUuid);
+        CreatureCard hoveredCreature = hoveredCardPlayer.GetCreatureByUuid(hoveredCreatureUuid);
+
+        CreatureReleasedOverCreatureEventArgs args = new CreatureReleasedOverCreatureEventArgs(rpcParams.Receive.SenderClientId,
+                                                                                               heldCreature,
+                                                                                               hoveredCreature);
+        EventBus.Instance.InvokeOnCreatureReleasedOverCreature(args);
     }
 
     public bool ContainsAttacker(Guid uuid) {

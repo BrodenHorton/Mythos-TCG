@@ -13,8 +13,11 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<PlayerCardUuidEventArgs> OnPlayHandCard;
     // Field Card Selection
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
+    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCardDrag;
     public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDrag;
+    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDragFinished;
     public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardOverCombatArea;
+    public event EventHandler<CreatureReleasedOverCreatureEventArgs> OnCreatureReleasedOverCreature;
     // Playing Cards
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
     public event EventHandler<PlayerCardEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
@@ -28,6 +31,8 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChanged;
     public event EventHandler<LifePointsChangedEventArgs> OnLifePointsChangedFinished;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
+    public event EventHandler<ManaChangedEventArgs> OnManaCountChangedFinished;
+    public event EventHandler<ManaChangedEventArgs> OnPostManaCountChanged;
     // Declaring and Undeclaring creatures
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureAttack;
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureDefend;
@@ -155,12 +160,27 @@ public class EventBus : NetworkBehaviour {
         OnSelectCreatureFieldCard?.Invoke(this, args);
     }
 
+    public void InvokeOnSelectCreatureFieldCardDrag(FieldCardEventArgs<CreatureFieldCardUI> args) {
+        OnSelectCreatureFieldCardDrag?.Invoke(this, args);
+    }
+
     public void InvokeOnReleaseCreatureFieldCardDrag(FieldCardEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardDrag?.Invoke(this, args);
     }
 
+    public void InvokeOnReleaseCreatureFieldCardDragFinished(FieldCardEventArgs<CreatureFieldCardUI> args) {
+        OnReleaseCreatureFieldCardDragFinished?.Invoke(this, args);
+    }
+
     public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
+    }
+
+    public void InvokeOnCreatureReleasedOverCreature(CreatureReleasedOverCreatureEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event OnCreatureReleasedOverCreature can only be invoked by the server");
+
+        OnCreatureReleasedOverCreature?.Invoke(this, args);
     }
     #endregion
 
@@ -248,17 +268,31 @@ public class EventBus : NetworkBehaviour {
         OnLifePointsChangedFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnManaCountChanged(ulong playerId, int manaCount) {
+    public void InvokeOnManaCountChanged(ManaChangedEventArgs args) {
         if (!IsServer)
-            return;
+            throw new Exception("The event InvokeOnManaChanged can only be called by the server");
 
-        InvokeOnManaCountChangedClientRpc(playerId, manaCount);
+        OnManaCountChanged?.Invoke(this, args);
+    }
+
+    public void InvokeOnManaCountChangedFinished(ManaChangedEventArgs args) {
+        if (!IsServer)
+            throw new Exception("The event InvokeOnManaChangedFinished can only be called by the server");
+
+        OnManaCountChangedFinished?.Invoke(this, args);
+    }
+
+    public void InvokeOnPostManaCountChanged(ulong playerId, int manaCount) {
+        if (!IsServer)
+            throw new Exception("The event InvokeOnPostManaChanged can only be called by the server");
+
+        InvokeOnPostManaCountChangedClientRpc(playerId, manaCount);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void InvokeOnManaCountChangedClientRpc(ulong playerId, int manaCount) {
+    private void InvokeOnPostManaCountChangedClientRpc(ulong playerId, int manaCount) {
         ManaChangedEventArgs args = new ManaChangedEventArgs(playerId, manaCount);
-        OnManaCountChanged?.Invoke(this, args);
+        OnPostManaCountChanged?.Invoke(this, args);
     }
     #endregion
 

@@ -16,7 +16,7 @@ public class PlayingFieldUI : MonoBehaviour {
     private ulong playerId;
 
     private void Start() {
-        FieldCardSelectionManager.Instance.OnReleaseCreatureFieldCardDragFinished += (sender, args) => {
+        EventBus.Instance.OnReleaseCreatureFieldCardDragFinished += (sender, args) => {
             if(args.CardUI.PlayerId == playerId) 
                 SetDefaultCardPositions();
         };

@@ -1,24 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerUI : DuelistUI {
+    [SerializeField] private Collider playableAreaCollider;
+    [SerializeField] private GameObject playableAreaVisual;
     [SerializeField] private Vector3 handHoverOffset;
     [SerializeField] private Vector3 cardHoverOffset;
     [SerializeField] private float cardHoverScale;
 
     private Camera cam;
     private HandCardUI previousSelection;
+    private bool canHoverHand;
 
     private void Awake() {
         previousSelection = null;
+        canHoverHand = true;
     }
 
     private void Start() {
         cam = Camera.main;
-    }
 
-    private void Update() {
-        UpdateHovering();
+        playableAreaVisual.SetActive(false);
     }
 
     public void UpdateHovering() {
@@ -98,6 +101,10 @@ public class PlayerUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions() {
+        SetDefaultCardPositions(new List<Guid>());
+    }
+
+    public override void SetDefaultCardPositions(List<Guid> ignoreCards) {
         float radius = 40f;
         float arcDistanceInterval = 1.15f;
         // TODO: Figure out how to detect which axis and direction the radius should be added to so you get the correct circle center
@@ -107,6 +114,9 @@ public class PlayerUI : DuelistUI {
         int cardCount = cardsInHand.Count;
         float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
         for (int i = 0; i < cardCount; i++) {
+            if (ignoreCards.Contains(cardsInHand[i].CardUuid))
+                continue;
+
             cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
 
@@ -136,6 +146,26 @@ public class PlayerUI : DuelistUI {
         return null;
     }
 
+    public void ShowPlayableAreaVisual() {
+        playableAreaVisual.SetActive(true);
+    }
+
+    public void HidePlayableAreaVisual() {
+        playableAreaVisual.SetActive(false);
+    }
+
+    public bool IsHoveringPlayableArea() {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit hit in hits) {
+            if (hit.collider == playableAreaCollider)
+                return true;
+        }
+
+        return false;
+    }
+
     public HandCardUI GetCardByUuid(Guid cardUuid) {
         foreach(HandCardUI cardUI in cardsInHand) {
             if(cardUI.CardUuid == cardUuid)
@@ -143,4 +173,6 @@ public class PlayerUI : DuelistUI {
         }
         throw new Exception("Attempted to get cardUI that does not exists in PlayerUI hand");
     }
+
+    public bool CanHoverHand {get { return canHoverHand; } set { canHoverHand = value; } }
 }

@@ -5,30 +5,29 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class FieldCardSelectionManager : NetworkBehaviour {
-    /*public event EventHandler<SelectableCardsEventArgs> OnGetSelectableFieldCards;
-    public event EventHandler<List<Guid>> OnSetSelectableFieldCards;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCardDrag;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDrag;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDragFinished;
-    public event EventHandler<CreatureReleasedOverCreatureEventArgs> OnCreatureReleasedOverCreature;
-    public event EventHandler<FieldCardEventArgs<FieldCardUI>> OnInspectFieldCard;
+public class CardSelectionManager : NetworkBehaviour {
+    public event EventHandler<SelectableCardsEventArgs> OnGetSelectableCards;
+    public event EventHandler<List<Guid>> OnSetSelectableCards;
+    public event EventHandler OnClearSelectableCards;
+    public event EventHandler<CardUIEventArgs<CardUI>> OnInspectCard;
+    public event EventHandler OnCardDrag;
+    public event EventHandler OnReleaseCardDrag;
 
-    public static FieldCardSelectionManager Instance { get; private set; }
+    public static CardSelectionManager Instance { get; private set; }
 
     [SerializeField] private float dragOffset;
-
     private Camera cam;
     private bool isDragging;
-    private CreatureFieldCardUI draggingCard;
+    private CardUI draggingCard;
     private DuelManager duelManager;
     private ActionManager actionManager;
+    private DuelStateManager stateManager;
     private CombatStateManager combatStateManager;
+    private SpellChainManager spellChainManager;
 
     private void Awake() {
         if (Instance != null) {
-            Debug.LogWarning("FieldCardSelectionManager already exists in scene. Destroying redundant object.");
+            Debug.LogWarning("CardSelectionManager already exists in scene. Destroying redundant object.");
             Destroy(this);
             return;
         }
@@ -42,12 +41,24 @@ public class FieldCardSelectionManager : NetworkBehaviour {
 
         duelManager = ServiceLocator.Get<DuelManager>();
         actionManager = ServiceLocator.Get<ActionManager>();
+        stateManager = ServiceLocator.Get<DuelStateManager>();
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
+        // Hand Card Selection Event Listeners
+        stateManager.FirstMainPhase.OnFirstMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
+        stateManager.CombatPhase.OnCombatPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
+        stateManager.SecondMainPhase.OnSecondMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
+        stateManager.EndPhase.OnEndPhasEnteredFinished += (sender, args) => ClearSelectableCards(args);
+        spellChainManager.OnSpellChainEnd += SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnManaCountChangedFinished += (sender, args) => SetSelectableCards(args.PlayerId);
+        actionManager.OnActionStateChanged +=  SetSelectableCardsForActionFocusPlayers;
+
+        // Field Card Selection Event Listeners
         combatStateManager.DeclareAttackersState.OnDeclareAttackersStateEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
-        combatStateManager.DeclareDefendersState.OnDeclareDefendersEntered += (sender, args) => {
+        combatStateManager.DeclareDefendersState.OnDeclareDefendersEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
         actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
@@ -57,23 +68,17 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         EventBus.Instance.OnPostUndeclareDefender += SetSelectableCardsForActionFocusPlayers;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.started += SelectCreatureFieldCard;
-        playerInputActions.Player.Select.canceled += ReleaseCreatureFieldCardDrag;
+        playerInputActions.Player.Select.started += SelectCard;
+        playerInputActions.Player.Select.canceled += ReleaseCardDrag;
         playerInputActions.Player.Inspect.started += InspectFieldCard;
     }
 
     public override void OnNetworkDespawn() {
         base.OnNetworkDespawn();
 
-        actionManager.OnActionStateChanged -= SetSelectableCardsForActionFocusPlayers;
-        EventBus.Instance.OnPostDeclareAttacker -= SetSelectableCardsForActionFocusPlayers;
-        EventBus.Instance.OnPostDeclareDefender -= SetSelectableCardsForActionFocusPlayers;
-        EventBus.Instance.OnPostUndeclareAttacker -= SetSelectableCardsForActionFocusPlayers;
-        EventBus.Instance.OnPostUndeclareDefender -= SetSelectableCardsForActionFocusPlayers;
-
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Select.started -= SelectCreatureFieldCard;
-        playerInputActions.Player.Select.canceled -= ReleaseCreatureFieldCardDrag;
+        playerInputActions.Player.Select.started -= SelectCard;
+        playerInputActions.Player.Select.canceled -= ReleaseCardDrag;
         playerInputActions.Player.Inspect.started -= InspectFieldCard;
     }
 
@@ -116,7 +121,7 @@ public class FieldCardSelectionManager : NetworkBehaviour {
     }
 
     private void SetSelectableCards(ulong playerId) {
-        if(!IsServer)
+        if (!IsServer)
             throw new Exception("Only the server can call the method SetSelectableCards");
 
         FixedString128Bytes[] selectableCardUuidStrs;
@@ -138,7 +143,7 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         List<Guid> selectableCardUuids = new List<Guid>();
         for (int i = 0; i < selectableCardUuidStrs.Length; i++)
             selectableCardUuids.Add(Guid.Parse(selectableCardUuidStrs[i].ToString()));
-        OnSetSelectableFieldCards?.Invoke(this, selectableCardUuids);
+        OnSetSelectableCards?.Invoke(this, selectableCardUuids);
     }
 
     public List<Guid> GetSelectableCardGuids(ulong playerId) {
@@ -147,11 +152,17 @@ public class FieldCardSelectionManager : NetworkBehaviour {
 
         List<Guid> selectableCardGuids = new List<Guid>();
         MatchPlayer player = duelManager.GetPlayerById(playerId);
+        // Get Selectable Hand Cards
+        for (int i = 0; i < player.Hand.Count; i++) {
+            if (player.Hand[i].IsPlayable(duelManager, stateManager, spellChainManager, player))
+                selectableCardGuids.Add(player.Hand[i].Uuid);
+        }
+        // Get Selectable Field Cards
         for (int i = 0; i < player.Creatures.Count; i++) {
             if (CanSelectAttacker(player, player.Creatures[i]) || CanSelectDefender(player, player.Creatures[i]))
                 selectableCardGuids.Add(player.Creatures[i].Uuid);
         }
-        OnGetSelectableFieldCards?.Invoke(this, new SelectableCardsEventArgs(playerId, selectableCardGuids));
+        OnGetSelectableCards?.Invoke(this, new SelectableCardsEventArgs(playerId, selectableCardGuids));
 
         return selectableCardGuids;
     }
@@ -190,104 +201,66 @@ public class FieldCardSelectionManager : NetworkBehaviour {
         return true;
     }
 
-    // TODO: Move to CardSelectionManager
-    private void SelectCreatureFieldCard(InputAction.CallbackContext context) {
+    private void ClearSelectableCards(ulong playerId) {
+        if (!IsServer)
+            throw new Exception("Only the server can call the method ClearSelectableCards");
+
+        BaseRpcTarget target = RpcTarget.Single(playerId, RpcTargetUse.Temp);
+        SetSelectableCardsClientRpc(new FixedString128Bytes[0], target);
+    }
+
+    private void SelectCard(InputAction.CallbackContext context) {
         if (!context.started)
             return;
-        if (!CreatureFieldCardRaycast(out CreatureFieldCardUI cardUI))
+        if (!CardUIRaycast(out CardUI cardUI))
             return;
         if (!cardUI.IsSelectable)
             return;
 
-        FieldCardEventArgs<CreatureFieldCardUI> args = new FieldCardEventArgs<CreatureFieldCardUI>(cardUI);
-        OnSelectCreatureFieldCard?.Invoke(this, args);
-        if (args.IsCanceled)
-            return;
+        cardUI.SelectCard(out bool canDragCard);
 
-        OnSelectCreatureFieldCardDrag?.Invoke(this, new FieldCardEventArgs<CreatureFieldCardUI>(cardUI));
-        isDragging = true;
-        draggingCard = cardUI;
-        draggingCard.transform.position = new Vector3(draggingCard.transform.position.x,
-                                                      draggingCard.transform.position.y + dragOffset,
-                                                      draggingCard.transform.position.z);
+        if(canDragCard) {
+            OnCardDrag?.Invoke(this, EventArgs.Empty);
+            cardUI.StartCardDrag();
+            isDragging = true;
+            draggingCard = cardUI;
+            draggingCard.transform.position = new Vector3(draggingCard.transform.position.x,
+                                                          draggingCard.transform.position.y + dragOffset,
+                                                          draggingCard.transform.position.z);
+        }
     }
 
-    // TODO: Move to CardSelectionManager
-    private void ReleaseCreatureFieldCardDrag(InputAction.CallbackContext context) {
+    private void ReleaseCardDrag(InputAction.CallbackContext context) {
         if (!context.canceled)
             return;
         if (!isDragging)
             return;
 
-        CreatureFieldCardUI cardUI = draggingCard;
+        CardUI cardUI = draggingCard;
         ResetCardDragging();
-        FieldCardEventArgs<CreatureFieldCardUI> args = new FieldCardEventArgs<CreatureFieldCardUI>(cardUI);
-        OnReleaseCreatureFieldCardDrag?.Invoke(this, args);
-        if (CreatureFieldCardRaycast(out CreatureFieldCardUI hoveredCardUI, cardUI)) {
-            CreatureReleasedOverCreatureServerRpc(cardUI.PlayerId,
-                                                  hoveredCardUI.PlayerId,
-                                                  cardUI.CardUuid.ToString(),
-                                                  hoveredCardUI.CardUuid.ToString());
-        }
-        OnReleaseCreatureFieldCardDragFinished?.Invoke(this, args);
-    }
-
-    [Rpc(SendTo.Server)]
-    private void CreatureReleasedOverCreatureServerRpc(ulong heldCardPlayerId,
-                                                       ulong hoveredCardPlayerId,
-                                                       FixedString128Bytes heldCreatureUuidStr,
-                                                       FixedString128Bytes hoveredCreatureUuidStr,
-                                                       RpcParams rpcParams = default) {
-        MatchPlayer heldCardPlayer = duelManager.GetPlayerById(heldCardPlayerId);
-        MatchPlayer hoveredCardPlayer = duelManager.GetPlayerById(hoveredCardPlayerId);
-        Guid heldCreatureUuid = Guid.Parse(heldCreatureUuidStr.ToString());
-        Guid hoveredCreatureUuid = Guid.Parse(hoveredCreatureUuidStr.ToString());
-        CreatureCard heldCreature = heldCardPlayer.GetCreatureByUuid(heldCreatureUuid);
-        CreatureCard hoveredCreature = hoveredCardPlayer.GetCreatureByUuid(hoveredCreatureUuid);
-
-        CreatureReleasedOverCreatureEventArgs args = new CreatureReleasedOverCreatureEventArgs(rpcParams.Receive.SenderClientId,
-                                                                                               heldCreature,
-                                                                                               hoveredCreature);
-        OnCreatureReleasedOverCreature?.Invoke(this, args);
+        OnReleaseCardDrag?.Invoke(this, EventArgs.Empty);
+        cardUI.ReleaseCardDrag();
     }
 
     private void InspectFieldCard(InputAction.CallbackContext context) {
         if (!context.started)
             return;
-        if (!FieldCardRaycast(out FieldCardUI cardUI))
+        if (!CardUIRaycast(out CardUI cardUI))
             return;
 
         // TODO: Implement inspecting cards. Could implemnt a CardUI interface that is implemented
         // by hand and field cards
     }
 
-    private bool FieldCardRaycast(out FieldCardUI cardUI) {
+    private bool CardUIRaycast(out CardUI cardUI) {
         cardUI = null;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
-            FieldCardCollisionPointer fieldCardCollisionPointer;
+            CardCollisionPointer fieldCardCollisionPointer;
             if (hit.collider.TryGetComponent(out fieldCardCollisionPointer)) {
-                cardUI = fieldCardCollisionPointer.GetFieldCardUI();
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool CreatureFieldCardRaycast(out CreatureFieldCardUI cardUI, CreatureFieldCardUI ignoreCard = null) {
-        cardUI = null;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray);
-        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.TryGetComponent(out CreatureFieldCardCollisionPointer collisionPointer)) {
-                if (ignoreCard != null && collisionPointer.GetFieldCardUI().CardUuid == ignoreCard.CardUuid)
-                    continue;
-
-                cardUI = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;
+                cardUI = fieldCardCollisionPointer.GetCardUI();
                 return true;
             }
         }
@@ -298,5 +271,7 @@ public class FieldCardSelectionManager : NetworkBehaviour {
     public void ResetCardDragging() {
         isDragging = false;
         draggingCard = null;
-    }*/
+    }
+
+    public bool IsDragging { get { return isDragging; } }
 }

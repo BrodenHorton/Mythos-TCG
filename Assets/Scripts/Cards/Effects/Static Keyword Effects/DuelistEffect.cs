@@ -22,16 +22,16 @@ public class DuelistEffect : StaticCreatureCardEffect {
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
         combatManager = ServiceLocator.Get<CombatManager>();
 
-        FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += SetTargetCardsSelectable;
-        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature += SetDuelistDefender;
-        FieldCardSelectionManager.Instance.OnGetSelectableFieldCards += RemoveDuelistTargetFromSelectableCards;
+        CardSelectionManager.Instance.OnGetSelectableCards += SetTargetCardsSelectable;
+        EventBus.Instance.OnCreatureReleasedOverCreature += SetDuelistDefender;
+        CardSelectionManager.Instance.OnGetSelectableCards += RemoveDuelistTargetFromSelectableCards;
         EventBus.Instance.OnUndeclareAttacker += ClearDuelistDefender;
     }
 
     public override void RemoveListeners() {
-        FieldCardSelectionManager.Instance.OnGetSelectableFieldCards -= SetTargetCardsSelectable;
-        FieldCardSelectionManager.Instance.OnCreatureReleasedOverCreature -= SetDuelistDefender;
-        FieldCardSelectionManager.Instance.OnGetSelectableFieldCards -= RemoveDuelistTargetFromSelectableCards;
+        CardSelectionManager.Instance.OnGetSelectableCards -= SetTargetCardsSelectable;
+        EventBus.Instance.OnCreatureReleasedOverCreature -= SetDuelistDefender;
+        CardSelectionManager.Instance.OnGetSelectableCards -= RemoveDuelistTargetFromSelectableCards;
         EventBus.Instance.OnUndeclareAttacker -= ClearDuelistDefender;
     }
 
