@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class CreatureFieldCardUI : FieldCardUI {
+public class CreatureFieldCardUI : CardUI {
     [SerializeField] private TextMeshPro atk;
     [SerializeField] private TextMeshPro health;
     private bool isInCombatField;
@@ -12,18 +12,22 @@ public class CreatureFieldCardUI : FieldCardUI {
         this.playerId = playerId;
         isInCombatField = false;
 
+        AddListeners();
+        UpdateFieldCard(card);
+    }
+
+    public override void AddListeners() {
+        base.AddListeners();
         EventBus.Instance.OnCreatureEndOfTurnRegenerationFinished += UpdateFieldCardOnEndOfTurnRegeneration;
         EventBus.Instance.OnCreatureTappedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureUntappedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureDamagedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureHealedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnPostCreatureCombat += UpdateFieldCardOnPostCreatureCombat;
-
-        UpdateFieldCard(card);
     }
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    public override void RemoveListeners() {
+        base.RemoveListeners();
         EventBus.Instance.OnCreatureEndOfTurnRegenerationFinished -= UpdateFieldCardOnEndOfTurnRegeneration;
         EventBus.Instance.OnCreatureTappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureUntappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
@@ -37,16 +41,16 @@ public class CreatureFieldCardUI : FieldCardUI {
             throw new System.Exception("Attempting to call SelectCard when CardUI is not marked selectable");
 
         canDragCard = !isInCombatField;
-        EventBus.Instance.InvokeOnSelectCreatureFieldCard(new FieldCardEventArgs<CreatureFieldCardUI>(this));
+        EventBus.Instance.InvokeOnSelectCreatureFieldCard(new CardUIEventArgs<CreatureFieldCardUI>(this));
     }
 
     public override void StartCardDrag() {
-        EventBus.Instance.InvokeOnSelectCreatureFieldCardDrag(new FieldCardEventArgs<CreatureFieldCardUI>(this));
+        EventBus.Instance.InvokeOnStartCreatureFieldCardDrag(new CardUIEventArgs<CreatureFieldCardUI>(this));
     }
 
     public override void ReleaseCardDrag() {
-        EventBus.Instance.InvokeOnReleaseCreatureFieldCardDrag(new FieldCardEventArgs<CreatureFieldCardUI>(this));
-        EventBus.Instance.InvokeOnReleaseCreatureFieldCardDragFinished(new FieldCardEventArgs<CreatureFieldCardUI>(this));
+        EventBus.Instance.InvokeOnReleaseCreatureFieldCardDrag(new CardUIEventArgs<CreatureFieldCardUI>(this));
+        EventBus.Instance.InvokeOnReleaseCreatureFieldCardDragFinished(new CardUIEventArgs<CreatureFieldCardUI>(this));
     }
 
     public void UpdateFieldCard(CreatureCardPayload card) {

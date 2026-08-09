@@ -78,7 +78,7 @@ public class PlayingFieldUI : MonoBehaviour {
         int cardCount = creatures.Count;
         float handOffset = (cardCount - 1) * cardSpacing / 2;
         for (int i = 0; i < cardCount; i++) {
-            FieldCardUI cardUI = creatures[i];
+            CardUI cardUI = creatures[i];
             cardUI.transform.localScale = Vector3.one;
             Vector3 cardPosition = creatureSlotOrigin.position;
             cardPosition.x += i * cardSpacing - handOffset;

@@ -68,7 +68,6 @@ public class DeclareDefendersState : NetworkBehaviour, CombatState {
 
         actionManager.RemoveActionFocusId(playerId);
         readyPlayers.Add(playerId);
-        TcgLogger.Log("Player " + playerId + " has readied up");
         UpdatePlayerReadyStateServerRpc();
     }
 

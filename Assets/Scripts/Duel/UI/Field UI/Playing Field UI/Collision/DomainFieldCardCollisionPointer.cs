@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-public class DomainFieldCardCollisionPointer : MonoBehaviour, FieldCardCollisionPointer {
+public class DomainFieldCardCollisionPointer : MonoBehaviour, CardCollisionPointer {
     [SerializeField] private DomainFieldCardUI cardUI;
 
-    public FieldCardUI GetFieldCardUI() {
+    public CardUI GetCardUI() {
         return cardUI;
     }
 

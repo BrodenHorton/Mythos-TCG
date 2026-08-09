@@ -28,7 +28,7 @@ public class CombatManager : NetworkBehaviour {
         ServiceLocator.Unregister(this);
     }
 
-    private void DeclareAttacker(object sender, CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
+    private void DeclareAttacker(object sender, CombatFieldCardEventArgs args) {
         DeclareAttackerServerRpc(args.CombatFieldUI.TargetPlayerId, args.CardUI.CardUuid.ToString());
     }
 
@@ -62,7 +62,6 @@ public class CombatManager : NetworkBehaviour {
         if (!IsServer)
             throw new Exception("Only the server can call the method DeclareDefender");
 
-        TcgLogger.Log("Player Select Declare Defender called");
         if (combatStateManager.CurrentState.CanDeclareDefenders())
             DeclareDefender(args.DraggingPlayerId, args.HoveredCard, args.HeldCard);
     }

@@ -197,9 +197,9 @@ public class CombatFieldUI : MonoBehaviour {
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits) {
             if (hit.collider.TryGetComponent(out CreatureFieldCardCollisionPointer collisionPointer)) {
-                if (ignoreCard != null && collisionPointer.GetFieldCardUI().CardUuid == ignoreCard.CardUuid)
+                if (ignoreCard != null && collisionPointer.GetCardUI().CardUuid == ignoreCard.CardUuid)
                     continue;
-                if (!ContainsAttacker(collisionPointer.GetFieldCardUI().CardUuid) && !ContainsDefender(collisionPointer.GetFieldCardUI().CardUuid))
+                if (!ContainsAttacker(collisionPointer.GetCardUI().CardUuid) && !ContainsDefender(collisionPointer.GetCardUI().CardUuid))
                     continue;
 
                 hoveredCard = hit.collider.GetComponent<CreatureFieldCardCollisionPointer>().CardUI;

@@ -49,24 +49,25 @@ public class PlayerUI : DuelistUI {
     public override void DrawCard(CardPayload card) {
         if(card is CreatureCardPayload creatureCard) {
             CreatureHandCardUI cardUI = Instantiate(creatureCardPrefab, handOrigin);
-            cardUI.Init(creatureCard);
+            cardUI.Init(creatureCard, playerId);
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
         else if (card is SpellCardPayload spellCard) {
             SpellHandCardUI cardUI = Instantiate(spellCardPrefab, handOrigin);
-            cardUI.Init(spellCard);
+            cardUI.Init(spellCard, playerId);
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
         else if (card is DomainCardPayload domainCard) {
             DomainHandCardUI cardUI = Instantiate(domainCardPrefab, handOrigin);
-            cardUI.Init(domainCard);
+            cardUI.Init(domainCard, playerId);
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
         else {
             NullHandCardUI cardUI = Instantiate(nullCardPrefab, handOrigin);
+            cardUI.Init(playerId);
             cardUI.transform.Rotate(90f, 0, 0);
             cardsInHand.Add(cardUI);
         }
@@ -80,6 +81,7 @@ public class PlayerUI : DuelistUI {
 
         HandCardUI cardUI = GetCardByUuid(cardUuid);
         cardsInHand.Remove(cardUI);
+        cardUI.RemoveListeners();
         Destroy(cardUI.gameObject);
         SetDefaultCardPositions();
     }

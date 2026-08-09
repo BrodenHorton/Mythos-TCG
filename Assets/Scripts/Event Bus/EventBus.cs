@@ -12,11 +12,11 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<CardUIEventArgs<HandCardUI>> OnReleaseHandCardDrag;
     public event EventHandler<PlayerCardUuidEventArgs> OnPlayHandCard;
     // Field Card Selection
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCardDrag;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDrag;
-    public event EventHandler<FieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDragFinished;
-    public event EventHandler<CombatFieldCardEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardOverCombatArea;
+    public event EventHandler<CardUIEventArgs<CreatureFieldCardUI>> OnSelectCreatureFieldCard;
+    public event EventHandler<CardUIEventArgs<CreatureFieldCardUI>> OnStartCreatureFieldCardDrag;
+    public event EventHandler<CardUIEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDrag;
+    public event EventHandler<CardUIEventArgs<CreatureFieldCardUI>> OnReleaseCreatureFieldCardDragFinished;
+    public event EventHandler<CombatFieldCardEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
     public event EventHandler<CreatureReleasedOverCreatureEventArgs> OnCreatureReleasedOverCreature;
     // Playing Cards
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
@@ -156,23 +156,23 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Field Card Selection
-    public void InvokeOnSelectCreatureFieldCard(FieldCardEventArgs<CreatureFieldCardUI> args) {
+    public void InvokeOnSelectCreatureFieldCard(CardUIEventArgs<CreatureFieldCardUI> args) {
         OnSelectCreatureFieldCard?.Invoke(this, args);
     }
 
-    public void InvokeOnSelectCreatureFieldCardDrag(FieldCardEventArgs<CreatureFieldCardUI> args) {
-        OnSelectCreatureFieldCardDrag?.Invoke(this, args);
+    public void InvokeOnStartCreatureFieldCardDrag(CardUIEventArgs<CreatureFieldCardUI> args) {
+        OnStartCreatureFieldCardDrag?.Invoke(this, args);
     }
 
-    public void InvokeOnReleaseCreatureFieldCardDrag(FieldCardEventArgs<CreatureFieldCardUI> args) {
+    public void InvokeOnReleaseCreatureFieldCardDrag(CardUIEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardDrag?.Invoke(this, args);
     }
 
-    public void InvokeOnReleaseCreatureFieldCardDragFinished(FieldCardEventArgs<CreatureFieldCardUI> args) {
+    public void InvokeOnReleaseCreatureFieldCardDragFinished(CardUIEventArgs<CreatureFieldCardUI> args) {
         OnReleaseCreatureFieldCardDragFinished?.Invoke(this, args);
     }
 
-    public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CombatFieldCardEventArgs<CreatureFieldCardUI> args) {
+    public void InvokeOnReleaseCreatureFieldCardOverCombatArea(CombatFieldCardEventArgs args) {
         OnReleaseCreatureFieldCardOverCombatArea?.Invoke(this, args);
     }
 

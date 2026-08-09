@@ -14,11 +14,11 @@ public abstract class CardUI : MonoBehaviour {
         isSelectable = false;
     }
 
-    protected virtual void Start() {
+    public virtual void AddListeners() {
         CardSelectionManager.Instance.OnSetSelectableCards += SetSelectabilityOnSetSelectableCards;
     }
 
-    protected virtual void OnDestroy() {
+    public virtual void RemoveListeners() {
         CardSelectionManager.Instance.OnSetSelectableCards -= SetSelectabilityOnSetSelectableCards;
     }
 
@@ -29,6 +29,7 @@ public abstract class CardUI : MonoBehaviour {
     public abstract void ReleaseCardDrag();
 
     protected void SetSelectabilityOnSetSelectableCards(object sender, List<Guid> cardUuids) {
+        TcgLogger.Log("HandCardUI SetSelectability entered. " + " cardUuids Count: " + cardUuids);
         bool isSelectable = cardUuids.Contains(cardUuid);
         SetSelectable(isSelectable);
     }

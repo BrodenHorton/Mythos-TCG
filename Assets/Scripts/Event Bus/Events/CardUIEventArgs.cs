@@ -1,15 +1,15 @@
 ﻿using System;
 
 public class CardUIEventArgs<T> : EventArgs where T : CardUI {
-    private CardUI cardUI;
+    private T cardUI;
     private bool isCanceled;
 
-    public CardUIEventArgs(CardUI cardUI) {
+    public CardUIEventArgs(T cardUI) {
         this.cardUI = cardUI;
         isCanceled = false;
     }
 
-    public CardUI CardUI { get { return cardUI; } }
+    public T CardUI { get { return cardUI; } }
 
     public bool IsCanceled { get { return isCanceled; } set { isCanceled = value; } }
 }

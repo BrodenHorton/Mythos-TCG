@@ -43,27 +43,23 @@ public class CardSelectionManager : NetworkBehaviour {
         combatStateManager = ServiceLocator.Get<CombatStateManager>();
         spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
-        // Hand Card Selection Event Listeners
+        actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
+        EventBus.Instance.OnManaCountChangedFinished += (sender, args) => SetSelectableCards(args.PlayerId);
         stateManager.FirstMainPhase.OnFirstMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
         stateManager.CombatPhase.OnCombatPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
         stateManager.SecondMainPhase.OnSecondMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
         stateManager.EndPhase.OnEndPhasEnteredFinished += (sender, args) => ClearSelectableCards(args);
-        spellChainManager.OnSpellChainEnd += SetSelectableCardsForActionFocusPlayers;
-        EventBus.Instance.OnManaCountChangedFinished += (sender, args) => SetSelectableCards(args.PlayerId);
-        actionManager.OnActionStateChanged +=  SetSelectableCardsForActionFocusPlayers;
-
-        // Field Card Selection Event Listeners
         combatStateManager.DeclareAttackersState.OnDeclareAttackersStateEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
         combatStateManager.DeclareDefendersState.OnDeclareDefendersEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };
-        actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
         EventBus.Instance.OnPostDeclareAttacker += SetSelectableCardsForActionFocusPlayers;
         EventBus.Instance.OnPostDeclareDefender += SetSelectableCardsForActionFocusPlayers;
         EventBus.Instance.OnPostUndeclareAttacker += SetSelectableCardsForActionFocusPlayers;
         EventBus.Instance.OnPostUndeclareDefender += SetSelectableCardsForActionFocusPlayers;
+        spellChainManager.OnSpellChainEnd += SetSelectableCardsForActionFocusPlayers;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started += SelectCard;
@@ -122,6 +118,7 @@ public class CardSelectionManager : NetworkBehaviour {
         if (!IsServer)
             throw new Exception("Only the server can call the method SetSelectableCards");
 
+        TcgLogger.Log("SetSelectableCards Entered");
         FixedString128Bytes[] selectableCardUuidStrs;
         if (actionManager.ActionFocusPlayerIds.Contains(playerId)) {
             List<Guid> selectableCardGuids = GetSelectableCardGuids(playerId);
@@ -132,6 +129,7 @@ public class CardSelectionManager : NetworkBehaviour {
         else
             selectableCardUuidStrs = new FixedString128Bytes[0];
 
+        TcgLogger.Log("# of selectable cards: " + selectableCardUuidStrs.Length);
         BaseRpcTarget target = RpcTarget.Single(playerId, RpcTargetUse.Temp);
         SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
     }

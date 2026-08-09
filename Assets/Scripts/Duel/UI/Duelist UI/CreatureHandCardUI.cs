@@ -10,7 +10,8 @@ public class CreatureHandCardUI : HandCardUI {
     [Header("Prefabs")]
     [SerializeField] private StaticKeywordUI staticKeywordUIPrefab;
 
-    public void Init(CreatureCardPayload card) {
+    public void Init(CreatureCardPayload card, ulong playerId) {
+        this.playerId = playerId;
         cardUuid = Guid.Parse(card.Uuid.ToString());
         cardName.text = card.CardBase.CardName;
         bool hasStaticKeyword = false;
@@ -29,6 +30,7 @@ public class CreatureHandCardUI : HandCardUI {
             staticKeywordContainer.gameObject.SetActive(false);
         if(!hasUniqueEffect)
             uniqueEffectContainer.gameObject.SetActive(false);
+        AddListeners();
         UpdateCreatureFieldCard(card);
     }
 

@@ -1,15 +1,15 @@
 ﻿using System;
 
-public class CombatFieldCardEventArgs<T> : EventArgs where T : FieldCardUI {
+public class CombatFieldCardEventArgs : EventArgs {
     private CombatFieldUI combatFieldUI;
-    private T cardUI;
+    private CreatureFieldCardUI cardUI;
 
-    public CombatFieldCardEventArgs(CombatFieldUI combatFieldUI, T cardUI) {
+    public CombatFieldCardEventArgs(CombatFieldUI combatFieldUI, CreatureFieldCardUI cardUI) {
         this.combatFieldUI = combatFieldUI;
         this.cardUI = cardUI;
     }
 
     public CombatFieldUI CombatFieldUI { get { return combatFieldUI; } }
 
-    public T CardUI { get { return cardUI; } }
+    public CreatureFieldCardUI CardUI { get { return cardUI; } }
 }

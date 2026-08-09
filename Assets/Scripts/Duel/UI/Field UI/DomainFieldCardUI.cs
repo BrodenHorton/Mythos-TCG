@@ -1,8 +1,9 @@
-﻿public class DomainFieldCardUI : FieldCardUI {
+﻿public class DomainFieldCardUI : CardUI {
 
     public void Init(ulong playerId, DomainCardPayload card) {
         cardUuid = card.Uuid;
         this.playerId = playerId;
+        AddListeners();
     }
 
     public override void SelectCard(out bool canDragCard) {
