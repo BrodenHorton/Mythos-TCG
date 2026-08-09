@@ -263,6 +263,8 @@ MonoBehaviour:
   lifePoints: {fileID: 1856378651686916872}
   manaCount: {fileID: 7642753490845534241}
   cardsInHand: []
+  radius: 45
+  arcDistanceInterval: 1.15
   creatureCardPrefab: {fileID: 6147231164332936400, guid: cf6a5725ea4823c4eaac7f033a9cef82, type: 3}
   spellCardPrefab: {fileID: 2315697197007250659, guid: 3df4d14d8b7a2704d9357cf88214cf53, type: 3}
   domainCardPrefab: {fileID: 4056201593920334295, guid: 7f646dd48b055b54d9d929938279b097, type: 3}

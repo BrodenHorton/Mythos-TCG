@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class OpponentUI : DuelistUI {
+    private Vector3 handCircleCenter;
+
+    private void Awake() {
+        handCircleCenter = new Vector3(handOrigin.position.x,
+                                           handOrigin.position.y,
+                                           handOrigin.position.z + radius);
+    }
 
     public override void DrawCard(CardPayload card) {
         NullHandCardUI cardUI = Instantiate(nullCardPrefab, handOrigin);
@@ -26,12 +33,7 @@ public class OpponentUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions(List<Guid> ignoreCards) {
-        float radius = 40f;
-        float arcDistanceInterval = 1.15f;
         // TODO: Figure out how to detect which axis and direction the radius should be added to so you get the correct circle center
-        Vector3 circleCenter = new Vector3(handOrigin.position.x,
-                                           handOrigin.position.y,
-                                           handOrigin.position.z + radius);
         int cardCount = cardsInHand.Count;
         float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
         for (int i = 0; i < cardCount; i++) {
@@ -43,10 +45,10 @@ public class OpponentUI : DuelistUI {
 
             float arcDistance = initialArcDistance - (arcDistanceInterval * i);
             float angle = arcDistance / radius + (float)(-Math.PI / 2);
-            Vector3 cardPosition = new Vector3(circleCenter.x + radius * (float)Math.Cos(angle),
+            Vector3 cardPosition = new Vector3(handCircleCenter.x + radius * (float)Math.Cos(angle),
                                                0.05f + (i * 0.012f),
-                                               circleCenter.z + radius * (float)Math.Sin(angle));
-            Vector3 normal = (cardPosition - circleCenter).normalized;
+                                               handCircleCenter.z + radius * (float)Math.Sin(angle));
+            Vector3 normal = (cardPosition - handCircleCenter).normalized;
             cardsInHand[i].transform.position = cardPosition;
             Quaternion targetRotation = Quaternion.LookRotation(normal);
             cardsInHand[i].transform.rotation = targetRotation;

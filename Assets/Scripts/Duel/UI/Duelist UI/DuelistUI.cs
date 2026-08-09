@@ -9,6 +9,9 @@ public abstract class DuelistUI : MonoBehaviour {
     [SerializeField] protected TextMeshPro lifePoints;
     [SerializeField] protected TextMeshPro manaCount;
     [SerializeField] protected List<HandCardUI> cardsInHand;
+    [Header("Hand Arc Parameters")]
+    [SerializeField] protected float radius;
+    [SerializeField] protected float arcDistanceInterval;
     [Header("Prefabs")]
     [SerializeField] protected CreatureHandCardUI creatureCardPrefab;
     [SerializeField] protected SpellHandCardUI spellCardPrefab;

@@ -19,15 +19,12 @@ public class PlayerUIController : DuelistUIController {
         spellChainManager = ServiceLocator.Get<SpellChainManager>();
 
         EventBus.Instance.OnPlayHandCard += PlayHandCard;
-        CardSelectionManager.Instance.OnCardDrag += DisableHandHoverOnCardDrag;
-        CardSelectionManager.Instance.OnReleaseCardDrag += EnableHandHoverOnReleaseCardDrag;
-        EventBus.Instance.OnReleaseHandCardDrag += ResetHandCardPosition;
         EventBus.Instance.OnStartHandCardDrag += HandCardDragHandler;
         EventBus.Instance.OnReleaseHandCardDrag += ReleaseHandCardDragHandler;
     }
 
     private void Update() {
-        if (playerUI.CanHoverHand)
+        if (CardSelectionManager.Instance.IsDragging)
             return;
 
         playerUI.UpdateHovering();
@@ -72,27 +69,11 @@ public class PlayerUIController : DuelistUIController {
         duelManager.PlayCardFromHand(playerId, handCardUuid);
     }
 
-    private void DisableHandHoverOnCardDrag(object sender, EventArgs args) {
-        playerUI.CanHoverHand = false;
-    }
-
-    private void EnableHandHoverOnReleaseCardDrag(object sender, EventArgs args) {
-        playerUI.CanHoverHand = true;
-    }
-
-    private void ResetHandCardPosition(object sender, CardUIEventArgs<HandCardUI> args) {
-        if (!playerUI.ContainsCard(args.CardUI.CardUuid))
-            return;
-
-        playerUI.SetDefaultCardPositions();
-    }
-
     public void HandCardDragHandler(object sender, CardUIEventArgs<HandCardUI> args) {
         if (playerId != args.CardUI.PlayerId)
             return;
 
         playerUI.ShowPlayableAreaVisual();
-        playerUI.CanHoverHand = false;
         playerUI.SetDefaultCardPositions(new List<Guid>() { args.CardUI.CardUuid });
     }
 
@@ -101,7 +82,6 @@ public class PlayerUIController : DuelistUIController {
             return;
 
         playerUI.HidePlayableAreaVisual();
-        playerUI.CanHoverHand = true;
         if (playerUI.IsHoveringPlayableArea())
             EventBus.Instance.InvokeOnPlayHandCard(new PlayerCardUuidEventArgs(args.CardUI.PlayerId, args.CardUI.CardUuid));
         playerUI.SetDefaultCardPositions();

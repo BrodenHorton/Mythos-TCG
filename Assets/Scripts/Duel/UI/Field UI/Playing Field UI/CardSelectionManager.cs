@@ -10,8 +10,6 @@ public class CardSelectionManager : NetworkBehaviour {
     public event EventHandler<List<Guid>> OnSetSelectableCards;
     public event EventHandler OnClearSelectableCards;
     public event EventHandler<CardUIEventArgs<CardUI>> OnInspectCard;
-    public event EventHandler OnCardDrag;
-    public event EventHandler OnReleaseCardDrag;
 
     public static CardSelectionManager Instance { get; private set; }
 
@@ -93,7 +91,7 @@ public class CardSelectionManager : NetworkBehaviour {
             throw new Exception("Dragging card is null while isDragging is true");
 
         Vector3 dragPosition = GetScreenToWorldSapceVector();
-        draggingCard.transform.position = new Vector3(dragPosition.x, draggingCard.transform.position.y, dragPosition.z);
+        draggingCard.transform.position = new Vector3(dragPosition.x, transform.position.y + dragOffset, dragPosition.z);
     }
 
     private Vector3 GetScreenToWorldSapceVector() {
@@ -220,12 +218,11 @@ public class CardSelectionManager : NetworkBehaviour {
         cardUI.SelectCard(out bool canDragCard);
 
         if(canDragCard) {
-            OnCardDrag?.Invoke(this, EventArgs.Empty);
             cardUI.StartCardDrag();
             isDragging = true;
             draggingCard = cardUI;
             draggingCard.transform.position = new Vector3(draggingCard.transform.position.x,
-                                                          draggingCard.transform.position.y + dragOffset,
+                                                          transform.position.y + dragOffset,
                                                           draggingCard.transform.position.z);
         }
     }
@@ -238,7 +235,6 @@ public class CardSelectionManager : NetworkBehaviour {
 
         CardUI cardUI = draggingCard;
         ResetCardDragging();
-        OnReleaseCardDrag?.Invoke(this, EventArgs.Empty);
         cardUI.ReleaseCardDrag();
     }
 

@@ -11,11 +11,13 @@ public class PlayerUI : DuelistUI {
 
     private Camera cam;
     private HandCardUI previousSelection;
-    private bool canHoverHand;
+    private Vector3 handCircleCenter;
 
     private void Awake() {
         previousSelection = null;
-        canHoverHand = true;
+        handCircleCenter = new Vector3(handOrigin.position.x,
+                                           handOrigin.position.y,
+                                           handOrigin.position.z - radius);
     }
 
     private void Start() {
@@ -95,9 +97,10 @@ public class PlayerUI : DuelistUI {
                                                       card.transform.localEulerAngles.z);
     }
 
-    public void ExitHoverCard(HandCardUI card) {
-        card.transform.Translate(-cardHoverOffset, Space.World);
-        card.transform.localScale = new Vector3(1f, 1f, 1f);
+    public void ExitHoverCard(HandCardUI cardUI) {
+        cardUI.transform.Translate(-cardHoverOffset, Space.World);
+        cardUI.transform.localScale = new Vector3(1f, 1f, 1f);
+        ResetHandCardRotation(IndexOf(cardUI.CardUuid));
     }
 
     public override void SetDefaultCardPositions() {
@@ -105,32 +108,46 @@ public class PlayerUI : DuelistUI {
     }
 
     public override void SetDefaultCardPositions(List<Guid> ignoreCards) {
-        float radius = 40f;
-        float arcDistanceInterval = 1.15f;
         // TODO: Figure out how to detect which axis and direction the radius should be added to so you get the correct circle center
-        Vector3 circleCenter = new Vector3(handOrigin.position.x,
-                                           handOrigin.position.y,
-                                           handOrigin.position.z - radius);
         int cardCount = cardsInHand.Count;
         float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
         for (int i = 0; i < cardCount; i++) {
+            cardsInHand[i].transform.localScale = Vector3.one;
+
             if (ignoreCards.Contains(cardsInHand[i].CardUuid))
                 continue;
 
-            cardsInHand[i].transform.localScale = Vector3.one;
             cardsInHand[i].transform.position = handOrigin.position;
 
             float arcDistance = initialArcDistance - (arcDistanceInterval * i);
             float angle = arcDistance / radius + (float)(Math.PI / 2);
-            Vector3 cardPosition = new Vector3(circleCenter.x + radius * (float)Math.Cos(angle),
+            Vector3 cardPosition = new Vector3(handCircleCenter.x + radius * (float)Math.Cos(angle),
                                                0.05f + (i * 0.012f),
-                                               circleCenter.z + radius * (float)Math.Sin(angle));
-            Vector3 normal = (cardPosition - circleCenter).normalized;
+                                               handCircleCenter.z + radius * (float)Math.Sin(angle));
+            Vector3 normal = (cardPosition - handCircleCenter).normalized;
             cardsInHand[i].transform.position = cardPosition;
             Quaternion targetRotation = Quaternion.LookRotation(normal);
             cardsInHand[i].transform.rotation = targetRotation;
             cardsInHand[i].transform.Rotate(new Vector3(90f, 0f, 0f));
         }
+    }
+
+    private void ResetHandCardRotation(int cardIndex) {
+        if (cardIndex >= cardsInHand.Count)
+            throw new Exception("Attempting to set the card rotation of an out of bounds card index.Cards in hand: " + cardsInHand + " Card Index: " + cardIndex);
+
+        // TODO: Figure out how to detect which axis and direction the radius should be added to so you get the correct circle center
+        int cardCount = cardsInHand.Count;
+        float initialArcDistance = (cardCount - 1) * arcDistanceInterval / 2;
+        float arcDistance = initialArcDistance - (arcDistanceInterval * cardIndex);
+        float angle = arcDistance / radius + (float)(Math.PI / 2);
+        Vector3 cardPosition = new Vector3(handCircleCenter.x + radius * (float)Math.Cos(angle),
+                                           0.05f + (cardIndex * 0.012f),
+                                           handCircleCenter.z + radius * (float)Math.Sin(angle));
+        Vector3 normal = (cardPosition - handCircleCenter).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(normal);
+        cardsInHand[cardIndex].transform.rotation = targetRotation;
+        cardsInHand[cardIndex].transform.Rotate(new Vector3(90f, 0f, 0f));
     }
 
     private HandCardUI HoverDetection() {
@@ -166,6 +183,14 @@ public class PlayerUI : DuelistUI {
         return false;
     }
 
+    public int IndexOf(Guid cardUuid) {
+        for (int i = 0; i < cardsInHand.Count; i++) {
+            if (cardsInHand[i].CardUuid == cardUuid)
+                return i;
+        }
+        throw new Exception("Unable for find card with uuid: " +  cardUuid);
+    }
+
     public HandCardUI GetCardByUuid(Guid cardUuid) {
         foreach(HandCardUI cardUI in cardsInHand) {
             if(cardUI.CardUuid == cardUuid)
@@ -173,6 +198,4 @@ public class PlayerUI : DuelistUI {
         }
         throw new Exception("Attempted to get cardUI that does not exists in PlayerUI hand");
     }
-
-    public bool CanHoverHand {get { return canHoverHand; } set { canHoverHand = value; } }
 }
