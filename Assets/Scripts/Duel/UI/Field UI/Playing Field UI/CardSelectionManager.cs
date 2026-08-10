@@ -9,7 +9,7 @@ public class CardSelectionManager : NetworkBehaviour {
     public event EventHandler<SelectableCardsEventArgs> OnGetSelectableCards;
     public event EventHandler<List<Guid>> OnSetSelectableCards;
     public event EventHandler OnClearSelectableCards;
-    public event EventHandler<CardUIEventArgs<CardUI>> OnInspectCard;
+    public event EventHandler<CardPayloadEventArgs<CardPayload>> OnInspectCard;
 
     public static CardSelectionManager Instance { get; private set; }
 
@@ -64,7 +64,7 @@ public class CardSelectionManager : NetworkBehaviour {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started += SelectCard;
         playerInputActions.Player.Select.canceled += ReleaseCardDrag;
-        playerInputActions.Player.Inspect.started += InspectFieldCard;
+        playerInputActions.Player.Inspect.started += InspectCard;
     }
 
     public override void OnNetworkDespawn() {
@@ -73,7 +73,7 @@ public class CardSelectionManager : NetworkBehaviour {
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
         playerInputActions.Player.Select.started -= SelectCard;
         playerInputActions.Player.Select.canceled -= ReleaseCardDrag;
-        playerInputActions.Player.Inspect.started -= InspectFieldCard;
+        playerInputActions.Player.Inspect.started -= InspectCard;
     }
 
     private void Update() {
@@ -118,7 +118,6 @@ public class CardSelectionManager : NetworkBehaviour {
         if (!IsServer)
             throw new Exception("Only the server can call the method SetSelectableCards");
 
-        TcgLogger.Log("SetSelectableCards Entered");
         FixedString128Bytes[] selectableCardUuidStrs;
         if (actionManager.ActionFocusPlayerIds.Contains(playerId)) {
             List<Guid> selectableCardGuids = GetSelectableCardGuids(playerId);
@@ -129,7 +128,6 @@ public class CardSelectionManager : NetworkBehaviour {
         else
             selectableCardUuidStrs = new FixedString128Bytes[0];
 
-        TcgLogger.Log("# of selectable cards: " + selectableCardUuidStrs.Length);
         BaseRpcTarget target = RpcTarget.Single(playerId, RpcTargetUse.Temp);
         SetSelectableCardsClientRpc(selectableCardUuidStrs, target);
     }
@@ -236,14 +234,31 @@ public class CardSelectionManager : NetworkBehaviour {
         cardUI.ReleaseCardDrag();
     }
 
-    private void InspectFieldCard(InputAction.CallbackContext context) {
+    private void InspectCard(InputAction.CallbackContext context) {
         if (!context.started)
             return;
         if (!CardUIRaycast(out CardUI cardUI))
             return;
 
-        // TODO: Implement inspecting cards. Could implemnt a CardUI interface that is implemented
-        // by hand and field cards
+        InspectCardServerRpc(cardUI.CardUuid.ToString(), cardUI.PlayerId);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void InspectCardServerRpc(FixedString128Bytes cardUuidStr, ulong playerId, RpcParams rpcParams = default) {
+        MatchPlayer player = duelManager.GetPlayerById(playerId);
+        Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
+        if (player.ContainsCreatureUuid(cardUuid)) {
+            CardPayload cardPayload = player.GetCreatureByUuid(cardUuid).GetCardPayload();
+            CardPayloadNetworkContainer cardPayloadNetworkContainer = new CardPayloadNetworkContainer();
+            cardPayloadNetworkContainer.cardPayload = cardPayload;
+            BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
+            InspectCardClientRpc(cardPayloadNetworkContainer, target);
+        }
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void InspectCardClientRpc(CardPayloadNetworkContainer cardPayloadNetworkContainer, RpcParams rpcParams) {
+        OnInspectCard?.Invoke(this, new CardPayloadEventArgs<CardPayload>(cardPayloadNetworkContainer.cardPayload));
     }
 
     private bool CardUIRaycast(out CardUI cardUI) {

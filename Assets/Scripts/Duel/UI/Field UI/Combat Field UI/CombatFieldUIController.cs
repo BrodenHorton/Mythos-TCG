@@ -113,9 +113,7 @@ public class CombatFieldUIController : NetworkBehaviour {
     private void ReleaseCreatureCardDragHandler(object sender, CardUIEventArgs<CreatureFieldCardUI> args) {
         combatFieldUI.HidePlayableAreaVisual();
         if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId) {
-            TcgLogger.Log("Before creature over creature check");
             if (combatFieldUI.IsHoveringCombatFieldCreatureCard(out CreatureFieldCardUI hoveredCardUI, args.CardUI)) {
-                TcgLogger.Log("Creature over creature detected");
                 CreatureReleasedOverCreatureServerRpc(args.CardUI.PlayerId,
                                                       hoveredCardUI.PlayerId,
                                                       args.CardUI.CardUuid.ToString(),

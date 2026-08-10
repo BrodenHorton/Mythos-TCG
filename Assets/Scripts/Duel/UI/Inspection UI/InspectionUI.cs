@@ -17,17 +17,20 @@ public class InspectionUI : MonoBehaviour {
         Hide();
     }
 
-    public void Inspect(CardPayload card) {
+    public void InspectCard(CardPayload card) {
         if (isOpen)
             throw new Exception("Attempting to inspect a card while the inspection UI is already open");
 
         isOpen = true;
-        if (card is CreatureCardPayload creatureCardPayload)
+        background.SetActive(true);
+        if (card is CreatureCardPayload creatureCardPayload) {
+            creatureInspectionCardUI.gameObject.SetActive(true);
             creatureInspectionCardUI.UpdateUI(creatureCardPayload);
-        else if (card is DomainCardPayload domainCardPayload)
+        }
+        /*else if (card is DomainCardPayload domainCardPayload)
             domainInspectionCardUI.UpdateUI(domainCardPayload);
         else if (card is SpellCardPayload spellCardPayload)
-            spellInspectionCardUI.UpdateUI(spellCardPayload);
+            spellInspectionCardUI.UpdateUI(spellCardPayload);*/
         else
             throw new Exception("Unrecognized card payload");
     }
@@ -35,9 +38,12 @@ public class InspectionUI : MonoBehaviour {
     public void Hide() {
         isOpen = false;
         background.SetActive(false);
+        creatureInspectionCardUI.ClearUI();
         creatureInspectionCardUI.gameObject.SetActive(false);
+        /*domainInspectionCardUI.ClearUI();
         domainInspectionCardUI.gameObject.SetActive(false);
-        spellInspectionCardUI.gameObject.SetActive(false);
+        spellInspectionCardUI.ClearUI();
+        spellInspectionCardUI.gameObject.SetActive(false);*/
     }
 
     public bool IsOpen { get { return isOpen; } }

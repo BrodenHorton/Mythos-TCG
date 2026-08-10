@@ -29,7 +29,6 @@ public abstract class CardUI : MonoBehaviour {
     public abstract void ReleaseCardDrag();
 
     protected void SetSelectabilityOnSetSelectableCards(object sender, List<Guid> cardUuids) {
-        TcgLogger.Log("HandCardUI SetSelectability entered. " + " cardUuids Count: " + cardUuids);
         bool isSelectable = cardUuids.Contains(cardUuid);
         SetSelectable(isSelectable);
     }
