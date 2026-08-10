@@ -19,7 +19,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.Instance.OnReleaseHandCardDrag += HidePlayableAreaVisualOnReleaseHandCardDrag;
         EventBus.Instance.OnSelectCreatureFieldCard += SelectCombatCreature;
         EventBus.Instance.OnStartCreatureFieldCardDrag += ShowPlayableAreaVisualOnFieldCardDrag;
-        EventBus.Instance.OnReleaseCreatureFieldCardDrag += ReleaseCreatureFieldCardDragHandler;
+        EventBus.Instance.OnReleaseCreatureFieldCardDrag += ReleaseCreatureCardDragHandler;
     }
 
     public override void OnNetworkDespawn() {
@@ -27,7 +27,7 @@ public class CombatFieldUIController : NetworkBehaviour {
         EventBus.Instance.OnReleaseHandCardDrag -= HidePlayableAreaVisualOnReleaseHandCardDrag;
         EventBus.Instance.OnSelectCreatureFieldCard -= SelectCombatCreature;
         EventBus.Instance.OnStartCreatureFieldCardDrag -= ShowPlayableAreaVisualOnFieldCardDrag;
-        EventBus.Instance.OnReleaseCreatureFieldCardDrag -= ReleaseCreatureFieldCardDragHandler;
+        EventBus.Instance.OnReleaseCreatureFieldCardDrag -= ReleaseCreatureCardDragHandler;
     }
 
     public void Init(ulong playerId) {
@@ -108,19 +108,23 @@ public class CombatFieldUIController : NetworkBehaviour {
         combatFieldUI.ShowPlayableAreaVisual();
     }
 
-    private void ReleaseCreatureFieldCardDragHandler(object sender, CardUIEventArgs<CreatureFieldCardUI> args) {
-        if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId)
-            return;
-
+    // TODO: Move all card drag and release logic to the server since the server has all the context for what should
+    // happen when a card is dragged and released.
+    private void ReleaseCreatureCardDragHandler(object sender, CardUIEventArgs<CreatureFieldCardUI> args) {
         combatFieldUI.HidePlayableAreaVisual();
-        if (combatFieldUI.IsHoveringCombatArea()) {
-            EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CombatFieldCardEventArgs(combatFieldUI, args.CardUI));
+        if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId) {
+            TcgLogger.Log("Before creature over creature check");
             if (combatFieldUI.IsHoveringCombatFieldCreatureCard(out CreatureFieldCardUI hoveredCardUI, args.CardUI)) {
+                TcgLogger.Log("Creature over creature detected");
                 CreatureReleasedOverCreatureServerRpc(args.CardUI.PlayerId,
                                                       hoveredCardUI.PlayerId,
                                                       args.CardUI.CardUuid.ToString(),
                                                       hoveredCardUI.CardUuid.ToString());
             }
+        }
+        else {
+            if (combatFieldUI.IsHoveringCombatArea())
+                EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CombatFieldCardEventArgs(combatFieldUI, args.CardUI));
         }
     }
 

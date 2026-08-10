@@ -191,6 +191,7 @@ public class CombatFieldUI : MonoBehaviour {
     }
 
     public bool IsHoveringCombatFieldCreatureCard(out CreatureFieldCardUI hoveredCard, CreatureFieldCardUI ignoreCard = null) {
+        TcgLogger.Log("IsHoveringCombatFieldCreatureCard: Attacker count: " + attackerByPositionIndex.Count);
         hoveredCard = null;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
@@ -199,6 +200,7 @@ public class CombatFieldUI : MonoBehaviour {
             if (hit.collider.TryGetComponent(out CreatureFieldCardCollisionPointer collisionPointer)) {
                 if (ignoreCard != null && collisionPointer.GetCardUI().CardUuid == ignoreCard.CardUuid)
                     continue;
+                TcgLogger.Log("Hit: " + collisionPointer.GetCardUI().CardUuid.ToString());
                 if (!ContainsAttacker(collisionPointer.GetCardUI().CardUuid) && !ContainsDefender(collisionPointer.GetCardUI().CardUuid))
                     continue;
 

@@ -23,6 +23,7 @@ public class CreatureFieldCardUI : CardUI {
         EventBus.Instance.OnCreatureUntappedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureDamagedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureHealedFinished += UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnPostCreatureDestroyed += DestroyCreature;
         EventBus.Instance.OnPostCreatureCombat += UpdateFieldCardOnPostCreatureCombat;
     }
 
@@ -33,6 +34,7 @@ public class CreatureFieldCardUI : CardUI {
         EventBus.Instance.OnCreatureUntappedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureDamagedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
         EventBus.Instance.OnCreatureHealedFinished -= UpdateFieldCardOnPlayerFieldCardPayload;
+        EventBus.Instance.OnPostCreatureDestroyed -= DestroyCreature;
         EventBus.Instance.OnPostCreatureCombat -= UpdateFieldCardOnPostCreatureCombat;
     }
 
@@ -103,6 +105,14 @@ public class CreatureFieldCardUI : CardUI {
 
     public void Untap() {
         transform.eulerAngles = Vector3.zero;
+    }
+
+    private void DestroyCreature(object sender, PlayerCardPayloadEventArgs<CreatureCardPayload> args) {
+        if (args.CardPayload.Uuid != cardUuid)
+            return;
+
+        RemoveListeners();
+        Destroy(gameObject);
     }
 
     public bool IsInCombatField { get { return isInCombatField; } set { isInCombatField = value; } }

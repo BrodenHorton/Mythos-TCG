@@ -14,7 +14,7 @@ public class DuelistUIManager : NetworkBehaviour {
             throw new Exception("Could not find DuelManager object");
 
         duelManager.OnPlayersInitialization += Init;
-        EventBus.Instance.OnLifePointsChanged += LifePointsChanged;
+        EventBus.Instance.OnLifePointsChangedFinished += LifePointsChanged;
         EventBus.Instance.OnPostManaCountChanged += ManaCountChanged;
         EventBus.Instance.OnCardDrawn += CardDrawn;
         EventBus.Instance.OnCardRemovedFromHand += CardRemovedFromHand;
