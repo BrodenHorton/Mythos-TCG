@@ -10,5 +10,5 @@ public abstract class InspectionCardUI<T> : MonoBehaviour where T : CardPayload 
 
     public abstract void UpdateUI(T cardPayload);
 
-    public abstract void ClearUI();
+    public abstract void ResetUI();
 }

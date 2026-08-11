@@ -19,7 +19,7 @@ public class InspectionUI : MonoBehaviour {
 
     public void InspectCard(CardPayload card) {
         if (isOpen)
-            throw new Exception("Attempting to inspect a card while the inspection UI is already open");
+            return;
 
         isOpen = true;
         background.SetActive(true);
@@ -38,11 +38,11 @@ public class InspectionUI : MonoBehaviour {
     public void Hide() {
         isOpen = false;
         background.SetActive(false);
-        creatureInspectionCardUI.ClearUI();
+        creatureInspectionCardUI.ResetUI();
         creatureInspectionCardUI.gameObject.SetActive(false);
-        /*domainInspectionCardUI.ClearUI();
+        /*domainInspectionCardUI.ResetUI();
         domainInspectionCardUI.gameObject.SetActive(false);
-        spellInspectionCardUI.ClearUI();
+        spellInspectionCardUI.ResetUI();
         spellInspectionCardUI.gameObject.SetActive(false);*/
     }
 

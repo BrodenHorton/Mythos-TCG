@@ -49,9 +49,9 @@ public class CreatureInspectionCardUI : InspectionCardUI<CreatureCardPayload> {
             }
         }
         if (!hasStaticKeyword)
-            staticKeywordContainer.gameObject.SetActive(false);
+            staticKeywordContainer.gameObject.SetActive(hasStaticKeyword);
         if (!hasUniqueEffect)
-            uniqueEffectContainer.gameObject.SetActive(false);
+            uniqueEffectContainer.gameObject.SetActive(hasUniqueEffect);
     }
 
     private void AddStaticKeyword(StaticCreatureCardEffectPayload effect) {
@@ -68,10 +68,12 @@ public class CreatureInspectionCardUI : InspectionCardUI<CreatureCardPayload> {
         LayoutRebuilder.ForceRebuildLayoutImmediate(infoContainer);
     }
 
-    public override void ClearUI() {
-        foreach(Transform child in staticKeywordContainer)
-            Destroy(child);
+    public override void ResetUI() {
+        staticKeywordContainer.gameObject.SetActive(true);
+        foreach (Transform child in staticKeywordContainer)
+            Destroy(child.gameObject);
+        uniqueEffectContainer.gameObject.SetActive(true);
         foreach (Transform child in uniqueEffectContainer)
-            Destroy(child);
+            Destroy(child.gameObject);
     }
 }

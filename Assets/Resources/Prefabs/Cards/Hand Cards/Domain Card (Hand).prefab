@@ -695,6 +695,9 @@ MonoBehaviour:
   selectableBorder: {fileID: 99607716425891067}
   cardName: {fileID: 1818894915135389846}
   manaCost: {fileID: 7205172686528948382}
+  infoContainer: {fileID: 784438710366987415}
+  uniqueEffectContainer: {fileID: 0}
+  uniqueEffectTextPrefab: {fileID: 0}
 --- !u!1 &6888017013518863991
 GameObject:
   m_ObjectHideFlags: 0

@@ -247,13 +247,18 @@ public class CardSelectionManager : NetworkBehaviour {
     private void InspectCardServerRpc(FixedString128Bytes cardUuidStr, ulong playerId, RpcParams rpcParams = default) {
         MatchPlayer player = duelManager.GetPlayerById(playerId);
         Guid cardUuid = Guid.Parse(cardUuidStr.ToString());
-        if (player.ContainsCreatureUuid(cardUuid)) {
-            CardPayload cardPayload = player.GetCreatureByUuid(cardUuid).GetCardPayload();
-            CardPayloadNetworkContainer cardPayloadNetworkContainer = new CardPayloadNetworkContainer();
-            cardPayloadNetworkContainer.cardPayload = cardPayload;
-            BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
-            InspectCardClientRpc(cardPayloadNetworkContainer, target);
-        }
+        CardPayload cardPayload;
+        if (player.ContainsHandCardeUuid(cardUuid))
+            cardPayload = player.GetHandCardByUuid(cardUuid).GetCardPayload();
+        else if (player.ContainsCreatureUuid(cardUuid))
+            cardPayload = player.GetCreatureByUuid(cardUuid).GetCardPayload();
+        else
+            throw new Exception("Player with id " + playerId + " doesn't contain a card with the guid " + cardUuid);
+
+        CardPayloadNetworkContainer cardPayloadNetworkContainer = new CardPayloadNetworkContainer();
+        cardPayloadNetworkContainer.cardPayload = cardPayload;
+        BaseRpcTarget target = RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp);
+        InspectCardClientRpc(cardPayloadNetworkContainer, target);
     }
 
     [Rpc(SendTo.SpecifiedInParams)]

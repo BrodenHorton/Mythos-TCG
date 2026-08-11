@@ -4,7 +4,7 @@
 
     }
 
-    public override void ClearUI() {
+    public override void ResetUI() {
         throw new System.NotImplementedException();
     }
 }
