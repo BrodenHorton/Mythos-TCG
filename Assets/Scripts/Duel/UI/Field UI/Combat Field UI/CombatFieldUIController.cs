@@ -15,16 +15,12 @@ public class CombatFieldUIController : NetworkBehaviour {
         duelManager = ServiceLocator.Get<DuelManager>();
         combatManager = ServiceLocator.Get<CombatManager>();
 
-        EventBus.Instance.OnStartHandCardDrag += ShowPlayableAreaVisualOnHandCardDrag;
-        EventBus.Instance.OnReleaseHandCardDrag += HidePlayableAreaVisualOnReleaseHandCardDrag;
         EventBus.Instance.OnSelectCreatureFieldCard += SelectCombatCreature;
         EventBus.Instance.OnStartCreatureFieldCardDrag += ShowPlayableAreaVisualOnFieldCardDrag;
         EventBus.Instance.OnReleaseCreatureFieldCardDrag += ReleaseCreatureCardDragHandler;
     }
 
     public override void OnNetworkDespawn() {
-        EventBus.Instance.OnStartHandCardDrag -= ShowPlayableAreaVisualOnHandCardDrag;
-        EventBus.Instance.OnReleaseHandCardDrag -= HidePlayableAreaVisualOnReleaseHandCardDrag;
         EventBus.Instance.OnSelectCreatureFieldCard -= SelectCombatCreature;
         EventBus.Instance.OnStartCreatureFieldCardDrag -= ShowPlayableAreaVisualOnFieldCardDrag;
         EventBus.Instance.OnReleaseCreatureFieldCardDrag -= ReleaseCreatureCardDragHandler;
@@ -71,20 +67,6 @@ public class CombatFieldUIController : NetworkBehaviour {
         return defenders;
     }
 
-    private void ShowPlayableAreaVisualOnHandCardDrag(object sender, CardUIEventArgs<HandCardUI> args) {
-        if (combatFieldUI.TargetPlayerId != args.CardUI.PlayerId)
-            return;
-
-        combatFieldUI.ShowPlayableAreaVisual();
-    }
-
-    private void HidePlayableAreaVisualOnReleaseHandCardDrag(object sender, CardUIEventArgs<HandCardUI> args) {
-        if (combatFieldUI.TargetPlayerId != args.CardUI.PlayerId)
-            return;
-
-        combatFieldUI.HidePlayableAreaVisual();
-    }
-
     private void SelectCombatCreature(object sender, CardUIEventArgs<CreatureFieldCardUI> args) {
         if (args.CardUI == null || (!combatFieldUI.ContainsAttacker(args.CardUI) && !combatFieldUI.ContainsDefender(args.CardUI)))
             return;
@@ -105,13 +87,12 @@ public class CombatFieldUIController : NetworkBehaviour {
         if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId)
             return;
 
-        combatFieldUI.ShowPlayableAreaVisual();
+        combatFieldUI.ShowPlayableArea();
     }
 
     // TODO: Move all card drag and release logic to the server since the server has all the context for what should
     // happen when a card is dragged and released.
     private void ReleaseCreatureCardDragHandler(object sender, CardUIEventArgs<CreatureFieldCardUI> args) {
-        combatFieldUI.HidePlayableAreaVisual();
         if (combatFieldUI.TargetPlayerId == args.CardUI.PlayerId) {
             if (combatFieldUI.IsHoveringCombatFieldCreatureCard(out CreatureFieldCardUI hoveredCardUI, args.CardUI)) {
                 CreatureReleasedOverCreatureServerRpc(args.CardUI.PlayerId,
@@ -124,6 +105,7 @@ public class CombatFieldUIController : NetworkBehaviour {
             if (combatFieldUI.IsHoveringCombatArea())
                 EventBus.Instance.InvokeOnReleaseCreatureFieldCardOverCombatArea(new CombatFieldCardEventArgs(combatFieldUI, args.CardUI));
         }
+        combatFieldUI.HidePlayableArea();
     }
 
     [Rpc(SendTo.Server)]

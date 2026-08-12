@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "MousePosition",
+                    "type": "Value",
+                    "id": "3d1bbc6b-45ba-47c0-8459-3d1ee56ef34e",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -186,6 +195,17 @@
                     "action": "Inspect",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a302613a-f3d7-43f3-833d-4028c1cabc2b",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MousePosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -194,7 +214,16 @@
             "id": "62364c66-2bc7-4026-8ece-9d05798f4466",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "c565fc35-fa2e-47b7-9848-fbf0b3b94cc5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Escape",
                     "type": "Button",
                     "id": "b6ff47b1-387d-468c-b5fb-84d31cd4ee53",
                     "expectedControlType": "",
@@ -207,11 +236,22 @@
                 {
                     "name": "",
                     "id": "77f3fd26-56c7-4125-a7bd-eae3fdc4cf58",
-                    "path": "",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "Escape",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "32630d0f-4a66-4f76-a3b9-cc1451a5a47c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

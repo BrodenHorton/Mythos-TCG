@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerUIController : DuelistUIController {
     [SerializeField] private PlayerUI playerUI;
@@ -21,9 +22,12 @@ public class PlayerUIController : DuelistUIController {
         EventBus.Instance.OnPlayHandCard += PlayHandCard;
         EventBus.Instance.OnStartHandCardDrag += HandCardDragHandler;
         EventBus.Instance.OnReleaseHandCardDrag += ReleaseHandCardDragHandler;
+        GameInputManager.Instance.OnInputActionMapChanged += ResetHandHover;
     }
 
     private void Update() {
+        if (!GameInputManager.Instance.PlayerInputActions.Player.enabled)
+            return;
         if (CardSelectionManager.Instance.IsDragging)
             return;
 
@@ -73,7 +77,7 @@ public class PlayerUIController : DuelistUIController {
         if (playerId != args.CardUI.PlayerId)
             return;
 
-        playerUI.ShowPlayableAreaVisual();
+        playerUI.ShowPlayableArea();
         playerUI.SetDefaultCardPositions(new List<Guid>() { args.CardUI.CardUuid });
     }
 
@@ -81,10 +85,17 @@ public class PlayerUIController : DuelistUIController {
         if (playerId != args.CardUI.PlayerId)
             return;
 
-        playerUI.HidePlayableAreaVisual();
         if (playerUI.IsHoveringPlayableArea())
             EventBus.Instance.InvokeOnPlayHandCard(new PlayerCardUuidEventArgs(args.CardUI.PlayerId, args.CardUI.CardUuid));
+        playerUI.HidePlayableArea();
         playerUI.SetDefaultCardPositions();
+    }
+
+    private void ResetHandHover(object sender, InputActionMap actionMap) {
+        if (actionMap == GameInputManager.Instance.PlayerInputActions.Player.Get())
+            return;
+
+        playerUI.ExitHoverHand();
     }
 
     public override DuelistUI GetDuelistUI() {

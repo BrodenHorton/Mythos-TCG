@@ -19,7 +19,7 @@ public class InspectionUI : MonoBehaviour {
 
     public void InspectCard(CardPayload card) {
         if (isOpen)
-            return;
+            throw new Exception("Attempting to inspect a card when the inspection UI is alrady open");
 
         isOpen = true;
         background.SetActive(true);

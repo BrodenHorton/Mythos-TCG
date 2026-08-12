@@ -29,7 +29,7 @@ public class CombatFieldUI : MonoBehaviour {
     private void Start() {
         cam = Camera.main;
 
-        playableAreaVisual.SetActive(false);
+        HidePlayableArea();
     }
 
     public void Init(ulong targetPlayerId) {
@@ -170,11 +170,13 @@ public class CombatFieldUI : MonoBehaviour {
         defenderByPositionIndex.Clear();
     }
 
-    public void ShowPlayableAreaVisual() {
+    public void ShowPlayableArea() {
+        playableAreaCollider.gameObject.SetActive(true);
         playableAreaVisual.SetActive(true);
     }
 
-    public void HidePlayableAreaVisual() {
+    public void HidePlayableArea() {
+        playableAreaCollider.gameObject.SetActive(false);
         playableAreaVisual.SetActive(false);
     }
 

@@ -271,12 +271,10 @@ public class CardSelectionManager : NetworkBehaviour {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        foreach (RaycastHit hit in hits) {
-            CardCollisionPointer fieldCardCollisionPointer;
-            if (hit.collider.TryGetComponent(out fieldCardCollisionPointer)) {
-                cardUI = fieldCardCollisionPointer.GetCardUI();
-                return true;
-            }
+        CardCollisionPointer fieldCardCollisionPointer;
+        if (hits.Length > 0 && hits[0].collider.TryGetComponent(out fieldCardCollisionPointer)) {
+            cardUI = fieldCardCollisionPointer.GetCardUI();
+            return true;
         }
 
         return false;

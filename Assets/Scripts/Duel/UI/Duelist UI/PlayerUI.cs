@@ -23,6 +23,7 @@ public class PlayerUI : DuelistUI {
     private void Start() {
         cam = Camera.main;
 
+        playableAreaCollider.gameObject.SetActive(false);
         playableAreaVisual.SetActive(false);
     }
 
@@ -91,6 +92,11 @@ public class PlayerUI : DuelistUI {
             cardsInHand[i].transform.Translate(handHoverOffset, Space.World);
     }
 
+    public void ExitHoverHand() {
+        previousSelection = null;
+        SetDefaultCardPositions();
+    }
+
     public void HoverCard(HandCardUI card) {
         card.transform.Translate(cardHoverOffset, Space.World);
         card.transform.localScale = new Vector3(cardHoverScale, cardHoverScale, cardHoverScale);
@@ -155,21 +161,20 @@ public class PlayerUI : DuelistUI {
     private HandCardUI HoverDetection() {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray);
-        if (hits.Length > 0)
-            Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-        foreach (RaycastHit hit in hits) {
-            if (hit.collider.GetComponent<HandCardCollisionPointer>())
-                return hit.collider.GetComponent<HandCardCollisionPointer>().HandCardUI;
-        }
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        if(hits.Length > 0 && hits[0].collider.TryGetComponent(out HandCardCollisionPointer collisionPointer))
+            return collisionPointer.HandCardUI;
 
         return null;
     }
 
-    public void ShowPlayableAreaVisual() {
+    public void ShowPlayableArea() {
+        playableAreaCollider.gameObject.SetActive(true);
         playableAreaVisual.SetActive(true);
     }
 
-    public void HidePlayableAreaVisual() {
+    public void HidePlayableArea() {
+        playableAreaCollider.gameObject.SetActive(false);
         playableAreaVisual.SetActive(false);
     }
 

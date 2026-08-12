@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameInputManager : MonoBehaviour {
+    public event EventHandler<InputActionMap> OnInputActionMapChanged;
+
     public static GameInputManager Instance { get; private set; }
 
     private PlayerInputActions playerInputActions;
@@ -32,6 +34,8 @@ public class GameInputManager : MonoBehaviour {
             else
                 entry.Disable();
         }
+
+        OnInputActionMapChanged?.Invoke(this, actionMap);
     }
 
     public PlayerInputActions PlayerInputActions { get { return playerInputActions; } }

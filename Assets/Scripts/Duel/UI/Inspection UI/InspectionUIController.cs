@@ -8,14 +8,14 @@ public class InspectionUIController : MonoBehaviour {
         CardSelectionManager.Instance.OnInspectCard += InspectCardHandler;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Escape.started += CloseInspectionUI;
+        playerInputActions.UI.Escape.started += CloseInspectionUI;
     }
 
     private void OnDestroy() {
         CardSelectionManager.Instance.OnInspectCard -= InspectCardHandler;
 
         PlayerInputActions playerInputActions = GameInputManager.Instance.PlayerInputActions;
-        playerInputActions.Player.Escape.started -= CloseInspectionUI;
+        playerInputActions.UI.Escape.started -= CloseInspectionUI;
     }
 
     private void InspectCardHandler(object sender, CardPayloadEventArgs<CardPayload> args) {
@@ -24,6 +24,7 @@ public class InspectionUIController : MonoBehaviour {
 
     public void InspectCard(CardPayload cardPayload) {
         inspectionUI.InspectCard(cardPayload);
+        GameInputManager.Instance.SwitchCurrentActionMap(GameInputManager.Instance.PlayerInputActions.UI);
     }
 
     private void CloseInspectionUI(InputAction.CallbackContext context) {
@@ -33,5 +34,6 @@ public class InspectionUIController : MonoBehaviour {
             return;
 
         inspectionUI.Hide();
+        GameInputManager.Instance.SwitchCurrentActionMap(GameInputManager.Instance.PlayerInputActions.Player);
     }
 }
