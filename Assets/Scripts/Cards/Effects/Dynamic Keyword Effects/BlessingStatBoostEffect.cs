@@ -36,6 +36,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
 
         TcgLogger.Log("BlessingStatBoostEffect Proked");
         effectProkCount++;
+        EventBus.Instance.InvokeOnCreatureCardEffectClientpdate(new CreatureCardPayload(card));
     }
 
     private void AddAttack(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
@@ -63,6 +64,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
             return;
 
         effectProkCount = 0;
+        EventBus.Instance.InvokeOnCreatureCardEffectClientpdate(new CreatureCardPayload(card));
     }
 
     public override string GetEffectDescription() {

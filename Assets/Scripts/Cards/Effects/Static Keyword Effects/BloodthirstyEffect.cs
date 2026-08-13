@@ -31,6 +31,7 @@ public class BloodthirstyEffect : StaticCreatureCardEffect {
 
         TcgLogger.Log("Bloodthirsty Proked");
         effectProkCount++;
+        EventBus.Instance.InvokeOnCreatureCardEffectClientpdate(new CreatureCardPayload(card));
     }
 
     private void AddAttack(object sender, PlayerCardStatEventArgs<CreatureCard> args) {

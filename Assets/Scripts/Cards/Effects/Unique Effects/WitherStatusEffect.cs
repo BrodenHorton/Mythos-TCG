@@ -36,6 +36,7 @@ public class WitherStatusEffect : CreatureCardEffect {
         args.IsCanceled = true;
         witherCount += args.Damage;
         TcgLogger.Log("Wither Status Proked. Count: " + witherCount);
+        EventBus.Instance.InvokeOnCreatureCardEffectClientpdate(new CreatureCardPayload(card));
         card.CheckHealthState();
     }
 

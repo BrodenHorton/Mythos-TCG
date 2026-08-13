@@ -14,11 +14,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 885045983339532142, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 885045983339532142, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_fontSizeBase
-      value: 24
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 4352067064154271867, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_Pivot.x

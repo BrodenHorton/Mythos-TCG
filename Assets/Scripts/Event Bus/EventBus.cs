@@ -33,6 +33,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<ManaChangedEventArgs> OnManaCountChanged;
     public event EventHandler<ManaChangedEventArgs> OnManaCountChangedFinished;
     public event EventHandler<ManaChangedEventArgs> OnPostManaCountChanged;
+    public event EventHandler<CardPayloadEventArgs<CreatureCardPayload>> OnCreatureCardEffectClientpdate;
     // Declaring and Undeclaring creatures
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureAttack;
     public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnCanCreatureDefend;
@@ -293,6 +294,19 @@ public class EventBus : NetworkBehaviour {
     private void InvokeOnPostManaCountChangedClientRpc(ulong playerId, int manaCount) {
         ManaChangedEventArgs args = new ManaChangedEventArgs(playerId, manaCount);
         OnPostManaCountChanged?.Invoke(this, args);
+    }
+
+    public void InvokeOnCreatureCardEffectClientpdate(CreatureCardPayload cardPayload) {
+        if (!IsServer)
+            throw new Exception("The event InvokeOnCardUEffectClientpdate can only be called by the server");
+
+        InvokeOnCreatureCardEffectClientpdateClientRpc(cardPayload);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InvokeOnCreatureCardEffectClientpdateClientRpc(CreatureCardPayload cardPayload) {
+        CardPayloadEventArgs<CreatureCardPayload> args = new CardPayloadEventArgs<CreatureCardPayload>(cardPayload);
+        OnCreatureCardEffectClientpdate?.Invoke(this, args);
     }
     #endregion
 
