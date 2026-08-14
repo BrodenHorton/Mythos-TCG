@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform), typeof(HorizontalLayoutGroup))]
-public class StaticKeywordUI : MonoBehaviour {
+public class StaticKeywordUI : MonoBehaviour, DynamicPopupPromptIndicator {
     private static Color32 STATIC_KEYWORD_COLOR = new Color32(250, 250, 100, 255);
 
     [SerializeField] private Image icon;
@@ -25,4 +25,10 @@ public class StaticKeywordUI : MonoBehaviour {
         effectDescription = effect.Description.ToString();
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
+
+    public string GetPrompt() {
+        return effectDescription;
+    }
+
+    public string EffectDescription { get { return effectDescription; } }
 }
