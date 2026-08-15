@@ -16,7 +16,7 @@ public class SpellshieldEffect : StaticCreatureCardEffect {
 
     public override void RemoveListeners() { }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

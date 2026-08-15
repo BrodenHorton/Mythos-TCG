@@ -54,7 +54,7 @@ public class WitherStatusEffect : CreatureCardEffect {
         args.Value -= witherCount;
     }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

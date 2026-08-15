@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 public class DynamicKeywordRegistry : MonoBehaviour {
-    [SerializeField] private List<DynamicKeyword> keywords;
+    [SerializeField] private List<EffectKeyword> keywords;
 
     private void Awake() {
         ServiceLocator.Register(this);
@@ -13,7 +13,7 @@ public class DynamicKeywordRegistry : MonoBehaviour {
         ServiceLocator.Unregister(this);
     }
 
-    public DynamicKeyword Get(string id) {
+    public EffectKeyword Get(string id) {
         for (int i = 0; i < keywords.Count; i++) {
             if (keywords[i].Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return keywords[i];

@@ -1,11 +1,11 @@
 ﻿
 public abstract class DynamicCreatureCardEffect : CreatureCardEffect {
 
-    public abstract string GetEffectDescription();
+    public abstract string GetDynamicEffectDescription();
 
-    public sealed override string GetFullDescription() {
-        return "<color=#fff47d>" + GetDynamicKeyword().KeywordName + "</color>: " + GetEffectDescription();
+    public sealed override string GetRawDescription() {
+        return "<color=#fff47d><link=keyword_id>" + GetDynamicKeyword().KeywordName + "</link></color>: " + GetDynamicEffectDescription();
     }
 
-    public abstract DynamicKeyword GetDynamicKeyword();
+    public abstract EffectKeyword GetDynamicKeyword();
 }

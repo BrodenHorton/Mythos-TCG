@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 850326614605109415, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_Name
-      value: Unique Effect Text Inspection Variant
+      value: Unique Effect UI Inspection Variant
       objectReference: {fileID: 0}
     - target: {fileID: 885045983339532142, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_fontSize
@@ -19,6 +19,34 @@ PrefabInstance:
     - target: {fileID: 885045983339532142, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_fontSizeBase
       value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2940720598030167852, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 4352067064154271867, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_Pivot.x
@@ -99,6 +127,14 @@ PrefabInstance:
     - target: {fileID: 4352067064154271867, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721947360119025323, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_fontSize
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721947360119025323, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 22
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

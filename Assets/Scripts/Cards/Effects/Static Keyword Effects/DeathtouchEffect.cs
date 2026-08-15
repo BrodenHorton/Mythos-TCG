@@ -29,7 +29,7 @@ public class DeathtouchEffect : StaticCreatureCardEffect {
         args.Defender.DestroyCreature();
     }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

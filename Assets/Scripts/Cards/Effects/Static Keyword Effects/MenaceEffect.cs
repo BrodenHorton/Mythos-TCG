@@ -32,7 +32,7 @@ public class MenaceEffect : StaticCreatureCardEffect {
             args.CanDefend = false;
     }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

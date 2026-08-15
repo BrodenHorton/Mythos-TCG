@@ -62,9 +62,9 @@ public class CreatureInspectionCardUI : InspectionCardUI<CreatureCardPayload> {
     }
 
     private void AddUniqueEffect(CreatureCardEffectPayload effect) {
-        TextMeshProUGUI effectText = Instantiate(uniqueEffectTextPrefab, uniqueEffectContainer);
-        effectText.text = effect.Description.ToString();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(effectText.rectTransform);
+        UniqueEffectUI uniqueEffectUI = Instantiate(uniqueEffectUIPrefab, uniqueEffectContainer);
+        uniqueEffectUI.Init(effect);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(uniqueEffectUI.RectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(infoContainer);
     }
 

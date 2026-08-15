@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 public abstract class CreatureCardEffectPayload : INetworkSerializable {
     protected FixedString128Bytes effectName;
-    protected FixedString128Bytes description;
+    protected FixedString128Bytes rawDescription;
     protected FixedString128Bytes creatureUuidStr;
     protected CreatureCardEffectType effectType;
 
@@ -11,7 +11,7 @@ public abstract class CreatureCardEffectPayload : INetworkSerializable {
 
     public CreatureCardEffectPayload(CreatureCardEffect effect) {
         effectName = effect.GetCreatureEffectBase().EffectName;
-        description = effect.GetFullDescription();
+        rawDescription = effect.GetRawDescription();
         creatureUuidStr = effect.Card.Uuid.ToString();
     }
 
@@ -19,7 +19,7 @@ public abstract class CreatureCardEffectPayload : INetworkSerializable {
 
     public FixedString128Bytes EffectName { get { return effectName; } }
 
-    public FixedString128Bytes Description { get { return description; } }
+    public FixedString128Bytes RawDescription { get { return rawDescription; } }
 
     public CreatureCardEffectType EffectType { get { return effectType; } }
 }

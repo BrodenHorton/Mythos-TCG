@@ -36,7 +36,7 @@ public class OverwhelmEffect : StaticCreatureCardEffect {
             args.DirectDamage = overwhelmDamage;
     }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

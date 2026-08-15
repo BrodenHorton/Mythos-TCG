@@ -27,7 +27,7 @@ public class ReachEffect : StaticCreatureCardEffect {
         args.CanDefend = true;
     }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

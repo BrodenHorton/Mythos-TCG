@@ -37,6 +37,14 @@ public class TcgLogger : MonoBehaviour {
         Instance.OnLog?.Invoke(Instance, sender.GetLogPrefix() + " " + msg);
     }
 
+    public static void Warn(string msg) {
+        if (Instance == null)
+            throw new Exception("TcgLogger Instance is null");
+
+        Debug.Log("&e" + msg);
+        Instance.OnLog?.Invoke(Instance, "&e" + msg);
+    }
+
     private void LogConsoleException(string exceptionMessage, string stackTrace, LogType logType) {
         if (logType != LogType.Exception && logType != LogType.Error)
             return;

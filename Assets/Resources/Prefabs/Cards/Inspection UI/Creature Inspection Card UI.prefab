@@ -171,8 +171,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 206.44261, y: -20.81}
-  m_SizeDelta: {x: 412.88522, y: 0}
+  m_AnchoredPosition: {x: 192.94261, y: -20.81}
+  m_SizeDelta: {x: 385.88522, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6868201036902808346
 CanvasRenderer:
@@ -593,8 +593,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 206.44261, y: -53.62}
-  m_SizeDelta: {x: 412.88522, y: 0}
+  m_AnchoredPosition: {x: 192.94261, y: -78.2}
+  m_SizeDelta: {x: 385.88522, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &371705801906341616
 MonoBehaviour:
@@ -616,8 +616,8 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_Spacing: 3
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -695,7 +695,7 @@ MonoBehaviour:
   manaCost: {fileID: 8428784101651711828}
   infoContainer: {fileID: 1335921953632911146}
   uniqueEffectContainer: {fileID: 5402099230300315842}
-  uniqueEffectTextPrefab: {fileID: 7204021820524146641, guid: 0db977d0ac49a354eb0750cd98c139c5, type: 3}
+  uniqueEffectUIPrefab: {fileID: 397928675930313445, guid: 0db977d0ac49a354eb0750cd98c139c5, type: 3}
   atk: {fileID: 4782544256014110507}
   health: {fileID: 7831886045119902449}
   staticKeywordContainer: {fileID: 290668022154616419}
@@ -1013,8 +1013,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -1.5, y: 92.44998}
-  m_SizeDelta: {x: -53, y: 0}
+  m_AnchoredPosition: {x: 0, y: 92.44998}
+  m_SizeDelta: {x: -80, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &4103924147839966066
 MonoBehaviour:

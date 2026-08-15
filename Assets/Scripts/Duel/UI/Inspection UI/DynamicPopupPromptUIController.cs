@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 
 public class DynamicPopupPromptUIController : MonoBehaviour {
     [SerializeField] private DynamicPopupPromptUI popupPromptUI;
-    [SerializeField] private EventSystem eventSystem;
 
     private void Update() {
         if (!GameInputManager.Instance.PlayerInputActions.UI.enabled) {
@@ -24,11 +23,11 @@ public class DynamicPopupPromptUIController : MonoBehaviour {
     }
 
     private bool IndicatorRaycast(out DynamicPopupPromptIndicator indicator) {
-        PointerEventData pointerData = new PointerEventData(eventSystem);
+        PointerEventData pointerData = new PointerEventData(EventSystem.current);
         pointerData.position = Input.mousePosition;
 
         List<RaycastResult> results = new List<RaycastResult>();
-        eventSystem.RaycastAll(pointerData, results);
+        EventSystem.current.RaycastAll(pointerData, results);
 
         indicator = null;
         foreach (RaycastResult entry in results) {

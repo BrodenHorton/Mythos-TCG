@@ -22,13 +22,11 @@ public class StaticKeywordUI : MonoBehaviour, DynamicPopupPromptIndicator {
             icon.sprite = iconDatabase.Get(effect.IconId);
         staticKeywordText.text = effect.EffectName.ToString().ToUpper();
         staticKeywordText.color = STATIC_KEYWORD_COLOR;
-        effectDescription = effect.Description.ToString();
+        effectDescription = effect.RawDescription.ToString();
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
     public string GetPrompt() {
         return effectDescription;
     }
-
-    public string EffectDescription { get { return effectDescription; } }
 }

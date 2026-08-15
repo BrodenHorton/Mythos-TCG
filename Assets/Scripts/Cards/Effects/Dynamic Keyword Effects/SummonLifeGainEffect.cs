@@ -23,7 +23,7 @@
         duelManager.GetPlayerById(card.PlayerId).ModifyLifePoints(effectBase.LifePointsModifier);
     }
 
-    public override string GetEffectDescription() {
+    public override string GetDynamicEffectDescription() {
         return "Increase life points by " + effectBase.LifePointsModifier;
     }
 

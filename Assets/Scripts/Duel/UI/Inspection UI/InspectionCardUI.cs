@@ -6,7 +6,7 @@ public abstract class InspectionCardUI<T> : MonoBehaviour where T : CardPayload 
     [SerializeField] protected TextMeshProUGUI manaCost;
     [SerializeField] protected RectTransform infoContainer;
     [SerializeField] protected RectTransform uniqueEffectContainer;
-    [SerializeField] protected TextMeshProUGUI uniqueEffectTextPrefab;
+    [SerializeField] protected UniqueEffectUI uniqueEffectUIPrefab;
 
     public abstract void UpdateUI(T cardPayload);
 

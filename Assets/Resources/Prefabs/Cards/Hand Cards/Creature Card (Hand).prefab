@@ -412,7 +412,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -76.98}
+  m_AnchoredPosition: {x: 60, y: -72.51001}
   m_SizeDelta: {x: 120, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1498233597198845591
@@ -1185,7 +1185,7 @@ MonoBehaviour:
   manaCost: {fileID: 7205172686528948382}
   infoContainer: {fileID: 784438710366987415}
   uniqueEffectContainer: {fileID: 7383508031247776138}
-  uniqueEffectTextPrefab: {fileID: 885045983339532142, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
+  uniqueEffectUIPrefab: {fileID: 7652804378005566042, guid: da428203e20c99d4a9602a07901f6f47, type: 3}
   atk: {fileID: 1218836546212971706}
   health: {fileID: 3469288718854458655}
   staticKeywordContainer: {fileID: 8445248980760732511}
@@ -1290,7 +1290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -66.275}
+  m_AnchoredPosition: {x: 60, y: -57.335007}
   m_SizeDelta: {x: 120, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8506010003049080697

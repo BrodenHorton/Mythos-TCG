@@ -6,7 +6,7 @@ public abstract class HandCardUI : CardUI {
     [SerializeField] protected TextMeshProUGUI manaCost;
     [SerializeField] protected RectTransform infoContainer;
     [SerializeField] protected RectTransform uniqueEffectContainer;
-    [SerializeField] protected TextMeshProUGUI uniqueEffectTextPrefab;
+    [SerializeField] protected UniqueEffectUI uniqueEffectUIPrefab;
 
     public sealed override void SelectCard(out bool canDragCard) {
         if (!isSelectable)

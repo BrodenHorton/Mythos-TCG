@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DynamicKeyword", menuName = "Scriptable Objects/Effect/Dynamic Keyword")]
-public class DynamicKeyword : ScriptableObject {
+[CreateAssetMenu(fileName = "EffectKeyword", menuName = "Scriptable Objects/Effect/Effect Keyword")]
+public class EffectKeyword : ScriptableObject {
     [SerializeField] private string id;
     [SerializeField] private string keywordName;
     [SerializeField, TextArea] private string description;

@@ -31,7 +31,7 @@ public class LifelinkEffect : StaticCreatureCardEffect {
         duelManager.GetPlayerById(args.InitiatorId).ModifyLifePoints(args.Damage);
     }
 
-    public override string GetFullDescription() {
+    public override string GetRawDescription() {
         return EFFECT_DESCRIPTION;
     }
 

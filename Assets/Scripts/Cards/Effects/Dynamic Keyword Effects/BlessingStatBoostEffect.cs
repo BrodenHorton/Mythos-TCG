@@ -67,7 +67,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
         EventBus.Instance.InvokeOnCreatureCardEffectClientpdate(new CreatureCardPayload(card));
     }
 
-    public override string GetEffectDescription() {
+    public override string GetDynamicEffectDescription() {
         StringBuilder sb = new StringBuilder();
         sb.Append("Gain +" + effectBase.AtkBoost + " +" + effectBase.HealthBoost);
         if (effectBase.IsResetAfterTurn)

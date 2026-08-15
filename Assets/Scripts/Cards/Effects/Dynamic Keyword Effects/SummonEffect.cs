@@ -2,7 +2,7 @@
 
     protected abstract void SummonEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args);
 
-    public sealed override DynamicKeyword GetDynamicKeyword() {
+    public sealed override EffectKeyword GetDynamicKeyword() {
         return ServiceLocator.Get<DynamicKeywordRegistry>().Get("summon");
     }
 }
