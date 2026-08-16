@@ -71,7 +71,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
         StringBuilder sb = new StringBuilder();
         sb.Append("Gain +" + effectBase.AtkBoost + " +" + effectBase.HealthBoost);
         if (effectBase.IsResetAfterTurn)
-            sb.Append(" until the end of the turn");
+            sb.Append(" until the end of the turn and <color=#fff47d><link=keyword_id>summon</link></color> test");
         return sb.ToString();
     }
 

@@ -35,8 +35,12 @@ public class UniqueEffectUI : MonoBehaviour {
                 continue;
             }
 
+            int firstKeywordCharacterIndex = textInfo.characterInfo[linkInfo.linkTextfirstCharacterIndex].index;
+            effectDescription.text = effectDescription.text.Remove(firstKeywordCharacterIndex, linkInfo.linkTextLength);
+            effectDescription.text = effectDescription.text.Insert(firstKeywordCharacterIndex, dynamicKeywordRegistry.Get(keywordId).KeywordName);
+            effectDescription.ForceMeshUpdate();
             string keywordDescription = dynamicKeywordRegistry.Get(keywordId).Description;
-            AddDynamicKeywordIndicator(keywordDescription, linkInfo.linkTextfirstCharacterIndex, linkInfo.linkIdLength);
+            AddDynamicKeywordIndicator(keywordDescription, linkInfo.linkTextfirstCharacterIndex, linkInfo.linkTextLength);
         }
     }
 
