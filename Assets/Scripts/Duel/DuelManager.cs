@@ -32,10 +32,6 @@ public class DuelManager : NetworkBehaviour {
             return;
 
         GameManager.Instance.OnGameStart += InitializePlayers;
-        EventBus.Instance.OnCreatureCardSelectedForPlay += PlayCreatureCardFromHand;
-        EventBus.Instance.OnDomainCardSelectedForPlay += PlayDomainCardFromHand;
-        EventBus.Instance.OnSpellCardSelectedForPlay += PlaySpellCardFromHand;
-        EventBus.Instance.OnSpellCardPlayedFromHand += PlaySpellCard;
     }
 
     public override void OnNetworkDespawn() {
@@ -55,7 +51,7 @@ public class DuelManager : NetworkBehaviour {
 
         players = new List<MatchPlayer>();
         for (int i = 0; i < playerOrder.Length; i++) {
-            List<Card> deck = deckSim != null ? deckSim.GenerateDeck(playerOrder[i]) : Temp_PopulateDeck(playerOrder[i]);
+            List<Card> deck = deckSim.GenerateDeck(playerOrder[i]);
             MatchPlayer player = new MatchPlayer(playerOrder[i], deck);
             players.Add(player);
         }
@@ -70,74 +66,6 @@ public class DuelManager : NetworkBehaviour {
     [Rpc(SendTo.SpecifiedInParams)]
     private void InvokePlayerInitializationClientRpc(ulong[] playerOrder, int localClientPlayerIndex, RpcParams rpcParams) {
         OnPlayersInitialization?.Invoke(this, new PlayersInitializedEventArgs(new List<ulong>(playerOrder), localClientPlayerIndex, STARTING_LIFE_POINTS, STARTING_MANA_COUNT));
-    }
-
-    private List<Card> Temp_PopulateDeck(ulong playerId) {
-        List<Card> result = new List<Card>();
-        int tempDeckSize = 40;
-        CardRegistry cardRegistry = ServiceLocator.Get<CardRegistry>();
-        int databaseCardCount = cardRegistry.Cards.Count;
-        for (int i = 0; i < tempDeckSize; i++) {
-            Card card = cardRegistry.Cards[UnityEngine.Random.Range(0, databaseCardCount)].GenerateCardFromBase(playerId);
-            result.Add(card);
-        }
-
-        return result;
-    }
-
-    public void PlayCardFromHand(ulong playerId, Guid handCardUuid) {
-        if (!IsServer)
-            return;
-        MatchPlayer player = GetPlayerById(playerId);
-        if (!player.ContainsHandCardeUuid(handCardUuid))
-            throw new Exception("Attmepting to play card with uuid that is not in the player's hand: " + handCardUuid);
-
-        player.GetHandCardByUuid(handCardUuid).PlayCardFromHand(player);
-    }
-
-    public void PlayCreatureCardFromHand(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (!IsServer)
-            return;
-
-        MatchPlayer player = GetPlayerById(args.PlayerId);
-        player.PlayCreatureCardFromHand(args.Card);
-    }
-    
-    public void PlayDomainCardFromHand(object sender, PlayerCardEventArgs<DomainCard> args) {
-        if (!IsServer)
-            return;
-
-        MatchPlayer player = Players[GetPlayerIndex(args.PlayerId)];
-        player.PlayDomainCardFromHand(args.Card);
-    }
-
-    public void PlaySpellCardFromHand(object sender, PlayerCardEventArgs<SpellCard> args) {
-        if (!IsServer)
-            return;
-
-        MatchPlayer player = Players[GetPlayerIndex(args.PlayerId)];
-        player.PlaySpellCardFromHand(args.Card);
-    }
-
-    public void PlaySpellCard(object sender, PlayerCardEventArgs<SpellCard> args) {
-        if (!IsServer)
-            return;
-
-        MatchPlayer player = Players[GetPlayerIndex(args.PlayerId)];
-        if (args.Card.SpellType == SpellType.Instant)
-            ExecuteSpell(player, args.Card);
-        else
-            EventBus.Instance.InvokeOnSpellChainCardPlayed(new PlayerCardEventArgs<SpellCard>(args.PlayerId, args.Card));
-    }
-
-    public void ExecuteSpell(MatchPlayer player, SpellCard spellCard) {
-        if (!IsServer)
-            return;
-
-        for (int i = 0; i < spellCard.BaseEffects.Count; i++) {
-            spellCard.BaseEffects[i].Execute();
-            // TODO: Execute the additional effects on the SpellCard class
-        }
     }
 
     public void NextTurn() {

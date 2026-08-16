@@ -17,6 +17,7 @@ public class DuelistUIManager : NetworkBehaviour {
         EventBus.Instance.OnLifePointsChangedFinished += LifePointsChanged;
         EventBus.Instance.OnPostManaCountChanged += ManaCountChanged;
         EventBus.Instance.OnCardDrawn += CardDrawn;
+        EventBus.Instance.OnCardAddedToHand += CardDrawn;
         EventBus.Instance.OnCardRemovedFromHand += CardRemovedFromHand;
     }
 

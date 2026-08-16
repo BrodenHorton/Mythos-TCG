@@ -24,12 +24,8 @@ public class DomainCard : Card {
         return true;
     }
 
-    public override void PlayCard(MatchPlayer player) {
-
-    }
-
-    public override void PlayCardFromHand(MatchPlayer player) {
-        EventBus.Instance.InvokeOnDomainCardSelectedForPlay(new PlayerCardEventArgs<DomainCard>(player.PlayerId, this));
+    public override CardBase GetCardBase() {
+        return cardBase;
     }
 
     public override int GetManaCost() {

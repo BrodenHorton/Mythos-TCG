@@ -111,7 +111,7 @@ public class SpellChainManager : NetworkBehaviour {
 
         while(spellChain.Count > 0) {
             SpellCardAction action = spellChain.Pop();
-            duelManager.ExecuteSpell(duelManager.GetPlayerById(action.InitiatorId), action.Card);
+            action.Card.ExecuteSpell();
             InvokeOnSpellRemovedFromSpellChainClientRpc(action.InitiatorId, new SpellCardPayload(action.Card));
         }
     }

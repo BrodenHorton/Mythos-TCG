@@ -10,11 +10,12 @@ public abstract class Card {
         this.playerId = playerId;
     }
 
-    public abstract bool IsPlayable(DuelManager duelManager, DuelStateManager stateMaager, SpellChainManager spellChainManager, MatchPlayer player);
+    public abstract bool IsPlayable(DuelManager duelManager,
+                                    DuelStateManager stateMaager,
+                                    SpellChainManager spellChainManager,
+                                    MatchPlayer player);
 
-    public abstract void PlayCard(MatchPlayer player);
-
-    public abstract void PlayCardFromHand(MatchPlayer player);
+    public abstract CardBase GetCardBase();
 
     public abstract int GetManaCost();
 

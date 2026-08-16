@@ -15,5 +15,7 @@
     Spellshield,
     Duelist,
     BlessingStatBoost,
-    SummonLifeGain
+    SummonLifeGain,
+    BattleCryStatBoost,
+    DeathCryCardSearch
 }

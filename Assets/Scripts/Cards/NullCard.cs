@@ -1,19 +1,19 @@
-﻿using Unity.Netcode;
+﻿using System;
 
 public class NullCard : Card {
 
     public NullCard(ulong playerId) : base(playerId) { }
 
     public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
-        return false;
+        throw new Exception("Attempting to call IsPlayable on a Null Card");
     }
 
-    public override void PlayCard(MatchPlayer player) { }
-
-    public override void PlayCardFromHand(MatchPlayer player) { }
-
     public override int GetManaCost() {
-        return 999;
+        throw new Exception("Attempting to get mana count from Null card");
+    }
+
+    public override CardBase GetCardBase() {
+        throw new Exception("Attempting to get card base from Null card");
     }
 
     public override CardPayload GetCardPayload() {

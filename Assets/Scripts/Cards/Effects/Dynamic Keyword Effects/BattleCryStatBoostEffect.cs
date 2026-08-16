@@ -1,13 +1,13 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-[Serializable]
-public class BlessingStatBoostEffect : BlessingEffect {
-    private BlessingStatBoostEffectBase effectBase;
+public class BattleCryStatBoostEffect : BattleCryEffect {
+    private BattleCryStatBoostEffectBase effectBase;
     private int effectProkCount;
     private DuelStateManager stateManager;
+    private CombatStateManager combatStateManager;
+    private CombatManager combatManager;
 
-    public BlessingStatBoostEffect(BlessingStatBoostEffectBase effectBase) {
+    public BattleCryStatBoostEffect(BattleCryStatBoostEffectBase effectBase) {
         this.effectBase = effectBase;
         effectProkCount = 0;
     }
@@ -15,26 +15,32 @@ public class BlessingStatBoostEffect : BlessingEffect {
     public override void Init(CreatureCard card) {
         this.card = card;
         stateManager = ServiceLocator.Get<DuelStateManager>();
-        EventBus.Instance.OnLifePointsChanged += BlessingEffectHandler;
+        combatStateManager = ServiceLocator.Get<CombatStateManager>();
+        combatManager = ServiceLocator.Get<CombatManager>();
+
+        combatStateManager.DeclareAttackersState.OnDeclareAttackersStateExited += BattleCryEffectHandler;
         EventBus.Instance.OnCalculateCreatureAttack += AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth += AddHealth;
         stateManager.EndPhase.OnEndPhasEnteredFinished += ClearEffectProks;
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnLifePointsChanged -= BlessingEffectHandler;
+        combatStateManager.DeclareAttackersState.OnDeclareAttackersStateExited -= BattleCryEffectHandler;
         EventBus.Instance.OnCalculateCreatureAttack -= AddAttack;
         EventBus.Instance.OnCalculateCreatureHealth -= AddHealth;
         stateManager.EndPhase.OnEndPhasEnteredFinished -= ClearEffectProks;
     }
 
-    protected override void BlessingEffectHandler(object sender, LifePointsChangedEventArgs args) {
-        if (args.PlayerId != card.PlayerId)
+    protected override void BattleCryEffectHandler(object sender, ulong currentPlayerTurnId) {
+        if (currentPlayerTurnId != card.PlayerId)
             return;
-        if (args.PreviousLifePoints >= args.LifePoints)
+        if (!combatManager.IsCreatureInCombat(card.Uuid))
+            return;
+        CreatureCombat creatureCombat = combatManager.GetCreatureCombat(card.Uuid);
+        if (creatureCombat.Attacker.Uuid != card.Uuid)
             return;
 
-        TcgLogger.Log("BlessingStatBoostEffect Proked");
+        TcgLogger.Log("BattleCryStatBoostEffect Proked");
         effectProkCount++;
         EventBus.Instance.InvokeOnCreatureCardEffectClientpdate(new CreatureCardPayload(card));
     }
@@ -80,7 +86,7 @@ public class BlessingStatBoostEffect : BlessingEffect {
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {
-        return new BlessingStatBoostEffectPayload(this);
+        return new BattleCryStatBoostEffectPayload(this);
     }
 
     public int EffectProkCount { get { return effectProkCount; } }

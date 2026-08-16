@@ -6,6 +6,7 @@ using UnityEngine;
 public class EventBus : NetworkBehaviour {
     // Duelist UI Actions
     public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardDrawn;
+    public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardAddedToHand;
     public event EventHandler<PlayerCardPayloadEventArgs<CardPayload>> OnCardRemovedFromHand;
     // Hand Card Selection
     public event EventHandler<CardUIEventArgs<HandCardUI>> OnStartHandCardDrag;
@@ -118,6 +119,27 @@ public class EventBus : NetworkBehaviour {
     [Rpc(SendTo.SpecifiedInParams)]
     private void InvokeOnCardDrawnClientRpc(ulong playerId, CardPayloadNetworkContainer cardNetworkContainer, RpcParams rpcParams) {
         Instance.OnCardDrawn?.Invoke(this, new PlayerCardPayloadEventArgs<CardPayload>(playerId, cardNetworkContainer.cardPayload));
+    }
+
+    public void InvokeOnCardAddedToHand(ulong playerId, Card card) {
+        if (!IsServer)
+            return;
+
+        List<ulong> otherPlayerIds = duelManager.GetPlayerIds();
+        otherPlayerIds.Remove(playerId);
+        BaseRpcTarget playerTarget = RpcTarget.Single(playerId, RpcTargetUse.Temp);
+        CardPayloadNetworkContainer cardPayloadNetworkContainer = new CardPayloadNetworkContainer();
+        cardPayloadNetworkContainer.cardPayload = card.GetCardPayload();
+        InvokeOnCardAddedToHandClientRpc(playerId, cardPayloadNetworkContainer, playerTarget);
+        BaseRpcTarget otherTarget = RpcTarget.Group(otherPlayerIds, RpcTargetUse.Temp);
+        CardPayloadNetworkContainer nullCardPayloadNetworkContainer = new CardPayloadNetworkContainer();
+        nullCardPayloadNetworkContainer.cardPayload = new NullCardPayload();
+        InvokeOnCardAddedToHandClientRpc(playerId, nullCardPayloadNetworkContainer, otherTarget);
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void InvokeOnCardAddedToHandClientRpc(ulong playerId, CardPayloadNetworkContainer cardNetworkContainer, RpcParams rpcParams) {
+        Instance.OnCardAddedToHand?.Invoke(this, new PlayerCardPayloadEventArgs<CardPayload>(playerId, cardNetworkContainer.cardPayload));
     }
 
     public void InvokeOnCardRemovedFromHand(ulong playerId, Card card) {

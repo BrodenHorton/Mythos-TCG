@@ -25,6 +25,8 @@ public struct CreatureCardEffectPayloadNetworkContainer : INetworkSerializable {
                 CreatureCardEffectType.Duelist => new DuelistEffectPayload(),
                 CreatureCardEffectType.BlessingStatBoost => new BlessingStatBoostEffectPayload(),
                 CreatureCardEffectType.SummonLifeGain => new SummonLifeGainEffectPayload(),
+                CreatureCardEffectType.BattleCryStatBoost => new BattleCryStatBoostEffectPayload(),
+                CreatureCardEffectType.DeathCryCardSearch => new DeathCryCardSearchEffectPayload(),
                 _ => throw new NotImplementedException("Attempting to read card type that is not defined: " + effectType.ToString())
             };
         }

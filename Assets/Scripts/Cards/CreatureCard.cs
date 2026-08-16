@@ -35,13 +35,8 @@ public partial class CreatureCard : Card {
         return true;
     }
 
-    // TODO: Implement for cards not played from the hand
-    public override void PlayCard(MatchPlayer player) {
-        //EventBus.InvokeOnCreatureCardPlayed(this, new PlayCreatureCardFromHandEventArgs(player, this));
-    }
-
-    public override void PlayCardFromHand(MatchPlayer player) {
-        EventBus.Instance.InvokeOnCreatureCardSelectedForPlay(new PlayerCardEventArgs<CreatureCard>(player.PlayerId, this));
+    public override CardBase GetCardBase() {
+        return cardBase;
     }
 
     public override int GetManaCost() {

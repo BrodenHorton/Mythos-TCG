@@ -70,7 +70,8 @@ public class PlayerUIController : DuelistUIController {
         if (!player.GetHandCardByUuid(handCardUuid).IsPlayable(duelManager, stateManager, spellChainManager, player))
             return;
 
-        duelManager.PlayCardFromHand(playerId, handCardUuid);
+        Card handCard = player.GetHandCardByUuid(handCardUuid);
+        player.PlayCardFromHand(handCard);
     }
 
     public void HandCardDragHandler(object sender, CardUIEventArgs<HandCardUI> args) {

@@ -4,6 +4,7 @@ using Unity.Netcode;
 public class DeclareAttackersState : NetworkBehaviour, CombatState {
     public event EventHandler<ulong> OnDeclareAttackersStateEntered;
     public event EventHandler<ulong> OnDeclareAttackersStateEnteredFinished;
+    public event EventHandler<ulong> OnDeclareAttackersStateExited;
 
     private CombatStateManager combatStateManager;
     private ActionManager actionManager;
@@ -21,7 +22,7 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
             return;
 
         ulong currentPlayerTurnId = combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
-        actionManager.AddAction(currentPlayerTurnId, SwitchToDeclareDefendersServerRpc, "Commit", "Waiting for Opponent");
+        actionManager.AddAction(currentPlayerTurnId, EndDeclareAttackersStateServerRpc, "Commit", "Waiting for Opponent");
         InvokeOnDeclareAttackersStateEnteredClientRpc(currentPlayerTurnId);
         OnDeclareAttackersStateEnteredFinished?.Invoke(this, currentPlayerTurnId);
     }
@@ -34,7 +35,15 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
     }
 
     [Rpc(SendTo.Server)]
-    private void SwitchToDeclareDefendersServerRpc(ulong _) {
+    private void EndDeclareAttackersStateServerRpc(ulong playerId) {
+        OnDeclareAttackersStateExited?.Invoke(this, combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
+        SwitchToDeclareDefenders();
+    }
+
+    private void SwitchToDeclareDefenders() {
+        if (!IsServer)
+            throw new Exception("Only the server can call the method SwitchToDeclareDefenders");
+
         combatStateManager.SwitchState(combatStateManager.DeclareDefendersState);
     }
 

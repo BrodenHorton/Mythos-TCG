@@ -13,7 +13,17 @@ public class SpellCard : Card {
         //effects = new List<SpellCardEffect>();
     }
 
-    public override bool IsPlayable(DuelManager duelManager, DuelStateManager stateManager, SpellChainManager spellChainManager, MatchPlayer player) {
+    public void ExecuteSpell() {
+        for (int i = 0; i < cardBase.BaseEffects.Count; i++) {
+            cardBase.BaseEffects[i].Execute();
+            // TODO: Execute the additional effects on the SpellCard class
+        }
+    }
+
+    public override bool IsPlayable(DuelManager duelManager,
+                                    DuelStateManager stateManager,
+                                    SpellChainManager spellChainManager,
+                                    MatchPlayer player) {
         if(spellChainManager.IsSpellChainActive()) {
             if (SpellType == SpellType.Slow)
                 return false;
@@ -28,16 +38,12 @@ public class SpellCard : Card {
         return true;
     }
 
-    public override void PlayCard(MatchPlayer player) {
-        
-    }
-
-    public override void PlayCardFromHand(MatchPlayer player) {
-        EventBus.Instance.InvokeOnSpellCardSelectedForPlay(new PlayerCardEventArgs<SpellCard>(player.PlayerId, this));
-    }
-
     public override int GetManaCost() {
         return cardBase.ManaCost;
+    }
+
+    public override CardBase GetCardBase() {
+        return cardBase;
     }
 
     public override CardPayload GetCardPayload() {
@@ -51,6 +57,4 @@ public class SpellCard : Card {
     public Material SplashArt { get { return cardBase.SplashArt; } }
 
     public SpellType SpellType { get { return cardBase.SpellType; } }
-
-    public List<SpellCardEffect> BaseEffects { get { return cardBase.BaseEffects; } }
 }

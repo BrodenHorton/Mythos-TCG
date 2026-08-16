@@ -25,6 +25,7 @@ public class MatchPlayer {
         seriesWinCount = 0;
     }
 
+    // TODO: Figure out how to combine Draw card and Added card to hand events into one method
     public Card DrawCard() {
         if(deck.Count == 0)
             throw new Exception("Attempting to draw a card when the player has no cards in their deck");
@@ -36,31 +37,51 @@ public class MatchPlayer {
         return card;
     }
 
-    public void PlayCreatureCardFromHand(CreatureCard card) {
+    public void AddCardToHand(Card card) {
+        hand.Add(card);
+        EventBus.Instance.InvokeOnCardAddedToHand(playerId, card);
+    }
+
+    public void PlayCardFromHand(Card card) {
         RemoveCardFromHand(card.Uuid);
         CurrentMana -= card.GetManaCost();
+        PlayCard(card);
+    }
+
+    public void PlayCard(Card card) {
+        if (card is CreatureCard creatureCard)
+            PlayCreatureCard(creatureCard);
+        else if (card is DomainCard domainCard)
+            PlayDomainCard(domainCard);
+        else if (card is SpellCard spellCard)
+            PlaySpellCard(spellCard);
+        else
+            throw new Exception("Attempting to play an unrecognized card type");
+    }
+
+    public void PlayCreatureCard(CreatureCard card) {
         card.CreatureDestroyedCallback = OnCreatureDestroyCallback;
+        creatures.Add(card);
+
+        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(new PlayerCardEventArgs<CreatureCard>(playerId, card));
+        EventBus.Instance.InvokeOnCreatureCardPlayedFromHandFinished(playerId, card);
 
         PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, card);
         EventBus.Instance.InvokeOnEnteringFieldSummoningSickness(args);
         card.HasSummoningSickness = !args.IsCanceled;
-
-        creatures.Add(card);
-        EventBus.Instance.InvokeOnCreatureCardPlayedFromHand(new PlayerCardEventArgs<CreatureCard>(playerId, card));
-        EventBus.Instance.InvokeOnCreatureCardPlayedFromHandFinished(playerId, card);
     }
 
-    public void PlayDomainCardFromHand(DomainCard card) {
-        RemoveCardFromHand(card.Uuid);
-        CurrentMana -= card.GetManaCost();
+    public void PlayDomainCard(DomainCard card) {
         domain = card;
         EventBus.Instance.InvokeOnDomainCardPlayedFromHand(playerId, card);
     }
 
-    public void PlaySpellCardFromHand(SpellCard card) {
-        RemoveCardFromHand(card.Uuid);
-        CurrentMana -= card.GetManaCost();
+    public void PlaySpellCard(SpellCard card) {
         EventBus.Instance.InvokeOnSpellCardPlayedFromHand(new PlayerCardEventArgs<SpellCard>(playerId, card));
+        if (card.SpellType == SpellType.Instant)
+            card.ExecuteSpell();
+        else
+            EventBus.Instance.InvokeOnSpellChainCardPlayed(new PlayerCardEventArgs<SpellCard>(playerId, card));
     }
 
     public void RemoveCardFromHand(Guid cardUuid) {
