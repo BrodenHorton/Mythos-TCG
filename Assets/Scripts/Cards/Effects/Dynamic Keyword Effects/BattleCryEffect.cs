@@ -1,17 +1,11 @@
-﻿public abstract class BattleCryEffect : DynamicCreatureCardEffect {
+﻿public abstract class BattleCryEffect : CreatureCardEffect {
+    private static readonly string BATTLE_CRY_KEYWORD = "battle_cry";
 
     protected abstract void BattleCryEffectHandler(object sender, ulong currentPlayerTurnId);
 
-    public sealed override EffectKeyword GetDynamicKeyword() {
-        return ServiceLocator.Get<DynamicKeywordRegistry>().Get("battle_cry");
-    }
-}
+    public abstract string GetDynamicEffectDescription();
 
-public abstract class DeathCryEffect : DynamicCreatureCardEffect {
-
-    protected abstract void DeathCryEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args);
-
-    public sealed override EffectKeyword GetDynamicKeyword() {
-        return ServiceLocator.Get<DynamicKeywordRegistry>().Get("death_cry");
+    public sealed override string GetRawDescription() {
+        return CardRichTextUtil.GetKeywordLinkTagText(BATTLE_CRY_KEYWORD, "Battle Cry") + ": " + GetDynamicEffectDescription();
     }
 }

@@ -24,21 +24,15 @@ public class UniqueEffectUI : MonoBehaviour {
     private void ParseDynamicKeywords() {
         TMP_TextInfo textInfo = effectDescription.textInfo;
 
+        DynamicKeywordRegistry dynamicKeywordRegistry = ServiceLocator.Get<DynamicKeywordRegistry>();
         for (int i = 0; i < textInfo.linkCount; i++) {
             TMP_LinkInfo linkInfo = textInfo.linkInfo[i];
-            if (!linkInfo.GetLinkID().Equals("keyword_id", System.StringComparison.OrdinalIgnoreCase))
-                continue;
-            DynamicKeywordRegistry dynamicKeywordRegistry = ServiceLocator.Get<DynamicKeywordRegistry>();
-            string keywordId = linkInfo.GetLinkText();
+            string keywordId = linkInfo.GetLinkID();
             if (!dynamicKeywordRegistry.Contains(keywordId)) {
                 TcgLogger.Warn("Unable to find keyword with id:" + keywordId);
                 continue;
             }
 
-            int firstKeywordCharacterIndex = textInfo.characterInfo[linkInfo.linkTextfirstCharacterIndex].index;
-            effectDescription.text = effectDescription.text.Remove(firstKeywordCharacterIndex, linkInfo.linkTextLength);
-            effectDescription.text = effectDescription.text.Insert(firstKeywordCharacterIndex, dynamicKeywordRegistry.Get(keywordId).KeywordName);
-            effectDescription.ForceMeshUpdate();
             string keywordDescription = dynamicKeywordRegistry.Get(keywordId).Description;
             AddDynamicKeywordIndicator(keywordDescription, linkInfo.linkTextfirstCharacterIndex, linkInfo.linkTextLength);
         }

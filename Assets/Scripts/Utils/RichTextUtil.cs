@@ -21,7 +21,7 @@ public static class RichTextUtil {
         { 'f', new RichTextValues("<color=#FFFFFF>", "</color>") }
     };
 
-    public static string ProcessRichText(string msg) {
+    public static string ParseRichText(string msg) {
         if (msg == null || msg.Length == 0)
             return "";
 

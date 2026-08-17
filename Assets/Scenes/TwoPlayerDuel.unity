@@ -1322,7 +1322,7 @@ GameObject:
   - component: {fileID: 418567531}
   - component: {fileID: 418567530}
   m_Layer: 0
-  m_Name: Untap Phase
+  m_Name: Start Phase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1377,7 +1377,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 418567528}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abac897a3d8d93240ba337311d42ee7e, type: 3}
+  m_Script: {fileID: 11500000, guid: 1373924d6e8b5a449822905c4d547900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
@@ -3705,6 +3705,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 846ec3e0652c05e41aa93d93ccf103f2, type: 2}
   - {fileID: 11400000, guid: 6c643fa6e6ce8984299ce3c3ce2f7c79, type: 2}
   - {fileID: 11400000, guid: ecf8d38e8631906488ebace5f4ad7768, type: 2}
+  - {fileID: 11400000, guid: a1dbbdf3d6ae6164f8d156283cb7b539, type: 2}
+  - {fileID: 11400000, guid: 7fe0e52c4bdbda145844e73eb8b651cd, type: 2}
+  - {fileID: 11400000, guid: c2fbfcecaee2e85419a5ba3db320625e, type: 2}
 --- !u!1 &1294806329
 GameObject:
   m_ObjectHideFlags: 0
@@ -3906,7 +3909,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   initializationPhase: {fileID: 507153374}
-  untapPhase: {fileID: 418567531}
+  startPhase: {fileID: 418567531}
   drawPhase: {fileID: 1209193706}
   firstMainPhase: {fileID: 31504060}
   combatPhase: {fileID: 1619909327}

@@ -20,9 +20,6 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<CombatFieldCardEventArgs> OnReleaseCreatureFieldCardOverCombatArea;
     public event EventHandler<CreatureReleasedOverCreatureEventArgs> OnCreatureReleasedOverCreature;
     // Playing Cards
-    public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardSelectedForPlay;
-    public event EventHandler<PlayerCardEventArgs<DomainCard>> OnDomainCardSelectedForPlay;
-    public event EventHandler<PlayerCardEventArgs<SpellCard>> OnSpellCardSelectedForPlay;
     public event EventHandler<PlayerCardEventArgs<CreatureCard>> OnCreatureCardPlayedFromHand;
     public event EventHandler<PlayerCardPayloadEventArgs<CreatureCardPayload>> OnCreatureCardPlayedFromHandFinished;
     public event EventHandler<PlayerCardPayloadEventArgs<DomainCardPayload>> OnDomainCardPlayedFromHand;
@@ -208,27 +205,6 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Playing Cards
-    public void InvokeOnCreatureCardSelectedForPlay(PlayerCardEventArgs<CreatureCard> args) {
-        if (!IsServer)
-            throw new Exception("The event OnCreatureCardSelectedForPlay can only be invoked by the server");
-
-        OnCreatureCardSelectedForPlay?.Invoke(this, args);
-    }
-
-    public void InvokeOnDomainCardSelectedForPlay(PlayerCardEventArgs<DomainCard> args) {
-        if (!IsServer)
-            throw new Exception("The event OnDomainCardSelectedForPlay can only be invoked by the server");
-
-        OnDomainCardSelectedForPlay?.Invoke(this, args);
-    }
-
-    public void InvokeOnSpellCardSelectedForPlay(PlayerCardEventArgs<SpellCard> args) {
-        if (!IsServer)
-            throw new Exception("The event OnSpellCardSelectedForPlay can only be invoked by the server");
-
-        OnSpellCardSelectedForPlay?.Invoke(this, args);
-    }
-
     public void InvokeOnCreatureCardPlayedFromHand(PlayerCardEventArgs<CreatureCard> args) {
         if (!IsServer)
             throw new Exception("The event OnCreatureCardPlayedFromHand can only be invoked by the server");

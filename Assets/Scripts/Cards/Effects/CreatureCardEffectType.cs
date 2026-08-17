@@ -17,5 +17,6 @@
     BlessingStatBoost,
     SummonLifeGain,
     BattleCryStatBoost,
-    DeathCryCardSearch
+    DeathCryCardSearch,
+    Evolve
 }

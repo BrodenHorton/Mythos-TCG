@@ -22,7 +22,7 @@ public class EndPhase : NetworkBehaviour, DuelState {
         OnEndPhasEnteredFinished?.Invoke(this, duelManager.GetCurrentPlayerTurn().PlayerId);
         duelManager.GetCurrentPlayerTurn().ClearSummoningSickness();
         duelManager.NextTurn();
-        stateManager.SwitchState(stateManager.UntapPhase);
+        stateManager.SwitchState(stateManager.StartPhase);
     }
 
     public void UpdateState() { }

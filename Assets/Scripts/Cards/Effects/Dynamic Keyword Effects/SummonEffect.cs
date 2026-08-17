@@ -1,8 +1,11 @@
-﻿public abstract class SummonEffect : DynamicCreatureCardEffect {
+﻿public abstract class SummonEffect : CreatureCardEffect {
+    private static readonly string SUMMON_KEYWORD = "summon";
 
     protected abstract void SummonEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args);
 
-    public sealed override EffectKeyword GetDynamicKeyword() {
-        return ServiceLocator.Get<DynamicKeywordRegistry>().Get("summon");
+    public abstract string GetDynamicEffectDescription();
+
+    public sealed override string GetRawDescription() {
+        return CardRichTextUtil.GetKeywordLinkTagText(SUMMON_KEYWORD, "Summon") + ": " + GetDynamicEffectDescription();
     }
 }

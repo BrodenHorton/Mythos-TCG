@@ -123,6 +123,9 @@ public partial class CreatureCard : Card {
 
     public void DestroyCreature() {
         creatureDestroyedCallback?.Invoke(this);
+
+        foreach (CreatureCardEffect effect in effects)
+            effect.RemoveListeners();
     }
 
     public void AddEffect(CreatureCardEffect effect) {

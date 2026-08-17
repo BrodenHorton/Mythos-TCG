@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(DuelManager))]
 public class DuelStateManager : NetworkBehaviour {
     [SerializeField] private InitializationPhase initializationPhase;
-    [SerializeField] private UntapPhase untapPhase;
+    [SerializeField] private StartPhase startPhase;
     [SerializeField] private DrawPhase drawPhase;
     [SerializeField] private FirstMainPhase firstMainPhase;
     [SerializeField] private CombatPhase combatPhase;
@@ -61,7 +61,7 @@ public class DuelStateManager : NetworkBehaviour {
 
     public InitializationPhase Initialization { get { return initializationPhase; } }
 
-    public UntapPhase UntapPhase { get { return untapPhase; } }
+    public StartPhase StartPhase { get { return startPhase; } }
 
     public DrawPhase DrawPhase { get { return drawPhase; } }
 

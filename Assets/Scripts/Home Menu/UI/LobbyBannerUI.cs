@@ -36,7 +36,7 @@ public class LobbyBannerUI : MonoBehaviour {
                 break;
             }
         }
-        lobbyStatus.text = lobby.Players.Count < lobby.MaxPlayers ? RichTextUtil.ProcessRichText("&cOpen") : RichTextUtil.ProcessRichText("&aFull");
+        lobbyStatus.text = lobby.Players.Count < lobby.MaxPlayers ? RichTextUtil.ParseRichText("&cOpen") : RichTextUtil.ParseRichText("&aFull");
         playerCount.text = lobby.Players.Count.ToString();
         maxPlayerCount.text = lobby.MaxPlayers.ToString();
     }

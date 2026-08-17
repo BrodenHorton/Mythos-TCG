@@ -12,7 +12,7 @@ public partial class LogUI : MonoBehaviour {
     }
 
     public void SetText(string text) {
-        logText.text = RichTextUtil.ProcessRichText(text);
+        logText.text = RichTextUtil.ParseRichText(text);
     }
 
     public void UpdateLogSize(float width) {
