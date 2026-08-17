@@ -42,25 +42,25 @@ public class BlessingStatBoostEffect : BlessingEffect {
     private void AddAttack(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
         if (args.Card.Uuid != card.Uuid)
             return;
-        if (effectProkCount <= 0 || effectBase.AtkBoost <= 0)
+        if (effectProkCount <= 0 || effectBase.StatBoosEffectData.AtkBoost <= 0)
             return;
 
-        args.Value += effectProkCount * effectBase.AtkBoost;
+        args.Value += effectProkCount * effectBase.StatBoosEffectData.AtkBoost;
     }
 
     private void AddHealth(object sender, PlayerCardStatEventArgs<CreatureCard> args) {
         if (args.Card.Uuid != card.Uuid)
             return;
-        if (effectProkCount <= 0 || effectBase.HealthBoost <= 0)
+        if (effectProkCount <= 0 || effectBase.StatBoosEffectData.HealthBoost <= 0)
             return;
 
-        args.Value += effectProkCount * effectBase.HealthBoost;
+        args.Value += effectProkCount * effectBase.StatBoosEffectData.HealthBoost;
     }
 
     private void ClearEffectProks(object sender, ulong currentPlayerId) {
         if (card.PlayerId != currentPlayerId)
             return;
-        if (!effectBase.IsResetAfterTurn)
+        if (!effectBase.StatBoosEffectData.IsResetAfterTurn)
             return;
 
         effectProkCount = 0;
@@ -69,8 +69,8 @@ public class BlessingStatBoostEffect : BlessingEffect {
 
     public override string GetDynamicEffectDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.Append("Gain +" + effectBase.AtkBoost + " +" + effectBase.HealthBoost);
-        if (effectBase.IsResetAfterTurn)
+        sb.Append("Gain +" + effectBase.StatBoosEffectData.AtkBoost + " +" + effectBase.StatBoosEffectData.HealthBoost);
+        if (effectBase.StatBoosEffectData.IsResetAfterTurn)
             sb.Append(" until the end of the turn");
         return sb.ToString();
     }

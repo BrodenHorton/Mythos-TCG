@@ -20,11 +20,11 @@
         if (args.Card.Uuid != card.Uuid)
             return;
 
-        duelManager.GetPlayerById(card.PlayerId).ModifyLifePoints(effectBase.LifePointsModifier);
+        duelManager.GetPlayerById(card.PlayerId).ModifyLifePoints(effectBase.LifeGainEffectData.LifePointsModifier);
     }
 
     public override string GetDynamicEffectDescription() {
-        return "Increase life points by " + effectBase.LifePointsModifier;
+        return "Increase life points by " + effectBase.LifeGainEffectData.LifePointsModifier;
     }
 
     public override CreatureCardEffectBase GetCreatureEffectBase() {

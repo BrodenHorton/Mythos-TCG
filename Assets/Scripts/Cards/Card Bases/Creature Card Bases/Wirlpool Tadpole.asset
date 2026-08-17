@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d884deb7188e42e4c86259bffd9cb5cb, type: 3}
+  m_Name: Wirlpool Tadpole
+  m_EditorClassIdentifier: 
+  id: wirlpool_tadpole
+  cardName: Wirlpool Tadpole
+  splashArt: {fileID: 2100000, guid: ca10d317eeae44843adeae95983b04ac, type: 2}
+  manaCost: 1
+  domain: 1
+  atk: 1
+  health: 2
+  creatureClasses: 0d000000
+  baseEffects:
+  - {fileID: 11400000, guid: e22157754e903ad4f908823f008234b7, type: 2}

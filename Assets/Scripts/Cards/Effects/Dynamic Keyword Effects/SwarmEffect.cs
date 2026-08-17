@@ -1,5 +1,6 @@
 ﻿public abstract class SwarmEffect : CreatureCardEffect {
     private static readonly string SWARM_KEYWORD = "swarm";
+    protected static readonly int SWARM_MINIMUM = 4;
 
     protected abstract void SwarmEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args);
 

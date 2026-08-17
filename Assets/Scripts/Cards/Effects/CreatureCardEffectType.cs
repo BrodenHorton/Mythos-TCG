@@ -18,5 +18,6 @@
     SummonLifeGain,
     BattleCryStatBoost,
     DeathCryCardSearch,
-    Evolve
+    Evolve,
+    SwarmAddEffect
 }
