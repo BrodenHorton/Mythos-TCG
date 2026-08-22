@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: wild_emberback_battle_cry
   effectName: Wild Emberback Battle Cry
-  atkBoost: 2
-  healthBoost: 0
-  isResetAfterTurn: 1
+  statBoostEffectData:
+    atkBoost: 2
+    healthBoost: 0
+    isResetAfterTurn: 1

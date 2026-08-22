@@ -2,11 +2,11 @@
 
 [CreateAssetMenu(fileName = "Summon Life Gain Effect Base", menuName = "Scriptable Objects/Effect/Base/Summon Life Gain")]
 public class SummonLifeGainEffectBase : CreatureCardEffectBase {
-    [SerializeField] private LifeGainEffectData lifeGainEffectData;
+    [SerializeField] private int lifePointsModifier;
 
     public override CreatureCardEffect GenerateCardEffectFromBase() {
         return new SummonLifeGainEffect(this);
     }
 
-    public LifeGainEffectData LifeGainEffectData { get { return LifeGainEffectData; } }
+    public int LifePointsModifier { get { return lifePointsModifier; } }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 
+[System.Serializable]
 public class PlayerCardEventArgs<T> : EventArgs where T : Card {
     private ulong playerId;
     private T card;

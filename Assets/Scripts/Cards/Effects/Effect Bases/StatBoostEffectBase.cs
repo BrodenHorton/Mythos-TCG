@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
+[Serializable]
 public class StatBoostEffectData {
     [SerializeField] private int atkBoost;
     [SerializeField] private int healthBoost;
