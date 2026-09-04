@@ -1,9 +1,9 @@
 ﻿
-public class DeathCryCardSearchEffect : DeathCryEffect {
-    private DeathCryCardSearchEffectBase effectBase;
+public class SummonCardSearchEffect : SummonEffect {
+    private SummonCardSearchEffectBase effectBase;
     private DuelManager duelManager;
 
-    public DeathCryCardSearchEffect(DeathCryCardSearchEffectBase effectBase) {
+    public SummonCardSearchEffect(SummonCardSearchEffectBase effectBase) {
         this.effectBase = effectBase;
     }
 
@@ -11,14 +11,14 @@ public class DeathCryCardSearchEffect : DeathCryEffect {
         this.card = card;
         duelManager = ServiceLocator.Get<DuelManager>();
 
-        EventBus.Instance.OnCreatureDestroyed += DeathCryEffectHandler;
+        EventBus.Instance.OnCreatureCardPlayedFromHand += SummonEffectHandler;
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnCreatureDestroyed -= DeathCryEffectHandler;
+        EventBus.Instance.OnCreatureCardPlayedFromHand -= SummonEffectHandler;
     }
 
-    protected override void DeathCryEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args) {
+    protected override void SummonEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (args.PlayerId != card.PlayerId)
             return;
         if (args.Card.Uuid != card.Uuid)
@@ -28,7 +28,7 @@ public class DeathCryCardSearchEffect : DeathCryEffect {
         for (int i = 0; i < player.Deck.Count; i++) {
             Card deckCard = player.Deck[i];
             if (effectBase.TargetCard.Id.Equals(deckCard.GetCardBase().Id)) {
-                TcgLogger.Log("DeathCryCardSearchEffect Proked");
+                TcgLogger.Log("SummonCardSearchEffect Proked");
                 player.Deck.RemoveAt(i);
                 player.AddCardToHand(deckCard);
                 return;
@@ -45,6 +45,6 @@ public class DeathCryCardSearchEffect : DeathCryEffect {
     }
 
     public override CreatureCardEffectPayload GetEffectPayload() {
-        return new DeathCryCardSearchEffectPayload(this);
+        return new SummonCardSearchEffectPayload(this);
     }
 }

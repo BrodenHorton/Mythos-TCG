@@ -29,7 +29,8 @@ public struct CreatureCardEffectPayloadNetworkContainer : INetworkSerializable {
                 CreatureCardEffectType.DeathCryCardSearch => new DeathCryCardSearchEffectPayload(),
                 CreatureCardEffectType.Evolve => new EvolveEffectPayload(),
                 CreatureCardEffectType.SwarmAddEffect => new SwarmAddEffectEffectPayload(),
-                _ => throw new NotImplementedException("Attempting to read card type that is not defined: " + effectType.ToString())
+                CreatureCardEffectType.SummonCardSearch => new SummonCardSearchEffectPayload(),
+                _ => throw new NotImplementedException("Attempting to read card effect type that is not defined: " + effectType.ToString())
             };
         }
         effectPayload?.NetworkSerialize(serializer);

@@ -6,7 +6,7 @@ public class CardRegistry : MonoBehaviour {
     [SerializeField] private CreatureCardBases creatureBases;
     [SerializeField] private SpellCardBases spellBases;
     [SerializeField] private DomainCardBases domainBases;
-    
+
     private List<CardBase> cards;
 
     private void Awake() {
@@ -26,7 +26,7 @@ public class CardRegistry : MonoBehaviour {
         if (id == null)
             throw new Exception("Cannot search for card base with null Id");
 
-        for(int i = 0; i < cards.Count; i++) {
+        for (int i = 0; i < cards.Count; i++) {
             if (cards[i].Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return cards[i];
         }

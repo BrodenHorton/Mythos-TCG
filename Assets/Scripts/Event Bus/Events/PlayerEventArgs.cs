@@ -1,4 +1,6 @@
-﻿public class PlayerEventArgs {
+﻿using System;
+
+public class PlayerEventArgs : EventArgs {
     private ulong playerId;
 
     public PlayerEventArgs(ulong playerId) {

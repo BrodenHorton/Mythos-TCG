@@ -1426,6 +1426,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitingForPlayersUI: {fileID: 826618243}
+--- !u!1 &491036712
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 491036713}
+  - component: {fileID: 491036714}
+  m_Layer: 0
+  m_Name: CardRegistry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &491036713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491036712}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1151302305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &491036714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491036712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd55c091d604d8e4eb2fe4b63e9494f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  creatureBases: {fileID: 11400000, guid: 4246183e2b902e6498e7983b88078318, type: 2}
+  spellBases: {fileID: 11400000, guid: 790dd841ec504224b8bb017fc501e6a9, type: 2}
+  domainBases: {fileID: 11400000, guid: d2cc910ce5a6a26439318f86dbf6d109, type: 2}
 --- !u!1 &498079529
 GameObject:
   m_ObjectHideFlags: 0
@@ -1957,53 +2004,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d444f45d386e244cb1f7d24b78c6893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &685587342
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 685587343}
-  - component: {fileID: 685587344}
-  m_Layer: 0
-  m_Name: CardRegistry
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &685587343
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685587342}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1151302305}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &685587344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685587342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd55c091d604d8e4eb2fe4b63e9494f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  creatureBases: {fileID: 11400000, guid: 4246183e2b902e6498e7983b88078318, type: 2}
-  spellBases: {fileID: 11400000, guid: 790dd841ec504224b8bb017fc501e6a9, type: 2}
-  domainBases: {fileID: 11400000, guid: d2cc910ce5a6a26439318f86dbf6d109, type: 2}
 --- !u!1 &745788449
 GameObject:
   m_ObjectHideFlags: 0
@@ -3206,7 +3206,6 @@ Transform:
   - {fileID: 782071761}
   - {fileID: 1336480728}
   - {fileID: 944256952}
-  - {fileID: 685587343}
   - {fileID: 586076832}
   - {fileID: 1068589890}
   - {fileID: 1730183051}
@@ -3232,6 +3231,7 @@ Transform:
   - {fileID: 1432902333}
   - {fileID: 1947611093}
   - {fileID: 2144040672}
+  - {fileID: 491036713}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1151302306
