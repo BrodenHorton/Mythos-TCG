@@ -20,5 +20,6 @@
     DeathCryCardSearch,
     SummonCardSearch,
     Evolve,
-    SwarmAddEffect
+    SwarmAddEffect,
+    ChorionSparkletBlessing
 }
