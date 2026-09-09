@@ -1,7 +1,7 @@
 ﻿using System;
 
 public abstract class DuelistAction {
-    public event EventHandler<ulong> OnRemoveAction;
+    public event EventHandler<PlayerEventArgs> OnRemoveAction;
 
     protected ulong playerId;
     protected string activeActionMessage;
@@ -10,7 +10,7 @@ public abstract class DuelistAction {
     public abstract void Execute();
 
     protected void InvokeOnRemoveAction() {
-        OnRemoveAction?.Invoke(this, playerId);
+        OnRemoveAction?.Invoke(this, new PlayerEventArgs(playerId));
     }
 
     public void ResetOnRemoveAction() {

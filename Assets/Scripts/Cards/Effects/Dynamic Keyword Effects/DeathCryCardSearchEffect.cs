@@ -19,8 +19,6 @@ public class DeathCryCardSearchEffect : DeathCryEffect {
     }
 
     protected override void DeathCryEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (args.PlayerId != card.PlayerId)
-            return;
         if (args.Card.Uuid != card.Uuid)
             return;
 

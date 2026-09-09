@@ -5,6 +5,10 @@ public class EffectSequence<TContext, UEventArgs> : IEffectSequence<CreatureCard
     private EffectTrigger<UEventArgs> trigger;
     private List<EffectRule<TContext, UEventArgs>> rules;
 
+    public EffectSequence(EffectTrigger<UEventArgs> trigger) {
+        this.trigger = trigger;
+    }
+
     public void Init(CreatureCard card) {
         trigger.Init();
         trigger.OnTriggerEffect += TriggerHandler;
@@ -19,10 +23,6 @@ public class EffectSequence<TContext, UEventArgs> : IEffectSequence<CreatureCard
 
         for (int i = 0; i < rules.Count; i++)
             rules[i].RemoveListeners();
-    }
-
-    public void SetTrigger(EffectTrigger<UEventArgs> trigger) {
-        this.trigger = trigger;
     }
 
     public void AddRule(EffectRule<TContext, UEventArgs> rule) {

@@ -3,8 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class SecondMainPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<ulong> OnSecondMainPhaseEntered;
-    public event EventHandler<ulong> OnSecondMainPhaseEnteredFinished;
+    public event EventHandler<PlayerEventArgs> OnSecondMainPhaseEntered;
+    public event EventHandler<PlayerEventArgs> OnSecondMainPhaseEnteredFinished;
 
     private DuelStateManager stateManager;
     private ActionManager actionManager;
@@ -20,7 +20,7 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
 
         ulong currentTurnPlayerId = stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
         InvokeOnSecondMainPhaseEnteredClientRpc(currentTurnPlayerId);
-        OnSecondMainPhaseEnteredFinished?.Invoke(this, currentTurnPlayerId);
+        OnSecondMainPhaseEnteredFinished?.Invoke(this, new PlayerEventArgs(currentTurnPlayerId));
         actionManager.AddAction(currentTurnPlayerId, SwitchToEndPhaseServerRpc, "End", "Waiting for Opponent");
     }
 
@@ -29,7 +29,7 @@ public class SecondMainPhase : NetworkBehaviour, DuelState {
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnSecondMainPhaseEnteredClientRpc(ulong playerId) {
         Debug.Log("Entered Second Main Phase");
-        OnSecondMainPhaseEntered?.Invoke(this, playerId);
+        OnSecondMainPhaseEntered?.Invoke(this, new PlayerEventArgs(playerId));
     }
 
     [Rpc(SendTo.Server)]

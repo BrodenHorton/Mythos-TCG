@@ -1,16 +1,12 @@
 ﻿using System;
 
-[System.Serializable]
-public class PlayerCardEventArgs<T> : EventArgs where T : Card {
-    private ulong playerId;
+[Serializable]
+public class PlayerCardEventArgs<T> : PlayerEventArgs where T : Card {
     private T card;
 
-    public PlayerCardEventArgs(ulong playerId, T card) {
-        this.playerId = playerId;
+    public PlayerCardEventArgs(ulong playerId, T card) : base(playerId) {
         this.card = card;
     }
-
-    public ulong PlayerId { get { return playerId; } }
 
     public T Card { get { return card; } }
 }

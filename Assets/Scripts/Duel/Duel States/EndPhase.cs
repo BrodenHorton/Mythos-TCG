@@ -3,8 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class EndPhase : NetworkBehaviour, DuelState {
-    public EventHandler<ulong> OnEndPhasEntered;
-    public EventHandler<ulong> OnEndPhasEnteredFinished;
+    public EventHandler<PlayerEventArgs> OnEndPhasEntered;
+    public EventHandler<PlayerEventArgs> OnEndPhasEnteredFinished;
 
     private DuelManager duelManager;
     private DuelStateManager stateManager;
@@ -19,7 +19,7 @@ public class EndPhase : NetworkBehaviour, DuelState {
             return;
 
         InvokeOnEndPhaseEnteredClientRpc(duelManager.GetCurrentPlayerTurn().PlayerId);
-        OnEndPhasEnteredFinished?.Invoke(this, duelManager.GetCurrentPlayerTurn().PlayerId);
+        OnEndPhasEnteredFinished?.Invoke(this, new PlayerEventArgs(duelManager.GetCurrentPlayerTurn().PlayerId));
         duelManager.GetCurrentPlayerTurn().ClearSummoningSickness();
         duelManager.NextTurn();
         stateManager.SwitchState(stateManager.StartPhase);
@@ -30,7 +30,7 @@ public class EndPhase : NetworkBehaviour, DuelState {
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnEndPhaseEnteredClientRpc(ulong playerId) {
         Debug.Log("Entered End Phase");
-        OnEndPhasEntered?.Invoke(this, playerId);
+        OnEndPhasEntered?.Invoke(this, new PlayerEventArgs(playerId));
     }
 
     public bool CanPlaySetupCards() {

@@ -3,8 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class CombatPhase : NetworkBehaviour, DuelState {
-    public event EventHandler<ulong> OnCombatPhaseEntered;
-    public event EventHandler<ulong> OnCombatPhaseEnteredFinished;
+    public event EventHandler<PlayerEventArgs> OnCombatPhaseEntered;
+    public event EventHandler<PlayerEventArgs> OnCombatPhaseEnteredFinished;
     public event EventHandler<PlayerEventArgs> OnCombatPhaseEnded;
 
     private DuelStateManager stateManager;
@@ -24,7 +24,7 @@ public class CombatPhase : NetworkBehaviour, DuelState {
 
         ulong currentPlayerId = stateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
         InvokeOnCombatPhaseEnteredClientRpc(currentPlayerId);
-        OnCombatPhaseEnteredFinished?.Invoke(this, currentPlayerId);
+        OnCombatPhaseEnteredFinished?.Invoke(this, new PlayerEventArgs(currentPlayerId));
         combatStateManager.OutOfCombatState.OnOutOfCombatStateEntered += SwitchToSecondMainPhase;
         combatStateManager.StartCombat();
     }
@@ -34,7 +34,7 @@ public class CombatPhase : NetworkBehaviour, DuelState {
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnCombatPhaseEnteredClientRpc(ulong playerId) {
         Debug.Log("Entered Combat Phase");
-        OnCombatPhaseEntered?.Invoke(this, playerId);
+        OnCombatPhaseEntered?.Invoke(this, new PlayerEventArgs(playerId));
     }
 
     private void SwitchToSecondMainPhase(object sender, EventArgs args) {

@@ -2,9 +2,9 @@
 using Unity.Netcode;
 
 public class DeclareAttackersState : NetworkBehaviour, CombatState {
-    public event EventHandler<ulong> OnDeclareAttackersStateEntered;
-    public event EventHandler<ulong> OnDeclareAttackersStateEnteredFinished;
-    public event EventHandler<ulong> OnDeclareAttackersStateExited;
+    public event EventHandler<PlayerEventArgs> OnDeclareAttackersStateEntered;
+    public event EventHandler<PlayerEventArgs> OnDeclareAttackersStateEnteredFinished;
+    public event EventHandler<PlayerEventArgs> OnDeclareAttackersStateExited;
 
     private CombatStateManager combatStateManager;
     private ActionManager actionManager;
@@ -24,19 +24,19 @@ public class DeclareAttackersState : NetworkBehaviour, CombatState {
         ulong currentPlayerTurnId = combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId;
         actionManager.AddAction(currentPlayerTurnId, EndDeclareAttackersStateServerRpc, "Commit", "Waiting for Opponent");
         InvokeOnDeclareAttackersStateEnteredClientRpc(currentPlayerTurnId);
-        OnDeclareAttackersStateEnteredFinished?.Invoke(this, currentPlayerTurnId);
+        OnDeclareAttackersStateEnteredFinished?.Invoke(this, new PlayerEventArgs(currentPlayerTurnId));
     }
 
     public void UpdateState() { }
 
     [Rpc(SendTo.ClientsAndHost)]
     private void InvokeOnDeclareAttackersStateEnteredClientRpc(ulong playerId) {
-        OnDeclareAttackersStateEntered?.Invoke(this, playerId);
+        OnDeclareAttackersStateEntered?.Invoke(this, new PlayerEventArgs(playerId));
     }
 
     [Rpc(SendTo.Server)]
     private void EndDeclareAttackersStateServerRpc(ulong playerId) {
-        OnDeclareAttackersStateExited?.Invoke(this, combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId);
+        OnDeclareAttackersStateExited?.Invoke(this, new PlayerEventArgs(combatStateManager.DuelManager.GetCurrentPlayerTurn().PlayerId));
         SwitchToDeclareDefenders();
     }
 

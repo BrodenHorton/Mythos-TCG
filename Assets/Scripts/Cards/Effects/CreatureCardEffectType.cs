@@ -21,5 +21,7 @@
     SummonCardSearch,
     Evolve,
     SwarmAddEffect,
-    ChorionSparkletBlessing
+    ChorionSparkletBlessing,
+    WildEmberbackBattleCry,
+    SinisterSnailDeathCry
 }
