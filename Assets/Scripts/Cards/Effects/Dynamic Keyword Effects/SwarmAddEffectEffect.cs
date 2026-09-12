@@ -22,18 +22,19 @@
     protected override void SwarmEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (args.PlayerId != card.PlayerId)
             return;
-        if (!CanActiveSwarm())
+        if (!CanActivateSwarm())
             return;
         if (addedEffect != null)
             return;
 
-        card.AddEffect(effectBase.AddedEffectBase.GenerateCardEffectFromBase());
+        addedEffect = effectBase.AddedEffectBase.GenerateCardEffectFromBase();
+        card.AddEffect(addedEffect);
     }
 
     protected override void ClearSwarmEffect(object sender, PlayerCardEventArgs<CreatureCard> args) {
         if (args.PlayerId != card.PlayerId)
             return;
-        if (CanActiveSwarm())
+        if (CanActivateSwarm())
             return;
         if (addedEffect == null)
             return;
@@ -41,7 +42,7 @@
         card.RemoveEffect(addedEffect);
     }
 
-    private bool CanActiveSwarm() {
+    private bool CanActivateSwarm() {
         int swarmCount = 0;
         MatchPlayer player = duelManager.GetPlayerById(card.PlayerId);
         foreach (CreatureCard creatureCard in player.Creatures) {

@@ -8,10 +8,6 @@
         this.effectName = effectName;
     }
 
-    public abstract void Init(TCard card);
-
-    public abstract void RemoveListeners();
-
     public string Id { get { return id; } }
 
     public string EffectName { get { return effectName; } }

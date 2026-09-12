@@ -1,17 +1,13 @@
 ﻿using System;
 
-public class LifePointsChangedEventArgs : EventArgs {
-    private ulong playerId;
+public class LifePointsChangedEventArgs : PlayerEventArgs {
     private int previousLifePoints;
     private int lifePoints;
 
-    public LifePointsChangedEventArgs(ulong playerId, int previousLifePoints, int lifePoints) {
-        this.playerId = playerId;
+    public LifePointsChangedEventArgs(ulong playerId, int previousLifePoints, int lifePoints) : base(playerId) {
         this.previousLifePoints = previousLifePoints;
         this.lifePoints = lifePoints;
     }
-
-    public ulong PlayerId { get { return playerId; } }
 
     public int PreviousLifePoints { get { return previousLifePoints; } }
 

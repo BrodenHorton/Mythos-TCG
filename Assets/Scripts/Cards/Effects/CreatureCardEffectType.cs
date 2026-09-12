@@ -23,5 +23,7 @@
     SwarmAddEffect,
     ChorionSparkletBlessing,
     WildEmberbackBattleCry,
-    SinisterSnailDeathCry
+    SinisterSnailDeathCry,
+    SquadFrogSummon,
+    AstrasFieldMedicSummon
 }

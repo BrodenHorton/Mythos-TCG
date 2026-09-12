@@ -19,8 +19,6 @@ public class SummonCardSearchEffect : SummonEffect {
     }
 
     protected override void SummonEffectHandler(object sender, PlayerCardEventArgs<CreatureCard> args) {
-        if (args.PlayerId != card.PlayerId)
-            return;
         if (args.Card.Uuid != card.Uuid)
             return;
 

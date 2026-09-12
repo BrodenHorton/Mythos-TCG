@@ -1,6 +1,5 @@
 ﻿using System;
 
-public interface EffectAction<in T, in U> where T : EffectContext<CreatureCard> where U : EventArgs {
-    void Execute(T context, U args);
+public interface EffectAction<in TContext, in UEventArgs> where TContext : EffectContext<CreatureCard> where UEventArgs : EventArgs {
+    void Execute(TContext context, UEventArgs args);
 }
-#endregion

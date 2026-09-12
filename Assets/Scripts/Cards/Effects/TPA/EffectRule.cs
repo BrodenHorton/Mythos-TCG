@@ -3,20 +3,12 @@ using System.Collections.Generic;
 
 public class EffectRule<TContext, UEventArgs> where TContext : EffectContext<CreatureCard> where UEventArgs : EventArgs {
     private List<EffectPrecondition<TContext, UEventArgs>> preconditions;
-    private EffectAction<TContext, UEventArgs> action; // TODO: Change to allow multiple actions per rule
+    private EffectAction<TContext, UEventArgs> action;
     private TContext context;
 
     public EffectRule(TContext context) {
         preconditions = new List<EffectPrecondition<TContext, UEventArgs>>();
         this.context = context;
-    }
-
-    public void Init(CreatureCard card) {
-        context.Init(card);
-    }
-
-    public void RemoveListeners() {
-        context.RemoveListeners();
     }
 
     public void AddAction(EffectAction<TContext, UEventArgs> action) {

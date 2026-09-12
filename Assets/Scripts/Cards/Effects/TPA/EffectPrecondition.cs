@@ -1,6 +1,5 @@
 ﻿using System;
 
-public interface EffectPrecondition<in T, in U> where T : EffectContext<CreatureCard> where U : EventArgs {
-    bool Evaluate(T context, U args);
+public interface EffectPrecondition<in TContext, in UEventArgs> where TContext : EffectContext<CreatureCard> where UEventArgs : EventArgs {
+    bool Evaluate(TContext context, UEventArgs args);
 }
-#endregion
