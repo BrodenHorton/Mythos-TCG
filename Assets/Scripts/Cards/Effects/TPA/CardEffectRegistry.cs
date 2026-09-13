@@ -11,7 +11,7 @@ public static class CardEffectRegistry {
         creatureCardEffectByType.Add(type, effect);
     }
 
-    public static CreatureCardEffect Get(CreatureCardEffectType type) {
+    public static CardEffect<CreatureCard> Get(CreatureCardEffectType type) {
         if (!creatureCardEffectByType.ContainsKey(type))
             throw new Exception("Unable to find the following Creature Card Effect Type: " + type);
 

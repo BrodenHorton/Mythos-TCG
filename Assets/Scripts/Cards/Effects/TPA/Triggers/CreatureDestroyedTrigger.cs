@@ -1,6 +1,4 @@
-﻿
-public class CreatureDestroyedTrigger : EffectTrigger<PlayerCardEventArgs<CreatureCard>> {
-
+﻿public class CreatureDestroyedTrigger : EffectTrigger<PlayerCardEventArgs<CreatureCard>> {
     public override void Init() {
         EventBus.Instance.OnCreatureDestroyed += InvokeOnTriggerEffect;
     }

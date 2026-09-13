@@ -1,4 +1,4 @@
-﻿public abstract class EffectContext<TCard> where TCard : Card {
+﻿public class EffectContext<TCard> where TCard : Card {
     private string id;
     private string effectName;
     protected TCard card;

@@ -27,5 +27,6 @@
     SquadFrogSummon,
     AstrasFieldMedicSummon,
     WirlpoolTadpoleSwarm,
-    SproutingBudEvolve
+    SproutingBudEvolve,
+    SwordSaintMielOverwhelm
 }

@@ -14,6 +14,8 @@ public class CardEffect<TCard> where TCard : Card {
     public static void RegisterEffects() {
         CardRegistry cardRegistry = ServiceLocator.Get<CardRegistry>();
 
+        #region Creature Card Effects
+
         #region Chorion Sparklet Blessing
         {
             StatBoostContext context = new StatBoostContext(id: "chorion_sparklet_blessing",
@@ -169,6 +171,20 @@ public class CardEffect<TCard> where TCard : Card {
             CardEffectRegistry.Register(CreatureCardEffectType.SproutingBudEvolve, sproutingBudEvolve);
         }
         #endregion
+
+        #region Sword Saint Miel Overwhelm
+        {
+            EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id: "sword_saint_miel_overwhelm",
+                                                                                  effectName: "Sword Saint Miel Overwhelm");
+            string rawDescription = "Overflow damage that isn’t blocked by a defender's Health is dealt as life point damage";
+            StaticCreatureCardEffect swordSaintMielOverwhelm = OverwhelmEffectFactory.Create(context,
+                                                                                             rawDescription,
+                                                                                             effectIconId: "swords");
+            CardEffectRegistry.Register(CreatureCardEffectType.SwordSaintMielOverwhelm, swordSaintMielOverwhelm);
+        }
+        #endregion
+
+        #endregion
     }
 
     public void Init(TCard card) {
@@ -193,7 +209,7 @@ public class CardEffect<TCard> where TCard : Card {
         throw new NotImplementedException();
     }
 
-    public CreatureCardEffect Clone() {
+    public CardEffect<TCard> Clone() {
         throw new NotImplementedException();
     }
 
