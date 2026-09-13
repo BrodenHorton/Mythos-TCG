@@ -25,5 +25,6 @@
     WildEmberbackBattleCry,
     SinisterSnailDeathCry,
     SquadFrogSummon,
-    AstrasFieldMedicSummon
+    AstrasFieldMedicSummon,
+    WirlpoolTadpoleSwarm
 }

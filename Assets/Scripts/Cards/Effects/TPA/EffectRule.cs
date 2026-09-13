@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 
 public class EffectRule<TContext, UEventArgs> where TContext : EffectContext<CreatureCard> where UEventArgs : EventArgs {
-    private List<EffectPrecondition<TContext, UEventArgs>> preconditions;
+    private List<EffectPreconditionOperator<TContext, UEventArgs>> preconditions;
     private EffectAction<TContext, UEventArgs> action;
     private TContext context;
 
     public EffectRule(TContext context) {
-        preconditions = new List<EffectPrecondition<TContext, UEventArgs>>();
+        preconditions = new List<EffectPreconditionOperator<TContext, UEventArgs>>();
         this.context = context;
     }
 
@@ -15,8 +15,8 @@ public class EffectRule<TContext, UEventArgs> where TContext : EffectContext<Cre
         this.action = action;
     }
 
-    public void AddPrecondition(EffectPrecondition<TContext, UEventArgs> precondtion) {
-        preconditions.Add(precondtion);
+    public void AddPrecondition(EffectPrecondition<TContext, UEventArgs> precondtion, bool shouldEvaluateAsNot = false) {
+        preconditions.Add(new EffectPreconditionOperator<TContext, UEventArgs>(precondtion, shouldEvaluateAsNot));
     }
 
     public void ExecuteRule(UEventArgs args) {

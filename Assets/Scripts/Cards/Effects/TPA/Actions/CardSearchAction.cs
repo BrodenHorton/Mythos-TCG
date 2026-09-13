@@ -1,13 +1,13 @@
 ﻿using System;
 
-public class CardSearchAction : EffectAction<CardSearchEffectContext, EventArgs> {
+public class CardSearchAction : EffectAction<CardSearchContext, EventArgs> {
     private DuelManager duelManager;
 
     public CardSearchAction() {
         duelManager = ServiceLocator.Get<DuelManager>();
     }
 
-    public void Execute(CardSearchEffectContext context, EventArgs _) {
+    public void Execute(CardSearchContext context, EventArgs _) {
         MatchPlayer player = duelManager.GetPlayerById(context.Card.PlayerId);
         for (int i = 0; i < player.Deck.Count; i++) {
             Card deckCard = player.Deck[i];

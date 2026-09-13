@@ -1,7 +1,7 @@
 ﻿using System;
 
-public class StatBoostIncrementAction : EffectAction<StatBoostEffectContext, EventArgs> {
-    public void Execute(StatBoostEffectContext context, EventArgs _) {
+public class StatBoostIncrementAction : EffectAction<StatBoostContext, EventArgs> {
+    public void Execute(StatBoostContext context, EventArgs _) {
         context.EffectProkCount++;
     }
 }

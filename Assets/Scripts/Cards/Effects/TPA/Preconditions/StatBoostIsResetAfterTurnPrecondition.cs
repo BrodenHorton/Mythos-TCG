@@ -1,7 +1,7 @@
 ﻿using System;
 
-public class StatBoostIsResetAfterTurnPrecondition : EffectPrecondition<StatBoostEffectContext, EventArgs> {
-    public bool Evaluate(StatBoostEffectContext context, EventArgs _) {
+public class StatBoostIsResetAfterTurnPrecondition : EffectPrecondition<StatBoostContext, EventArgs> {
+    public bool Evaluate(StatBoostContext context, EventArgs _) {
         return context.IsResetAfterTurn;
     }
 }
