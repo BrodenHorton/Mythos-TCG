@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 public static class CardEffectRegistry {
-    private static Dictionary<CreatureCardEffectType, CreatureCardEffect> creatureCardEffectByType = new Dictionary<CreatureCardEffectType, CreatureCardEffect>();
+    private static Dictionary<CreatureCardEffectType, CardEffect<CreatureCard>> creatureCardEffectByType = new();
 
-    public static void Register(CreatureCardEffectType type, CreatureCardEffect effect) {
+    public static void Register(CreatureCardEffectType type, CardEffect<CreatureCard> effect) {
         if (creatureCardEffectByType.ContainsKey(type))
             throw new Exception("Attempting to add a Creature Card Effect Type that already exists in the registry: " + type);
 

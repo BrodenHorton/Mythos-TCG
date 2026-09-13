@@ -1,6 +1,4 @@
-﻿
-
-public class EndPhaseEnteredFinishedTrigger : EffectTrigger<PlayerEventArgs> {
+﻿public class EndPhaseEnteredFinishedTrigger : EffectTrigger<PlayerEventArgs> {
     private DuelStateManager stateManager;
 
     public EndPhaseEnteredFinishedTrigger() {

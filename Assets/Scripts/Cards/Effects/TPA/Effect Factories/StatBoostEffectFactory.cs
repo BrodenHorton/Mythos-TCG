@@ -1,9 +1,7 @@
-
 using System;
 
 public class StatBoostEffectFactory {
-        
-    public static UniqueCardEffect<CreatureCard> Create<TEventArgs>(StatBoostContext context,
+    public static CardEffect<CreatureCard> Create<TEventArgs>(StatBoostContext context,
                                                                     EffectSequence<StatBoostContext, TEventArgs> statBoostProkSequence,
                                                                     string rawDescription) where TEventArgs : EventArgs {
         EffectRule<StatBoostContext, PlayerCardStatEventArgs<CreatureCard>> attackCalcRule = new(context);
@@ -27,7 +25,7 @@ public class StatBoostEffectFactory {
         EffectSequence<StatBoostContext, PlayerEventArgs> clearEffectProksSequence = new(new EndPhaseEnteredFinishedTrigger());
         clearEffectProksSequence.AddRule(clearEffectProksRule);
 
-        UniqueCardEffect<CreatureCard> statBoostEffect = new UniqueCardEffect<CreatureCard>(rawDescription);
+        CardEffect<CreatureCard> statBoostEffect = new CardEffect<CreatureCard>(rawDescription);
         statBoostEffect.AddEffectSequence(statBoostProkSequence);
         statBoostEffect.AddEffectSequence(attackCalcSequence);
         statBoostEffect.AddEffectSequence(healthCalcSequence);

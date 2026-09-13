@@ -26,5 +26,6 @@
     SinisterSnailDeathCry,
     SquadFrogSummon,
     AstrasFieldMedicSummon,
-    WirlpoolTadpoleSwarm
+    WirlpoolTadpoleSwarm,
+    SproutingBudEvolve
 }

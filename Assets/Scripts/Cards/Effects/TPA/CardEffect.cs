@@ -1,11 +1,15 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using static CardRichTextUtil;
 
-[Serializable]
-public abstract class CreatureCardEffect {
-    protected CreatureCard card;
+public class CardEffect<TCard> where TCard : Card {
+    protected TCard card;
+    protected List<IEffectSequence<TCard>> sequences;
+    protected string rawDescription;
 
-    public CreatureCardEffect() { }
+    public CardEffect(string rawDescription) {
+        this.rawDescription = rawDescription;
+    }
 
     public static void RegisterEffects() {
         CardRegistry cardRegistry = ServiceLocator.Get<CardRegistry>();
@@ -47,7 +51,7 @@ public abstract class CreatureCardEffect {
             statBoostProkRule.AddPrecondition(new CreatureInCombatPrecondition());
             statBoostProkRule.AddAction(new StatBoostIncrementAction());
 
-            EffectSequence<StatBoostContext, PlayerEventArgs> statBoostProkSequence = new (new DeclareAttackersStateExitedTrigger());
+            EffectSequence<StatBoostContext, PlayerEventArgs> statBoostProkSequence = new(new DeclareAttackersStateExitedTrigger());
             statBoostProkSequence.AddRule(statBoostProkRule);
 
             string rawDescription = GetKeywordLinkTagText("battle_cry", "Battle Cry") + ": Gain +2/+0 until the end of the turn";
@@ -132,7 +136,7 @@ public abstract class CreatureCardEffect {
             swarmAddEffectRule.AddPrecondition(new SwarmCheckPrecondition());
             swarmAddEffectRule.AddPrecondition(new SwarmAddedEffectPrecondition());
             swarmAddEffectRule.AddAction(new SwarmAddEffectAction());
-            
+
             EffectSequence<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> swarmAddEffectSequence = new(new SummonTrigger());
             swarmAddEffectSequence.AddRule(swarmAddEffectRule);
 
@@ -141,7 +145,7 @@ public abstract class CreatureCardEffect {
             swarmRemoveEffectRule.AddPrecondition(new SwarmCheckPrecondition(), shouldEvaluateAsNot: true);
             swarmRemoveEffectRule.AddPrecondition(new SwarmAddedEffectPrecondition(), shouldEvaluateAsNot: true);
             swarmRemoveEffectRule.AddAction(new SwarmRemoveEffectAction());
-            
+
             EffectSequence<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> swarmRemoveEffectSequence = new(new CreatureDestroyedTrigger());
             swarmRemoveEffectSequence.AddRule(swarmAddEffectRule);
 
@@ -167,15 +171,31 @@ public abstract class CreatureCardEffect {
         #endregion
     }
 
-    public abstract void Init(CreatureCard card);
+    public void Init(TCard card) {
+        for(int i = 0; i < sequences.Count; i++)
+            sequences[i].Init(card);
+    }
 
-    public abstract void RemoveListeners();
+    public void RemoveListeners() {
+        for (int i = 0; i < sequences.Count; i++)
+            sequences[i].RemoveListeners();
+    }
 
-    public abstract string GetRawDescription();
+    public void AddEffectSequence(IEffectSequence<TCard> sequence) {
+        sequences.Add(sequence);
+    }
 
-    public abstract CreatureCardEffectPayload GetEffectPayload();
+    public string GetRawDescription() {
+        return rawDescription;
+    }
 
-    public abstract CreatureCardEffect Clone();
+    public CreatureCardEffectPayload GetEffectPayload() {
+        throw new NotImplementedException();
+    }
 
-    public CreatureCard Card { get { return card; } }
+    public CreatureCardEffect Clone() {
+        throw new NotImplementedException();
+    }
+
+    public TCard Card { get { return card; } }
 }
