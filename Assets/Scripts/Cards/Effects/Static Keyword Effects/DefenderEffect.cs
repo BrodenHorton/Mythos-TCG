@@ -16,7 +16,7 @@ public class DefenderEffect : StaticCreatureCardEffect {
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnEnteringFieldSummoningSickness -= CancelCanAttack;
+        EventBus.Instance.OnCanCreatureAttack -= CancelCanAttack;
     }
 
     private void CancelCanAttack(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {

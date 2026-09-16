@@ -24,18 +24,18 @@ public class CardEffect<TCard> where TCard : Card {
                                                             healthBoost: 1,
                                                             isResetAfterTurn: true);
 
-            EffectRule<StatBoostContext, LifePointsChangedEventArgs> statBoostProkRule = new(context);
+            EffectRule<StatBoostContext, LifePointsChangedEventArgs, CreatureCard> statBoostProkRule = new(context);
             statBoostProkRule.AddPrecondition(new PlayerCheckPrecondition());
             statBoostProkRule.AddPrecondition(new LifePointsIncreasedPrecondition());
             statBoostProkRule.AddAction(new StatBoostIncrementAction());
 
-            EffectSequence<StatBoostContext, LifePointsChangedEventArgs> statBoostProkSequence = new(new LifePointsChangedTrigger());
+            EffectSequence<StatBoostContext, LifePointsChangedEventArgs, CreatureCard> statBoostProkSequence = new(new LifePointsChangedTrigger());
             statBoostProkSequence.AddRule(statBoostProkRule);
 
             string rawDescription = GetKeywordLinkTagText("blessing", "Blessing") + ": Gain +1/+1 until the end of the turn";
             CardEffect<CreatureCard> chorionSparkletBlessing = StatBoostEffectFactory.Create(context,
-                                                                                                   statBoostProkSequence,
-                                                                                                   rawDescription);
+                                                                                             statBoostProkSequence,
+                                                                                             rawDescription);
             CardEffectRegistry.Register(CreatureCardEffectType.ChorionSparkletBlessing, chorionSparkletBlessing);
         }
         #endregion
@@ -48,33 +48,33 @@ public class CardEffect<TCard> where TCard : Card {
                                                             healthBoost: 0,
                                                             isResetAfterTurn: true);
 
-            EffectRule<StatBoostContext, PlayerEventArgs> statBoostProkRule = new(context);
+            EffectRule<StatBoostContext, PlayerEventArgs, CreatureCard> statBoostProkRule = new(context);
             statBoostProkRule.AddPrecondition(new PlayerCheckPrecondition());
             statBoostProkRule.AddPrecondition(new CreatureInCombatPrecondition());
             statBoostProkRule.AddAction(new StatBoostIncrementAction());
 
-            EffectSequence<StatBoostContext, PlayerEventArgs> statBoostProkSequence = new(new DeclareAttackersStateExitedTrigger());
+            EffectSequence<StatBoostContext, PlayerEventArgs, CreatureCard> statBoostProkSequence = new(new DeclareAttackersStateExitedTrigger());
             statBoostProkSequence.AddRule(statBoostProkRule);
 
             string rawDescription = GetKeywordLinkTagText("battle_cry", "Battle Cry") + ": Gain +2/+0 until the end of the turn";
             CardEffect<CreatureCard> wildEmberbackBattleCry = StatBoostEffectFactory.Create(context,
-                                                                                                   statBoostProkSequence,
-                                                                                                   rawDescription);
+                                                                                            statBoostProkSequence,
+                                                                                            rawDescription);
             CardEffectRegistry.Register(CreatureCardEffectType.WildEmberbackBattleCry, wildEmberbackBattleCry);
         }
         #endregion
 
         #region Sinister Snail Death Cry
         {
-            CardSearchContext context = new CardSearchContext(id: "sinister_snail_death_cry",
-                                                                          effectName: "Sinister Snail Death Cry",
-                                                                          searchTarget: cardRegistry.GetCardById("sinister_snail"));
+            CardSearchContext<CreatureCard> context = new CardSearchContext<CreatureCard>(id: "sinister_snail_death_cry",
+                                                                                          effectName: "Sinister Snail Death Cry",
+                                                                                          searchTarget: cardRegistry.GetCardById("sinister_snail"));
 
-            EffectRule<CardSearchContext, PlayerCardEventArgs<CreatureCard>> cardSearchRule = new(context);
-            cardSearchRule.AddPrecondition(new CardCheckPrecondition());
-            cardSearchRule.AddAction(new CardSearchAction());
+            EffectRule<CardSearchContext<CreatureCard>, PlayerCardEventArgs<CreatureCard>, CreatureCard> cardSearchRule = new(context);
+            cardSearchRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
+            cardSearchRule.AddAction(new CardSearchAction<CreatureCard>());
 
-            EffectSequence<CardSearchContext, PlayerCardEventArgs<CreatureCard>> cardSearchSequence = new(new CreatureDestroyedTrigger());
+            EffectSequence<CardSearchContext<CreatureCard>, PlayerCardEventArgs<CreatureCard>, CreatureCard> cardSearchSequence = new(new CreatureDestroyedTrigger());
             cardSearchSequence.AddRule(cardSearchRule);
 
             string rawDescription = GetKeywordLinkTagText("death_cry", "Death Cry") + ": Add a " + context.SearchTarget.CardName + " card from your deck to your hand";
@@ -87,15 +87,15 @@ public class CardEffect<TCard> where TCard : Card {
 
         #region Squad Frog Summon
         {
-            CardSearchContext context = new CardSearchContext(id: "squad_frog_summon",
-                                                                          effectName: "Squad Frog Summon",
-                                                                          searchTarget: cardRegistry.GetCardById("squad_frog"));
+            CardSearchContext<CreatureCard> context = new CardSearchContext<CreatureCard>(id: "squad_frog_summon",
+                                                                                          effectName: "Squad Frog Summon",
+                                                                                          searchTarget: cardRegistry.GetCardById("squad_frog"));
 
-            EffectRule<CardSearchContext, PlayerCardEventArgs<CreatureCard>> cardSearchRule = new(context);
-            cardSearchRule.AddPrecondition(new CardCheckPrecondition());
-            cardSearchRule.AddAction(new CardSearchAction());
+            EffectRule<CardSearchContext<CreatureCard>, PlayerCardEventArgs<CreatureCard>, CreatureCard> cardSearchRule = new(context);
+            cardSearchRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
+            cardSearchRule.AddAction(new CardSearchAction<CreatureCard>());
 
-            EffectSequence<CardSearchContext, PlayerCardEventArgs<CreatureCard>> cardSearchSequence = new(new SummonTrigger());
+            EffectSequence<CardSearchContext<CreatureCard>, PlayerCardEventArgs<CreatureCard>, CreatureCard> cardSearchSequence = new(new SummonTrigger());
             cardSearchSequence.AddRule(cardSearchRule);
 
             string rawDescription = GetKeywordLinkTagText("summon", "Summon") + ": Add a " + context.SearchTarget.CardName + " card from your deck to your hand";
@@ -109,14 +109,14 @@ public class CardEffect<TCard> where TCard : Card {
         #region Astra's Field Medic
         {
             LifeGainContext context = new LifeGainContext(id: "astras_field_medic_summon",
-                                                                      effectName: "Astra's Field Medic Summon",
-                                                                      lifePointsModifier: 1);
+                                                          effectName: "Astra's Field Medic Summon",
+                                                          lifePointsModifier: 1);
 
-            EffectRule<LifeGainContext, PlayerCardEventArgs<CreatureCard>> lifeGainRule = new(context);
-            lifeGainRule.AddPrecondition(new CardCheckPrecondition());
+            EffectRule<LifeGainContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> lifeGainRule = new(context);
+            lifeGainRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
             lifeGainRule.AddAction(new LifeGainAction());
 
-            EffectSequence<LifeGainContext, PlayerCardEventArgs<CreatureCard>> lifeGainSequence = new(new SummonTrigger());
+            EffectSequence<LifeGainContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> lifeGainSequence = new(new SummonTrigger());
             lifeGainSequence.AddRule(lifeGainRule);
 
             string rawDescription = GetKeywordLinkTagText("summon", "Summon") + ": Increase life points by " + context.LifePointsModifier;
@@ -133,22 +133,22 @@ public class CardEffect<TCard> where TCard : Card {
                                                                       effectName: "Whirlpool Tadpole Swarm",
                                                                       additionalEffectType: CreatureCardEffectType.Reach);
 
-            EffectRule<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> swarmAddEffectRule = new(context);
+            EffectRule<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> swarmAddEffectRule = new(context);
             swarmAddEffectRule.AddPrecondition(new PlayerCheckPrecondition());
             swarmAddEffectRule.AddPrecondition(new SwarmCheckPrecondition());
             swarmAddEffectRule.AddPrecondition(new SwarmAddedEffectPrecondition());
             swarmAddEffectRule.AddAction(new SwarmAddEffectAction());
 
-            EffectSequence<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> swarmAddEffectSequence = new(new SummonTrigger());
+            EffectSequence<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> swarmAddEffectSequence = new(new SummonTrigger());
             swarmAddEffectSequence.AddRule(swarmAddEffectRule);
 
-            EffectRule<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> swarmRemoveEffectRule = new(context);
+            EffectRule<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> swarmRemoveEffectRule = new(context);
             swarmRemoveEffectRule.AddPrecondition(new PlayerCheckPrecondition());
             swarmRemoveEffectRule.AddPrecondition(new SwarmCheckPrecondition(), shouldEvaluateAsNot: true);
             swarmRemoveEffectRule.AddPrecondition(new SwarmAddedEffectPrecondition(), shouldEvaluateAsNot: true);
             swarmRemoveEffectRule.AddAction(new SwarmRemoveEffectAction());
 
-            EffectSequence<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> swarmRemoveEffectSequence = new(new CreatureDestroyedTrigger());
+            EffectSequence<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> swarmRemoveEffectSequence = new(new CreatureDestroyedTrigger());
             swarmRemoveEffectSequence.AddRule(swarmAddEffectRule);
 
             string rawDescription = GetKeywordLinkTagText("swarm", "Swarm") + ": " + context.AdditionalEffectType;
@@ -174,13 +174,33 @@ public class CardEffect<TCard> where TCard : Card {
 
         #region Sword Saint Miel Overwhelm
         {
-            EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id: "sword_saint_miel_overwhelm",
-                                                                                  effectName: "Sword Saint Miel Overwhelm");
-            string rawDescription = "Overflow damage that isn’t blocked by a defender's Health is dealt as life point damage";
-            StaticCreatureCardEffect swordSaintMielOverwhelm = OverwhelmEffectFactory.Create(context,
-                                                                                             rawDescription,
-                                                                                             effectIconId: "swords");
+            StaticCreatureCardEffect swordSaintMielOverwhelm = OverwhelmEffectFactory.Create(id: "sword_saint_miel_overwhelm",
+                                                                                             effectName: "Sword Saint Miel Overwhelm");
             CardEffectRegistry.Register(CreatureCardEffectType.SwordSaintMielOverwhelm, swordSaintMielOverwhelm);
+        }
+        #endregion
+
+        #region Fluttersky Bloodthirsty
+        {
+            StaticCreatureCardEffect flutterSkyBloodthirsty = BloodthirstyEffectFactory.Create(id: "fluttersky_bloodthirsty",
+                                                                                               effectName: "Fluttersky Bloodthirsty");
+            CardEffectRegistry.Register(CreatureCardEffectType.FlutterskyBloodthirsty, flutterSkyBloodthirsty);
+        }
+        #endregion
+
+        #region Kaitros, Deep Sea Devourer Deathtouch
+        {
+            StaticCreatureCardEffect kaitrosDeepSeaDevourerDeathtouch = DeathtouchEffectFactory.Create(id: "kaitros_deep_sea_devourer_deathtouch",
+                                                                                             effectName: "Kaitros, Deep Sea Devourer Deathtouch");
+            CardEffectRegistry.Register(CreatureCardEffectType.KaitrosDeepSeaDevourerDeathtouch, kaitrosDeepSeaDevourerDeathtouch);
+        }
+        #endregion
+
+        #region Mineral Crab Defender
+        {
+            StaticCreatureCardEffect mineralCrabDefender = DefenderEffectFactory.Create(id: "mineral_crab_defender",
+                                                                                        effectName: "Mineral Crab Defender");
+            CardEffectRegistry.Register(CreatureCardEffectType.MineralCrabDefender, mineralCrabDefender);
         }
         #endregion
 

@@ -28,5 +28,8 @@
     AstrasFieldMedicSummon,
     WirlpoolTadpoleSwarm,
     SproutingBudEvolve,
-    SwordSaintMielOverwhelm
+    SwordSaintMielOverwhelm,
+    FlutterskyBloodthirsty,
+    KaitrosDeepSeaDevourerDeathtouch,
+    MineralCrabDefender
 }

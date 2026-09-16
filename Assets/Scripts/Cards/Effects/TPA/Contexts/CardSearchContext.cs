@@ -1,5 +1,5 @@
 ﻿
-public class CardSearchContext : EffectContext<CreatureCard> {
+public class CardSearchContext<TCard> : EffectContext<TCard> where TCard : Card {
     private CardBase searchTarget;
 
     public CardSearchContext(string id, string effectName, CardBase searchTarget) : base(id, effectName) {

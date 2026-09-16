@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class LifeGainAction : EffectAction<LifeGainContext, EventArgs> {
+public class LifeGainAction : EffectAction<LifeGainContext, EventArgs, CreatureCard> {
     private DuelManager duelManager;
 
     public LifeGainAction() {

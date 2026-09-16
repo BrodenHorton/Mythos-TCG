@@ -1,4 +1,4 @@
-﻿public class SwarmCheckPrecondition : EffectPrecondition<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>> {
+﻿public class SwarmCheckPrecondition : EffectPrecondition<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> {
     protected static readonly int SWARM_MINIMUM = 4;
 
     private DuelManager duelManager;
@@ -14,6 +14,7 @@
             if (creatureCard == args.Card)
                 continue;
 
+            // TODO: Change this to search through the new TPA effects for swarm effects
             foreach (CreatureCardEffect cardEffect in creatureCard.Effects) {
                 if (cardEffect is SwarmEffect) {
                     swarmCount++;

@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class EffectRule<TContext, UEventArgs> where TContext : EffectContext<CreatureCard> where UEventArgs : EventArgs {
-    private List<EffectPreconditionOperator<TContext, UEventArgs>> preconditions;
-    private EffectAction<TContext, UEventArgs> action;
+public class EffectRule<TContext, UEventArgs, VCard> where TContext : EffectContext<VCard> where UEventArgs : EventArgs where VCard : Card {
+    private List<EffectPreconditionOperator<TContext, UEventArgs, VCard>> preconditions;
+    private EffectAction<TContext, UEventArgs, VCard> action;
     private TContext context;
 
     public EffectRule(TContext context) {
-        preconditions = new List<EffectPreconditionOperator<TContext, UEventArgs>>();
+        preconditions = new List<EffectPreconditionOperator<TContext, UEventArgs, VCard>>();
         this.context = context;
     }
 
-    public void AddAction(EffectAction<TContext, UEventArgs> action) {
+    public void AddAction(EffectAction<TContext, UEventArgs, VCard> action) {
         this.action = action;
     }
 
-    public void AddPrecondition(EffectPrecondition<TContext, UEventArgs> precondtion, bool shouldEvaluateAsNot = false) {
-        preconditions.Add(new EffectPreconditionOperator<TContext, UEventArgs>(precondtion, shouldEvaluateAsNot));
+    public void AddPrecondition(EffectPrecondition<TContext, UEventArgs, VCard> precondtion, bool shouldEvaluateAsNot = false) {
+        preconditions.Add(new EffectPreconditionOperator<TContext, UEventArgs, VCard>(precondtion, shouldEvaluateAsNot));
     }
 
     public void ExecuteRule(UEventArgs args) {

@@ -1,5 +1,5 @@
-﻿public class CreatureIsAttackerPrecondition : EffectPrecondition<EffectContext<CreatureCard>, CreatureCombatDamageEventArgs> {
+﻿public class CreatureIsAttackerPrecondition : EffectPrecondition<EffectContext<CreatureCard>, CreatureCombatDamageEventArgs, CreatureCard> {
     public bool Evaluate(EffectContext<CreatureCard> context, CreatureCombatDamageEventArgs args) {
-        return args.Attacker.Uuid == context.Card.Uuid;
+        return args.Attacker != null && args.Attacker.Uuid == context.Card.Uuid;
     }
 }

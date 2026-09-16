@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class EffectSequence<TContext, UEventArgs> : IEffectSequence<CreatureCard> where TContext : EffectContext<CreatureCard> where UEventArgs : EventArgs {
+public class EffectSequence<TContext, UEventArgs, VCard> : IEffectSequence<CreatureCard> where TContext : EffectContext<VCard> where UEventArgs : EventArgs where VCard : Card {
     private EffectTrigger<UEventArgs> trigger;
-    private List<EffectRule<TContext, UEventArgs>> rules;
+    private List<EffectRule<TContext, UEventArgs, VCard>> rules;
 
     public EffectSequence(EffectTrigger<UEventArgs> trigger) {
         this.trigger = trigger;
@@ -12,20 +12,14 @@ public class EffectSequence<TContext, UEventArgs> : IEffectSequence<CreatureCard
     public void Init(CreatureCard card) {
         trigger.Init();
         trigger.OnTriggerEffect += TriggerHandler;
-
-        for(int i = 0; i < rules.Count; i++)
-            rules[i].Init(card);
     }
 
     public void RemoveListeners() {
         trigger.RemoveListeners();
         trigger.OnTriggerEffect -= TriggerHandler;
-
-        for (int i = 0; i < rules.Count; i++)
-            rules[i].RemoveListeners();
     }
 
-    public void AddRule(EffectRule<TContext, UEventArgs> rule) {
+    public void AddRule(EffectRule<TContext, UEventArgs, VCard> rule) {
         rules.Add(rule);
     }
 

@@ -5,7 +5,7 @@ public class StatBoostContext : EffectContext<CreatureCard> {
     private bool isResetAfterTurn;
     private int effectProkCount;
 
-    public StatBoostContext(string id, string effectName, int atkBoost, int healthBoost, bool isResetAfterTurn) : base(id, effectName) {
+    public StatBoostContext(string id, string effectName, int atkBoost, int healthBoost, bool isResetAfterTurn = false) : base(id, effectName) {
         this.atkBoost = atkBoost;
         this.healthBoost = healthBoost;
         this.isResetAfterTurn = isResetAfterTurn;

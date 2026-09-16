@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class CreatureInCombatPrecondition : EffectPrecondition<EffectContext<CreatureCard>, EventArgs> {
+public class CreatureInCombatPrecondition : EffectPrecondition<EffectContext<CreatureCard>, EventArgs, CreatureCard> {
     private CombatManager combatManager;
 
     public CreatureInCombatPrecondition() {

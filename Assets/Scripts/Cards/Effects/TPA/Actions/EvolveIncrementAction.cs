@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class EvolveIncrementAction : EffectAction<EvolveContext, EventArgs> {
+public class EvolveIncrementAction : EffectAction<EvolveContext, EventArgs, CreatureCard> {
     private DuelManager duelManager;
 
     public EvolveIncrementAction() {
