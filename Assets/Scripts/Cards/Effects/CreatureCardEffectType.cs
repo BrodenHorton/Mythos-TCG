@@ -31,5 +31,8 @@
     SwordSaintMielOverwhelm,
     FlutterskyBloodthirsty,
     KaitrosDeepSeaDevourerDeathtouch,
-    MineralCrabDefender
+    MineralCrabDefender,
+    WhimsicalBeeElusive,
+    SunlitMilitiaEndurance,
+    GlimmirsapFrogLifelink
 }

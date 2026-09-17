@@ -162,12 +162,10 @@ public class CardEffect<TCard> where TCard : Card {
 
         #region Sprouting Bud Evolve
         {
-            EvolveContext context = new EvolveContext(id: "sprouting_bud_evolve",
-                                                      effectName: "Sprouting Bud Evolve",
-                                                      cardRegistry.GetCreatureCardById("ent_warrior"),
-                                                      evolutionRequiredTurnCount: 1);
-            string rawDescription = GetKeywordLinkTagText("evolve", "Evolve " + context.EvolutionRequiredTurnCount) + ": " + context.Evolution.CardName;
-            CardEffect<CreatureCard> sproutingBudEvolve = EvolveEffectFactory.Create(context, rawDescription);
+            CardEffect<CreatureCard> sproutingBudEvolve = EvolveEffectFactory.Create(id: "sprouting_bud_evolve",
+                                                                                     effectName: "Sprouting Bud Evolve",
+                                                                                     evolution: cardRegistry.GetCreatureCardById("ent_warrior"),
+                                                                                     evolutionRequiredTurnCount: 1);
             CardEffectRegistry.Register(CreatureCardEffectType.SproutingBudEvolve, sproutingBudEvolve);
         }
         #endregion
@@ -201,6 +199,30 @@ public class CardEffect<TCard> where TCard : Card {
             StaticCreatureCardEffect mineralCrabDefender = DefenderEffectFactory.Create(id: "mineral_crab_defender",
                                                                                         effectName: "Mineral Crab Defender");
             CardEffectRegistry.Register(CreatureCardEffectType.MineralCrabDefender, mineralCrabDefender);
+        }
+        #endregion
+
+        #region Whimsical Bee Elusive
+        {
+            StaticCreatureCardEffect whimsicalBeeElusive = ElusiveEffectFactory.Create(id: "whimsical_bee_elusive",
+                                                                                       effectName: "Whimsical Bee Elusive");
+            CardEffectRegistry.Register(CreatureCardEffectType.WhimsicalBeeElusive, whimsicalBeeElusive);
+        }
+        #endregion
+
+        #region Sunlit Militia Endurance
+        {
+            StaticCreatureCardEffect sunlitMilitiaEndurance = EnduranceEffectFactory.Create(id: "sunlit_militia_endurance",
+                                                                                            effectName: "Sunlit Militia Endurance");
+            CardEffectRegistry.Register(CreatureCardEffectType.SunlitMilitiaEndurance, sunlitMilitiaEndurance);
+        }
+        #endregion
+
+        #region Glimmirsap Frog Lifelink
+        {
+            StaticCreatureCardEffect glimmirsapFrogLifelink = LifelinkEffectFactory.Create(id: "glimmirsap_frog_lifelink",
+                                                                                           effectName: "Glimmirsap Frog Lifelink");
+            CardEffectRegistry.Register(CreatureCardEffectType.GlimmirsapFrogLifelink, glimmirsapFrogLifelink);
         }
         #endregion
 
