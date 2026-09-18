@@ -186,6 +186,14 @@ public class CardEffect<TCard> where TCard : Card {
         }
         #endregion
 
+        #region Fluttersky Swiftness
+        {
+            StaticCreatureCardEffect flutterSkySwiftness = SwiftnessEffectFactory.Create(id: "fluttersky_swiftness",
+                                                                                         effectName: "Fluttersky Swiftness");
+            CardEffectRegistry.Register(CreatureCardEffectType.FlutterskySwiftness, flutterSkySwiftness);
+        }
+        #endregion
+
         #region Kaitros, Deep Sea Devourer Deathtouch
         {
             StaticCreatureCardEffect kaitrosDeepSeaDevourerDeathtouch = DeathtouchEffectFactory.Create(id: "kaitros_deep_sea_devourer_deathtouch",
@@ -223,6 +231,30 @@ public class CardEffect<TCard> where TCard : Card {
             StaticCreatureCardEffect glimmirsapFrogLifelink = LifelinkEffectFactory.Create(id: "glimmirsap_frog_lifelink",
                                                                                            effectName: "Glimmirsap Frog Lifelink");
             CardEffectRegistry.Register(CreatureCardEffectType.GlimmirsapFrogLifelink, glimmirsapFrogLifelink);
+        }
+        #endregion
+
+        #region Glimmirsap Frog Reach
+        {
+            StaticCreatureCardEffect glimmirsapFrogReach = ReachEffectFactory.Create(id: "glimmirsap_frog_reach",
+                                                                                     effectName: "Glimmirsap Frog Reach");
+            CardEffectRegistry.Register(CreatureCardEffectType.GlimmirsapFrogReach, glimmirsapFrogReach);
+        }
+        #endregion
+
+        #region Maneater Mildred Menace
+        {
+            StaticCreatureCardEffect maneaterMildredMenace = MenaceEffectFactory.Create(id: "maneater_mildred_menace",
+                                                                                        effectName: "Maneater Mildred Menace");
+            CardEffectRegistry.Register(CreatureCardEffectType.ManeaterMildredMenace, maneaterMildredMenace);
+        }
+        #endregion
+
+        #region Vicious Bloosm Wither
+        {
+            StaticCreatureCardEffect viciousBloosmWither = WitherEffectFactory.Create(id: "vicious_bloosm_wither",
+                                                                                      effectName: "Vicious Bloosm Wither");
+            CardEffectRegistry.Register(CreatureCardEffectType.ViciousBloosmWither, viciousBloosmWither);
         }
         #endregion
 

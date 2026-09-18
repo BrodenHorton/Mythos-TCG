@@ -1,6 +1,6 @@
 ﻿public class LifelinkEffectFactory {
     public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id, effectName);
+        EffectContext<CreatureCard> context = new(id, effectName);
 
         EffectRule<EffectContext<CreatureCard>, CreatureCombatDamageEventArgs, CreatureCard> lifelinkRule = new(context);
         lifelinkRule.AddPrecondition(new CreatureIsAttackerPrecondition());

@@ -62,7 +62,7 @@ public class EventBus : NetworkBehaviour {
     public event EventHandler<CreatureCombatDamageEventArgs> OnCreatureCombatFinished;
     public event EventHandler<CreatureCombatPayloadEventArgs> OnPostCreatureCombat;
     // Creature Actions
-    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnEnteringFieldSummoningSickness;
+    public event EventHandler<PlayerCardCancelableEventArgs<CreatureCard>> OnSummoningSickness;
     public event EventHandler<PlayerCardStatEventArgs<Card>> OnCalculateCardManaCount;
     public event EventHandler<PlayerCardStatEventArgs<CreatureCard>> OnCalculateCreatureAttack;
     public event EventHandler<PlayerCardStatEventArgs<CreatureCard>> OnCalculateCreatureHealth;
@@ -485,11 +485,11 @@ public class EventBus : NetworkBehaviour {
     #endregion
 
     #region Creature Actions
-    public void InvokeOnEnteringFieldSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
+    public void InvokeOnSummoningSickness(PlayerCardCancelableEventArgs<CreatureCard> args) {
         if (!IsServer)
             throw new Exception("The event OnEnteringFieldSummoningSickness can only be invoked by the server");
 
-        OnEnteringFieldSummoningSickness?.Invoke(this, args);
+        OnSummoningSickness?.Invoke(this, args);
     }
 
     public void InvokeOnCalculateCardManaCount(PlayerCardStatEventArgs<Card> args) {

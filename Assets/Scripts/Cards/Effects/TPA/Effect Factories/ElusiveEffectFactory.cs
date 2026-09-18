@@ -12,7 +12,7 @@
 
         EffectRule<EffectContext<CreatureCard>, CanDefendEventArgs, CreatureCard> canDefendElusiveAttackerRule = new(context);
         canDefendElusiveAttackerRule.AddPrecondition(new CreatureIsDefenderPrecondition());
-        canDefendElusiveAttackerRule.AddAction(new SetCanDefendAction());
+        canDefendElusiveAttackerRule.AddAction(new SetCanDefendAction(canDefend: true));
 
         EffectSequence<EffectContext<CreatureCard>, CanDefendEventArgs, CreatureCard> canDefendElusiveAttackerSequence = new(new SelectElusiveAttackerToDefendTrigger());
         canDefendElusiveAttackerSequence.AddRule(canDefendElusiveAttackerRule);

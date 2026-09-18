@@ -67,7 +67,7 @@ public class MatchPlayer {
         EventBus.Instance.InvokeOnCreatureCardPlayedFromHandFinished(playerId, card);
 
         PlayerCardCancelableEventArgs<CreatureCard> args = new PlayerCardCancelableEventArgs<CreatureCard>(playerId, card);
-        EventBus.Instance.InvokeOnEnteringFieldSummoningSickness(args);
+        EventBus.Instance.InvokeOnSummoningSickness(args);
         card.HasSummoningSickness = !args.IsCanceled;
     }
 

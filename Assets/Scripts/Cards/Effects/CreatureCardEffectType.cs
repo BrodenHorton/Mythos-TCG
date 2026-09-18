@@ -30,9 +30,13 @@
     SproutingBudEvolve,
     SwordSaintMielOverwhelm,
     FlutterskyBloodthirsty,
+    FlutterskySwiftness,
     KaitrosDeepSeaDevourerDeathtouch,
     MineralCrabDefender,
     WhimsicalBeeElusive,
     SunlitMilitiaEndurance,
-    GlimmirsapFrogLifelink
+    GlimmirsapFrogLifelink,
+    GlimmirsapFrogReach,
+    ManeaterMildredMenace,
+    ViciousBloosmWither
 }

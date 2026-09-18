@@ -12,11 +12,11 @@ public class SwiftnessEffect : StaticCreatureCardEffect {
 
     public override void Init(CreatureCard card) {
         this.card = card;
-        EventBus.Instance.OnEnteringFieldSummoningSickness += RemoveSummoningSickness;
+        EventBus.Instance.OnSummoningSickness += RemoveSummoningSickness;
     }
 
     public override void RemoveListeners() {
-        EventBus.Instance.OnEnteringFieldSummoningSickness -= RemoveSummoningSickness;
+        EventBus.Instance.OnSummoningSickness -= RemoveSummoningSickness;
     }
 
     private void RemoveSummoningSickness(object sender, PlayerCardCancelableEventArgs<CreatureCard> args) {
