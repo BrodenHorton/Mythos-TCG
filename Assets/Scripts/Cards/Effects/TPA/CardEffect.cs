@@ -16,6 +16,108 @@ public class CardEffect<TCard> where TCard : Card {
 
         #region Creature Card Effects
 
+        #region Overwhelm
+        {
+            StaticCreatureCardEffect overwhelmEffect = OverwhelmEffectFactory.Create(id: "overwhelm",
+                                                                                     effectName: "Overwhelm");
+            CardEffectRegistry.Register(CreatureCardEffectType.Overwhelm, overwhelmEffect);
+        }
+        #endregion
+
+        #region Bloodthirsty
+        {
+            StaticCreatureCardEffect bloodthirstyEffect = BloodthirstyEffectFactory.Create(id: "bloodthirsty",
+                                                                                           effectName: "Bloodthirsty");
+            CardEffectRegistry.Register(CreatureCardEffectType.Bloodthirsty, bloodthirstyEffect);
+        }
+        #endregion
+
+        #region Swiftness
+        {
+            StaticCreatureCardEffect swiftnessEffect = SwiftnessEffectFactory.Create(id: "swiftness",
+                                                                                     effectName: "Swiftness");
+            CardEffectRegistry.Register(CreatureCardEffectType.Swiftness, swiftnessEffect);
+        }
+        #endregion
+
+        #region Deathtouch
+        {
+            StaticCreatureCardEffect deathtouchEffect = DeathtouchEffectFactory.Create(id: "deathtouch",
+                                                                                       effectName: "Deathtouch");
+            CardEffectRegistry.Register(CreatureCardEffectType.Deathtouch, deathtouchEffect);
+        }
+        #endregion
+
+        #region Defender
+        {
+            StaticCreatureCardEffect defenderEffect = DefenderEffectFactory.Create(id: "defender",
+                                                                                   effectName: "Defender");
+            CardEffectRegistry.Register(CreatureCardEffectType.Defender, defenderEffect);
+        }
+        #endregion
+
+        #region Duelist
+        {
+
+        }
+        #endregion
+
+        #region Elusive
+        {
+            StaticCreatureCardEffect elusiveEffect = ElusiveEffectFactory.Create(id: "elusive",
+                                                                                 effectName: "Elusive");
+            CardEffectRegistry.Register(CreatureCardEffectType.Elusive, elusiveEffect);
+        }
+        #endregion
+
+        #region Endurance
+        {
+            StaticCreatureCardEffect enduranceEffect = EnduranceEffectFactory.Create(id: "endurance",
+                                                                                     effectName: "Endurance");
+            CardEffectRegistry.Register(CreatureCardEffectType.Endurance, enduranceEffect);
+        }
+        #endregion
+
+        #region Lifelink
+        {
+            StaticCreatureCardEffect lifelinkEffect = LifelinkEffectFactory.Create(id: "lifelink",
+                                                                                   effectName: "Lifelink");
+            CardEffectRegistry.Register(CreatureCardEffectType.Lifelink, lifelinkEffect);
+        }
+        #endregion
+
+        #region Reach
+        {
+            StaticCreatureCardEffect reachEffect = ReachEffectFactory.Create(id: "reach",
+                                                                             effectName: "Reach");
+            CardEffectRegistry.Register(CreatureCardEffectType.Reach, reachEffect);
+        }
+        #endregion
+
+        #region Menace
+        {
+            StaticCreatureCardEffect menaceEffect = MenaceEffectFactory.Create(id: "menace",
+                                                                               effectName: "Menace");
+            CardEffectRegistry.Register(CreatureCardEffectType.Menace, menaceEffect);
+        }
+        #endregion
+
+        #region Wither
+        {
+            StaticCreatureCardEffect witherEffect = WitherEffectFactory.Create(id: "wither",
+                                                                               effectName: "Wither");
+            CardEffectRegistry.Register(CreatureCardEffectType.Wither, witherEffect);
+        }
+        #endregion
+
+        #region Wither Status
+        {
+            CardEffect<CreatureCard> witherStatusEffect = WitherStatusEffectFactory.Create(id: "wither_status",
+                                                                                           effectName: "Wither Status");
+            CardEffectRegistry.Register(CreatureCardEffectType.WitherStatus, witherStatusEffect);
+        }
+        #endregion
+
         #region Chorion Sparklet Blessing
         {
             StatBoostContext context = new StatBoostContext(id: "chorion_sparklet_blessing",
@@ -167,94 +269,6 @@ public class CardEffect<TCard> where TCard : Card {
                                                                                      evolution: cardRegistry.GetCreatureCardById("ent_warrior"),
                                                                                      evolutionRequiredTurnCount: 1);
             CardEffectRegistry.Register(CreatureCardEffectType.SproutingBudEvolve, sproutingBudEvolve);
-        }
-        #endregion
-
-        #region Sword Saint Miel Overwhelm
-        {
-            StaticCreatureCardEffect swordSaintMielOverwhelm = OverwhelmEffectFactory.Create(id: "sword_saint_miel_overwhelm",
-                                                                                             effectName: "Sword Saint Miel Overwhelm");
-            CardEffectRegistry.Register(CreatureCardEffectType.SwordSaintMielOverwhelm, swordSaintMielOverwhelm);
-        }
-        #endregion
-
-        #region Fluttersky Bloodthirsty
-        {
-            StaticCreatureCardEffect flutterSkyBloodthirsty = BloodthirstyEffectFactory.Create(id: "fluttersky_bloodthirsty",
-                                                                                               effectName: "Fluttersky Bloodthirsty");
-            CardEffectRegistry.Register(CreatureCardEffectType.FlutterskyBloodthirsty, flutterSkyBloodthirsty);
-        }
-        #endregion
-
-        #region Fluttersky Swiftness
-        {
-            StaticCreatureCardEffect flutterSkySwiftness = SwiftnessEffectFactory.Create(id: "fluttersky_swiftness",
-                                                                                         effectName: "Fluttersky Swiftness");
-            CardEffectRegistry.Register(CreatureCardEffectType.FlutterskySwiftness, flutterSkySwiftness);
-        }
-        #endregion
-
-        #region Kaitros, Deep Sea Devourer Deathtouch
-        {
-            StaticCreatureCardEffect kaitrosDeepSeaDevourerDeathtouch = DeathtouchEffectFactory.Create(id: "kaitros_deep_sea_devourer_deathtouch",
-                                                                                             effectName: "Kaitros, Deep Sea Devourer Deathtouch");
-            CardEffectRegistry.Register(CreatureCardEffectType.KaitrosDeepSeaDevourerDeathtouch, kaitrosDeepSeaDevourerDeathtouch);
-        }
-        #endregion
-
-        #region Mineral Crab Defender
-        {
-            StaticCreatureCardEffect mineralCrabDefender = DefenderEffectFactory.Create(id: "mineral_crab_defender",
-                                                                                        effectName: "Mineral Crab Defender");
-            CardEffectRegistry.Register(CreatureCardEffectType.MineralCrabDefender, mineralCrabDefender);
-        }
-        #endregion
-
-        #region Whimsical Bee Elusive
-        {
-            StaticCreatureCardEffect whimsicalBeeElusive = ElusiveEffectFactory.Create(id: "whimsical_bee_elusive",
-                                                                                       effectName: "Whimsical Bee Elusive");
-            CardEffectRegistry.Register(CreatureCardEffectType.WhimsicalBeeElusive, whimsicalBeeElusive);
-        }
-        #endregion
-
-        #region Sunlit Militia Endurance
-        {
-            StaticCreatureCardEffect sunlitMilitiaEndurance = EnduranceEffectFactory.Create(id: "sunlit_militia_endurance",
-                                                                                            effectName: "Sunlit Militia Endurance");
-            CardEffectRegistry.Register(CreatureCardEffectType.SunlitMilitiaEndurance, sunlitMilitiaEndurance);
-        }
-        #endregion
-
-        #region Glimmirsap Frog Lifelink
-        {
-            StaticCreatureCardEffect glimmirsapFrogLifelink = LifelinkEffectFactory.Create(id: "glimmirsap_frog_lifelink",
-                                                                                           effectName: "Glimmirsap Frog Lifelink");
-            CardEffectRegistry.Register(CreatureCardEffectType.GlimmirsapFrogLifelink, glimmirsapFrogLifelink);
-        }
-        #endregion
-
-        #region Glimmirsap Frog Reach
-        {
-            StaticCreatureCardEffect glimmirsapFrogReach = ReachEffectFactory.Create(id: "glimmirsap_frog_reach",
-                                                                                     effectName: "Glimmirsap Frog Reach");
-            CardEffectRegistry.Register(CreatureCardEffectType.GlimmirsapFrogReach, glimmirsapFrogReach);
-        }
-        #endregion
-
-        #region Maneater Mildred Menace
-        {
-            StaticCreatureCardEffect maneaterMildredMenace = MenaceEffectFactory.Create(id: "maneater_mildred_menace",
-                                                                                        effectName: "Maneater Mildred Menace");
-            CardEffectRegistry.Register(CreatureCardEffectType.ManeaterMildredMenace, maneaterMildredMenace);
-        }
-        #endregion
-
-        #region Vicious Bloosm Wither
-        {
-            StaticCreatureCardEffect viciousBloosmWither = WitherEffectFactory.Create(id: "vicious_bloosm_wither",
-                                                                                      effectName: "Vicious Bloosm Wither");
-            CardEffectRegistry.Register(CreatureCardEffectType.ViciousBloosmWither, viciousBloosmWither);
         }
         #endregion
 

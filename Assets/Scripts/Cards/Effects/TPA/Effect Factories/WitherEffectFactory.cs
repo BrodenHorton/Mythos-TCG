@@ -1,6 +1,6 @@
 ﻿public class WitherEffectFactory {
     public static StaticCreatureCardEffect Create(string id, string effectName) {
-        WitherContext context = new(id, effectName);
+        EffectContext<CreatureCard> context = new(id, effectName);
 
         EffectRule<EffectContext<CreatureCard>, CreatureCombatDamageEventArgs, CreatureCard> stopDamageToDefenderRule = new(context);
         stopDamageToDefenderRule.AddPrecondition(new CreatureIsAttackerPrecondition());

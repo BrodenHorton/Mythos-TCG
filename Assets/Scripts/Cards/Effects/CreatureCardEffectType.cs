@@ -28,15 +28,4 @@
     AstrasFieldMedicSummon,
     WirlpoolTadpoleSwarm,
     SproutingBudEvolve,
-    SwordSaintMielOverwhelm,
-    FlutterskyBloodthirsty,
-    FlutterskySwiftness,
-    KaitrosDeepSeaDevourerDeathtouch,
-    MineralCrabDefender,
-    WhimsicalBeeElusive,
-    SunlitMilitiaEndurance,
-    GlimmirsapFrogLifelink,
-    GlimmirsapFrogReach,
-    ManeaterMildredMenace,
-    ViciousBloosmWither
 }

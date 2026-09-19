@@ -15,7 +15,7 @@
         EffectRule<StatBoostContext, PlayerCardStatEventArgs<CreatureCard>, CreatureCard> attackCalcRule = new(context);
         attackCalcRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
         attackCalcRule.AddPrecondition(new StatBoostCanBoostAttackPrecondition());
-        attackCalcRule.AddAction(new StatBoostUpdateAttackCalceAction());
+        attackCalcRule.AddAction(new StatBoostUpdateAttackCalcAction());
 
         EffectSequence<StatBoostContext, PlayerCardStatEventArgs<CreatureCard>, CreatureCard> attackCalcSequence = new(new CalculateCreatureAttackTrigger());
         attackCalcSequence.AddRule(attackCalcRule);
@@ -23,7 +23,7 @@
         EffectRule<StatBoostContext, PlayerCardStatEventArgs<CreatureCard>, CreatureCard> healthCalcRule = new(context);
         healthCalcRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
         healthCalcRule.AddPrecondition(new StatBoostCanBoostHealthPrecondition());
-        healthCalcRule.AddAction(new StatBoostUpdateHealthCalceAction());
+        healthCalcRule.AddAction(new StatBoostUpdateHealthCalcAction());
 
         EffectSequence<StatBoostContext, PlayerCardStatEventArgs<CreatureCard>, CreatureCard> healthCalcSequence = new(new CalculateCreatureHealthTrigger());
         healthCalcSequence.AddRule(healthCalcRule);
