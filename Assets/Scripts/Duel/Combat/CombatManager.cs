@@ -63,7 +63,7 @@ public class CombatManager : NetworkBehaviour {
             throw new Exception("Only the server can call the method DeclareDefender");
 
         if (combatStateManager.CurrentState.CanDeclareDefenders())
-            DeclareDefender(args.DraggingPlayerId, args.HoveredCard, args.HeldCard);
+            DeclareDefender(args.PlayerId, args.HoveredCard, args.HeldCard);
     }
 
     public void DeclareDefender(ulong targetId, CreatureCard attacker, CreatureCard defender) {

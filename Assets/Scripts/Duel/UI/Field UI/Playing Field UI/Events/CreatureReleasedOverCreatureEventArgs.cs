@@ -1,17 +1,13 @@
 ﻿using System;
 
-public class CreatureReleasedOverCreatureEventArgs : EventArgs {
-    private ulong draggingPlayerId;
+public class CreatureReleasedOverCreatureEventArgs : PlayerEventArgs {
     private CreatureCard heldCard;
     private CreatureCard hoveredCard;
 
-    public CreatureReleasedOverCreatureEventArgs(ulong draggingPlayerId, CreatureCard heldCard, CreatureCard hoveredCard) {
-        this.draggingPlayerId = draggingPlayerId;
+    public CreatureReleasedOverCreatureEventArgs(ulong draggingPlayerId, CreatureCard heldCard, CreatureCard hoveredCard) : base(draggingPlayerId) {
         this.heldCard = heldCard;
         this.hoveredCard = hoveredCard;
     }
-    
-    public ulong DraggingPlayerId {  get { return draggingPlayerId; } }
 
     public CreatureCard HeldCard { get { return heldCard; } }
 

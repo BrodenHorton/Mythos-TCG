@@ -57,13 +57,13 @@ public class DuelistEffect : StaticCreatureCardEffect {
     }
 
     private void SetDuelistDefender(object sender, CreatureReleasedOverCreatureEventArgs args) {
-        if (args.DraggingPlayerId != card.PlayerId)
-            return;
-        if (args.HoveredCard.Uuid != card.Uuid)
+        if (args.PlayerId != card.PlayerId)
             return;
         if (duelManager.GetCurrentPlayerTurn().PlayerId != card.PlayerId)
             return;
         if (combatStateManager.CurrentState != combatStateManager.DeclareAttackersState)
+            return;
+        if (args.HoveredCard.Uuid != card.Uuid)
             return;
         if (!combatManager.HasExistingDuelistCombat(card.PlayerId, args.HeldCard.PlayerId))
             return;

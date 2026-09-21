@@ -58,7 +58,9 @@ public class CardEffect<TCard> where TCard : Card {
 
         #region Duelist
         {
-
+            StaticCreatureCardEffect duelistEffect = DuelistEffectFactory.Create(id: "duelist",
+                                                                                 effectName: "Duelist");
+            CardEffectRegistry.Register(CreatureCardEffectType.Duelist, duelistEffect);
         }
         #endregion
 
@@ -127,7 +129,7 @@ public class CardEffect<TCard> where TCard : Card {
                                                             isResetAfterTurn: true);
 
             EffectRule<StatBoostContext, LifePointsChangedEventArgs, CreatureCard> statBoostProkRule = new(context);
-            statBoostProkRule.AddPrecondition(new PlayerCheckPrecondition());
+            statBoostProkRule.AddPrecondition(new PlayerCheckPrecondition<CreatureCard>());
             statBoostProkRule.AddPrecondition(new LifePointsIncreasedPrecondition());
             statBoostProkRule.AddAction(new StatBoostIncrementAction());
 
@@ -151,7 +153,7 @@ public class CardEffect<TCard> where TCard : Card {
                                                             isResetAfterTurn: true);
 
             EffectRule<StatBoostContext, PlayerEventArgs, CreatureCard> statBoostProkRule = new(context);
-            statBoostProkRule.AddPrecondition(new PlayerCheckPrecondition());
+            statBoostProkRule.AddPrecondition(new PlayerCheckPrecondition<CreatureCard>());
             statBoostProkRule.AddPrecondition(new CreatureInCombatPrecondition());
             statBoostProkRule.AddAction(new StatBoostIncrementAction());
 
@@ -236,7 +238,7 @@ public class CardEffect<TCard> where TCard : Card {
                                                                       additionalEffectType: CreatureCardEffectType.Reach);
 
             EffectRule<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> swarmAddEffectRule = new(context);
-            swarmAddEffectRule.AddPrecondition(new PlayerCheckPrecondition());
+            swarmAddEffectRule.AddPrecondition(new PlayerCheckPrecondition<CreatureCard>());
             swarmAddEffectRule.AddPrecondition(new SwarmCheckPrecondition());
             swarmAddEffectRule.AddPrecondition(new SwarmAddedEffectPrecondition());
             swarmAddEffectRule.AddAction(new SwarmAddEffectAction());
@@ -245,7 +247,7 @@ public class CardEffect<TCard> where TCard : Card {
             swarmAddEffectSequence.AddRule(swarmAddEffectRule);
 
             EffectRule<SwarmAddEffectContext, PlayerCardEventArgs<CreatureCard>, CreatureCard> swarmRemoveEffectRule = new(context);
-            swarmRemoveEffectRule.AddPrecondition(new PlayerCheckPrecondition());
+            swarmRemoveEffectRule.AddPrecondition(new PlayerCheckPrecondition<CreatureCard>());
             swarmRemoveEffectRule.AddPrecondition(new SwarmCheckPrecondition(), shouldEvaluateAsNot: true);
             swarmRemoveEffectRule.AddPrecondition(new SwarmAddedEffectPrecondition(), shouldEvaluateAsNot: true);
             swarmRemoveEffectRule.AddAction(new SwarmRemoveEffectAction());
