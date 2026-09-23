@@ -7,6 +7,7 @@ public class EffectSequence<TContext, UEventArgs, VCard> : IEffectSequence<Creat
 
     public EffectSequence(EffectTrigger<UEventArgs> trigger) {
         this.trigger = trigger;
+        rules = new List<EffectRule<TContext, UEventArgs, VCard>>();
     }
 
     public void Init(CreatureCard card) {

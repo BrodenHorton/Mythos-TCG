@@ -24,8 +24,11 @@ public class GameManager : NetworkBehaviour {
     }
 
     private void Start() {
-        if(IsServer)
+        if(IsServer) {
+            CardEffect<Card>.RegisterEffects();
+
             NetworkManager.Singleton.OnClientConnectedCallback += UpdateGameStateOnClientConnectedServerRpc;
+        }
     }
 
     private void Update() {

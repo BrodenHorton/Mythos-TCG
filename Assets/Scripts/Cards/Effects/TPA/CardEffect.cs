@@ -11,6 +11,7 @@ public class CardEffect<TCard> where TCard : Card {
     public CardEffect(string effectName, string rawDescription) {
         this.rawDescription = rawDescription;
         this.effectName = effectName;
+        sequences = new List<IEffectSequence<TCard>>();
     }
 
     public static void RegisterEffects() {
@@ -271,10 +272,6 @@ public class CardEffect<TCard> where TCard : Card {
 
     public void AddEffectSequence(IEffectSequence<TCard> sequence) {
         sequences.Add(sequence);
-    }
-
-    public CreatureCardEffectPayload GetEffectPayload() {
-        throw new NotImplementedException();
     }
 
     public CardEffect<TCard> Clone() {

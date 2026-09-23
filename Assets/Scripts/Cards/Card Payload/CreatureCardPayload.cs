@@ -29,7 +29,10 @@ public class CreatureCardPayload : CardPayload {
         effectNetworkContainers = new CreatureCardEffectPayloadNetworkContainer[card.Effects.Count];
         for(int i = 0; i < effectNetworkContainers.Length; i++) {
             CreatureCardEffectPayloadNetworkContainer effectNetworkContainer = new CreatureCardEffectPayloadNetworkContainer();
-            effectNetworkContainer.effectPayload = card.Effects[i].GetEffectPayload();
+            if (card.Effects[i] is StaticCreatureCardEffect staticEffect)
+                effectNetworkContainer.effectPayload = new StaticCreatureCardEffectPayload(staticEffect);
+            else
+                effectNetworkContainer.effectPayload = new CreatureCardEffectPayload(card.Effects[i]);
             effectNetworkContainers[i] = effectNetworkContainer;
         }
     }
