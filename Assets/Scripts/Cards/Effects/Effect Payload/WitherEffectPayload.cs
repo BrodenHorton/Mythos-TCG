@@ -14,6 +14,6 @@ public class WitherEffectPayload : StaticCreatureCardEffectPayload {
         serializer.SerializeValue(ref effectName);
         serializer.SerializeValue(ref rawDescription);
         serializer.SerializeValue(ref creatureUuidStr);
-        serializer.SerializeValue(ref iconId);
+        serializer.SerializeValue(ref effecticonId);
     }
 }

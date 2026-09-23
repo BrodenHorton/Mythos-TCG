@@ -2,34 +2,23 @@ using System;
 using Unity.Netcode;
 
 public struct CreatureCardEffectPayloadNetworkContainer : INetworkSerializable {
+    public enum CreatureCardEffectPayloadType {
+        Normal,
+        Static
+    }
+
     public CreatureCardEffectPayload effectPayload;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
-        CreatureCardEffectType effectType = serializer.IsWriter && effectPayload != null ? effectPayload.EffectType : default;
+        CreatureCardEffectPayloadType effectType = default;
+        if(serializer.IsWriter && effectPayload != null)
+            effectType = effectPayload is StaticCreatureCardEffectPayload ? CreatureCardEffectPayloadType.Static : CreatureCardEffectPayloadType.Normal;
+
         serializer.SerializeValue(ref effectType);
         if (serializer.IsReader) {
             effectPayload = effectType switch {
-                CreatureCardEffectType.Overwhelm => new OverwhelmEffectPayload(),
-                CreatureCardEffectType.Elusive => new ElusiveEffectPayload(),
-                CreatureCardEffectType.Reach => new ReachEffectPayload(),
-                CreatureCardEffectType.Swiftness => new SwiftnessEffectPayload(),
-                CreatureCardEffectType.Endurance => new EnduranceEffectPayload(),
-                CreatureCardEffectType.Defender => new DefenderEffectPayload(),
-                CreatureCardEffectType.Menace => new MenaceEffectPayload(),
-                CreatureCardEffectType.Bloodthirsty => new BloodthirstyEffectPayload(),
-                CreatureCardEffectType.Wither => new WitherEffectPayload(),
-                CreatureCardEffectType.WitherStatus => new WitherStatusEffectPayload(),
-                CreatureCardEffectType.Lifelink => new LifelinkEffectPayload(),
-                CreatureCardEffectType.Deathtouch => new DeathtouchEffectPayload(),
-                CreatureCardEffectType.Spellshield => new SpellshieldEffectPayload(),
-                CreatureCardEffectType.Duelist => new DuelistEffectPayload(),
-                CreatureCardEffectType.BlessingStatBoost => new BlessingStatBoostEffectPayload(),
-                CreatureCardEffectType.SummonLifeGain => new SummonLifeGainEffectPayload(),
-                CreatureCardEffectType.BattleCryStatBoost => new BattleCryStatBoostEffectPayload(),
-                CreatureCardEffectType.DeathCryCardSearch => new DeathCryCardSearchEffectPayload(),
-                CreatureCardEffectType.Evolve => new EvolveEffectPayload(),
-                CreatureCardEffectType.SwarmAddEffect => new SwarmAddEffectEffectPayload(),
-                CreatureCardEffectType.SummonCardSearch => new SummonCardSearchEffectPayload(),
+                CreatureCardEffectPayloadType.Normal => new CreatureCardEffectPayload(),
+                CreatureCardEffectPayloadType.Static => new StaticCreatureCardEffectPayload(),
                 _ => throw new NotImplementedException("Attempting to read card effect type that is not defined: " + effectType.ToString())
             };
         }

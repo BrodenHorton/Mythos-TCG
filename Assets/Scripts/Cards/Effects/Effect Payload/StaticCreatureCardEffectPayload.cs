@@ -1,12 +1,19 @@
-﻿
-public abstract class StaticCreatureCardEffectPayload : CreatureCardEffectPayload {
-    protected string iconId;
+﻿using Unity.Netcode;
+
+public class StaticCreatureCardEffectPayload : CreatureCardEffectPayload {
+    protected string effecticonId;
 
     public StaticCreatureCardEffectPayload() { }
 
     public StaticCreatureCardEffectPayload(StaticCreatureCardEffect effect) : base(effect) {
-        iconId = effect.GetStaticCreatureEffectBase().EffectIconId;
+        effecticonId = effect.EffectIconId;
     }
 
-    public string IconId { get { return iconId; } }
+    public override void NetworkSerialize<T>(BufferSerializer<T> serializer) {
+        serializer.SerializeValue(ref rawDescription);
+        serializer.SerializeValue(ref creatureUuidStr);
+        serializer.SerializeValue(ref effecticonId);
+    }
+
+    public string EffectIconId { get { return effecticonId; } }
 }

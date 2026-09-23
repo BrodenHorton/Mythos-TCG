@@ -18,8 +18,8 @@ public class StaticKeywordUI : MonoBehaviour, DynamicPopupPromptIndicator {
 
     public void Init(StaticCreatureCardEffectPayload effect) {
         IconRegistry iconDatabase = ServiceLocator.Get<IconRegistry>();
-        if(iconDatabase.Contains(effect.IconId))
-            icon.sprite = iconDatabase.Get(effect.IconId);
+        if(iconDatabase.Contains(effect.EffectIconId))
+            icon.sprite = iconDatabase.Get(effect.EffectIconId);
         staticKeywordText.text = effect.EffectName.ToString().ToUpper();
         staticKeywordText.color = STATIC_KEYWORD_COLOR;
         effectDescription = effect.RawDescription.ToString();

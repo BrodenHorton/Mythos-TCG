@@ -1,25 +1,21 @@
 ﻿using Unity.Collections;
 using Unity.Netcode;
 
-public abstract class CreatureCardEffectPayload : INetworkSerializable {
-    protected FixedString128Bytes effectName;
+public class CreatureCardEffectPayload : INetworkSerializable {
     protected FixedString512Bytes rawDescription;
     protected FixedString128Bytes creatureUuidStr;
-    protected CreatureCardEffectType effectType;
 
     public CreatureCardEffectPayload() { }
 
-    public CreatureCardEffectPayload(CreatureCardEffect effect) {
-        effectName = effect.GetCreatureEffectBase().EffectName;
+    public CreatureCardEffectPayload(CardEffect<CreatureCard> effect) {
         rawDescription = effect.GetRawDescription();
         creatureUuidStr = effect.Card.Uuid.ToString();
     }
 
-    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
-
-    public FixedString128Bytes EffectName { get { return effectName; } }
+    public virtual void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
+        serializer.SerializeValue(ref rawDescription);
+        serializer.SerializeValue(ref creatureUuidStr);
+    }
 
     public FixedString512Bytes RawDescription { get { return rawDescription; } }
-
-    public CreatureCardEffectType EffectType { get { return effectType; } }
 }
