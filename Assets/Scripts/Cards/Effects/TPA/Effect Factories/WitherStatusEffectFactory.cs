@@ -1,6 +1,6 @@
 ﻿public class WitherStatusEffectFactory {
-    public static CardEffect<CreatureCard> Create(string id, string effectName) {
-        WitherStatusContext context = new(id, effectName);
+    public static CardEffect<CreatureCard> Create() {
+        WitherStatusContext context = new();
 
         EffectRule<WitherStatusContext, CreatureCombatDamageEventArgs, CreatureCard> witherProkedRule = new(context);
         witherProkedRule.AddPrecondition(new CreatureIsDefenderPrecondition());
@@ -26,7 +26,9 @@
         healthCalcSequence.AddRule(healthCalcRule);
 
         string rawDescription = "Wither Status";
-        StaticCreatureCardEffect witherEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect witherEffect = new StaticCreatureCardEffect(effectName: "Wither Status",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         witherEffect.AddEffectSequence(witherProkedSequence);
         witherEffect.AddEffectSequence(attackCalcSequence);
         witherEffect.AddEffectSequence(healthCalcSequence);

@@ -1,6 +1,6 @@
 ﻿public class OverwhelmEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        EffectContext<CreatureCard> context = new();
 
         EffectRule<EffectContext<CreatureCard>, CreatureCombatDamageEventArgs, CreatureCard> overwhelmRule = new(context);
         overwhelmRule.AddPrecondition(new CreatureIsAttackerPrecondition());
@@ -11,7 +11,9 @@
         overwhelmSequence.AddRule(overwhelmRule);
 
         string rawDescription = "Overflow damage that isn’t blocked by a defender's Health is dealt as life point damage";
-        StaticCreatureCardEffect overwhelmEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect overwhelmEffect = new StaticCreatureCardEffect(effectName: "Overwhelm",
+                                                                                rawDescription,
+                                                                                effectIconId: "swords");
         overwhelmEffect.AddEffectSequence(overwhelmSequence);
 
         return overwhelmEffect;

@@ -1,6 +1,6 @@
 ﻿public class DuelistEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        DuelistContext context = new(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        DuelistContext context = new();
 
         EffectRule<DuelistContext, SelectableCardsEventArgs, CreatureCard> setTargetCardsSelectableRule = new(context);
         setTargetCardsSelectableRule.AddPrecondition(new PlayerCheckPrecondition<CreatureCard>());
@@ -40,7 +40,9 @@
         clearDuelistDefenderSequence.AddRule(clearDuelistDefenderRule);
 
         string rawDescription = "When this creature attacks, choose the enemy creature that defends";
-        StaticCreatureCardEffect duelistEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect duelistEffect = new StaticCreatureCardEffect(effectName: "Duelist",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         duelistEffect.AddEffectSequence(setTargetCardsSelectableSequence);
         duelistEffect.AddEffectSequence(setDuelistDefenderSequence);
         duelistEffect.AddEffectSequence(removeDuelistTargetFromSelectableCardsSequence);

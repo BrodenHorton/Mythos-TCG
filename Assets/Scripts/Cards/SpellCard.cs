@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 
 [Serializable]
@@ -15,7 +13,8 @@ public class SpellCard : Card {
 
     public void ExecuteSpell() {
         for (int i = 0; i < cardBase.BaseEffects.Count; i++) {
-            cardBase.BaseEffects[i].Execute();
+            // TODO: Make it so spell cards are executable
+            //cardBase.BaseEffects[i].Execute();
             // TODO: Execute the additional effects on the SpellCard class
         }
     }

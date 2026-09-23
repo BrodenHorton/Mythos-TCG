@@ -1,14 +1,14 @@
 ﻿
 public class SwarmAddEffectContext : EffectContext<CreatureCard> {
     private CreatureCardEffectType additionalEffectType;
-    private CreatureCardEffect addedEffect;
+    private CardEffect<CreatureCard> addedEffect;
 
-    public SwarmAddEffectContext(string id, string effectName, CreatureCardEffectType additionalEffectType) : base(id, effectName) {
+    public SwarmAddEffectContext(CreatureCardEffectType additionalEffectType) {
         this.additionalEffectType = additionalEffectType;
         addedEffect = null;
     }
 
     public CreatureCardEffectType AdditionalEffectType { get { return additionalEffectType; } }
 
-    public CreatureCardEffect AddedEffect { get { return addedEffect; } set { addedEffect = value; } }
+    public CardEffect<CreatureCard> AddedEffect { get { return addedEffect; } set { addedEffect = value; } }
 }

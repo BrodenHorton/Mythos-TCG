@@ -1,8 +1,6 @@
 ﻿public class BloodthirstyEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        StatBoostContext context = new StatBoostContext(id,
-                                                        effectName,
-                                                        atkBoost: 1,
+    public static StaticCreatureCardEffect Create() {
+        StatBoostContext context = new StatBoostContext(atkBoost: 1,
                                                         healthBoost: 1);
 
         EffectRule<StatBoostContext, CreatureCombatDamageEventArgs, CreatureCard> bloodthirstyRule = new(context);
@@ -29,7 +27,9 @@
         healthCalcSequence.AddRule(healthCalcRule);
 
         string rawDescription = "When this creature deals damage, it gains +1/+1";
-        StaticCreatureCardEffect bloodthirstyEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect bloodthirstyEffect = new StaticCreatureCardEffect(effectName: "Bloodthirstry",
+                                                                                   rawDescription,
+                                                                                   effectIconId: "swords");
         bloodthirstyEffect.AddEffectSequence(bloodthirstySequence);
         bloodthirstyEffect.AddEffectSequence(attackCalcSequence);
         bloodthirstyEffect.AddEffectSequence(healthCalcSequence);

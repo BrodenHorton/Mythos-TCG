@@ -1,6 +1,6 @@
 ﻿public class DefenderEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        EffectContext<CreatureCard> context = new ();
 
         EffectRule<EffectContext<CreatureCard>, PlayerCardCancelableEventArgs<CreatureCard>, CreatureCard> defenderRule = new(context);
         defenderRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
@@ -10,7 +10,9 @@
         defenderSequence.AddRule(defenderRule);
 
         string rawDescription = "This creature cannot declare an attack";
-        StaticCreatureCardEffect defenderEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect defenderEffect = new StaticCreatureCardEffect(effectName: "Defender",
+                                                                               rawDescription,
+                                                                               effectIconId: "swords");
         defenderEffect.AddEffectSequence(defenderSequence);
 
         return defenderEffect;

@@ -1,6 +1,6 @@
 ﻿public class EnduranceEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        EffectContext<CreatureCard> context = new();
 
         EffectRule<EffectContext<CreatureCard>, PlayerCardCancelableEventArgs<CreatureCard>, CreatureCard> enduranceRule = new(context);
         enduranceRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
@@ -10,7 +10,9 @@
         enduranceSequence.AddRule(enduranceRule);
 
         string rawDescription = "Attacking does not cause this creature to tap";
-        StaticCreatureCardEffect elusiveEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect elusiveEffect = new StaticCreatureCardEffect(effectName: "Endurance",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         elusiveEffect.AddEffectSequence(enduranceSequence);
 
         return elusiveEffect;

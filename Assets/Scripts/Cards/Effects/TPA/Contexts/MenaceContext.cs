@@ -2,7 +2,7 @@
 public class MenaceContext : EffectContext<CreatureCard> {
     private int blockableHealthMin;
 
-    public MenaceContext(string id, string effectName) : base(id, effectName) {
+    public MenaceContext() {
         blockableHealthMin = 4;
     }
 

@@ -4,7 +4,7 @@ public class EvolveContext : EffectContext<CreatureCard> {
     private int evolutionRequiredTurnCount;
     private int currentTurnCount;
 
-    public EvolveContext(string id, string effectName, CreatureCardBase evolution, int evolutionRequiredTurnCount) : base(id, effectName) {
+    public EvolveContext(CreatureCardBase evolution, int evolutionRequiredTurnCount) {
         this.evolution = evolution;
         this.evolutionRequiredTurnCount = evolutionRequiredTurnCount;
     }

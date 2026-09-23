@@ -20,5 +20,4 @@ MonoBehaviour:
   atk: 1
   health: 8
   creatureClasses: 000000000c000000
-  baseEffects:
-  - {fileID: 11400000, guid: 8f5bbfd0a5729d24d823800afa5ce9f9, type: 2}
+  baseEffects: 02000000

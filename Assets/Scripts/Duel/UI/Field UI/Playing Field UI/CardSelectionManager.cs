@@ -45,10 +45,10 @@ public class CardSelectionManager : NetworkBehaviour {
 
         actionManager.OnActionStateChanged += SetSelectableCardsForActionFocusPlayers;
         EventBus.Instance.OnManaCountChangedFinished += (sender, args) => SetSelectableCards(args.PlayerId);
-        stateManager.FirstMainPhase.OnFirstMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
-        stateManager.CombatPhase.OnCombatPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
-        stateManager.SecondMainPhase.OnSecondMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args);
-        stateManager.EndPhase.OnEndPhasEnteredFinished += (sender, args) => ClearSelectableCards(args);
+        stateManager.FirstMainPhase.OnFirstMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args.PlayerId);
+        stateManager.CombatPhase.OnCombatPhaseEnteredFinished += (sender, args) => SetSelectableCards(args.PlayerId);
+        stateManager.SecondMainPhase.OnSecondMainPhaseEnteredFinished += (sender, args) => SetSelectableCards(args.PlayerId);
+        stateManager.EndPhase.OnEndPhasEnteredFinished += (sender, args) => ClearSelectableCards(args.PlayerId);
         combatStateManager.DeclareAttackersState.OnDeclareAttackersStateEnteredFinished += (sender, args) => {
             SetSelectableCardsForActionFocusPlayers();
         };

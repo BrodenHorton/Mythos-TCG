@@ -1,6 +1,6 @@
 ﻿public class WitherEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        EffectContext<CreatureCard> context = new();
 
         EffectRule<EffectContext<CreatureCard>, CreatureCombatDamageEventArgs, CreatureCard> stopDamageToDefenderRule = new(context);
         stopDamageToDefenderRule.AddPrecondition(new CreatureIsAttackerPrecondition());
@@ -20,7 +20,9 @@
         addWitherStatusSequence.AddRule(addWitherStatusRule);
 
         string rawDescription = "Deals damage as -1/-1 debuffs";
-        StaticCreatureCardEffect witherEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect witherEffect = new StaticCreatureCardEffect(effectName: "Wither",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         witherEffect.AddEffectSequence(stopDamageToDefenderSequence);
         witherEffect.AddEffectSequence(addWitherStatusSequence);
 

@@ -1,6 +1,6 @@
 ﻿public class MenaceEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        MenaceContext context = new(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        MenaceContext context = new();
 
         EffectRule<MenaceContext, CanDefendEventArgs, CreatureCard> menaceRule = new(context);
         menaceRule.AddPrecondition(new CreatureIsAttackerPrecondition());
@@ -11,7 +11,9 @@
         menaceSequence.AddRule(menaceRule);
 
         string rawDescription = "This Creature cannot be blocked by creatures with 3 or less Health";
-        StaticCreatureCardEffect menaceEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect menaceEffect = new StaticCreatureCardEffect(effectName: "Menace",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         menaceEffect.AddEffectSequence(menaceSequence);
 
         return menaceEffect;

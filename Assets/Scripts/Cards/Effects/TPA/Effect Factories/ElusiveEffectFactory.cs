@@ -1,6 +1,6 @@
 ﻿public class ElusiveEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new EffectContext<CreatureCard>(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        EffectContext<CreatureCard> context = new();
 
         EffectRule<EffectContext<CreatureCard>, CanDefendEventArgs, CreatureCard> restrictDefendersRule = new(context);
         restrictDefendersRule.AddPrecondition(new CreatureIsAttackerPrecondition());
@@ -18,7 +18,9 @@
         canDefendElusiveAttackerSequence.AddRule(canDefendElusiveAttackerRule);
 
         string rawDescription = "Can only be blocked by creatures with Elusive or Reach";
-        StaticCreatureCardEffect elusiveEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect elusiveEffect = new StaticCreatureCardEffect(effectName: "Elusive",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         elusiveEffect.AddEffectSequence(elusiveSequence);
         elusiveEffect.AddEffectSequence(canDefendElusiveAttackerSequence);
 

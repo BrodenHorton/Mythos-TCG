@@ -10,19 +10,19 @@
     public bool Evaluate(SwarmAddEffectContext context, PlayerCardEventArgs<CreatureCard> args) {
         int swarmCount = 0;
         MatchPlayer player = duelManager.GetPlayerById(args.Card.PlayerId);
-        foreach (CreatureCard creatureCard in player.Creatures) {
+        // TODO: Change this to search through the new TPA effects for swarm or create a new event that swarm listens for
+        /*foreach (CreatureCard creatureCard in player.Creatures) {
             if (creatureCard == args.Card)
                 continue;
 
-            // TODO: Change this to search through the new TPA effects for swarm effects
-            foreach (CreatureCardEffect cardEffect in creatureCard.Effects) {
+            foreach (CardEffect<CreatureCard> cardEffect in creatureCard.Effects) {
                 if (cardEffect is SwarmEffect) {
                     swarmCount++;
                     if (swarmCount >= SWARM_MINIMUM)
                         return true;
                 }
             }
-        }
+        }*/
 
         return false;
     }

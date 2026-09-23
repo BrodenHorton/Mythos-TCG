@@ -1,7 +1,7 @@
 ﻿public class WitherStatusContext : EffectContext<CreatureCard> {
     private int witherProkCount;
 
-    public WitherStatusContext(string id, string effectName) : base(id, effectName) {
+    public WitherStatusContext() {
         witherProkCount = 0;
     }
 

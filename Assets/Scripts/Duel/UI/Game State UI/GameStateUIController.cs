@@ -21,23 +21,23 @@ public class GameStateUIController : MonoBehaviour {
         duelManager.OnNextFullTurn += SetFullTurn;
     }
 
-    public void OnStartPhase(object sender, ulong playerId) {
+    public void OnStartPhase(object sender, PlayerEventArgs args) {
         gameStateUI.SetDuelPhase("Start Phase");
     }
 
-    public void OnFirstMainPhase(object sender, ulong playerId) {
+    public void OnFirstMainPhase(object sender, PlayerEventArgs args) {
         gameStateUI.SetDuelPhase("First Main Phase");
     }
 
-    public void OnCombatPhase(object sender, ulong playerId) {
+    public void OnCombatPhase(object sender, PlayerEventArgs args) {
         gameStateUI.SetDuelPhase("Combat Phase");
     }
 
-    public void OnSecondMainPhase(object sender, ulong playerId) {
+    public void OnSecondMainPhase(object sender, PlayerEventArgs args) {
         gameStateUI.SetDuelPhase("Second Main Phase");
     }
 
-    public void OnEndPhase(object sender, ulong playerId) {
+    public void OnEndPhase(object sender, PlayerEventArgs args) {
         gameStateUI.SetDuelPhase("End Phase");
     }
 

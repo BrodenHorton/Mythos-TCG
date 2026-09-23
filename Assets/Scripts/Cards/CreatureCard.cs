@@ -8,15 +8,15 @@ public partial class CreatureCard : Card {
     [SerializeField] private bool hasSummoningSickness;
     [SerializeField] private bool isTapped;
     [SerializeField] private int damage;
-    [SerializeField] private List<CreatureCardEffect> effects;
+    [SerializeField] private List<CardEffect<CreatureCard>> effects;
 
     private Action<CreatureCard> creatureDestroyedCallback;
 
     public CreatureCard(ulong playerId, CreatureCardBase cardBase) : base(playerId) {
         this.cardBase = cardBase;
-        effects = new List<CreatureCardEffect>();
+        effects = new List<CardEffect<CreatureCard>>();
         for(int i = 0; i < cardBase.BaseEffects.Count; i++) {
-            CreatureCardEffect effect = cardBase.BaseEffects[i].GenerateCardEffectFromBase();
+            CardEffect<CreatureCard> effect = CardEffectRegistry.Get(cardBase.BaseEffects[i]);
             effect.Init(this);
             effects.Add(effect);
         }
@@ -124,17 +124,17 @@ public partial class CreatureCard : Card {
     public void DestroyCreature() {
         creatureDestroyedCallback?.Invoke(this);
 
-        foreach (CreatureCardEffect effect in effects)
+        foreach (CardEffect<CreatureCard> effect in effects)
             effect.RemoveListeners();
     }
 
-    public void AddEffect(CreatureCardEffect effect) {
+    public void AddEffect(CardEffect<CreatureCard> effect) {
         effect.Init(this);
         effects.Add(effect);
     }
 
-    public void RemoveEffect(CreatureCardEffect effect) {
-        foreach(CreatureCardEffect entry in effects) {
+    public void RemoveEffect(CardEffect<CreatureCard> effect) {
+        foreach(CardEffect<CreatureCard> entry in effects) {
             if(entry == effect) {
                 entry.RemoveListeners();
                 effects.Remove(entry);
@@ -167,7 +167,7 @@ public partial class CreatureCard : Card {
 
     public int CurrentDamage { get { return damage; } set { damage = value; } }
 
-    public List<CreatureCardEffect> Effects { get { return effects; } }
+    public List<CardEffect<CreatureCard>> Effects { get { return effects; } }
 
     public Action<CreatureCard> CreatureDestroyedCallback { get { return creatureDestroyedCallback; } set { creatureDestroyedCallback = value; } }
 }

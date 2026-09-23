@@ -7,11 +7,11 @@
                                                                                      args.Attacker,
                                                                                      args.Defender,
                                                                                      damage);
-        EventBus.Instance.InvokeOnWitherProked(witherArgs);
+        EventBus.Instance.InvokeOnWitherProked(witherArgs); // TODO: Create a new event for checking if there is an existing Wither status on a creature
         if (!witherArgs.IsCanceled) {
             TcgLogger.Log("Wither Status added to Defender");
-            // TODO: Replace with get method to the CardEffectRegistry to get WithStatusEffect
-            args.Defender.AddEffect(new WitherStatusEffect(effectBase.WitherStatusEffectBase, damage));
+            args.Defender.AddEffect(CardEffectRegistry.Get(CreatureCardEffectType.WitherStatus));
+            EventBus.Instance.InvokeOnWitherProked(witherArgs);
         }
     }
 }

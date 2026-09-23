@@ -1,6 +1,6 @@
 ﻿public class SwiftnessEffectFactory {
-    public static StaticCreatureCardEffect Create(string id, string effectName) {
-        EffectContext<CreatureCard> context = new(id, effectName);
+    public static StaticCreatureCardEffect Create() {
+        EffectContext<CreatureCard> context = new();
 
         EffectRule<EffectContext<CreatureCard>, PlayerCardCancelableEventArgs<CreatureCard>, CreatureCard> lifelinkRule = new(context);
         lifelinkRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
@@ -10,7 +10,9 @@
         lifelinkSequence.AddRule(lifelinkRule);
 
         string rawDescription = "This creature does not have summoning sickness";
-        StaticCreatureCardEffect lifelinkEffect = new StaticCreatureCardEffect(rawDescription, effectIconId: "swords");
+        StaticCreatureCardEffect lifelinkEffect = new StaticCreatureCardEffect(effectName: "Swiftness",
+                                                                              rawDescription,
+                                                                              effectIconId: "swords");
         lifelinkEffect.AddEffectSequence(lifelinkSequence);
 
         return lifelinkEffect;

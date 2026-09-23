@@ -2,7 +2,7 @@
 public class DuelistContext : EffectContext<CreatureCard> {
     private CreatureCard duelistDefender;
 
-    public DuelistContext(string id, string effectName) : base(id, effectName) {
+    public DuelistContext() {
         duelistDefender = null;
     }
 

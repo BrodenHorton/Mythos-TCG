@@ -1,9 +1,10 @@
 using System;
 
 public class StatBoostEffectFactory {
-    public static CardEffect<CreatureCard> Create<TEventArgs>(StatBoostContext context,
-                                                                    EffectSequence<StatBoostContext, TEventArgs, CreatureCard> statBoostProkSequence,
-                                                                    string rawDescription) where TEventArgs : EventArgs {
+    public static CardEffect<CreatureCard> Create<TEventArgs>(string effectName,
+                                                              string rawDescription,
+                                                              StatBoostContext context,
+                                                              EffectSequence<StatBoostContext, TEventArgs, CreatureCard> statBoostProkSequence) where TEventArgs : EventArgs {
         EffectRule<StatBoostContext, PlayerCardStatEventArgs<CreatureCard>, CreatureCard> attackCalcRule = new(context);
         attackCalcRule.AddPrecondition(new CardCheckPrecondition<CreatureCard>());
         attackCalcRule.AddPrecondition(new StatBoostCanBoostAttackPrecondition());
@@ -21,14 +22,14 @@ public class StatBoostEffectFactory {
         healthCalcSequence.AddRule(healthCalcRule);
 
         EffectRule<StatBoostContext, PlayerEventArgs, CreatureCard> clearEffectProksRule = new(context);
-        clearEffectProksRule.AddPrecondition(new PlayerCheckPrecondition());
+        clearEffectProksRule.AddPrecondition(new PlayerCheckPrecondition<CreatureCard>());
         clearEffectProksRule.AddPrecondition(new StatBoostIsResetAfterTurnPrecondition());
         clearEffectProksRule.AddAction(new StatBoostClearEffectProksAction());
 
         EffectSequence<StatBoostContext, PlayerEventArgs, CreatureCard> clearEffectProksSequence = new(new EndPhaseEnteredFinishedTrigger());
         clearEffectProksSequence.AddRule(clearEffectProksRule);
 
-        CardEffect<CreatureCard> statBoostEffect = new CardEffect<CreatureCard>(rawDescription);
+        CardEffect<CreatureCard> statBoostEffect = new CardEffect<CreatureCard>(effectName, rawDescription);
         statBoostEffect.AddEffectSequence(statBoostProkSequence);
         statBoostEffect.AddEffectSequence(attackCalcSequence);
         statBoostEffect.AddEffectSequence(healthCalcSequence);
